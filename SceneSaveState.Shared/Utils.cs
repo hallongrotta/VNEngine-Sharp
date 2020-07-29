@@ -306,12 +306,12 @@ namespace SceneSaveState
                 sceneConsole.svname = "backup";
                 sceneConsole.saveToFile(backup: true);
             }
-            sceneConsole.game.event_unreg_listener("update", hook_update);
+            //sceneConsole.game.event_unreg_listener("update", hook_update);
             sceneConsole.guiOnShow = false;
             sceneConsole.game.windowName = "";
             //sc.game.skin_set(sc.game_skin_saved)
-            sceneConsole.game.skin_set(sceneConsole.game.gdata.sss_game_skin_saved);
-            sceneConsole.game.gdata.sss_game_skin_saved = null;
+            //sceneConsole.game.skin_set(sceneConsole.game.gdata.sss_game_skin_saved);
+            //sceneConsole.game.gdata.sss_game_skin_saved = null;
             // sc.game.isShowDevConsole = False
             // sc.game.wwidth = sc.originalwindowwidth
             // sc.game.wheight = sc.originalwindowheight
