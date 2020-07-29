@@ -184,7 +184,7 @@ namespace SceneSaveState
             }
             catch (Exception e)
             {
-                Console.WriteLine("sceneSaveStateWindowGUI Exception:");
+                Console.WriteLine("sceneSaveStateWindowGUI Exception: " + e.ToString());
                 Utils.sceneConsoleGUIClose();
                 Utils.sceneConsole.game.show_blocking_message_time("sceneSaveState error: " + e.ToString());
             }
@@ -403,6 +403,7 @@ namespace SceneSaveState
             GUILayout.Space(10);
             GUILayout.BeginHorizontal();
             var cnt = 0;
+            /* TODO
             foreach (var command in Utils.sceneConsole.shortcuts.Keys.OrderBy(_p_1 => _p_1).ToList())
             {
                 GUILayout.Label(String.Format("%s:", command), GUILayout.Width(110));
@@ -415,6 +416,7 @@ namespace SceneSaveState
                     GUILayout.BeginHorizontal();
                 }
             }
+            */
             GUILayout.EndHorizontal();
             if (GUILayout.Button("Save config", GUILayout.Height(50)))
             {
