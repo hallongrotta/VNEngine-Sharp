@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>37792876-cc1b-4033-8ab7-4d3cca4715a4</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>VNActor.Shared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Actor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ActorFuncs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)HSNeoOCI.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)HSNeoOCIChar.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)HSNeoOCIFolder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)HSNeoOCIItem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)HSNeoOCILight.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)HSNeoOCIProp.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)HSNeoOCIRoute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IActor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IProp.cs" />
+    <Compile Include="..\VNActor.Shared\Light.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Prop.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PropFuncs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utils.cs" />
+  </ItemGroup>
+</Project>

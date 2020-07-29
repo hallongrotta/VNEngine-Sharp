@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<layerModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/SimpleShapesModel" dslVersion="1.0.0.0" Id="af0a2dde-2164-4d25-b3c3-ee1ef4a182f0" xmlns="http://schemas.microsoft.com/VisualStudio/TeamArchitect/LayerDesigner">
+  <layers>
+    <layer Id="02bb8155-dcbb-4726-ac0f-917e6de068f7" name="VNActor.KK">
+      <references>
+        <reference Id="e7a0a5e0-6436-4dd4-b0ac-531bd91deb7f" name="VNActor.KK">
+          <ArtifactNode Label="VNActor.KK" Category="CodeSchema_Project" Id="(Assembly=&quot;$(PersonalUri)/GitHub/Koikatu-Gameplay-Mod/VNActor.KK/VNActor.KK.csproj&quot;)">
+            <Category Ref="File" />
+          </ArtifactNode>
+          <ExpandedNode Id="(Assembly=VNActor.KK)" Label="VNActor.KK.dll" Category="CodeSchema_Assembly">
+            <LinkCategory Ref="Produces" />
+            <LinkCategory Ref="Represents" />
+          </ExpandedNode>
+        </reference>
+      </references>
+    </layer>
+  </layers>
+</layerModel>

@@ -1,0 +1,93 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29806.167
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VNSceneScript.old", "VNSceneScript\VNSceneScript.old.csproj", "{32D57315-418F-4279-99E4-C653A0581D10}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExtPlugins", "ExtPlugins\ExtPlugins.csproj", "{003944F1-DF3D-4F32-AC6D-5225192B8958}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "VNActor.Shared", "VNActor.Shared\VNActor.Shared.shproj", "{37792876-CC1B-4033-8AB7-4D3CCA4715A4}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SceneSaveState.Shared", "SceneSaveState.Shared\SceneSaveState.Shared.shproj", "{60460611-DB66-4373-9499-8E57A8814910}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "VNEngine.Shared", "VNEngine.Shared\VNEngine.Shared.shproj", "{062D595D-8E9B-4149-A5A0-16E45773F9D6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E0879B6B-BA21-4AC1-B91D-0FF0175CC579}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		Map.dgml = Map.dgml
+	EndProjectSection
+EndProject
+Project("{F088123C-0E9E-452A-89E6-6BA2F21D5CAC}") = "DependencyValidation1", "DependencyValidation1\DependencyValidation1.modelproj", "{B3E3E9EB-19B6-4506-9DBC-B21E78DFAA50}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VNActor.KK", "VNActor.KK\VNActor.KK.csproj", "{E687512C-010E-4F55-AC98-3E02BC89D60C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VNEngine.KK", "VNEngine.KK\VNEngine.KK.csproj", "{1FB1B473-387F-425B-8EAA-421B1869A4BD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VNEngine.AI", "VNEngine.AI\VNEngine.AI.csproj", "{E1C9E23E-B127-4FCD-8200-E5C75648A27F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VNActor.NeoV2", "VNActor.NeoV2\VNActor.NeoV2.csproj", "{6621FC6C-9992-400A-862A-18DC2F855EDA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VNActor.Legacy", "VNActor.Legacy\VNActor.Legacy.csproj", "{152273F9-B59C-43D1-8A9A-9729938044CB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SceneSaveState.KK", "SceneSaveState.KK\SceneSaveState.KK.csproj", "{F04A21FC-C895-4F4D-A83D-9AEC3B921D25}"
+EndProject
+Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		VNEngine.Shared\VNEngine.Shared.projitems*{062d595d-8e9b-4149-a5a0-16e45773f9d6}*SharedItemsImports = 13
+		VNEngine.Shared\VNEngine.Shared.projitems*{1fb1b473-387f-425b-8eaa-421b1869a4bd}*SharedItemsImports = 4
+		VNActor.Shared\VNActor.Shared.projitems*{37792876-cc1b-4033-8ab7-4d3cca4715a4}*SharedItemsImports = 13
+		SceneSaveState.Shared\SceneSaveState.Shared.projitems*{60460611-db66-4373-9499-8e57a8814910}*SharedItemsImports = 13
+		VNActor.Shared\VNActor.Shared.projitems*{e687512c-010e-4f55-ac98-3e02bc89d60c}*SharedItemsImports = 4
+		SceneSaveState.Shared\SceneSaveState.Shared.projitems*{f04a21fc-c895-4f4d-a83d-9aec3b921d25}*SharedItemsImports = 4
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{32D57315-418F-4279-99E4-C653A0581D10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32D57315-418F-4279-99E4-C653A0581D10}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32D57315-418F-4279-99E4-C653A0581D10}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32D57315-418F-4279-99E4-C653A0581D10}.Release|Any CPU.Build.0 = Release|Any CPU
+		{003944F1-DF3D-4F32-AC6D-5225192B8958}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{003944F1-DF3D-4F32-AC6D-5225192B8958}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{003944F1-DF3D-4F32-AC6D-5225192B8958}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{003944F1-DF3D-4F32-AC6D-5225192B8958}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3E3E9EB-19B6-4506-9DBC-B21E78DFAA50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3E3E9EB-19B6-4506-9DBC-B21E78DFAA50}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3E3E9EB-19B6-4506-9DBC-B21E78DFAA50}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3E3E9EB-19B6-4506-9DBC-B21E78DFAA50}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E687512C-010E-4F55-AC98-3E02BC89D60C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E687512C-010E-4F55-AC98-3E02BC89D60C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E687512C-010E-4F55-AC98-3E02BC89D60C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E687512C-010E-4F55-AC98-3E02BC89D60C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1FB1B473-387F-425B-8EAA-421B1869A4BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FB1B473-387F-425B-8EAA-421B1869A4BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FB1B473-387F-425B-8EAA-421B1869A4BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FB1B473-387F-425B-8EAA-421B1869A4BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1C9E23E-B127-4FCD-8200-E5C75648A27F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1C9E23E-B127-4FCD-8200-E5C75648A27F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1C9E23E-B127-4FCD-8200-E5C75648A27F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1C9E23E-B127-4FCD-8200-E5C75648A27F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6621FC6C-9992-400A-862A-18DC2F855EDA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6621FC6C-9992-400A-862A-18DC2F855EDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6621FC6C-9992-400A-862A-18DC2F855EDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6621FC6C-9992-400A-862A-18DC2F855EDA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{152273F9-B59C-43D1-8A9A-9729938044CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{152273F9-B59C-43D1-8A9A-9729938044CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{152273F9-B59C-43D1-8A9A-9729938044CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{152273F9-B59C-43D1-8A9A-9729938044CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F04A21FC-C895-4F4D-A83D-9AEC3B921D25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F04A21FC-C895-4F4D-A83D-9AEC3B921D25}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F04A21FC-C895-4F4D-A83D-9AEC3B921D25}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F04A21FC-C895-4F4D-A83D-9AEC3B921D25}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {19B0272D-3305-4C60-8DD9-E15889B2FF54}
+	EndGlobalSection
+EndGlobal

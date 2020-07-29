@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>062d595d-8e9b-4149-a5a0-16e45773f9d6</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>VNEngine.Shared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)ActorUtils.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AutoScriptInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BaseController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SkinRenPy.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)System.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Ministates.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SkinBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SkinCustomWindow.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SkinDefault.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SkinRenpyMini.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utils.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)VNCamera.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)VNController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)VNNeoController.cs" />
+  </ItemGroup>
+</Project>
