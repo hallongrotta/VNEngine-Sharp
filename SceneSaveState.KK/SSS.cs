@@ -64,7 +64,7 @@ namespace SceneSaveState
 
         public void OnGUI()
         {
-            if (this.visible)
+            if (Utils.sceneConsole.guiOnShow)
             {
                 GUILayout.Window(0, this.windowRect, this.windowCallback, "sceneconsole");
             }    
@@ -77,7 +77,7 @@ namespace SceneSaveState
             {
                 UnityEngine.Debug.Log("UI Toggle");
                 //UI.sceneConsoleGUIStart(game);
-                this.visible = !this.visible;
+                Utils.sceneConsole.guiOnShow = !Utils.sceneConsole.guiOnShow;
             }              
         }
     }
