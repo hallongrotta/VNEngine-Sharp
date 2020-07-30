@@ -26,9 +26,8 @@ namespace SceneSaveState
             this.props = props;
         }
 
-        public Scene(SceneConsole sc)
+        public Scene(SceneConsole sc) : this(sc, new Dictionary<string, ActorData>(), new Dictionary<string, PropData>(), new List<CamData>())
         {
-            new Scene(sc, new Dictionary<string, ActorData>(), new Dictionary<string, PropData>(), new List<CamData>());
         }
 
 

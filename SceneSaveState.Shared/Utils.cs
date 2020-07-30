@@ -241,7 +241,7 @@ namespace SceneSaveState
                     if (sceneConsole.block.Count > 0)
                     {
                         //print len(sc.block)
-                        Console.WriteLine(String.Format("VNGE SSS: try backup by timer (every %s seconds)... (%s scenes)", sceneConsole.backupTimeDuration.ToString(), sceneConsole.block.Count.ToString()));
+                        Console.WriteLine(String.Format("VNGE SSS: try backup by timer (every {0} seconds)... ({1} scenes)", sceneConsole.backupTimeDuration.ToString(), sceneConsole.block.Count.ToString()));
                         try
                         {
                             sceneConsole.saveToFileDirect("_backuptimer");
@@ -295,6 +295,7 @@ namespace SceneSaveState
         public static void sceneConsoleGUIClose()
         {
             // applying backup
+            /*
             if (!(sceneConsole.svname == ""))
             {
                 sceneConsole.saveToFile(backup: true);
@@ -306,6 +307,7 @@ namespace SceneSaveState
                 sceneConsole.svname = "backup";
                 sceneConsole.saveToFile(backup: true);
             }
+            */
             //sceneConsole.game.event_unreg_listener("update", hook_update);
             sceneConsole.guiOnShow = false;
             sceneConsole.game.windowName = "";
@@ -354,7 +356,7 @@ namespace SceneSaveState
             {
                 col = sceneConsole.nor_font_col;
             }
-            return String.Format("<color=%s>%s</color>", col, btntext);
+            return String.Format("<color={0}>{1}</color>", col, btntext);
         }
 
         public static string btntext_get_if_selected2(string btntext, bool isSelected)
@@ -368,7 +370,7 @@ namespace SceneSaveState
             {
                 col = sceneConsole.nor_font_col;
             }
-            return String.Format("<color=%s>%s</color>", col, btntext);
+            return String.Format("<color={0}>{1}</color>", col, btntext);
         }
 
         public static void recalc_autostates()

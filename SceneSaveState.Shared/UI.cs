@@ -72,7 +72,6 @@ namespace SceneSaveState
 
         public static void sceneConsoleWindowFunc(int id)
         {
-            UnityEngine.Debug.Log("Showing main window.");
             Utils.sceneConsole.scene_str_array = Utils.sceneConsole.scene_strings.ToArray();
             Utils.sceneConsole.fset = new List<string>(Utils.sceneConsole.nameset[0]);
             Utils.sceneConsole.mset = new List<string>(Utils.sceneConsole.nameset[1]);
@@ -163,7 +162,7 @@ namespace SceneSaveState
                         {
                             var col = Utils.sceneConsole.sel_font_col;
                             Utils.sceneConsole.warning_action = Utils.sceneConsoleGUIClose;
-                            Utils.sceneConsole.warning_param = new SceneConsole.WarningParam_s(String.Format("Do you really want to close window? (<b><color=%s>Warning:</color> All current scenedata will be deleted</b>)", col), null, false);
+                            Utils.sceneConsole.warning_param = new SceneConsole.WarningParam_s(String.Format("Do you really want to close window? (<b><color={0}>Warning:</color> All current scenedata will be deleted</b>)", col), null, false);
                         }
                         GUILayout.EndHorizontal();
                         GUILayout.EndVertical();
@@ -655,7 +654,7 @@ namespace SceneSaveState
                             }
                             catch (Exception e)
                             {
-                                Utils.sceneConsole.show_blocking_message_time_sc(String.Format("Error during set state: %s", e.ToString()));
+                                Utils.sceneConsole.show_blocking_message_time_sc(String.Format("Error during set state: {0}", e.ToString()));
                                 //return
                                 //if i != 0 and (i % 3 == 0):
                             }
@@ -739,7 +738,7 @@ namespace SceneSaveState
                         }
                         catch (Exception e)
                         {
-                            Utils.sceneConsole.show_blocking_message_time_sc(String.Format("Error during set visible: %s", e.ToString()));
+                            Utils.sceneConsole.show_blocking_message_time_sc(String.Format("Error during set visible: {0}", e.ToString()));
                             // return
                             // if i != 0 and (i % 3 == 0):
                         }
@@ -1091,11 +1090,11 @@ namespace SceneSaveState
                             string sname = addprops.a1o.name;
                             if (sname != null && sname.Trim().Length > 0)
                             {
-                                scn_name = sname + String.Format(" (%d)", i + 1);
+                                scn_name = sname + String.Format(" ({0})", i + 1);
                             }
                         }
                     }
-                    if (GUILayout.Button(String.Format("<color=%s>%s</color>", col, scn_name)))
+                    if (GUILayout.Button(String.Format("<color={0}>{1}</color>", col, scn_name)))
                     {
                         Utils.sceneConsole.cur_index = i;
                         if (Utils.sceneConsole.autoLoad == true)
@@ -1139,7 +1138,7 @@ namespace SceneSaveState
                     VNCamera.VNData addparams = cam.addata;
                     GUILayout.BeginHorizontal();
                     // show name if available
-                    var camtxt = String.Format("Cam %s", i.ToString());
+                    var camtxt = String.Format("Cam {0}", i.ToString());
                     if (addparams.addparam)
                     {
                         addprops = addparams.addprops;
@@ -1151,12 +1150,12 @@ namespace SceneSaveState
                             }
                         }
                     }
-                    if (GUILayout.Button(String.Format("<color=%s>%s</color>", col, camtxt)))
+                    if (GUILayout.Button(String.Format("<color={0}>{1}</color>", col, camtxt)))
                     {
                         Utils.sceneConsole.cur_cam = i;
                         Utils.sceneConsole.setCamera(false);
                     }
-                    if (GUILayout.Button(String.Format("<color=%s>a</color>", col), GUILayout.Width(22)))
+                    if (GUILayout.Button(String.Format("<color={0}>a</color>", col), GUILayout.Width(22)))
                     {
                         Utils.sceneConsole.cur_cam = i;
                         Utils.sceneConsole.setCamera(true);
@@ -1220,7 +1219,7 @@ namespace SceneSaveState
                     {
                         col = Utils.sceneConsole.nor_font_col;
                     }
-                    if (GUILayout.Button(String.Format("<color=%s>%s</color>", col, fset[i]), GUILayout.Height(40)))
+                    if (GUILayout.Button(String.Format("<color={0}>{1}</color>", col, fset[i]), GUILayout.Height(40)))
                     {
                         Utils.sceneConsole.fset_index = i;
                     }
@@ -1259,7 +1258,7 @@ namespace SceneSaveState
                     {
                         col = Utils.sceneConsole.nor_font_col;
                     }
-                    if (GUILayout.Button(String.Format("<color=%s>%s</color>", col, mset[i]), GUILayout.Height(40)))
+                    if (GUILayout.Button(String.Format("<color={0}>{1}</color>", col, mset[i]), GUILayout.Height(40)))
                     {
                         Utils.sceneConsole.mset_index = i;
                     }
@@ -1461,7 +1460,7 @@ namespace SceneSaveState
             {
                 Console.WriteLine("sceneSaveStateWindowGUI Exception: " + e.ToString());               
                 Utils.sceneConsoleGUIClose();
-                Utils.sceneConsole.game.show_blocking_message_time("sceneSaveState error: " + e.ToString());
+                //Utils.sceneConsole.game.show_blocking_message_time("sceneSaveState error: " + e.ToString()); TODO
             }
         }
 

@@ -143,13 +143,13 @@ namespace VNEngine
 
         public List<float> timersDuration;
 
-        public List<GameFunc> timersFuncEnd;
+        public Dictionary<int, GameFunc> timersFuncEnd;
 
         public delegate void TimerUpdateFunc(VNController controller, float f1, float f2, float f3);
 
         public delegate void GameFunc(VNController controller);
 
-        public List<TimerUpdateFunc> timersFuncUpd;
+        public Dictionary<int, TimerUpdateFunc> timersFuncUpd;
 
         public delegate void UpdateFunc(string file);
 
@@ -222,8 +222,8 @@ namespace VNEngine
                 -1,
                 -1
             };
-            this.timersFuncUpd = new List<TimerUpdateFunc>();
-            this.timersFuncEnd = new List<GameFunc>();
+            this.timersFuncUpd = new Dictionary<int, TimerUpdateFunc>();
+            this.timersFuncEnd = new Dictionary<int, GameFunc>();
             this.timersDuration = new List<float> {
                 0,
                 0,
@@ -428,7 +428,7 @@ namespace VNEngine
                 }
                 catch (Exception e)
                 {
-                    this.show_blocking_message_time(String.Format("Error: can't start VNFrame developer console: %s", e.ToString()));
+                    this.show_blocking_message_time(String.Format("Error: can't start VNFrame developer console: {0}", e.ToString()));
                 }
             }
             if (this.get_ini_option("usekeysforbuttons") == "1")
@@ -959,13 +959,13 @@ namespace VNEngine
             Console.WriteLine("-- Female scene chars: --");
             foreach (var i in Enumerable.Range(0, fems.Count))
             {
-                Console.WriteLine(String.Format("%s: %s", i.ToString(), fems[i].text_name));
+                Console.WriteLine(String.Format("{0}: {1}", i.ToString(), fems[i].text_name));
             }
             fems = this.scene_get_all_males();
             Console.WriteLine("-- Male scene chars: --");
             foreach (var i in Enumerable.Range(0, fems.Count))
             {
-                Console.WriteLine(String.Format("%s: %s", i.ToString(), fems[i].text_name));
+                Console.WriteLine(String.Format("{0}: {1}", i.ToString(), fems[i].text_name));
             }
             this.show_blocking_message_time("Debug: list of chars printed in console!");
         }
@@ -1035,12 +1035,22 @@ namespace VNEngine
         }
 
         // ---------- cameras ----------
+
+        public void move_camera(CamData cam)
+        {
+            this.move_camera_direct(cam);
+        }
+
         public void move_camera(Vector3? pos = null, Vector3? distance = null, Vector3? rotate = null, float fov = 23.0f)
         {
             //self.show_blocking_message_time("ERROR: move_camera was not implemented")
             CamData camobj = this.camparams2vec(pos, distance, rotate, fov);
             this.move_camera_obj(camobj);
         }
+
+        public abstract void move_camera_direct(CamData cam);
+
+        public abstract void move_camera_direct(Vector3? pos = null, Vector3? distance = null, Vector3? rotate = null, float? fov = null);
 
         public void move_camera_obj(CamData camobj)
         {
@@ -1070,12 +1080,6 @@ namespace VNEngine
         public CamData cam2vec(CamData camobj)
         {
             return this.camparams2vec(camobj.position, camobj.distance, camobj.rotation, camobj.fov);
-        }
-
-        public void move_camera_direct(object pos = null, object distance = null, object rotate = null, float fov = 23.0f)
-        {
-            // expecting only Vectors3
-            this.show_blocking_message_time("ERROR: move_camera_direct was not implemented");
         }
 
         public void anim_to_camera(

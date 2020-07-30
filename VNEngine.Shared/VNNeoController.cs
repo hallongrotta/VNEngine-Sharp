@@ -7,6 +7,8 @@ using Studio;
 using HarmonyLib;
 using System.IO;
 using Manager;
+using ADV.EventCG;
+using static VNEngine.VNCamera;
 
 namespace VNEngine
 {
@@ -86,10 +88,22 @@ namespace VNEngine
             }
         }
 
+        override public void move_camera_direct(CamData cam)
+        {
+            Studio.CameraControl.CameraData cdata = cameraData;
+            Studio.CameraControl c = studio.cameraCtrl;
 
+            cdata.pos = cam.position;       
 
+            cdata.distance = cam.distance;
 
-        public void move_camera_direct(Vector3? pos = null, Vector3? distance = null, Vector3? rotate = null, float? fov = null)
+            cdata.rotate = cam.rotation;         
+
+            cdata.parse = cam.fov;             
+            
+        }
+
+        override public void move_camera_direct(Vector3? pos = null, Vector3? distance = null, Vector3? rotate = null, float? fov = null)
         {
             Studio.CameraControl.CameraData cdata = cameraData;
             Studio.CameraControl c = studio.cameraCtrl;

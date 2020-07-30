@@ -396,7 +396,7 @@ namespace SceneSaveState
             this.scene_strings = new List<string>();
             foreach (var id in Enumerable.Range(0, this.block.Count - 0))
             {
-                this.scene_strings.Add(String.Format("Scene %d", id + 1));
+                this.scene_strings.Add(String.Format("Scene {0}", id + 1));
             }
             this.scene_str_array = this.scene_strings.ToArray();
         }
@@ -427,7 +427,7 @@ namespace SceneSaveState
                         txtname = actprop.text_name;
                     }
                     var fld = HSNeoOCIFolder.add("-msauto:" + param + ":" + txtname);
-                    //objSave["__id%s"%(str(id))] = actprop.export_full_status()
+                    //objSave["__id{0}"%(str(id))] = actprop.export_full_status()
                     fld.set_parent(actprop);
                 }
             }
@@ -484,7 +484,7 @@ namespace SceneSaveState
             {
                 //if isinstance(actprop, Actor):
                 var id = this.find_item_in_objlist(actprop.objctrl);
-                objSave[String.Format("__id%s", id.ToString())] = actprop.export_full_status();
+                objSave[String.Format("__id{0}", id.ToString())] = actprop.export_full_status();
                 //elif isinstance(actprop, Actor):
                 //print objSave
             }
@@ -582,7 +582,7 @@ namespace SceneSaveState
         {
             var cdata = VNNeoController.cameraData;
             var addata = new VNData(this.cam_addparam, this.cam_whosay, this.cam_whatsay, this.cam_addvncmds, this.cam_addprops);
-            var cam_data = new CamData(cdata.pos, cdata.distance, cdata.rotate, cdata.parse, addata);
+            var cam_data = new CamData(cdata.pos, cdata.rotate, cdata.distance, cdata.parse, addata);
             if (task == "" || task == "add")
             {
                 this.cur_cam = this.block[this.cur_index].addCam(cam_data);
@@ -639,7 +639,8 @@ namespace SceneSaveState
             }
             else
             {
-                this.game.move_camera(pos: camera_data.position, distance: camera_data.distance, rotate: camera_data.rotation, fov: camera_data.fov);
+                this.game.move_camera(camera_data);
+                //this.game.move_camera(pos: camera_data.position, distance: camera_data.distance, rotate: camera_data.rotation, fov: camera_data.fov);
             }
             if (camera_data.addata is VNCamera.VNData addata)
             {
@@ -724,7 +725,7 @@ namespace SceneSaveState
             {
                 this.block.RemoveAt(this.cur_index);
                 this.cur_index = this.cur_index - 1;
-                this.scene_strings.RemoveAt(-1);
+                this.scene_strings.RemoveAt(scene_strings.Count - 1);
                 this.scene_str_array = this.scene_strings.ToArray();
             }
         }
@@ -1395,7 +1396,7 @@ namespace SceneSaveState
                 {
                     if (i >= numchilds)
                     {
-                        Console.WriteLine(String.Format("deleted! %s", i.ToString()));
+                        Console.WriteLine(String.Format("deleted! {0}", i.ToString()));
                         ar2[i].delete();
                     }
                 }
@@ -1636,7 +1637,7 @@ namespace SceneSaveState
                 catch (Exception e)
                 {
                     this.block = blockold;
-                    Console.WriteLine(String.Format("Error verify loading data - %s", e.ToString()));
+                    Console.WriteLine(String.Format("Error verify loading data - {0}", e.ToString()));
                     return -100000;
                 }
                 var diffs = 0;
@@ -1649,7 +1650,7 @@ namespace SceneSaveState
                         //     diffs += 1
                         if (!blocknew[i].isEqual(blockold[i]))
                         {
-                            Console.WriteLine(String.Format("Verify: Non-eq scene: %s", (i + 1).ToString()));
+                            Console.WriteLine(String.Format("Verify: Non-eq scene: {0}", (i + 1).ToString()));
                             diffs += 1;
                         }
                     }
@@ -1657,7 +1658,7 @@ namespace SceneSaveState
                 else
                 {
                     diffs = blocknew.Count - blockold.Count;
-                    Console.WriteLine(String.Format("Diff scene length: %s", diffs.ToString()));
+                    Console.WriteLine(String.Format("Diff scene length: {0}", diffs.ToString()));
                 }
                 if (diffs == 0)
                 {
@@ -1675,7 +1676,7 @@ namespace SceneSaveState
             catch (Exception e)
             {
                 //self.show_blocking_message_time_sc("Data saved! (Verify: INTERNAL ERROR!)")
-                Console.WriteLine(String.Format("Error verify %s", e.ToString()));
+                Console.WriteLine(String.Format("Error verify {0}", e.ToString()));
                 return -100000;
             }
         }
@@ -1702,11 +1703,11 @@ namespace SceneSaveState
                 }
                 else if (this.isSaveOld)
                 {
-                    this.show_blocking_message_time_sc(String.Format("Data saved! (Verify: OK)\n(some %s potential misequals, seems be ok)", diffs.ToString()));
+                    this.show_blocking_message_time_sc(String.Format("Data saved! (Verify: OK)\n(some {0} potential misequals, seems be ok)", diffs.ToString()));
                 }
                 else
                 {
-                    this.show_blocking_message_time_sc(String.Format("Data saved! (Verify: %s potential problems, see Console!)", diffs.ToString()));
+                    this.show_blocking_message_time_sc(String.Format("Data saved! (Verify: {0} potential problems, see Console!)", diffs.ToString()));
                 }
             }
         }
@@ -1753,24 +1754,26 @@ namespace SceneSaveState
             }
         }
 
+        public class save_data
+        {
+            public Dictionary<string, ActorData> actors;
+            public List<CamData> cams;
+            public Dictionary<string, PropData> props;
+
+            public save_data()
+            {
+
+            }
+        }
+
         public void saveToFileDirect(string filename)
         {
-            var save_data = new List<object>();
+            var save_data = new List<save_data>();
             foreach (var i in Enumerable.Range(0, this.block.Count - 0))
             {
-                var actors = block[i].actors;
-                var cams = block[i].cams;
-                var props = block[i].props;
-                save_data[i] = new Dictionary<object, object> {
-                    {
-                        "actors",
-                        actors},
-                    {
-                        "cams",
-                        cams},
-                    {
-                        "props",
-                        props}};
+                save_data[i].actors = block[i].actors;
+                save_data[i].cams = block[i].cams;
+                save_data[i].props = block[i].props;
             }
             // save file
             var script_dir = Path.GetDirectoryName(Application.dataPath);
@@ -1779,12 +1782,21 @@ namespace SceneSaveState
             var file_path = folder_path + filename.ToString() + ".txt";
             //else:
             //file_path = folder_path + str(self.svname) + "_backup.txt"
-            var abs_file_path = Path.Combine(script_dir, file_path);
+            var abs_file_path = Path.Combine(script_dir, file_path);  
+            /*
+            System.Xml.Serialization.XmlSerializer writer =
+            new System.Xml.Serialization.XmlSerializer(typeof(List<save_data>));
+            FileStream file = System.IO.File.Create(abs_file_path);
+            writer.Serialize(file, save_data);
+            */
+            /*
             using (System.IO.StreamWriter file =
             new System.IO.StreamWriter(abs_file_path))
             {
+
                 file.Write(JsonConvert.SerializeObject(save_data));
             }
+            */
         }
 
         public Dictionary<string, Scene> loadFromFileDirect(string filename)
@@ -2139,7 +2151,7 @@ namespace SceneSaveState
                             addparams.whatsay
                         );*/
                         var res = JsonConvert.SerializeObject(addparams);
-                        w.Write(String.Format("%s,\n", res));
+                        w.Write(String.Format("{0},\n", res));
                     }
                 }
                 w.Write("{}\n");
@@ -2148,7 +2160,7 @@ namespace SceneSaveState
             }
             catch (Exception e)
             {
-                this.show_blocking_message_time_sc(String.Format("Can't write to file %s in game root folder\nerr: %s", filename, e.ToString()));
+                this.show_blocking_message_time_sc(String.Format("Can't write to file {0} in game root folder\nerr: {1}", filename, e.ToString()));
                 return;
             }
             this.show_blocking_message_time_sc("Cam VN texts exported to sss_camtexts.txt!\nFormat: scene, cam, isVNcam, whosay, whatsay");
@@ -2176,7 +2188,7 @@ namespace SceneSaveState
             }
             catch (Exception e)
             {
-                this.show_blocking_message_time_sc(String.Format("Can't import file %s in game root folder\nerr: %s", filename, e.ToString()));
+                this.show_blocking_message_time_sc(String.Format("Can't import file {0} in game root folder\nerr: {1}", filename, e.ToString()));
                 return;
             }
             this.show_blocking_message_time_sc("Cam VN texts import success!");
@@ -2232,7 +2244,7 @@ namespace SceneSaveState
             {
                 calcPos = 0;
             }
-            Console.WriteLine(String.Format("Run VNSS from state %s", calcPos.ToString()));
+            Console.WriteLine(String.Format("Run VNSS from state {0}", calcPos.ToString()));
             this.game.vnscenescript_run_current(this.onEndVNSS, calcPos.ToString());
         }
 

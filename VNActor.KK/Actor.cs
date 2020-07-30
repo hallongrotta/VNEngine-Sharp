@@ -421,7 +421,7 @@ namespace VNActor
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine(String.Format("Error set kinematic to 3(IK&FK), when ActiveFK[%d: %s]. Error message = %s", i, FKCtrl.parts[i].ToString(), e.ToString()));
+                        Console.WriteLine(String.Format("Error set kinematic to 3(IK&FK), when ActiveFK[%d: {0}]. Error message = {1}", i, FKCtrl.parts[i].ToString(), e.ToString()));
                     }
                 }
                 // call ActiveKinematicMode to set pvCopy?
@@ -645,7 +645,7 @@ namespace VNActor
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(String.Format("Exception in set_curcloth_coordinate, %s", e.ToString()));
+                    Console.WriteLine(String.Format("Exception in set_curcloth_coordinate, {0}", e.ToString()));
                 }
             }
         }
@@ -668,7 +668,7 @@ namespace VNActor
             }
             catch (Exception e)
             {
-                Console.WriteLine(String.Format("Exception in set_curcloth_coordinate_no_accessory, %s", e.ToString()));
+                Console.WriteLine(String.Format("Exception in set_curcloth_coordinate_no_accessory, {0}", e.ToString()));
             }
         }
 
@@ -915,7 +915,7 @@ namespace VNActor
                 factor.setAnimate(9, validCategoryKey[hPosition] + 1, validNoKey[hStage]);
             }
             // auto adjust anime param
-            Console.WriteLine(String.Format("factor(%s): height=%.2f breast=%.2f", factor.text_name, factor.height, factor.breast));
+            Console.WriteLine(String.Format("factor({0}): height={1} breast={2}", factor.text_name, factor.height, factor.breast));
             var anime_option_param = new AnimeOption_s { height = factor.height, breast = factor.breast };
             if (factor.isHAnime)
             {
