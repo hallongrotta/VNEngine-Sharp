@@ -218,7 +218,7 @@ namespace VNEngine.Shared
                         }
                         */
                         var fintext = restext;
-                        if (this.controller.get_ini_option("usekeysforbuttons") == "1")
+                        if (this.controller.GetConfigEntry("Skins", "usekeysforbuttons"))
                         {
                             if (this.controller.arKeyKodes.Length > i)
                             {

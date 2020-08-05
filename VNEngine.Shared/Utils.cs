@@ -7,6 +7,9 @@ using System.Reflection;
 using UnityEngine.SceneManagement;
 using System.Linq;
 using System.IO;
+using BepInEx;
+using BepInEx.Logging;
+using BepInEx.Configuration;
 
 namespace VNEngine
 {
@@ -29,8 +32,6 @@ namespace VNEngine
         }
 
         public static int vnge_version;
-        private static Dictionary<string, string> _engineoptions;
-        private static Dictionary<string, KeyCode_s> _keycodes;
 
         public static string get_engine_id()
         {
@@ -72,143 +73,6 @@ namespace VNEngine
             }
         }
 
-
-        public struct KeyCode_s {
-            string keycode;
-            public KeyCode code;
-            bool ctrl;
-            bool alt;
-            bool shift;
-            private string s;
-
-            public KeyCode_s(string s, KeyCode code, bool ctrl, bool alt, bool shift) : this()
-            {
-                this.s = s;
-                this.code = code;
-                this.ctrl = ctrl;
-                this.alt = alt;
-                this.shift = shift;
-            }
-        }
-
-
-        public static KeyCode_s ParseKeyCode(string s)
-        {
-            try
-            {
-
-                bool ctrl = false;
-                bool alt = false;
-                bool shift = false;
-                string[] keys_array = s.ToLower().Split('+');
-                List<string> keys = new List<string>(keys_array);
-                shift = keys.Contains("shift");
-                ctrl = keys.Contains("ctrl") || keys.Contains("control");
-                alt = keys.Contains("alt") || keys.Contains("meta");
-                KeyCode code = (KeyCode)Enum.Parse(typeof(KeyCode), keys[-1], true);
-                return new KeyCode_s(s, code, ctrl, alt, shift);
-                
-            }
-            catch
-            {
-            }
-            return new KeyCode_s(s, new KeyCode(), false, false, false);
-        }
-
-        public static void reloadKeyCodes()
-        {
-            _keycodes = new Dictionary<string, KeyCode_s>();
-        }
-
-        public static void parseIniFile()
-        {
-            //string v;
-            //string k;
-
-            if (_keycodes == null)
-            {
-                reloadKeyCodes();
-            }
-
-            if (_engineoptions == null)
-            {
-                _engineoptions = new Dictionary<string, string>();
-
-            }
-
-
-            try
-            {
-                /* TODO
-                //var config = ConfigParser.SafeConfigParser();
-                //config.read("vnengine_config.ini");
-                foreach (var _tup_1 in config.items("Shortcuts"))
-                {
-                    k = _tup_1.Item1;
-                    v = _tup_1.Item2;
-                    _keycodes[k.ToLower()] = ParseKeyCode(v);
-                }
-                foreach (var _tup_2 in config.items("Options"))
-                {
-                    k = _tup_2.Item1;
-                    v = _tup_2.Item2;
-                    _engineoptions[k.ToLower()] = v;
-                }
-                */
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Error: " + e.ToString());
-            }
-
-            _keycodes["hide"] = new KeyCode_s("Ctrl+F8", KeyCode.F8, true, false, false);
-            
-        }
-
-        public static Dictionary<string, KeyCode_s> getKeyCodes()
-        {
-            return _keycodes;
-        }
-
-        public static bool checkKeyCode(string iniparam)
-        {
-            try
-            {
-                iniparam = iniparam.ToLower();
-                if (_keycodes.ContainsKey(iniparam))
-                {
-                    //(_, KeyCode icode, bool ictrl, bool ialt, bool ishift) = 
-                    KeyCode_s keyCode = _keycodes[iniparam];
-                    if (Input.GetKeyDown(keyCode.code))
-                    {
-                        // unity sucks for checking meta keys
-                        /*var _tup_1 = unity_util.metakey_state(); TODO
-                        var ctrl = _tup_1.Item1;
-                        var alt = _tup_1.Item2;
-                        var shift = _tup_1.Item3;
-                        if (ctrl == ictrl && alt == ialt && shift == ishift)
-                        {
-                            return true;
-                        }
-                        */
-                    }
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            catch (Exception)
-            {
-            }
-            return false;
-        }
-
-        public static Dictionary<string, string> getEngineOptions()
-        {
-            return _engineoptions;
-        }
-
         //import GameCursor, CameraControl
 
         /*
@@ -233,12 +97,7 @@ namespace VNEngine
             var game = vngameenginephstudio.vngame_window_phstudio(vnButtonsStart, vnButtonsActionsStart);
             return game;
         }
-        */
-
-
-
-
-        
+        */ 
 
         // ---------------- --- dumping item tree -----------------
         public static void dump_selected_item_tree()
@@ -482,9 +341,10 @@ namespace VNEngine
         */
 
         // -- studio_wait_for_load trick - for NEO and Old Studio--
+        /*
         public static void studio_wait_for_load()
         {
-            parseIniFile();
+            loadConfig();
             var option = getEngineOptions();
             if (option.ContainsKey("hideconsoleafterstart"))
             {
@@ -544,5 +404,6 @@ namespace VNEngine
             //     #import coroutine
             //     #coroutine.start_new_coroutine(neo_preload2, (), None)
         }
+        */
     }
 }

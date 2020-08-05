@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using BepInEx;
+using BepInEx.Configuration;
 
 namespace VNEngine
 {
 
-    public class BaseController
+    public class BaseController : BaseUnityPlugin
     {
         //private Component component;
         //private int counter;
@@ -25,20 +26,45 @@ namespace VNEngine
         protected string engine_name;
         protected string pygamepath;
 
+        public bool checkKeyCode(string configkey)
+        {
+            var entry = new ConfigDefinition("Keyboard Shortcuts", configkey);
+            if (Config.ContainsKey(entry))
+            {
+                KeyboardShortcut shortcut = (KeyboardShortcut)Config[entry].BoxedValue;
+                return shortcut.IsDown();
+            }
+            else
+            {
+                return false;
+            }         
+        }
+
+        public void loadConfig()
+        {
+            Config.Bind("Keyboard Shortcuts", "ToggleVNControllerWindow", new KeyboardShortcut(KeyCode.F8, KeyCode.LeftControl), "Show or hide the VN Controller window in Studio.");
+            Config.Bind("Keyboard Shortcuts", "Reset", new KeyboardShortcut(KeyCode.F3, KeyCode.LeftControl), "Reset VN Controller.");
+            Config.Bind("Keyboard Shortcuts", "ReloadCurrentGame", new KeyboardShortcut(KeyCode.F10), "Reload current game.");
+            Config.Bind("Keyboard Shortcuts", "VNFrameDeveloperConsole", new KeyboardShortcut(KeyCode.F5, KeyCode.LeftControl), "Show or hide the VN Controller window in Studio");
+            Config.Bind("Keyboard Shortcuts", "DumpCamera", new KeyboardShortcut(KeyCode.F4, KeyCode.LeftControl, KeyCode.LeftAlt), "Show or hide the VN Controller window in Studio");
+            Config.Bind("Keyboard Shortcuts", "DeveloperConsole", new KeyboardShortcut(KeyCode.F4, KeyCode.LeftControl), "Show or hide the VN Controller window in Studio");
+            Config.Bind("Keyboard Shortcuts", "ReloadVNEngine", new KeyboardShortcut(KeyCode.F1, KeyCode.LeftControl), "Show or hide the VN Controller window in Studio");
+            Config.Bind("Skins", "usekeysforbuttons", false);
+        }
+
         public BaseController()
         {
             //component = null; // will be assigned if exists as member
             //counter = 1;
             //show_buttons = false;
-            visible = true;
+            visible = false;
             cameraControl = null;
             windowRect = new Rect(Screen.width / 2 - 50, Screen.height / 2 - 50, 400, 400);
             lastCameraState = true;
             gameCursor = null;
             windowName = "Window";
             //loading options
-            Utils.parseIniFile();
-            engineOptions = Utils.getEngineOptions();
+            loadConfig();
             //print self.engineOptions;
 
         }
@@ -86,7 +112,7 @@ namespace VNEngine
             }
 
 
-            catch (Exception exception) {
+            catch (Exception) {
                 //Logger.LogError("VNGE: passable error in Start:" + exception); //TODO
             }
         }
@@ -104,16 +130,16 @@ namespace VNEngine
         }
         */
 
-        /*
+        
         public void Update()
         {
 
             // Update is called less so better place to check keystate
 
-            if (Utils.checkKeyCode("hide")) {
+            if (checkKeyCode("ToggleVNControllerWindow")) {
                 visible = !visible;
             }
         }
-        */
+        
     }
 }
