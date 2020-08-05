@@ -97,6 +97,10 @@ namespace SceneSaveState
                     GUILayout.EndHorizontal();
                     GUILayout.Space(10);
                     GUILayout.EndVertical();
+                    if (GUILayout.Button("Ok.", GUILayout.Width(100)))
+                    {
+                        Utils.sceneConsole.isFuncLocked = false;
+                    }
                 }
                 else
                 {
