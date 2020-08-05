@@ -1,14 +1,13 @@
-﻿using System;
+﻿using BepInEx.Configuration;
+using System;
 using System.Collections.Generic;
-using System.Text;
-using UnityEngine;
-using Studio;
-using System.Linq;
 using System.IO;
+using System.Linq;
+using UnityEngine;
 using VNActor;
-using static VNEngine.VNCamera;
-using static VNEngine.Utils;
 using VNEngine.Shared;
+using static VNEngine.Utils;
+using static VNEngine.VNCamera;
 //using WindowsInput;
 //using WindowsInput.Native;
 
@@ -115,6 +114,18 @@ namespace VNEngine
 
         public double readingSpeed;
 
+        public Timer[] timers;
+
+        public delegate void TimerUpdateFunc(VNController controller, float deltaTime, float timeLapsed, float timeLeft);
+
+        public class Timer
+        {
+            public float timeLeft;
+            public float duration;
+            public GameFunc funcEnd;
+            public TimerUpdateFunc updateFunc;
+        }
+
         public struct RegisteredChar_s
         {
             public string color;
@@ -139,17 +150,7 @@ namespace VNEngine
 
         public SkinBase skin_saved;
 
-        public List<float> timers;
-
-        public List<float> timersDuration;
-
-        public Dictionary<int, GameFunc> timersFuncEnd;
-
-        public delegate void TimerUpdateFunc(VNController controller, float f1, float f2, float f3);
-
         public delegate void GameFunc(VNController controller);
-
-        public Dictionary<int, TimerUpdateFunc> timersFuncUpd;
 
         public delegate void UpdateFunc(string file);
 
@@ -192,7 +193,7 @@ namespace VNEngine
             this._vnText = "Welcome to <b>VN Game engine</b>!\n";
             try
             {
-                this._vnText = this._vnText;
+                //this._vnText = this._vnText;
                 this._vnText += "\n";
             }
             catch (Exception)
@@ -212,28 +213,7 @@ namespace VNEngine
 
             this.updFunc = null;
             this.updFuncParam = "";
-            this.timers = new List<float> {
-                -1,
-                -1,
-                -1,
-                -1,
-                -1,
-                -1,
-                -1,
-                -1
-            };
-            this.timersFuncUpd = new Dictionary<int, TimerUpdateFunc>();
-            this.timersFuncEnd = new Dictionary<int, GameFunc>();
-            this.timersDuration = new List<float> {
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0
-            };
+            this.timers = new Timer[8];
 
             /* TODO
 
@@ -316,10 +296,6 @@ namespace VNEngine
 
         public void FuncWindowGUI(int windowid)
         {
-            if (this.isClassicStudio)
-            {
-                //self.ResetWindow(windowid) #required for dragging - not work in NEO!!!
-            }
             if (this.skin is SkinCustomWindow customWindow)
             {
                 // skin has it's own WindowGUI func
@@ -377,8 +353,8 @@ namespace VNEngine
         }
 
 
-        /* TODO
-        override public void Update()
+        
+        new public void Update()
         {
             base.Update();
             if (this.updFunc != null)
@@ -387,40 +363,45 @@ namespace VNEngine
                 this.updFunc = null;
                 func(this.updFuncParam);
             }
-            foreach (var i in Enumerable.Range(0, this.timers.Count))
+            for (int i = 0; i < timers.Length; i++)
             {
-                if (this.timers[i] > 0)
+                if (timers[i] is Timer timer)
                 {
-                    this.timers[i] -= Time.deltaTime;
-                    if (this.timersFuncUpd[i] != null)
+                    if (timer.timeLeft > 0)
                     {
-                        this.timersFuncUpd[i](this, Time.deltaTime, this.timersDuration[i] - this.timers[i], this.timersDuration[i]);
-                    }
-                    if (this.timers[i] <= 0 && this.timersFuncEnd[i] != null)
-                    {
-                        this.call_game_func(this.timersFuncEnd[i]);
+                        timer.timeLeft -= Time.deltaTime;
+
+                        if (timer.updateFunc is TimerUpdateFunc func)
+                        {
+                            func(this, Time.deltaTime, timer.duration - timer.timeLeft, timer.duration);
+                        }
+
+                        if (timer.timeLeft <= 0)
+                        {
+                            this.call_game_func(timer.funcEnd);
+                        }
                     }
                 }
             }
             this.UpdateKeyChecks();
             this.event_dispatch("update", null);
         }
-        */
+        
 
         public void UpdateKeyChecks()
         {
-            if (Utils.checkKeyCode("reset"))
+            if (checkKeyCode("Reset"))
             {
                 this.return_to_start_screen_clear();
             }
-            if (Utils.checkKeyCode("ReloadCurrentGame"))
+            if (checkKeyCode("ReloadCurrentGame"))
             {
                 if (this.current_game != "")
                 {
                     this.game_start_fromfile(this, this.current_game);
                 }
             }
-            if (Utils.checkKeyCode("VNFrameDeveloperConsole"))
+            if (checkKeyCode("VNFrameDeveloperConsole"))
             {
                 try
                 {
@@ -431,7 +412,7 @@ namespace VNEngine
                     this.show_blocking_message_time(String.Format("Error: can't start VNFrame developer console: {0}", e.ToString()));
                 }
             }
-            if (this.get_ini_option("usekeysforbuttons") == "1")
+            if (this.GetConfigEntry("Skins", "usekeysforbuttons"))
             {
                 if (this.visible && !this.isFuncLocked && !this.isHideGameButtons)
                 {
@@ -446,6 +427,7 @@ namespace VNEngine
                 }
             }
             // running games from INI
+            /*
             this._util_upd_check_and_start_game("game1");
             this._util_upd_check_and_start_game("game2");
             this._util_upd_check_and_start_game("game3");
@@ -456,7 +438,8 @@ namespace VNEngine
             this._util_upd_check_and_start_game("game8");
             this._util_upd_check_and_start_game("game9");
             this._util_upd_check_and_start_game("game10");
-            if (Utils.checkKeyCode("developerconsole"))
+            */
+            if (checkKeyCode("developerconsole"))
             {
                 if (this.isShowDevConsole)
                 {
@@ -473,15 +456,15 @@ namespace VNEngine
                     this.isShowDevConsole = true;
                 }
             }
-            if (Utils.checkKeyCode("dumpcamera"))
+            if (checkKeyCode("dumpcamera"))
             {
                 this.dump_camera();
             }
-            if (Utils.checkKeyCode("dumpscene"))
+            if (checkKeyCode("dumpscene"))
             {
                 this.dump_scene();
             }
-            if (Utils.checkKeyCode("reloadvnengine"))
+            if (checkKeyCode("reloadvnengine"))
             {
                 // reload engine
                 Console.WriteLine("Try reloading engine...");
@@ -498,28 +481,35 @@ namespace VNEngine
             }
         }
 
+        /*
         public void _util_upd_check_and_start_game(string gamekey)
         {
             if (this.engineOptions.ContainsKey(gamekey))
             {
                 if (this.engineOptions[gamekey] != "")
                 {
-                    if (Utils.checkKeyCode(gamekey))
+                    if (checkKeyCode(gamekey))
                     {
                         this.game_start_fromfile(this, this.engineOptions[gamekey]);
                     }
                 }
             }
         }
+        */
 
-        public string get_ini_option(string option)
+        public bool GetConfigEntry(string section, string key)
         {
-            option = option.ToLower();
-            if (this.engineOptions.ContainsKey(option))
+
+            ConfigEntryBase value = Config[new BepInEx.Configuration.ConfigDefinition(section, key)];
+
+            if (value.BoxedValue is bool option)
             {
-                return this.engineOptions[option];
+                return option;
             }
-            return null;
+            else
+            {
+                return (bool)value.DefaultValue;
+            }
         }
 
         public void return_to_start_screen_clear()
@@ -534,33 +524,34 @@ namespace VNEngine
 
         public int set_timer(float duration, GameFunc timerFuncEnd, TimerUpdateFunc timerFuncUpd = null)
         {
-            // print "Start set_timer!"
-            foreach (var i in Enumerable.Range(0, this.timers.Count))
+            UnityEngine.Debug.Log("Start set_timer!");
+            int i;
+            for (i = 0; i < timers.Length; i++)
             {
-                if (this.timers[i] <= 0)
+                if (timers[i] is null)
                 {
-                    // print "Found timer!"
-                    this.timers[i] = duration;
-                    this.timersDuration[i] = duration;
-                    this.timersFuncEnd[i] = timerFuncEnd;
-                    this.timersFuncUpd[i] = timerFuncUpd;
-                    // print "New Timer ID =", str(i)
-                    return i;
+                    Timer timer = new Timer
+                    {
+                        timeLeft = duration,
+                        duration = duration,
+                        funcEnd = timerFuncEnd,
+                        updateFunc = timerFuncUpd
+                    };
+
+                    timers[i] = timer;
+                    break;
                 }
-            }
-            return -1;
+            }          
+            return i;
         }
 
         public void clear_timer(int index, bool runEndFunc = false)
         {
-            if (runEndFunc && this.timersFuncEnd[index] != null)
+            if (runEndFunc && this.timers[index] is Timer t)
             {
-                this.timersFuncEnd[index](this);
+                t.funcEnd(this);
             }
-            this.timers[index] = -1;
-            this.timersDuration[index] = 0;
-            this.timersFuncEnd[index] = null;
-            this.timersFuncUpd[index] = null;
+            this.timers[index] = null;
         }
 
         public void return_to_start_screen()
@@ -573,14 +564,7 @@ namespace VNEngine
         public void clear_timers()
         {
             // not calling end function
-            foreach (var i in Enumerable.Range(0, this.timers.Count))
-            {
-                if (this.timers[i] >= 0)
-                {
-                    this.timers[i] = -1;
-                    this.timersFuncEnd[i] = null;
-                }
-            }
+            this.timers = new Timer[8];
         }
 
         //self.OnGUI(self)
