@@ -9,8 +9,6 @@ namespace VNActor
     public partial class Prop : IProp
     {
 
-        new public OCIItem objctrl;
-
         public struct Panel {
             internal string filepath; 
             internal bool clamp;
@@ -88,7 +86,7 @@ namespace VNActor
                 scale_to = p.scale;
                 if (p.isAnime)
                 {
-                    anim_spd = p.get_anime_speed();
+                    anim_spd = p.anime_speed;
                 }
                 else
                 {
@@ -180,7 +178,6 @@ namespace VNActor
                     db_active = null;
                 }
             }
-
         }
 
         public Dictionary<int, Color> color
@@ -621,6 +618,7 @@ namespace VNActor
             }
         }
 
+        /*
         public bool isRoute
         {
             get
@@ -628,9 +626,9 @@ namespace VNActor
                 return base.objctrl is OCIRoute;
             }
         }
+        */
 
-
-        public IDataClass export_full_status()
+        override public IDataClass export_full_status()
         {
             return new PropData(this);
         }
@@ -657,6 +655,73 @@ namespace VNActor
         {
             prop.color = param;
         }
+
+        public void import_status(PropData p)
+        {
+            // export full status of prop
+            visible = p.visible;
+            pos = p.move_to;
+            rot = p.rotate_to;
+            scale = p.scale_to;
+            if (p.anim_spd is float f)
+            {
+                anime_speed = f;
+            }
+            if (isColorable && (p.color is Dictionary<int, Color>))
+            {
+                color = p.color;
+            }
+            if (hasPattern)
+            {
+                pattern = p.ptn_set;
+                pattern_detail = p.ptn_dtl;
+            }
+
+            if (hasPanel && p.pnl_set is Panel panel_set && p.pnl_dtl is PanelDetail_s detail)
+            {
+                panel = panel_set;
+                panel_detail = detail;
+            }
+            if (hasEmission && p.emission is Emission_s e)
+            {
+                emission = e;
+            }
+            if (hasAlpha && p.alpha is float alpha_set)
+            {
+                alpha = alpha_set;
+            }
+            if (hasLine)
+            {
+                if (p.line is Line_s line_s)
+                {
+                    line = line_s;
+                }              
+            }
+            if (hasShadowColor)
+            {
+                if (p.shadow_color is Color c)
+                {
+                    shadow_color = c;
+                }               
+            }
+            if (hasLightCancel)
+            {
+                if (p.light_cancel is float cancel)
+                light_cancel = cancel;
+            }
+            if (isFK)
+            {
+                import_fk_bone_info(p.fk_set);
+            }
+            if (isDynamicBone)
+            {
+                if (p.db_active is bool b)
+                {
+                    dynamicbone_enable = b;
+                }             
+            }
+        }
+    
 
         /* TODO
 

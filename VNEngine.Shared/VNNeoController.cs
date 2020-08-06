@@ -9,12 +9,17 @@ using System.IO;
 using Manager;
 using ADV.EventCG;
 using static VNEngine.VNCamera;
+using KKAPI.Studio;
+using System.Linq;
 
 namespace VNEngine
 {
     public abstract class VNNeoController
         : VNController
     {
+
+        public static string actor_folder_prefix = "vnactor:";
+        public static string prop_folder_prefix = "vnprop:";
 
         //public Dictionary<string, Actor> _scenef_actors;
 
@@ -176,7 +181,7 @@ namespace VNEngine
         {
             IDataClass status;
             var output = "";
-            this.scenef_register_actorsprops();
+            this.LoadTrackedActorsAndProps();
             Dictionary<string, Actor> actors = this.scenef_get_all_actors();
             string id_global = "";
             try
@@ -272,7 +277,7 @@ namespace VNEngine
             this.show_blocking_message_time("VNFrame selected dumped!");
         }
 
-        public VNCamera.CamData get_camera_num(int camnum)
+        new public VNCamera.CamData get_camera_num(int camnum)
         {
             Studio.CameraControl.CameraData cdata;
             Studio.Studio studio = this.studio;
@@ -344,7 +349,7 @@ namespace VNEngine
                     file.WriteLine(String.Format("objctrlchar = game.get_objctrl_num_tochar(%s) # char name %s, animid=%s", key, Utils.to_roman_file(objctrl.treeNodeObject.textName), Utils.to_roman_file(chara.charAnimeCtrl.name)));
                     //print("objctrlchar = game.get_objctrl_num_tochar(%s) # char name" % (key))
                     // objctrl.charAnimeCtrl.name
-                    var pctrl = new HSNeoOCIChar(chara);
+                    var pctrl = new Actor(chara);
                     pctrl.dump_obj();
                 }
                 else
@@ -384,10 +389,10 @@ namespace VNEngine
         public HSNeoOCIChar get_objctrl_num_tochar(int num)
         {
             // return HSNeoOCIChar by num
-            return new HSNeoOCIChar((OCIChar)this.get_objctrl_num(num));
+            return new Actor((OCIChar)this.get_objctrl_num(num));
         }
 
-        public List<HSNeoOCIChar> scene_get_all_females()
+        new public List<HSNeoOCIChar> scene_get_all_females()
         {
             var ar = new List<HSNeoOCIChar>();
             var dobjctrl = this.studio.dicObjectCtrl;
@@ -396,14 +401,14 @@ namespace VNEngine
                 var objctrl = dobjctrl[key];
                 if (objctrl is OCICharFemale chara)
                 {
-                    var pctrl = new HSNeoOCIChar(chara);
+                    var pctrl = new Actor(chara);
                     ar.Add(pctrl);
                 }
             }
             return ar;
         }
 
-        public List<HSNeoOCIChar> scene_get_all_males()
+        new public List<HSNeoOCIChar> scene_get_all_males()
         {
             var ar = new List<HSNeoOCIChar>();
             var dobjctrl = this.studio.dicObjectCtrl;
@@ -412,7 +417,7 @@ namespace VNEngine
                 var objctrl = dobjctrl[key];
                 if (objctrl is OCICharMale chara)
                 {
-                    var pctrl = new HSNeoOCIChar(chara);
+                    var pctrl = new Actor(chara);
                     ar.Add(pctrl);
                 }
             }
@@ -444,7 +449,7 @@ namespace VNEngine
                 var objctrl = dobjctrl[key];
                 if (objctrl is OCIItem item)
                 {
-                    ar.Add(new HSNeoOCIItem(item));
+                    ar.Add(new Prop(item));
                 }
             }
             return ar;
@@ -454,13 +459,9 @@ namespace VNEngine
         {
             var ar = new List<OCIFolder>();
             var dobjctrl = this.studio.dicObjectCtrl;
-            foreach (var key in dobjctrl.Keys)
+            foreach (OCIFolder folder in dobjctrl.Values.OfType<OCIFolder>())
             {
-                var objctrl = dobjctrl[key];
-                if (objctrl is OCIFolder folder)
-                {
-                    ar.Add(folder);
-                }
+               ar.Add(folder);
             }
             return ar;
         }
@@ -474,7 +475,6 @@ namespace VNEngine
                 var objctrl = dobjctrl[key];
                 if (objctrl is OCIFolder fld)
                 {
-                    var pctrl = objctrl;
                     ar.Add(new HSNeoOCIFolder(fld));
                 }
             }
@@ -540,9 +540,92 @@ namespace VNEngine
         }
 
         // -------- scene with framework ------------
+
+        /*
         public void scenef_register_actorsprops()
         {
-            string actorTitle;
+            foreach (var obj in StudioAPI.GetSelectedObjects())
+            {
+                if (obj is OCIItem item)
+                {
+                    string id = "prp" + this._scenef_props.Count;
+                    this._scenef_props[id] = new Prop(item); // TODO dont make a new one each time
+                }
+                else if (obj is OCIChar chara) 
+                {
+                    string id = "act" + this._scenef_actors.Count;
+                    this._scenef_actors[id] = new Actor(chara);
+                }
+            }
+        }
+        */
+
+        public void LoadTrackedActorsAndProps()
+        {
+            List<OCIFolder> folders = scene_get_all_folders_raw();
+            _scenef_actors = new Dictionary<string, Actor>();
+            _scenef_props = new Dictionary<string, Prop>();
+
+            foreach (OCIFolder fld in folders)
+            {
+                string fldName = fld.name;
+                if (fldName.StartsWith(actor_folder_prefix))
+                {
+
+                    var hsociChar = HSNeoOCI.create_from_treenode(fld.treeNodeObject.parent.parent.parent);
+
+                    if (hsociChar is HSNeoOCIChar chara)
+                    {
+                        string actorAlias;
+                        string actorColor = "ffffff";
+                        string actorTitle = hsociChar.text_name;
+
+                        // analysis actor tag
+                        var tagElements = fldName.Split(':');
+                        if (tagElements.Length == 2)
+                        {
+                            actorAlias = tagElements[1];
+                        }
+                        else if (tagElements.Length == 3)
+                        {
+                            actorAlias = tagElements[1];
+                            actorColor = tagElements[2];
+                        }
+                        else
+                        {
+                            actorAlias = tagElements[1];
+                            actorColor = tagElements[2];
+                            actorTitle = tagElements[3];
+                        }
+
+                        _scenef_actors[actorAlias] = chara.as_actor;
+
+                        register_char(actorAlias, actorColor, actorTitle);                      
+
+                        Console.WriteLine("Registered actor: '" + actorAlias + "' as " + actorTitle + " (#" + actorColor + ")");
+                    }
+                }
+                else if (fldName.StartsWith(prop_folder_prefix))
+                {
+                    // analysis props tag
+
+                    string propAlias = fldName.Substring(prop_folder_prefix.Length).Trim();
+                    // register props
+                    HSNeoOCI oci = HSNeoOCI.create_from_treenode(fld.treeNodeObject.parent);
+
+                    if (oci is Prop prop)
+                    {
+                        _scenef_props[propAlias] = prop;
+                        Console.WriteLine("Registered prop: '" + Utils.to_roman(propAlias) + "' as " + Utils.to_roman(oci.text_name));
+                    }
+                }
+            }
+        }
+
+        /*
+        public void scenef_register_actorsprops()
+        {
+            string actorTitle = "";
             Console.WriteLine("-- Framework: register actors and props start --");
             var game = this;
             // search for tag folder (-actor:,-prop:,-dlgFolder-) and load them into game automaticlly
@@ -557,7 +640,7 @@ namespace VNEngine
             var folders = game.scene_get_all_folders_raw();
             // load actors and props from -actor:/-prop: tag folder attach on char/item
             string actorAlias;
-            string actorColor;
+            string actorColor = "ffffff";
             string propAlias;
             HSNeoOCI hsobj;
             foreach (var fld in folders)
@@ -570,15 +653,11 @@ namespace VNEngine
                     if (tagElements.Length == 2)
                     {
                         actorAlias = tagElements[1];
-                        // actorColor = "ffffff"
-                        actorColor = null;
-                        actorTitle = null;
                     }
                     else if (tagElements.Length == 3)
                     {
                         actorAlias = tagElements[1];
                         actorColor = tagElements[2];
-                        actorTitle = null;
                     }
                     else
                     {
@@ -592,16 +671,20 @@ namespace VNEngine
                         var hsociChar = HSNeoOCI.create_from_treenode(fld.treeNodeObject.parent.parent.parent);
                         if (hsociChar is HSNeoOCIChar chara)
                         {
-                            if (actorTitle == null)
+                            if (actorTitle is null)
                             {
                                 actorTitle = hsociChar.text_name;
                             }
                             //game._scenef_actors[actorAlias] = Actor(hsociChar.objctrl)
                             //adapted to multiple frameworks in 2.0
                             game._scenef_actors[actorAlias] = chara.as_actor;
-                            if (actorColor != null)
+                            if (actorColor is string)
                             {
                                 game.register_char(actorAlias, actorColor, actorTitle);
+                            }
+                            else
+                            {
+
                             }
                             Console.WriteLine("Registered actor: '" + Utils.to_roman(actorAlias) + "' as " + Utils.to_roman(actorTitle) + " (#" + actorColor.ToString() + ")");
                         }
@@ -622,9 +705,13 @@ namespace VNEngine
 
                     propAlias = ftn.Substring("-prop:".Length).Trim();
                     // register props
-                    hsobj = HSNeoOCI.create_from_treenode(fld.treeNodeObject.parent);
-                    game._scenef_props[propAlias] = (Prop)hsobj;
-                    Console.WriteLine("Registered prop: '" + Utils.to_roman(propAlias) + "' as " + Utils.to_roman(hsobj.text_name));
+                    HSNeoOCI oci = HSNeoOCI.create_from_treenode(fld.treeNodeObject.parent);
+
+                    if (oci is Prop prop) {
+                        game._scenef_props[propAlias] = prop;
+                    }
+                    
+                    Console.WriteLine("Registered prop: '" + Utils.to_roman(propAlias) + "' as " + Utils.to_roman(oci.text_name));
                 }
                 else if (ftn.StartsWith("-propchild:"))
                 {
@@ -647,6 +734,8 @@ namespace VNEngine
             }
             Console.WriteLine("-- Framework: register actors and props end --");
         }
+       */
+        
 
         public Dictionary<string, Actor> scenef_get_all_actors()
         {

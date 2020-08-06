@@ -28,9 +28,9 @@ namespace VNEngine
 
         public GameFunc _onCameraEnd;
 
-        public Dictionary<string, Actor> _scenef_actors;
+        protected Dictionary<string, Actor> _scenef_actors;
 
-        public Dictionary<string, Prop> _scenef_props;
+        protected Dictionary<string, Prop> _scenef_props;
 
         public List<string> _vnButtons;
 

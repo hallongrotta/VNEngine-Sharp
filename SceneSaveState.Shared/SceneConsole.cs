@@ -4,13 +4,14 @@ using UnityEngine;
 using VNEngine;
 using VNActor;
 using System.Linq;
-using Newtonsoft.Json;
+using MessagePack;
 using static VNEngine.VNCamera;
 using System.IO;
 using Studio;
 using static VNActor.Actor;
 using static VNActor.Prop;
 using RootMotion;
+using System.Text;
 
 namespace SceneSaveState
 {
@@ -477,7 +478,7 @@ namespace SceneSaveState
                 this.show_blocking_message_time_sc("No selection!");
                 return;
             }
-            var objSave = new Dictionary<object, object>
+            var objSave = new Dictionary<string, IDataClass>
             {
             };
             foreach (Actor actprop in arSel)
@@ -489,18 +490,15 @@ namespace SceneSaveState
                 //print objSave
             }
             var fldName = Utils.folder_add_child(fld, name);
-            foreach (var k in objSave)
+            foreach (var k in objSave.Values)
             {
-                //fldObj = folder_add_child(fldName,JsonConvert.SerializeObject(objSave))
-                Utils.folder_add_child(fldName, JsonConvert.SerializeObject(new Dictionary<object, object> {
-                    {
-                        k,
-                        objSave[k]}}));
+                //fldObj = folder_add_child(fldName,MessagePackSerializer.Serialize(objSave))
+                Utils.folder_add_child(fldName, MessagePackSerializer.Serialize<IDataClass>(k).ToString());
             }
             // fldName = HSNeoOCIFolder.add(name)
             // fldName.set_parent(fld)
             //
-            // fldObj = HSNeoOCIFolder.add(JsonConvert.SerializeObject(objSave))
+            // fldObj = HSNeoOCIFolder.add(MessagePackSerializer.Serialize(objSave))
             // fldObj.set_parent(fldName)
             this.mininewid = "";
         }
@@ -887,6 +885,132 @@ namespace SceneSaveState
             }
         }
 
+
+        public void addSelectedToTrack(HSNeoOCIProp prop)
+        {
+            HSNeoOCIFolder tagfld;
+            var props = this.game.scenef_get_all_props();
+
+            foreach (Prop p in props.Values)
+            {
+                if (p.objctrl == prop.objctrl)
+                {
+                    return;
+                }
+            }
+
+            string id = "";
+            foreach (var i in Enumerable.Range(0, 1000 - 0))
+            {
+                id = "prp" + i.ToString();
+                if (props.ContainsKey(id))
+                {
+                }
+                else
+                {
+                    break;
+                }
+            }
+            if (prop is HSNeoOCILight)
+            {
+                tagfld = HSNeoOCIFolder.add("-propchild:" + id);
+                prop.set_parent(tagfld);
+            }
+            else if (prop is HSNeoOCIRoute)
+            {
+                tagfld = HSNeoOCIFolder.add("-propgrandpa:" + id);
+                tagfld.set_parent_treenodeobject(prop.treeNodeObject.child[0]);
+            }
+            else
+            {
+                tagfld = HSNeoOCIFolder.add(VNNeoController.prop_folder_prefix + id);
+                tagfld.set_parent_treenodeobject(prop.treeNodeObject);
+            }
+            var curstatus = prop.export_full_status();
+            foreach (var i in Enumerable.Range(0, this.block.Count))
+            {
+                Scene scene = this.block[i];
+                scene.props[id] = (PropData)curstatus;
+                // updating set
+            }
+        }
+
+        public void addSelectedToTrack(HSNeoOCIChar chara)
+        {
+            var actors = this.game.scenef_get_all_actors();
+
+            foreach (Actor actor in actors.Values)
+            {
+                if (actor.objctrl == chara.objctrl)
+                {
+                    return;
+                }
+            }
+
+            var id = "";
+            foreach (var i in Enumerable.Range(0, 1000 - 0))
+            {
+                id = "act" + i.ToString();
+                if (actors.ContainsKey(id))
+                {
+                }
+                else
+                {
+                    break;
+                }
+            }
+            var tagfld = HSNeoOCIFolder.add(VNNeoController.actor_folder_prefix + id);
+            tagfld.set_parent_treenodeobject(chara.treeNodeObject.child[0].child[0]);
+            var curstatus = (ActorData)chara.export_full_status();
+            foreach (var i in Enumerable.Range(0, this.block.Count))
+            {
+                Scene scene = this.block[i];
+                scene.actors[id] = curstatus;
+            }
+        }
+
+        public void addSelectedToTrack()
+        {
+            var objects = KKAPI.Studio.StudioAPI.GetSelectedObjects();
+
+            if (objects == null)
+            {
+                this.show_blocking_message_time_sc("Nothing selected");
+                return;
+            } 
+            else
+            {
+                foreach (ObjectCtrlInfo objectCtrl in objects)
+                {
+                    if (objectCtrl is OCIItem item)
+                    {
+                        var prop = HSNeoOCI.create_from(item);
+                        addSelectedToTrack(prop);
+                    }
+                    else if (objectCtrl is OCIChar chara)
+                    {
+                        var actor = HSNeoOCI.create_from(chara);
+                        addSelectedToTrack(actor);
+                    }
+                    else if (objectCtrl is OCILight oLight)
+                    {
+                        var light = HSNeoOCI.create_from(oLight);
+                        addSelectedToTrack(light);
+                    }
+                    else if (objectCtrl is OCIRoute oRoute)
+                    {
+                        var route = HSNeoOCI.create_from(oRoute);
+                        addSelectedToTrack(route);
+                    } else
+                    {
+                        return;
+                    }
+                }
+                game.LoadTrackedActorsAndProps();
+            }
+        }
+
+        /*
         public void addSelectedToTrack()
         {
             Scene scene;
@@ -963,6 +1087,7 @@ namespace SceneSaveState
                 }
             }
         }
+        */
 
         public void changeSelTrackID(string toId)
         {
@@ -999,9 +1124,9 @@ namespace SceneSaveState
                 this.changeActorTrackId(id, toId);
             }
             // updating set
-            this.game.scenef_register_actorsprops();
+            this.game.LoadTrackedActorsAndProps();
         }
-
+        
         public void delSelectedFromTrack()
         {
             var elem = HSNeoOCI.create_from_selected();
@@ -1044,7 +1169,7 @@ namespace SceneSaveState
                 this.delPropFromTrack(id);
             }
             // updating set
-            this.game.scenef_register_actorsprops();
+            this.game.LoadTrackedActorsAndProps();
         }
 
         public void delActorFromTrack(string actid)
@@ -1052,10 +1177,10 @@ namespace SceneSaveState
             if (actid != "")
             {
                 // we found this char
-                var fld = HSNeoOCIFolder.find_single("-actor:" + actid);
+                var fld = HSNeoOCIFolder.find_single(VNNeoController.actor_folder_prefix + actid);
                 if (fld == null)
                 {
-                    fld = HSNeoOCIFolder.find_single_startswith("-actor:" + actid + ":");
+                    fld = HSNeoOCIFolder.find_single_startswith(VNNeoController.actor_folder_prefix + actid + ":");
                 }
                 // found
                 if (fld != null)
@@ -1075,18 +1200,18 @@ namespace SceneSaveState
             if (actid != "")
             {
                 // we found this char
-                var fld = HSNeoOCIFolder.find_single("-actor:" + actid);
+                var fld = HSNeoOCIFolder.find_single(VNNeoController.actor_folder_prefix + actid);
                 if (fld == null)
                 {
-                    fld = HSNeoOCIFolder.find_single_startswith("-actor:" + actid + ":");
+                    fld = HSNeoOCIFolder.find_single_startswith(VNNeoController.actor_folder_prefix + actid + ":");
                 }
                 // found
                 //if fld != None:
                 //    fld.delete()
                 var fldoldname = fld.name;
-                var lastelems = fldoldname[("-actor:" + actid).Length];
+                var lastelems = fldoldname[(VNNeoController.actor_folder_prefix + actid).Length];
                 //print lastelems
-                fld.name = "-actor:" + toid + lastelems;
+                fld.name = VNNeoController.actor_folder_prefix + toid + lastelems;
                 //
                 foreach (var i in Enumerable.Range(0, this.block.Count))
                 {
@@ -1111,7 +1236,7 @@ namespace SceneSaveState
             if (propid != "")
             {
                 // we found this prop
-                var fld = HSNeoOCIFolder.find_single("-prop:" + propid);
+                var fld = HSNeoOCIFolder.find_single(VNNeoController.prop_folder_prefix + propid);
                 // found
                 if (fld != null)
                 {
@@ -1268,9 +1393,6 @@ namespace SceneSaveState
         // parseFlds works for 1.0 or 2.5 version
         public KeyValuePair<string, object> parseFlds(HSNeoOCIFolder fld, bool backup = false)
         {
-            Dictionary<string, object> prop_data;
-            Dictionary<string, object> char_data;
-
             if (fld.name.Contains("-scene:"))
             {
                 var sc_dict = new Scene(this);
@@ -1295,15 +1417,13 @@ namespace SceneSaveState
             }
             else if (fld.name == "-actors")
             {
-                var char_dict = new Dictionary<string, object>
-                {
-                };
+                var char_dict = new Dictionary<string, ActorData>();
                 foreach (var child in fld.treeNodeObject.child) {
                     var chara = HSNeoOCIFolder.create_from_treenode<HSNeoOCIFolder>(child);
                     if (chara.name.StartsWith("{"))
                     {
                         //char_data = self.parseFlds(chara)
-                        char_data = JsonConvert.DeserializeObject<Dictionary<string, object>>(chara.name);
+                        var char_data = Utils.DeserializeData<Dictionary<string, ActorData>>(chara.name);
 
                         foreach (var key in char_dict.Keys)
                         {
@@ -1313,7 +1433,7 @@ namespace SceneSaveState
                     else
                     {
                         var char_fld = HSNeoOCIFolder.create_from_treenode<HSNeoOCIFolder>(chara.treeNodeObject.child[0]);
-                        char_data = JsonConvert.DeserializeObject<Dictionary<string, object>>(char_fld.name);
+                        ActorData char_data = Utils.DeserializeData<ActorData>(char_fld.name);
                         char_dict[chara.name] = char_data;
                     }
                 }
@@ -1322,14 +1442,14 @@ namespace SceneSaveState
             else if (fld.name == "-props")
             {
                 // Props
-                var prop_dict = new Dictionary<string, object>();
+                var prop_dict = new Dictionary<string, PropData>();
                 foreach (var child in fld.treeNodeObject.child)
                 {
                     var prop = HSNeoOCIFolder.create_from_treenode<Prop>(child);
                     var prop_name = prop.name;
                     if (prop_name.StartsWith("{"))
                     {
-                        prop_data = JsonConvert.DeserializeObject<Dictionary<string, object>>(prop_name);
+                        var prop_data = Utils.DeserializeData<Dictionary<string, PropData>>(prop_name);
 
                         foreach (var key in prop_dict.Keys)
                         {
@@ -1340,8 +1460,7 @@ namespace SceneSaveState
                     {
                         var prop_fld = HSNeoOCIFolder.create_from_treenode<HSNeoOCIFolder>(prop.treeNodeObject.child[0]);
 
-                        
-                        prop_data = JsonConvert.DeserializeObject<Dictionary<string, object>>(prop_fld.name);
+                        var prop_data = Utils.DeserializeData<PropData>(prop_fld.name);
                         prop_dict[prop_name] = prop_data;
                     }
                 }
@@ -1354,7 +1473,7 @@ namespace SceneSaveState
                 //     #id = fld.name.strip("-propitem:")
                 //     id = fld.name[10:]
                 //     state_fld = HSNeoOCIFolder.create_from_treenode(fld.treeNodeObject.child[0])
-                //     prop_state = JsonConvert.DeserializeObject(state_fld.name, object_hook=sceneDecoder)
+                //     prop_state = Utils.DeserializeData(state_fld.name, object_hook=sceneDecoder)
                 //     return (id, prop_state)
                 // cams
                 var cams_dict = new Dictionary<object, object>
@@ -1373,7 +1492,7 @@ namespace SceneSaveState
             {
                 string key = fld.name.Substring("-cam:".Length);
                 var state_fld = HSNeoOCIFolder.create_from_treenode<HSNeoOCIFolder>(fld.treeNodeObject.child[0]);
-                Dictionary<string, object> cam_state = JsonConvert.DeserializeObject<Dictionary<string, object>>(state_fld.name);
+                CamData cam_state = Utils.DeserializeData<CamData>(state_fld.name);
                 return new KeyValuePair<string, object>(key, cam_state);
             } 
             else
@@ -1523,19 +1642,19 @@ namespace SceneSaveState
                     {
                         // no optimization
                         //print "non-opt"
-                        //self.createFld(JsonConvert.SerializeObject(ch_content, cls=SceneEncoder), ch_name_fld)
-                        this.createFldIfNo(JsonConvert.SerializeObject(new Dictionary<object, object> {
+                        //self.createFld(MessagePackSerializer.Serialize(ch_content, cls=SceneEncoder), ch_name_fld)
+                        this.createFldIfNo(Utils.SerializeData<Dictionary<string, object>>(new Dictionary<string, object> {
                             {
                                 ch_name,
                                 ch_content}}), actor_fld, k);
                     }
                     else
                     {
-                        //self.createFld(JsonConvert.SerializeObject({'_diff':[bestInd, bestResDiff]}, cls=SceneEncoder), ch_name_fld)
-                        this.createFldIfNo(JsonConvert.SerializeObject(new Dictionary<object, object> {
+                        //self.createFld(MessagePackSerializer.Serialize({'_diff':[bestInd, bestResDiff]}, cls=SceneEncoder), ch_name_fld)
+                        this.createFldIfNo(Utils.SerializeData<Dictionary<string, object>>(new Dictionary<string, object> {
                             {
                                 ch_name,
-                                new Dictionary<object, object> {
+                                new Dictionary<string, object> {
                                     {
                                         "_diff",
                                         new List<object> {
@@ -1549,7 +1668,7 @@ namespace SceneSaveState
                 foreach (var i in Enumerable.Range(0, scene.cams.Count - 0))
                 {
                     var cam_id_fld = this.createFldIfNo("-cam:" + i.ToString(), cams_fld, i);
-                    this.createFldIfNo(JsonConvert.SerializeObject(scene.cams[i]), cam_id_fld, 0);
+                    this.createFldIfNo(MessagePackSerializer.Serialize(scene.cams[i]).ToString(), cam_id_fld, 0);
                 }
                 this.restrict_to_child(props_fld, scene.props.Count);
                 k = 0;
@@ -1594,16 +1713,16 @@ namespace SceneSaveState
                     {
                         // no optimization
                         // print "non-opt"
-                        //self.createFld(JsonConvert.SerializeObject(prop_state, cls=SceneEncoder), prop_id_fld)
-                        this.createFldIfNo(JsonConvert.SerializeObject(new Dictionary<object, object> {
+                        //self.createFld(MessagePackSerializer.Serialize(prop_state, cls=SceneEncoder), prop_id_fld)
+                        this.createFldIfNo(Utils.SerializeData(new Dictionary<object, object> {
                             {
                                 prop_id,
                                 prop_state}}), props_fld, k);
                     }
                     else
                     {
-                        //self.createFld(JsonConvert.SerializeObject({'_diff': [bestInd, bestResDiff]}, cls=SceneEncoder), prop_id_fld)
-                        this.createFldIfNo(JsonConvert.SerializeObject(new Dictionary<object, object> {
+                        //self.createFld(MessagePackSerializer.Serialize({'_diff': [bestInd, bestResDiff]}, cls=SceneEncoder), prop_id_fld)
+                        this.createFldIfNo(Utils.SerializeData(new Dictionary<object, object> {
                             {
                                 prop_id,
                                 new Dictionary<object, object> {
@@ -1794,7 +1913,7 @@ namespace SceneSaveState
             new System.IO.StreamWriter(abs_file_path))
             {
 
-                file.Write(JsonConvert.SerializeObject(save_data));
+                file.Write(MessagePackSerializer.Serialize(save_data));
             }
             */
         }
@@ -1808,7 +1927,7 @@ namespace SceneSaveState
             if (File.Exists(abs_file_path))
             {
                 string text = File.ReadAllText(abs_file_path);
-                var block_dict = JsonConvert.DeserializeObject<Dictionary<string, Scene>>(text);
+                var block_dict = Utils.DeserializeData<Dictionary<string, Scene>>(text);
                 return block_dict;
             }
             return null;
@@ -1907,7 +2026,7 @@ namespace SceneSaveState
         public void loadSceneData(bool file = false, bool backup = false, bool setToFirst = true)
         {
             string filename;
-            this.game.scenef_register_actorsprops();
+            this.game.LoadTrackedActorsAndProps();
             Dictionary<string, Scene> block_dict = null;
             if (file == false)
             {
@@ -1935,7 +2054,7 @@ namespace SceneSaveState
                 // abs_file_path = os.Path.Combine(script_dir, file_path)
                 // if os.File.Exists(abs_file_path):
                 //     f = open(abs_file_path, "r")
-                //     block_dict = JsonConvert.DeserializeObject(f.read(), object_hook=sceneDecoder)  # , indent = 4, separators = (","," : ")))
+                //     block_dict = Utils.DeserializeData(f.read(), object_hook=sceneDecoder)  # , indent = 4, separators = (","," : ")))
                 //     f.close()
                 block_dict = this.loadFromFileDirect(filename);
             }
@@ -1970,7 +2089,7 @@ namespace SceneSaveState
             {
                 //import copy
                 // we have a problem with copy, so... just serialize and back it
-                //objstr = JsonConvert.SerializeObject(self.block[self.cur_index])
+                //objstr = MessagePackSerializer.Serialize(self.block[self.cur_index])
                 this.block.Insert(this.cur_index, this.block[this.cur_index].copy());
                 this.updateSceneStrings();
             }
@@ -2150,7 +2269,7 @@ namespace SceneSaveState
                             addparams.whosay,
                             addparams.whatsay
                         );*/
-                        var res = JsonConvert.SerializeObject(addparams);
+                        var res = MessagePackSerializer.Serialize(addparams);
                         w.Write(String.Format("{0},\n", res));
                     }
                 }
@@ -2173,7 +2292,7 @@ namespace SceneSaveState
             try
             {
                 string filecont = this.game.file_get_content_utf8(filename);
-                var arr = JsonConvert.DeserializeObject<List<KeyValuePair<int, CamData>>>(filecont);
+                var arr = Utils.DeserializeData<List<KeyValuePair<int, CamData>>>(filecont);
                 foreach (KeyValuePair<int, CamData> kv in arr)
                 {
                     var elem = kv.Value;

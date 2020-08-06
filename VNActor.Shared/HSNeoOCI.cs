@@ -13,15 +13,15 @@ namespace VNActor
             return;
         }
 
-        public static HSNeoOCI create_from(OCIChar objctrl) { return new HSNeoOCIChar(objctrl); }
+        public static HSNeoOCIChar create_from(OCIChar objctrl) { return new Actor(objctrl); }
 
-        public static HSNeoOCI create_from(OCIItem objctrl) { return new HSNeoOCIItem(objctrl); }
+        public static HSNeoOCIItem create_from(OCIItem objctrl) { return new Prop(objctrl); }
 
-        public static HSNeoOCI create_from(OCILight objctrl) { return new HSNeoOCILight(objctrl); }
+        public static HSNeoOCILight create_from(OCILight objctrl) { return new Light(objctrl); }
 
-        public static HSNeoOCI create_from(OCIRoute objctrl) { return new HSNeoOCIRoute(objctrl); }
+        public static HSNeoOCIRoute create_from(OCIRoute objctrl) { return new Route(objctrl); }
 
-        public static HSNeoOCI create_from(OCIFolder objctrl) { return new HSNeoOCIFolder(objctrl); }
+        public static HSNeoOCIFolder create_from(OCIFolder objctrl) { return new HSNeoOCIFolder(objctrl); }
 
         public static HSNeoOCI create_from(ObjectCtrlInfo objctrl) { return new HSNeoOCI(objctrl); }
 
@@ -36,7 +36,9 @@ namespace VNActor
             var obj = dobjctrl[treenode];
             if (obj != null)
             {
-                return (T)create_from(obj);
+                HSNeoOCI item = create_from(obj);
+                return (T)item;
+                
             }
             return null;
         }
@@ -49,10 +51,28 @@ namespace VNActor
             }
             Studio.Studio studio = Studio.Studio.Instance;
             var dobjctrl = studio.dicInfo;
-            var obj = dobjctrl[treenode];
+            ObjectCtrlInfo obj = dobjctrl[treenode];
             if (obj != null)
             {
-                return create_from(obj);
+                if (obj is OCIItem item)
+                {
+                    return create_from(item);
+                } else if (obj is OCIFolder fld)
+                {
+                    return create_from(fld);
+                }
+                else if (obj is OCIChar chara)
+                {
+                    return create_from(chara);
+                }
+                else if (obj is OCIRoute route)
+                {
+                    return create_from(route);
+                }
+                else
+                {
+                    return create_from(obj);
+                }      
             }
             return null;
         }

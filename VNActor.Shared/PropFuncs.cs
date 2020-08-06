@@ -181,12 +181,7 @@ namespace VNActor
         public static void prop_anime_speed(Prop prop, float param)
         {
             // param = speed (0~3)
-            prop.set_anime_speed(param);
-        }
-
-        public void import_status(PropData clipboard_status2)
-        {
-            throw new NotImplementedException();
+            prop.anime_speed = param;
         }
     }
 }

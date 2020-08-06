@@ -39,7 +39,13 @@ namespace VNActor
             internal float? normalizedTime;
         }
 
-
+        public enum KinematicMode
+        {
+            None,
+            FK,
+            IK,
+            IKFK
+        }
 
         public readonly struct ActorData : IDataClass
         {
@@ -54,7 +60,7 @@ namespace VNActor
             public readonly bool[] ikActive;
             public readonly Dictionary<int, Vector3> fk;
             public readonly bool[] fkActive;
-            public readonly int kinematicType;
+            public readonly KinematicMode kinematicType;
             public readonly Hands_s handMotions;
             public readonly bool lipSync;
             public readonly float mouthOpen;
@@ -396,10 +402,10 @@ namespace VNActor
 
         */
 
-        public void set_kinematic(int mode, bool force = false)
+        public void set_kinematic(KinematicMode mode, bool force = false)
         {
             // mode: 0-none, 1-IK, 2-FK, 3-IK&FK
-            if (mode == 3)
+            if (mode == KinematicMode.IKFK)
             {
                 // enable IK
                 this.objctrl.finalIK.enabled = true;
@@ -427,7 +433,7 @@ namespace VNActor
                 // call ActiveKinematicMode to set pvCopy?
                 this.objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.IK, true, false);
             }
-            else if (mode == 2)
+            else if (mode == KinematicMode.IK)
             {
                 if (this.objctrl.oiCharInfo.enableIK)
                 {
@@ -452,7 +458,7 @@ namespace VNActor
                     }
                 }
             }
-            else if (mode == 1)
+            else if (mode == KinematicMode.FK)
             {
                 if (this.objctrl.oiCharInfo.enableFK)
                 {
@@ -674,7 +680,10 @@ namespace VNActor
 
         public void import_status(IDataClass tmp_status)
         {
-            throw new NotImplementedException();
+            if (tmp_status is ActorData data)
+            {
+                import_status(data);
+            }          
         }
 
         public float[] body_shapes_all
@@ -732,7 +741,7 @@ namespace VNActor
             }
         }
 
-        public IDataClass export_full_status()
+        override public IDataClass export_full_status()
         {
             return new ActorData(this);
         }
@@ -777,14 +786,27 @@ namespace VNActor
             mouth_open = a.mouthOpen;
             lip_sync = a.lipSync;
             hand_ptn = a.handMotions;
-            //kinematic = a.kinematicType;
-            set_FK_active(a.fkActive);
-            import_fk_bone_info(a.fk);
-            set_IK_active(a.ikActive);
+            set_kinematic(a.kinematicType);
 
-            import_ik_target_info(a.ik);
+            if (a.kinematicType == KinematicMode.FK)
+            {
+                set_IK_active(a.ikActive);
+                import_ik_target_info(a.ik);
+            }
+            else if (a.kinematicType == KinematicMode.IK)
+            {
+                set_FK_active(a.fkActive);
+                import_fk_bone_info(a.fk);
+            }
+            else if (a.kinematicType == KinematicMode.IKFK)
+            {
+                set_IK_active(a.ikActive);
+                import_ik_target_info(a.ik);
+                set_FK_active(a.fkActive);
+                import_fk_bone_info(a.fk);
+            }
 
-            //voice_lst = a.voiceList;
+                //voice_lst = a.voiceList;
             voice_repeat = a.voiceRepeat;
             shoes_type = a.shoesType;
         }

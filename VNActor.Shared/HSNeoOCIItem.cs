@@ -5,19 +5,20 @@ using UnityEngine;
 namespace VNActor
 {
 
-    public class HSNeoOCIItem
+    abstract public class HSNeoOCIItem
         : HSNeoOCIProp
     {
+        new public OCIItem objctrl;
 
         public HSNeoOCIItem(OCIItem objctrl) : base(objctrl)
         {
-
+            this.objctrl = objctrl;
         }
 
         public static HSNeoOCIItem add_item(int group, int category, int no)
         {
             var objctrl = AddObjectItem.Add(group, category, no); //TODO make this right
-            return new HSNeoOCIItem(objctrl);
+            return new Prop(objctrl);
         }
 
         public void pos_add(float[] param)

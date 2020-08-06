@@ -5,7 +5,7 @@ using UnityEngine;
 namespace VNActor
 {
     public class HSNeoOCIFolder
-        : HSNeoOCIProp
+        : HSNeoOCI
     {
 
         new public OCIFolder objctrl;

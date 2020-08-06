@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using VNEngine;
 using VNActor;
 using CamData = VNEngine.VNCamera.CamData;
-using Newtonsoft.Json;
+using MessagePack;
 using static VNActor.Actor;
 using static VNActor.Prop;
 
@@ -34,14 +34,13 @@ namespace SceneSaveState
         public Scene copy()
         {
 
-            
-            string stractors = JsonConvert.SerializeObject(this.actors);
-            string strprops = JsonConvert.SerializeObject(this.props);
-            string strcams = JsonConvert.SerializeObject(this.cams);
+            var stractors = MessagePackSerializer.Serialize<Dictionary<string, ActorData>>(this.actors);
+            var strprops = MessagePackSerializer.Serialize<Dictionary<string, PropData>>(this.props);
+            var strcams = MessagePackSerializer.Serialize<List<CamData>>(this.cams);
 
-            Dictionary<string, ActorData> copied_actors = JsonConvert.DeserializeObject<Dictionary<string, ActorData>>(stractors);
-            Dictionary<string, PropData> copied_props = JsonConvert.DeserializeObject<Dictionary<string, PropData>>(strprops);
-            List<CamData> copied_cams = JsonConvert.DeserializeObject<List<CamData>>(strcams);
+            Dictionary<string, ActorData> copied_actors = MessagePackSerializer.Deserialize<Dictionary<string, ActorData>>(stractors);
+            Dictionary<string, PropData> copied_props = MessagePackSerializer.Deserialize<Dictionary<string, PropData>>(strprops);
+            List<CamData> copied_cams = MessagePackSerializer.Deserialize<List<CamData>>(strcams);
             return new Scene(sc, copied_actors, copied_props, copied_cams);
         }
 
@@ -63,7 +62,7 @@ namespace SceneSaveState
 
         public void importCurScene(VNNeoController game, Dictionary<string, object> options)
         {
-            game.scenef_register_actorsprops();
+            game.LoadTrackedActorsAndProps();
             this.actors = new Dictionary<string, ActorData>();
             this.props = new Dictionary<string, PropData>();
             Dictionary<string, Actor> actors = game.scenef_get_all_actors();
@@ -113,7 +112,8 @@ namespace SceneSaveState
                     catch (Exception)
                     {
                     }
-                    Utils.char_import_status_diff_optimized(game.scenef_get_actor(actid), char_status);
+                    //Utils.char_import_status_diff_optimized(game.scenef_get_actor(actid), char_status);
+                    game.scenef_get_actor(actid).import_status(this.actors[actid]);
                 }
             }
             foreach (var propid in this.props.Keys)

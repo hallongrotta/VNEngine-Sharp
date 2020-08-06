@@ -453,7 +453,7 @@ namespace SceneSaveState
             GUILayout.Space(15);
             if (GUILayout.Button("Refresh", GUILayout.Height(50), GUILayout.Width(80)))
             {
-                Utils.sceneConsole.game.scenef_register_actorsprops();
+                Utils.sceneConsole.game.LoadTrackedActorsAndProps();
             }
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();

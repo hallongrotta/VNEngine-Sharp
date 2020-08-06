@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace VNActor.KK
+namespace VNActor
 {
-    class Route : HSNeoOCIRoute, IProp
+    public partial class Route : HSNeoOCIRoute
     {
 
         new public OCIRoute objctrl;
@@ -236,7 +236,7 @@ namespace VNActor.KK
             prop.SetRouteFull((RouteInfo)param.route_f);
         }
 
-        public IDataClass export_full_status()
+        override public IDataClass export_full_status()
         {
             return new RouteData(this);
         }

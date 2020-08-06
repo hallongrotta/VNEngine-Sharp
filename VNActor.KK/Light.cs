@@ -39,7 +39,7 @@ namespace VNActor
             this.objctrl = objctrl;
         }
 
-        public IDataClass export_full_status()
+        override public IDataClass export_full_status()
         {
             return new LightData(this);
         }

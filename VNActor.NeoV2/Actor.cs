@@ -281,7 +281,7 @@ namespace VNActor
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine(String.Format("Error set kinematic to 3(IK&FK), when ActiveFK[%d: %s]. Error message = %s, Exception type = %s", i, FKCtrl.parts[i].ToString(), e.ToString(), e.ToString()));
+                        Console.WriteLine(String.Format("Error set kinematic to 3(IK&FK), when ActiveFK[%d: %s]. Error message = {0}, Exception type = {0}", i, FKCtrl.parts[i].ToString(), e.ToString(), e.ToString()));
                     }
                 }
                 // call ActiveKinematicMode to set pvCopy?
@@ -498,7 +498,7 @@ namespace VNActor
             }
             catch (Exception e)
             {
-                Console.WriteLine(String.Format("Exception in set_curcloth_coordinate, %s", e.ToString()));
+                Console.WriteLine(String.Format("Exception in set_curcloth_coordinate, {0}", e.ToString()));
             }
         }
 

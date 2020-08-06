@@ -6,11 +6,12 @@ using UnityEngine;
 namespace VNActor
 {
 
-    public abstract partial class Prop : HSNeoOCIProp
+    public partial class Prop : HSNeoOCIItem
     {
-
-        public Prop(ObjectCtrlInfo objctrl) : base(objctrl)
+        
+        public Prop(OCIItem objctrl) : base(objctrl)
         {
+            this.objctrl = objctrl;
         }
 
         public bool visible
@@ -161,16 +162,18 @@ namespace VNActor
             }
         }
 
-        public void set_anime_speed(float speed)
+        public float anime_speed
         {
-            // speed: 0~1
-            this.objctrl.animeSpeed = speed;
-        }
-
-        public float get_anime_speed()
-        {
-            // return anime speed
-            return this.objctrl.animeSpeed;
+            set
+            {
+                // speed: 0~1
+                this.objctrl.animeSpeed = value;
+            }
+            get
+            {
+                // return anime speed
+                return this.objctrl.animeSpeed;
+            }
         }
 
         /*
@@ -248,7 +251,7 @@ namespace VNActor
             if (this.isFK)
             {
                 var boneinfo = new List<Vector3>();
-                OCIItem item = (OCIItem)this.objctrl;
+                OCIItem item = objctrl;
                 foreach (var bi in item.listBones)
                 {
                     var rot = bi.boneInfo.changeAmount.rot;
@@ -268,7 +271,7 @@ namespace VNActor
             // import fk bone info from dic
             if (this.isFK)
             {
-                OCIItem item = (OCIItem)this.objctrl;
+                OCIItem item = objctrl;
                 foreach (var i in Enumerable.Range(0, item.listBones.Count))
                 {
                     var binfo = item.listBones[i];

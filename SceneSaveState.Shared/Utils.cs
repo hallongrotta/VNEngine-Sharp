@@ -10,11 +10,13 @@ using VNEngine;
 using System.Linq;
 using System.Linq.Expressions;
 using System.IO;
-using Newtonsoft.Json;
+using MessagePack;
+using System.Security.Cryptography;
+using System.Security.Policy;
 
 namespace SceneSaveState
 {
-    static class Utils
+    public static class Utils
     {
 
         public static SceneConsole sceneConsole;
@@ -43,7 +45,7 @@ namespace SceneSaveState
                 sceneConsole = new SceneConsole(game);
             }
             UI.sceneConsoleGUIStart(game);
-            game.scenef_register_actorsprops();
+            game.LoadTrackedActorsAndProps();
             // if no blocks - autoload
             if (sceneConsole.block.Count == 0)
             {
@@ -54,6 +56,27 @@ namespace SceneSaveState
                 }
             }
         }
+
+        public static string SerializeData<T>(T item)
+        {
+            return ByteArrayDecode(MessagePackSerializer.Serialize<T>(item));
+        }
+
+        public static T DeserializeData<T>(string s)
+        {
+            return MessagePackSerializer.Deserialize<T>(StringEncode(s));
+        }
+
+        public static byte[] StringEncode(string s) 
+        {
+            return Encoding.UTF8.GetBytes(s);
+        }
+
+        public static string ByteArrayDecode(byte[] bytes)
+        {
+            return Encoding.UTF8.GetString(bytes);
+        }
+
 
         public static bool is_arr_equal(List<object> ar1, List<object> ar2)
         {
@@ -569,7 +592,7 @@ namespace SceneSaveState
             }
             // if isinstance(el1, Vector3) or isinstance(el1, Vector2) or isinstance(el1, Color) or isinstance(
             //         el1, tuple):
-            if (JsonConvert.SerializeObject(el1) == JsonConvert.SerializeObject(el2))
+            if (Utils.SerializeData(el1) == Utils.SerializeData(el2))
             {
                 return true;
             }
@@ -620,8 +643,8 @@ namespace SceneSaveState
             {
                 return false;
             }
-            var str1 = JsonConvert.SerializeObject(oldstatus);
-            var str2 = JsonConvert.SerializeObject(status);
+            var str1 = Utils.SerializeData(oldstatus);
+            var str2 = Utils.SerializeData(status);
             if (str1 != str2)
             {
                 //print "neq json: ", str1, str2

@@ -2,7 +2,7 @@
 
 namespace VNActor
 {
-    public class HSNeoOCIProp : HSNeoOCI
+    abstract public class HSNeoOCIProp : HSNeoOCI
     {
 
         public HSNeoOCIProp(ObjectCtrlInfo objctrl) : base(objctrl)
@@ -16,5 +16,7 @@ namespace VNActor
                 return (Prop)this;
             }
         }
+
+        abstract public IDataClass export_full_status();
     }
 }

@@ -4,11 +4,11 @@ using UnityEngine;
 namespace VNActor
 {
 
-    public class HSNeoOCIRoute
+    abstract public class HSNeoOCIRoute
         : HSNeoOCIProp
     {
 
-        new public OCILight objctrl;
+        new public OCIRoute objctrl;
 
         public HSNeoOCIRoute(ObjectCtrlInfo objctrl) : base(objctrl)
         {

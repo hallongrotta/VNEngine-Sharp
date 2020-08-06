@@ -1,6 +1,6 @@
 ﻿namespace VNActor
 {
-    partial class Light
+    public partial class Light : HSNeoOCILight
     {
         public static void prop_enable(Light prop, LightData param)
         {

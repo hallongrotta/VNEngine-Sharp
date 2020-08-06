@@ -4,28 +4,29 @@ using UnityEngine;
 
 namespace VNActor
 {
-    public class HSNeoOCIChar
+    abstract public class HSNeoOCIChar
         : HSNeoOCI
     {
 
         new public OCIChar objctrl;
-
 
         public HSNeoOCIChar(OCIChar objctrl) : base(objctrl)
         {
             this.objctrl = objctrl;
         }
 
+        public abstract IDataClass export_full_status();
+
         public static HSNeoOCIChar add_female(string path)
         {
             var objctrl = AddObjectFemale.Add(path);
-            return new HSNeoOCIChar(objctrl);
+            return new Actor(objctrl);
         }
 
         public static HSNeoOCIChar add_male(string path)
         {
             var objctrl = AddObjectMale.Add(path);
-            return new HSNeoOCIChar(objctrl);
+            return new Actor(objctrl);
         }
 
         public ChaControl charInfo
@@ -50,6 +51,10 @@ namespace VNActor
             {
                 return this.charInfo.transform.localPosition;
             }
+            set
+            {
+                this.charInfo.transform.localPosition = value;
+            }
         }
 
         public Vector3 rot
@@ -58,6 +63,10 @@ namespace VNActor
             {
                 return this.charInfo.transform.localRotation.eulerAngles;
             }
+            set
+            {
+                this.charInfo.transform.localRotation = Quaternion.Euler(value.x, value.y, value.z);
+            }
         }
 
         public Vector3 scale
@@ -65,6 +74,10 @@ namespace VNActor
             get
             {
                 return this.charInfo.transform.localScale;
+            }
+            set
+            {
+
             }
         }
 
@@ -94,13 +107,15 @@ namespace VNActor
 
         public int mouth_ptn
         {
-            get
-            {
-                return this.objctrl.charInfo.GetMouthPtn();
-            }
             set
             {
+                // ptn: 0 to x (depend on engine)
                 this.objctrl.charInfo.ChangeMouthPtn(value);
+            }
+            get
+            {
+                // return mouth pattern
+                return this.objctrl.charInfo.GetMouthPtn();
             }
         }
 
@@ -118,13 +133,13 @@ namespace VNActor
 
         public int eyes_ptn
         {
-            get
-            {
-                return this.objctrl.charInfo.GetEyesPtn();
-            }
             set
             {
                 this.objctrl.charInfo.ChangeEyesPtn(value);
+            }
+            get
+            {
+                return this.objctrl.charInfo.GetEyesPtn();
             }
         }
 

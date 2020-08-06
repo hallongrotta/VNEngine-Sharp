@@ -8,7 +8,7 @@ namespace VNActor
     //===============================================================================================
     // character action wrapper functions list
     // All scripts: func(char, param)
-    partial class Actor
+    public partial class Actor
     {
 
         public static void char_anime(Actor chara, ActorData param)

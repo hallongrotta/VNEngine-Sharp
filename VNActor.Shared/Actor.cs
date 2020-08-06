@@ -7,7 +7,7 @@ using UnityEngine;
 namespace VNActor
 {
 
-    public abstract partial class Actor : HSNeoOCIChar
+    public partial class Actor : HSNeoOCIChar
     {
         public struct AnimeOption_s
         {
@@ -86,6 +86,7 @@ namespace VNActor
 
         */
 
+        /*
         new public Vector3 pos
         {
             get
@@ -121,6 +122,7 @@ namespace VNActor
                 this.objctrl.oiCharInfo.changeAmount.scale = value;
             }
         }
+        */
 
         public void move(Vector3 pos, Vector3 rot, Vector3 scale)
         {
@@ -421,20 +423,6 @@ namespace VNActor
             }
         }
 
-        public int eyes_ptn
-        {
-            set
-            {
-                // ptn: 0 to 39
-                this.objctrl.charInfo.ChangeEyesPtn(value);
-            }
-            get
-            {
-                // return eyes pattern
-                return this.objctrl.charInfo.GetEyesPtn();
-            }
-        }
-
         public float eyes_open
         {
             set
@@ -460,20 +448,6 @@ namespace VNActor
             {
                 // return eyes blink flag
                 return this.objctrl.charInfo.GetEyesBlinkFlag();
-            }
-        }
-
-        public int mouth_ptn
-        {
-            set
-            {
-                // ptn: 0 to x (depend on engine)
-                this.objctrl.charInfo.ChangeMouthPtn(value);
-            }
-            get
-            {
-                // return mouth pattern
-                return this.objctrl.charInfo.GetMouthPtn();
             }
         }
 
@@ -628,19 +602,27 @@ namespace VNActor
             this.objctrl.StopVoice();
         }
 
-        public int kinematic
+        public KinematicMode kinematic
         {
             get
             {
                 // return current kinematice mode: 0-none, 1-IK, 2-FK, 3-IK&FK
-                var kmode = 0;
-                if (this.objctrl.oiCharInfo.enableIK)
+                KinematicMode kmode;
+                if (this.objctrl.oiCharInfo.enableIK && this.objctrl.oiCharInfo.enableFK)
                 {
-                    kmode += 1;
+                    kmode = KinematicMode.IKFK;
                 }
-                if (this.objctrl.oiCharInfo.enableFK)
+                else if (this.objctrl.oiCharInfo.enableIK)
                 {
-                    kmode += 2;
+                    kmode = KinematicMode.IK;
+                }
+                else if (this.objctrl.oiCharInfo.enableFK)
+                {
+                    kmode = KinematicMode.FK;
+                }
+                else
+                {
+                    kmode = KinematicMode.None;
                 }
                 return kmode;
             }

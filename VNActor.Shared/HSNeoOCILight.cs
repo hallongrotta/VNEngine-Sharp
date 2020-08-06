@@ -4,7 +4,7 @@ using UnityEngine;
 namespace VNActor
 {
 
-    public class HSNeoOCILight
+    abstract public class HSNeoOCILight
         : HSNeoOCIProp
     {
 
@@ -18,7 +18,7 @@ namespace VNActor
         {
             //no:0~8
             var objctrl = AddObjectLight.Add(no);
-            return new HSNeoOCILight(objctrl);
+            return new Light(objctrl);
         }
 
         public void pos_add(Vector3 param)
@@ -89,5 +89,4 @@ namespace VNActor
             }
         }
     }
-
 }
