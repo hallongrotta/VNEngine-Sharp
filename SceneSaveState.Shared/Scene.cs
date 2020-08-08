@@ -32,13 +32,13 @@ namespace SceneSaveState
         public Scene copy()
         {
 
-            var stractors = MessagePackSerializer.Serialize<Dictionary<string, ActorData>>(this.actors);
-            var strprops = MessagePackSerializer.Serialize<Dictionary<string, PropData>>(this.props);
-            var strcams = MessagePackSerializer.Serialize<List<CamData>>(this.cams);
+            var stractors = Utils.SerializeData(this.actors);
+            var strprops = Utils.SerializeData(this.props);
+            var strcams = Utils.SerializeData(this.cams);
 
-            Dictionary<string, ActorData> copied_actors = MessagePackSerializer.Deserialize<Dictionary<string, ActorData>>(stractors);
-            Dictionary<string, PropData> copied_props = MessagePackSerializer.Deserialize<Dictionary<string, PropData>>(strprops);
-            List<CamData> copied_cams = MessagePackSerializer.Deserialize<List<CamData>>(strcams);
+            Dictionary<string, ActorData> copied_actors = Utils.DeserializeData<Dictionary<string, ActorData>>(stractors);
+            Dictionary<string, PropData> copied_props = Utils.DeserializeData<Dictionary<string, PropData>>(strprops);
+            List<CamData> copied_cams = Utils.DeserializeData<List<CamData>>(strcams);
             return new Scene(copied_actors, copied_props, copied_cams);
         }
 

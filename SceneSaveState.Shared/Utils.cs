@@ -54,27 +54,15 @@ namespace SceneSaveState
         }
         
 
-        public static string SerializeData<T>(T item)
+        public static byte[] SerializeData<T>(T item)
         {
-            byte[] bytes = MessagePackSerializer.Serialize(item, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
-            string str = MessagePackSerializer.ToJson(bytes);
-            return str;
+            return MessagePackSerializer.Serialize(item, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
         }
        
 
-        public static T DeserializeData<T>(string s)
+        public static T DeserializeData<T>(byte[] s)
         {
-            return MessagePackSerializer.Deserialize<T>(StringEncode(s));
-        }
-
-        public static byte[] StringEncode(string s) 
-        {
-            return Encoding.ASCII.GetBytes(s);
-        }
-
-        public static string ByteArrayDecode(byte[] bytes)
-        {
-            return Encoding.ASCII.GetString(bytes, 0, bytes.Length);
+            return MessagePackSerializer.Deserialize<T>(s, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
         }
 
 
