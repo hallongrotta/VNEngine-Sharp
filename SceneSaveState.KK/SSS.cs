@@ -77,7 +77,6 @@ namespace SceneSaveState
             
             if (SSSHotkey.Value.IsDown())
             {
-                UnityEngine.Debug.Log("UI Toggle");
                 //UI.sceneConsoleGUIStart(game);
                 SceneConsole.Instance.guiOnShow = !SceneConsole.Instance.guiOnShow;
             }              
