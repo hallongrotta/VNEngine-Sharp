@@ -346,11 +346,12 @@ namespace VNActor
             set
             {
                 // type: 0-School01, 1-School02, 2-Gym, 3-Swim, 4-Club, 5-Plain, 6-Pajamas
-                ChaFileDefine.CoordinateType coordinateType = this.coordinate_type_int_to_enum(value);
-                //print "Dont use it in console!"
-                //print "self.objctrl.charInfo.ChangeCoordinateType(%s, True) is OK"%(str(type))
-                //print "But self.objctrl.charInfo.Reload(0, 0, 0, 0) will clash the game"
-                this.objctrl.charInfo.ChangeCoordinateTypeAndReload(coordinateType);
+                if (coordinate_type != value)
+                {
+                    ChaFileDefine.CoordinateType coordinateType = this.coordinate_type_int_to_enum(value);
+                    this.objctrl.charInfo.ChangeCoordinateTypeAndReload(coordinateType);
+                }
+
             }
             get
             {
