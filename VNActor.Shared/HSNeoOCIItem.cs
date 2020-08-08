@@ -59,7 +59,7 @@ namespace VNActor
             }
             set
             {
-                this.objctrl.objectInfo.changeAmount.pos = pos;
+                this.objctrl.objectInfo.changeAmount.pos = value;
             }
         }
 
