@@ -27,9 +27,9 @@ namespace VNActor
         [MessagePackObject]
         public struct Hands_s {
             [Key(0)]
-            internal int leftMotion;
+            public int leftMotion;
             [Key(1)]
-            internal int rightMotion;
+            public int rightMotion;
         }
 
         [Serializable]
@@ -37,9 +37,9 @@ namespace VNActor
         public struct Son_s
         {
             [Key(0)]
-            internal bool visible;
+            public bool visible;
             [Key(1)]
-            internal float length;
+            public float length;
         }
 
         [Serializable]
@@ -47,13 +47,13 @@ namespace VNActor
         public struct Animation_s
         {
             [Key(0)]
-            internal int group;
+            public int group;
             [Key(1)]
-            internal int category;
+            public int category;
             [Key(2)]
-            internal int no;
+            public int no;
             [Key(3)]
-            internal float? normalizedTime;
+            public float? normalizedTime;
         }
 
         public enum KinematicMode
