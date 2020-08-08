@@ -199,15 +199,12 @@ namespace SceneSaveState
             public string msg;
             public object func_param;
             public bool single_op;
-            private string v1;
-            private object p;
-            private bool v2;
 
-            public WarningParam_s(string v1, object p, bool v2) : this()
+            public WarningParam_s(string msg, object p, bool v2) : this()
             {
-                this.v1 = v1;
-                this.p = p;
-                this.v2 = v2;
+                this.msg = msg;
+                this.func_param = p;
+                this.single_op = v2;
             }
         }
 
@@ -1937,7 +1934,7 @@ namespace SceneSaveState
 
         public void runVNSS(string starfrom = "begin")
         {
-            this.game.gdata.vnbupskin = this.game.skin;
+            //this.game.gdata.vnbupskin = this.game.skin;
             //self.game.skin_set_byname("skin_renpy")
             //from skin_renpy import SkinRenPy
             var rpySkin = new SkinRenPyMini();
