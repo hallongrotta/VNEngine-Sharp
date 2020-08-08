@@ -2024,6 +2024,15 @@ namespace SceneSaveState
             }
         }
 
+        public void deleteSaveData()
+        {
+            SetExtendedData(new PluginData() { data = null });
+            this.block = new List<Scene>();
+            this.cur_index = -1;
+            updateSceneStrings();
+            game.LoadTrackedActorsAndProps();
+        }
+
         protected override void OnSceneSave()
         {
             var pluginData = new PluginData();
@@ -2040,7 +2049,7 @@ namespace SceneSaveState
         protected override void OnSceneLoad(SceneOperationKind operation, ReadOnlyDictionary<int, ObjectCtrlInfo> loadedItems)
         {
             var pluginData = GetExtendedData();
-            if (pluginData is null)
+            if (pluginData == null || pluginData?.data == null)
             {
                 this.block = new List<Scene>();
                 this.cur_index = -1;

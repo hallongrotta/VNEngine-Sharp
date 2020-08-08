@@ -78,6 +78,7 @@ namespace SceneSaveState
             // prev_cam_index = sc.cur_cam
             // prev_sc_index = sc.cur_index
             // sc.prev_index = sc.cur_index
+            GUI.DragWindow(new Rect(0, 0, 10000, 20));
             try
             {
                 if (!(Instance.warning_param is null))
@@ -161,6 +162,10 @@ namespace SceneSaveState
                         if (GUILayout.Button("Reset console", GUILayout.Width(100)))
                         {
                             Utils.resetConsole(Instance.game);
+                        }
+                        if (GUILayout.Button("Delete saved data", GUILayout.Width(100)))
+                        {
+                            Instance.deleteSaveData();
                         }
                         if (GUILayout.Button("Close console", GUILayout.Width(100)))
                         {
