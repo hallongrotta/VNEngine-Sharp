@@ -24,10 +24,13 @@ namespace VNEngine
         public const string PluginName = "VN Controller";
         public const string GUID = "com.kasanari.bepinex.vncontroller";
         public const string Version = "1.0";
-        internal static ManualLogSource Logger;
+        internal new static ManualLogSource Logger;
+
+
 
         public CharaStudioController() : base()
         {
+            
             if (Instance != null)
             {
                 throw new InvalidOperationException("Can only create one instance of Controller");
@@ -42,7 +45,6 @@ namespace VNEngine
             {
                 throw new InvalidOperationException("Can only create one instance of Controller");
             }
-
             this.engine_name = "charastudio";
             this._vnButtons = vnButtonsStart;
             this._vnButtonsActions = vnButtonsActionsStart;

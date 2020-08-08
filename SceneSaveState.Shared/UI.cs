@@ -879,7 +879,7 @@ namespace SceneSaveState
                 }
                 else
                 {
-                    Instance.saveSceneData(backup: false);
+                    //Instance.saveSceneData(backup: false);
                 }
             }
             GUILayout.FlexibleSpace();

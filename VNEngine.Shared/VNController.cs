@@ -1,4 +1,5 @@
-﻿using BepInEx.Configuration;
+﻿using ADV.Commands.Base;
+using BepInEx.Configuration;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -524,7 +525,7 @@ namespace VNEngine
 
         public int set_timer(float duration, GameFunc timerFuncEnd, TimerUpdateFunc timerFuncUpd = null)
         {
-            UnityEngine.Debug.Log("Start set_timer!");
+            Logger.LogDebug("Start set_timer!");
             int i;
             for (i = 0; i < timers.Length; i++)
             {
@@ -539,19 +540,22 @@ namespace VNEngine
                     };
 
                     timers[i] = timer;
-                    break;
+                    return i;
                 }
-            }          
-            return i;
+            }
+            return -1;
         }
 
         public void clear_timer(int index, bool runEndFunc = false)
         {
-            if (runEndFunc && this.timers[index] is Timer t)
+            if (index < this.timers.Length)
             {
-                t.funcEnd(this);
+                if (runEndFunc && this.timers[index] is Timer t)
+                {
+                    t.funcEnd(this);
+                }
+                this.timers[index] = null;
             }
-            this.timers[index] = null;
         }
 
         public void return_to_start_screen()
@@ -827,7 +831,7 @@ namespace VNEngine
             }
             catch (Exception e)
             {
-                Console.WriteLine("Error in call_game_func: " + e.ToString());
+                Logger.LogError("Error in call_game_func: " + e.ToString());
             }
         }
 
@@ -854,7 +858,7 @@ namespace VNEngine
             }
             catch (Exception e)
             {
-                Console.WriteLine("Error in call_game_func: " + e.ToString());
+                Logger.LogError("Error in call_game_func: " + e.ToString());
             }
         }
 
@@ -867,7 +871,7 @@ namespace VNEngine
             }
             catch (Exception e)
             {
-                Console.WriteLine("Error in call_game_func: " + e.ToString());
+                Logger.LogError("Error in call_game_func: " + e.ToString());
             }
         }
 
@@ -881,7 +885,7 @@ namespace VNEngine
             }
             catch (Exception e)
             {
-                Console.WriteLine("Error in call_game_func: " + e.ToString());
+                Logger.LogError("Error in call_game_func: " + e.ToString());
             }
         }
 
@@ -894,7 +898,7 @@ namespace VNEngine
             }
             catch (Exception e)
             {
-                Console.WriteLine("Error in call_game_func: " + e.ToString());
+                Logger.LogError("Error in call_game_func: " + e.ToString());
             }
         }
 
@@ -1210,7 +1214,10 @@ namespace VNEngine
                 this.show_window();
             }
             this.camAnimeTID = -1;
-            this.call_game_func(this._onCameraEnd);
+            if (this._onCameraEnd != null)
+            {
+                this.call_game_func(this._onCameraEnd);
+            }      
             return;
         }
 

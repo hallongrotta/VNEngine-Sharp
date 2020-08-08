@@ -11,6 +11,7 @@ using ADV.EventCG;
 using static VNEngine.VNCamera;
 using KKAPI.Studio;
 using System.Linq;
+using BepInEx.Logging;
 
 namespace VNEngine
 {
@@ -611,7 +612,7 @@ namespace VNEngine
 
                             register_char(actorAlias, actorColor, actorTitle);
 
-                            Console.WriteLine("Registered actor: '" + actorAlias + "' as " + actorTitle + " (#" + actorColor + ")");
+                            Logger.LogDebug("Registered actor: '" + actorAlias + "' as " + actorTitle + " (#" + actorColor + ")");
                         }
                     }
                 }
@@ -629,7 +630,7 @@ namespace VNEngine
                         if (oci is Prop prop)
                         {
                             _scenef_props[propAlias] = prop;
-                            Console.WriteLine("Registered prop: '" + Utils.to_roman(propAlias) + "' as " + Utils.to_roman(oci.text_name));
+                            Logger.LogDebug("Registered prop: '" + Utils.to_roman(propAlias) + "' as " + Utils.to_roman(oci.text_name));
                         }
                     }
                 }

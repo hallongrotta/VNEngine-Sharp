@@ -4,12 +4,14 @@ using System.Text;
 using UnityEngine;
 using BepInEx;
 using BepInEx.Configuration;
+using BepInEx.Logging;
 
 namespace VNEngine
 {
 
     public class BaseController : BaseUnityPlugin
     {
+        new internal static ManualLogSource Logger;
         //private Component component;
         //private int counter;
         //private bool show_buttons;
@@ -25,6 +27,8 @@ namespace VNEngine
         protected Dictionary<string, string> engineOptions;
         protected string engine_name;
         protected string pygamepath;
+
+        public ManualLogSource GetLogger { get { return Logger; } }
 
         public bool checkKeyCode(string configkey)
         {
@@ -54,6 +58,7 @@ namespace VNEngine
 
         public BaseController()
         {
+            Logger = base.Logger;
             //component = null; // will be assigned if exists as member
             //counter = 1;
             //show_buttons = false;
