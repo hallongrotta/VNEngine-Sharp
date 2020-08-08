@@ -10,45 +10,72 @@ namespace VNActor
     public partial class Prop : IProp
     {
 
+        [MessagePackObject]
         public struct Panel {
-            internal string filepath; 
+            [Key(0)]
+            internal string filepath;
+            [Key(1)]
             internal bool clamp;
         }
 
+        [MessagePackObject]
         public struct PanelDetail_s {
+            [Key(0)]
             internal Color color;
+            [Key(1)]
             internal float ut;
+            [Key(2)]
             internal float vt;
+            [Key(3)]
             internal float us;
+            [Key(4)]
             internal float vs;
+            [Key(5)]
             internal float rot;
         }
 
+        [MessagePackObject]
         public struct Emission_s
         {
+            [Key(0)]
             internal Color color;
+            [Key(1)]
             internal float power;
         }
 
+        [MessagePackObject]
         public struct Pattern {
+            [Key(0)]
             internal int key;
+            [Key(1)]
             internal string filepath;
+            [Key(2)]
             internal bool clamp;
         }
 
 
+        [MessagePackObject]
         public struct PatternDetail_s {
+            [Key(0)]
             internal Color color;
+            [Key(1)]
             internal float ut;
+            [Key(2)]
             internal float vt;
+            [Key(3)]
             internal float us;
+            [Key(4)]
             internal float vs;
+            [Key(5)]
             internal float rot;
         }
 
+        [MessagePackObject]
         public struct Line_s
         {
+            [Key(0)]
             internal Color color;
+            [Key(1)]
             internal float lineWidth;
         }
 

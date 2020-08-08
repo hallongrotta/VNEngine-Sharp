@@ -111,7 +111,8 @@ namespace SceneSaveState
                     {
                     }
                     //Utils.char_import_status_diff_optimized(game.scenef_get_actor(actid), char_status);
-                    game.scenef_get_actor(actid).import_status(this.actors[actid]);
+                    var actor = game.scenef_get_actor(actid);
+                    actor?.import_status(this.actors[actid]);
                 }
             }
             foreach (var propid in this.props.Keys)
@@ -119,7 +120,8 @@ namespace SceneSaveState
                 //vnframe.act(game, {propid: self.props[propid]})
                 //print propid
                 //print game.scenef_get_all_props()
-                game.scenef_get_propf(propid).import_status(this.props[propid]);
+                var prop = game.scenef_get_propf(propid);
+                prop?.import_status(this.props[propid]);
             }
         }
 

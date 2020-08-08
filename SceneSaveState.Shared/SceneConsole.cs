@@ -761,7 +761,8 @@ namespace SceneSaveState
         public void setSceneState(int index)
         {
             var curscene = this.block[index];
-            curscene.setSceneState(this.game);
+            var game = VNNeoController.Instance;
+            curscene.setSceneState(game);
         }
 
         public void copySelectedStatusToTracking(List<string> exclude)

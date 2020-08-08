@@ -658,6 +658,7 @@ namespace SceneSaveState
                             }
                             catch (Exception e)
                             {
+                                Console.WriteLine(e.ToString());
                                 Instance.show_blocking_message_time_sc(String.Format("Error during set state: {0}", e.ToString()));
                                 //return
                                 //if i != 0 and (i % 3 == 0):
@@ -772,7 +773,7 @@ namespace SceneSaveState
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine("Err during calc label name...");
+                        Console.WriteLine("Err during calc label name: " + e.ToString());
                     }
                     GUILayout.Label(lbname, GUILayout.Width(tableLabelW));
                     GUILayout.BeginVertical();
@@ -808,7 +809,7 @@ namespace SceneSaveState
                             }
                             catch (Exception e)
                             {
-                                Console.WriteLine("Err during render button choice...");
+                                Console.WriteLine("Err during render button choice: " + e.ToString());
                             }
                             if (i % 3 == 0)
                             {
@@ -827,7 +828,7 @@ namespace SceneSaveState
             catch (Exception e)
             {
                 //print "VNGE SSS: try to recalc autostates...."
-                GUILayout.Label(Utils.color_text_red("Trying to get autostates folders...."));
+                GUILayout.Label(Utils.color_text_red("Trying to get autostates folders: " + e.ToString()));
                 Utils.recalc_autostates();
                 //return
                 // end of all elements

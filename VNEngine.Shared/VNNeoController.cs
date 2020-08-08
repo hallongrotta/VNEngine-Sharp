@@ -565,8 +565,8 @@ namespace VNEngine
         public void LoadTrackedActorsAndProps()
         {
             List<OCIFolder> folders = scene_get_all_folders_raw();
-            _scenef_actors = new Dictionary<string, Actor>();
-            _scenef_props = new Dictionary<string, Prop>();
+            //_scenef_actors = new Dictionary<string, Actor>();
+            //_scenef_props = new Dictionary<string, Prop>();
 
             foreach (OCIFolder fld in folders)
             {
@@ -574,37 +574,45 @@ namespace VNEngine
                 if (fldName.StartsWith(actor_folder_prefix))
                 {
 
-                    var hsociChar = HSNeoOCI.create_from_treenode(fld.treeNodeObject.parent.parent.parent);
+                    string actorAlias;
+                    string actorColor = "ffffff";
+                    string actorTitle = null;
 
-                    if (hsociChar is HSNeoOCIChar chara)
+                    // analysis actor tag
+                    var tagElements = fldName.Split(':');
+                    if (tagElements.Length == 2)
                     {
-                        string actorAlias;
-                        string actorColor = "ffffff";
-                        string actorTitle = hsociChar.text_name;
+                        actorAlias = tagElements[1];
+                    }
+                    else if (tagElements.Length == 3)
+                    {
+                        actorAlias = tagElements[1];
+                        actorColor = tagElements[2];
+                    }
+                    else
+                    {
+                        actorAlias = tagElements[1];
+                        actorColor = tagElements[2];
+                        actorTitle = tagElements[3];
+                    }
 
-                        // analysis actor tag
-                        var tagElements = fldName.Split(':');
-                        if (tagElements.Length == 2)
+                    if (!_scenef_actors.ContainsKey(actorAlias))
+                    {
+                        var hsociChar = HSNeoOCI.create_from_treenode(fld.treeNodeObject.parent.parent.parent);
+
+                        if (hsociChar is HSNeoOCIChar chara)
                         {
-                            actorAlias = tagElements[1];
-                        }
-                        else if (tagElements.Length == 3)
-                        {
-                            actorAlias = tagElements[1];
-                            actorColor = tagElements[2];
-                        }
-                        else
-                        {
-                            actorAlias = tagElements[1];
-                            actorColor = tagElements[2];
-                            actorTitle = tagElements[3];
-                        }
+                            if (actorTitle is null)
+                            {
+                                actorTitle = hsociChar.text_name;
+                            }
 
-                        _scenef_actors[actorAlias] = chara.as_actor;
+                            _scenef_actors[actorAlias] = chara.as_actor;
 
-                        register_char(actorAlias, actorColor, actorTitle);                      
+                            register_char(actorAlias, actorColor, actorTitle);
 
-                        Console.WriteLine("Registered actor: '" + actorAlias + "' as " + actorTitle + " (#" + actorColor + ")");
+                            Console.WriteLine("Registered actor: '" + actorAlias + "' as " + actorTitle + " (#" + actorColor + ")");
+                        }
                     }
                 }
                 else if (fldName.StartsWith(prop_folder_prefix))
@@ -613,12 +621,16 @@ namespace VNEngine
 
                     string propAlias = fldName.Substring(prop_folder_prefix.Length).Trim();
                     // register props
-                    HSNeoOCI oci = HSNeoOCI.create_from_treenode(fld.treeNodeObject.parent);
 
-                    if (oci is Prop prop)
+                    if (!_scenef_props.ContainsKey(propAlias))
                     {
-                        _scenef_props[propAlias] = prop;
-                        Console.WriteLine("Registered prop: '" + Utils.to_roman(propAlias) + "' as " + Utils.to_roman(oci.text_name));
+                        HSNeoOCI oci = HSNeoOCI.create_from_treenode(fld.treeNodeObject.parent);
+
+                        if (oci is Prop prop)
+                        {
+                            _scenef_props[propAlias] = prop;
+                            Console.WriteLine("Registered prop: '" + Utils.to_roman(propAlias) + "' as " + Utils.to_roman(oci.text_name));
+                        }
                     }
                 }
             }
