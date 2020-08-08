@@ -128,7 +128,7 @@ namespace SceneSaveState
 
         public void updateCam(int index, CamData cam_data)
         {
-            this.cams[index] = cam_data;
+            this.cams[index] = cam_data;  
         }
 
         public int deleteCam(int index)

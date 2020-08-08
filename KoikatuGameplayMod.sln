@@ -19,8 +19,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Map.dgml = Map.dgml
 	EndProjectSection
 EndProject
-Project("{F088123C-0E9E-452A-89E6-6BA2F21D5CAC}") = "DependencyValidation1", "DependencyValidation1\DependencyValidation1.modelproj", "{B3E3E9EB-19B6-4506-9DBC-B21E78DFAA50}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VNActor.KK", "VNActor.KK\VNActor.KK.csproj", "{E687512C-010E-4F55-AC98-3E02BC89D60C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VNEngine.KK", "VNEngine.KK\VNEngine.KK.csproj", "{1FB1B473-387F-425B-8EAA-421B1869A4BD}"
@@ -55,10 +53,6 @@ Global
 		{003944F1-DF3D-4F32-AC6D-5225192B8958}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{003944F1-DF3D-4F32-AC6D-5225192B8958}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{003944F1-DF3D-4F32-AC6D-5225192B8958}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B3E3E9EB-19B6-4506-9DBC-B21E78DFAA50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B3E3E9EB-19B6-4506-9DBC-B21E78DFAA50}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B3E3E9EB-19B6-4506-9DBC-B21E78DFAA50}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B3E3E9EB-19B6-4506-9DBC-B21E78DFAA50}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E687512C-010E-4F55-AC98-3E02BC89D60C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E687512C-010E-4F55-AC98-3E02BC89D60C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E687512C-010E-4F55-AC98-3E02BC89D60C}.Release|Any CPU.ActiveCfg = Release|Any CPU
