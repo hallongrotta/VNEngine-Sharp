@@ -1301,210 +1301,6 @@ namespace SceneSaveState
        
         }
 
-
-
-        // Parse/Save/Load
-        public Dictionary<string, Scene> findAndLoadSceneData(bool backup = false)
-        {
-            Dictionary<string, ActorData> char_data;
-            var flds = this.game.scene_get_all_folders_raw();
-            foreach (var fld in flds)
-            {
-                if (fld.name.StartsWith("-scenesavestate:") && backup == false)
-                {
-                    var ver = fld.name.Split(':')[1];
-                    if (ver == "1.0" || ver == "2.5" || ver == "4.0" || ver == "5.0" || ver == "7.0")
-                    {
-                        //return self.parseFlds(fld)  # returns dict
-                        var block_dict = parseSSSFlds(fld);
-                        // using compact resolve
-                        /*if (ver == "4.0" || ver == "5.0" || ver == "7.0") //TODO add this back
-                        {
-                            foreach (var key in block_dict.Keys.ToList())
-                            {
-                                //print 'key, %s' % str(key)
-                                //print isinstance(key, int)
-                                //print isinstance(key, str)
-                                Scene block = block_dict[key];
-                                foreach (var actorkey in block.actors.Keys)
-                                {
-                                    char_data = block.actors[actorkey];
-                                    if (char_data.ContainsKey("_diff"))
-                                    {
-                                        ind = char_data["_diff"][0];
-                                        patch = char_data["_diff"][1];
-                                        //print
-                                        res = Utils.merge_two_dicts(block_dict[(Convert.ToInt32(ind) + 1).ToString()].actors[actorkey], patch);
-                                        block.actors[actorkey] = res;
-                                    }
-                                }
-                                foreach (var propkey in block.props.Keys)
-                                {
-                                    char_data = block.props[propkey];
-                                    if (char_data.ContainsKey("_diff"))
-                                    {
-                                        ind = char_data["_diff"][0];
-                                        patch = char_data["_diff"][1];
-                                        //print
-                                        res = Utils.merge_two_dicts(block_dict[(Convert.ToInt32(ind) + 1).ToString()].props[propkey], patch);
-                                        block.props[propkey] = res;
-                                    }
-                                }
-                            }
-                        } */
-                        return block_dict;
-                    }
-                    else
-                    {
-                        this.show_blocking_message_time_sc("Error: unknown version " + ver + " of scene data.\nPlease, upgrade SceneSaveState to load it.");
-                        return null;
-                        // break
-                    }
-                }
-                if (fld.name == "-scenesavestatebackup" && backup == true)
-                {
-                    return this.parseSSSFlds(fld, backup: true);
-                    // break
-                }
-            }
-            this.show_blocking_message_time_sc("Error: can't find data to load");
-            return null;
-        }
-
-        public Dictionary<string, Scene> parseSSSFlds(OCIFolder fld, bool backup = false)
-        {
-            if (fld.name.StartsWith("-scenesavestate:") && backup == false || fld.name == "-scenesavestatebackup" && backup == true)
-            {
-                //print "ok"
-                var dict = new Dictionary<string, Scene>
-                {
-                };
-                foreach (TreeNodeObject scene_fld in fld.treeNodeObject.child)
-                {
-                    HSNeoOCIFolder sceneFld = HSNeoOCI.create_from_treenode<HSNeoOCIFolder>(scene_fld);
-                    // scene_id = int(scene_fld.name.strip("-scene:"))
-                    KeyValuePair<string, object> kv = this.parseFlds(sceneFld);
-                    dict[kv.Key] = (Scene)kv.Value;
-                }
-                return dict;
-            }
-            else
-            {
-                throw new Exception("Invalid SSS folder");
-            } 
-        }
-
-        // parseFlds works for 1.0 or 2.5 version
-        public KeyValuePair<string, object> parseFlds(HSNeoOCIFolder fld, bool backup = false)
-        {
-            if (fld.name.Contains("-scene:"))
-            {
-                var sc_dict = new Scene();
-                foreach (var child in fld.treeNodeObject.child)
-                {
-                    HSNeoOCIFolder sc_elements = HSNeoOCIFolder.create_from_treenode<HSNeoOCIFolder>(child);
-
-                    KeyValuePair<string, object> kv = this.parseFlds(sc_elements);
-
-                    if (kv.Key == "actors")
-                    {
-                        sc_dict.actors = (Dictionary<string, ActorData>)kv.Value;
-                    } else if (kv.Key == "props")
-                    {
-                        sc_dict.props = (Dictionary<string, PropData>)kv.Value;
-                    } else if (kv.Key == "cams")
-                    {
-                        sc_dict.cams = (List<CamData>)kv.Value;
-                    }
-                }
-                return new KeyValuePair<string, object>(fld.name.Substring("-scene:".Length), sc_dict);
-            }
-            else if (fld.name == "-actors")
-            {
-                var char_dict = new Dictionary<string, ActorData>();
-                foreach (var child in fld.treeNodeObject.child) {
-                    var chara = HSNeoOCIFolder.create_from_treenode<HSNeoOCIFolder>(child);
-                    if (chara.name.StartsWith("{"))
-                    {
-                        //char_data = self.parseFlds(chara)
-                        var char_data = Utils.DeserializeData<Dictionary<string, ActorData>>(chara.name);
-
-                        foreach (var key in char_dict.Keys)
-                        {
-                            char_dict[key] = char_data[key];
-                        }
-                    }
-                    else
-                    {
-                        var char_fld = HSNeoOCIFolder.create_from_treenode<HSNeoOCIFolder>(chara.treeNodeObject.child[0]);
-                        ActorData char_data = Utils.DeserializeData<ActorData>(char_fld.name);
-                        char_dict[chara.name] = char_data;
-                    }
-                }
-                return new KeyValuePair<string, object>(fld.name.Substring("-".Length), char_dict);
-            }
-            else if (fld.name == "-props")
-            {
-                // Props
-                var prop_dict = new Dictionary<string, PropData>();
-                foreach (var child in fld.treeNodeObject.child)
-                {
-                    var prop = HSNeoOCIFolder.create_from_treenode<Prop>(child);
-                    var prop_name = prop.name;
-                    if (prop_name.StartsWith("{"))
-                    {
-                        var prop_data = Utils.DeserializeData<Dictionary<string, PropData>>(prop_name);
-
-                        foreach (var key in prop_dict.Keys)
-                        {
-                            prop_dict[key] = prop_data[key];
-                        }
-                    }
-                    else
-                    {
-                        var prop_fld = HSNeoOCIFolder.create_from_treenode<HSNeoOCIFolder>(prop.treeNodeObject.child[0]);
-
-                        var prop_data = Utils.DeserializeData<PropData>(prop_fld.name);
-                        prop_dict[prop_name] = prop_data;
-                    }
-                }
-                return new KeyValuePair<string, object>(fld.name.Substring("-".Length), prop_dict);
-            }
-            else if (fld.name == "-cams")
-            {
-                // elif "-propitem:" in fld.name:
-                //     prop_state = {}
-                //     #id = fld.name.strip("-propitem:")
-                //     id = fld.name[10:]
-                //     state_fld = HSNeoOCIFolder.create_from_treenode(fld.treeNodeObject.child[0])
-                //     prop_state = Utils.DeserializeData(state_fld.name, object_hook=sceneDecoder)
-                //     return (id, prop_state)
-                // cams
-                var cams_dict = new Dictionary<object, object>
-                {
-                };
-                foreach (var child in fld.treeNodeObject.child)
-                {
-                    var cam = HSNeoOCIFolder.create_from_treenode<HSNeoOCIFolder>(child);
-                    KeyValuePair<string, object> kv = this.parseFlds(cam);
-                    int id = Convert.ToInt32(kv.Key);
-                    cams_dict[id] = (CamData)kv.Value;
-                }
-                return new KeyValuePair<string, object>(fld.name.Substring("-".Length), cams_dict);
-            }
-            else if (fld.name.Contains("-cam:"))
-            {
-                string key = fld.name.Substring("-cam:".Length);
-                var state_fld = HSNeoOCIFolder.create_from_treenode<HSNeoOCIFolder>(fld.treeNodeObject.child[0]);
-                CamData cam_state = Utils.DeserializeData<CamData>(state_fld.name);
-                return new KeyValuePair<string, object>(key, cam_state);
-            } 
-            else
-            {
-                throw new Exception("Failed to parse folder");
-            }
-        }
-
         public void restrict_to_child(HSNeoOCIFolder fld, int numchilds)
         {
             if (fld.treeNodeObject.child.Count > numchilds)
@@ -1529,217 +1325,6 @@ namespace SceneSaveState
         public void saveSceneData(object param)
         {
             saveSceneData((bool)param);
-        }
-
-        public void saveSceneData()
-        {
-            saveSceneData(backup: false);
-        }
-
-        public void saveSceneData(bool backup = false)
-        {
-            ActorData diff;
-            ActorData bestResDiff;
-            int bestRes;
-            int bestInd;
-            HSNeoOCIFolder data_fld;
-            // self.saveSceneDataOld(fld,backup)
-            // return
-            // delete existing scenedata fld
-            if (backup)
-            {
-                data_fld = HSNeoOCIFolder.find_single("-scenesavestatebackup");
-                // correct... but be super-confident
-                // if data_fld:
-                //     pass
-                // else:
-                //     data_fld = self.createFld("-scenesavestatebackup")
-                if (data_fld != null)
-                {
-                    data_fld.delete();
-                }
-                data_fld = this.createFld("-scenesavestatebackup");
-            }
-            else
-            {
-                data_fld = HSNeoOCIFolder.find_single_startswith("-scenesavestate:");
-                var txt = "-scenesavestate:" + this.versionSceneDataParsing;
-                if (data_fld != null)
-                {
-                    data_fld.name = txt;
-                }
-                else
-                {
-                    data_fld = this.createFld(txt);
-                }
-            }
-            // save data as flds
-            // template = {"fchars":{}, "mchars":{}, "propflds":{}, "cams":[], "accs":{}, "props":{}}
-            var sdict = new List<Scene>();
-            foreach (var scene in this.block)
-            {
-                sdict.Add(scene);
-            }
-            // Create folders as scenedata
-            if (this.isSaveOld)
-            {
-                // txt = data_fld.name
-                // data_fld.delete()
-                // data_fld = HSNeoOCIFolder.add(txt)
-                data_fld.delete_all_children();
-            }
-            else
-            {
-                this.restrict_to_child(data_fld, sdict.Count);
-            }
-            //self.restrict_to_child(data_fld, 0)
-            // Create scene data
-            //print len(sdict)
-            var scene_id = 1;
-            foreach (Scene scene in sdict)
-            {
-                // Making parent folders
-                var scene_fld = this.createFldIfNo("-scene:" + scene_id.ToString(), data_fld, scene_id - 1);
-                //scene_fld.delete_all_children()
-                var actor_fld = this.createFldIfNo("-actors", scene_fld, 0);
-                var props_fld = this.createFldIfNo("-props", scene_fld, 1);
-                var cams_fld = this.createFldIfNo("-cams", scene_fld, 2);
-                // Making children folders
-                this.restrict_to_child(actor_fld, scene.actors.Keys.Count);
-                var k = 0;
-                foreach (var ch_name in scene.actors.Keys)
-                {
-                    var ch_content = scene.actors[ch_name];
-                    //ch_name_fld = self.createFld(ch_name, actor_fld)
-                    bestInd = -1;
-                    bestRes = 100000;
-                    /* TODO
-                    if (this.isSaveCompact && !backup)
-                    {
-                        // optimization - calc diff, only for normal saves
-                        if (scene_id > 1)
-                        {
-                            foreach (var j in Enumerable.Range(0, scene_id - 1))
-                            {
-                                if (sdict[j].actors.ContainsKey(ch_name))
-                                {
-                                    diff = Utils.get_status_diff_optimized(sdict[j].actors[ch_name], ch_content);
-                                    if (diff.Count < bestRes)
-                                    {
-                                        bestInd = j;
-                                        bestRes = diff.Count;
-                                        bestResDiff = diff;
-                                    }
-                                    if (diff.Count == 0)
-                                    {
-                                        // ideal - immediately break
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    } */
-                    if (bestInd == -1)
-                    {
-                        // no optimization
-                        //print "non-opt"
-                        //self.createFld(MessagePackSerializer.Serialize(ch_content, cls=SceneEncoder), ch_name_fld)
-                        //this.createFldIfNo((new Dictionary<string, ActorData> { { ch_name, ch_content}}), actor_fld, k);
-                        this.createFldIfNo(Utils.SerializeData(scene.actors["act0"]), actor_fld, k);
-                    }
-                    /* TODO
-                    else
-                    {
-                        //self.createFld(MessagePackSerializer.Serialize({'_diff':[bestInd, bestResDiff]}, cls=SceneEncoder), ch_name_fld)
-                        this.createFldIfNo(Utils.SerializeData<Dictionary<string, ActorData>>(new Dictionary<string, ActorData> {
-                            {
-                                ch_name,
-                                new Dictionary<string, ActorData> {
-                                    {
-                                        "_diff",
-                                        new List<ActorData> {
-                                            bestInd,
-                                            bestResDiff
-                                        }}}}}), actor_fld, k);
-                    }
-                    */
-                    k += 1;
-                }
-                this.restrict_to_child(cams_fld, scene.cams.Count);
-                foreach (var i in Enumerable.Range(0, scene.cams.Count - 0))
-                {
-                    var cam_id_fld = this.createFldIfNo("-cam:" + i.ToString(), cams_fld, i);
-                    this.createFldIfNo(Utils.SerializeData(scene.cams[i]), cam_id_fld, 0);
-                }
-                this.restrict_to_child(props_fld, scene.props.Count);
-                k = 0;
-                foreach (var prop_id in scene.props.Keys)
-                {
-                    var prop_state = scene.props[prop_id];
-                    //print "prop"
-                    //prop_id_fld = self.createFld(prop_id, props_fld)
-                    bestInd = -1;
-                    bestRes = 100000;
-
-                    /* TODO
-                    if (this.isSaveCompact && !backup)
-                    {
-                        // optimization - calc diff, only for normal saves
-                        if (scene_id > 1)
-                        {
-                            foreach (var j in Enumerable.Range(0, scene_id - 1))
-                            {
-                                if (sdict[j].props.ContainsKey(prop_id))
-                                {
-                                    diff = Utils.get_status_diff_optimized(sdict[j].props[prop_id], prop_state);
-                                    if (diff.Count < bestRes)
-                                    {
-                                        bestInd = j;
-                                        bestRes = diff.Count;
-                                        bestResDiff = diff;
-                                    }
-                                    if (diff.Count == 0)
-                                    {
-                                        // ideal - immediately break
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    */
-                    if (bestInd == -1)
-                    {
-                        // no optimization
-                        // print "non-opt"
-                        //self.createFld(MessagePackSerializer.Serialize(prop_state, cls=SceneEncoder), prop_id_fld)
-                        this.createFldIfNo(Utils.SerializeData(new Dictionary<object, object> {
-                            {
-                                prop_id,
-                                prop_state}}), props_fld, k);
-                    }
-                    /* TODO
-                    else
-                    {
-                        //self.createFld(MessagePackSerializer.Serialize({'_diff': [bestInd, bestResDiff]}, cls=SceneEncoder), prop_id_fld)
-                        this.createFldIfNo(Utils.SerializeData(new Dictionary<object, object> {
-                            {
-                                prop_id,
-                                new Dictionary<object, object> {
-                                    {
-                                        "_diff",
-                                        new List<object> {
-                                            bestInd,
-                                            bestResDiff
-                                        }}}}}), props_fld, k);
-                    }
-                    */
-                    k += 1;
-                }
-                scene_id = scene_id + 1;
-            }
-            data_fld.visible_treenode = false;
-            this.game.set_timer(0.1f, this.onDataSaved);
         }
 
         public int verify_load()
@@ -1927,8 +1512,8 @@ namespace SceneSaveState
             var abs_file_path = Path.Combine(script_dir, file_path);
             if (File.Exists(abs_file_path))
             {
-                string text = File.ReadAllText(abs_file_path);
-                var block_dict = Utils.DeserializeData<Dictionary<string, Scene>>(text);
+                byte[] data = File.ReadAllBytes(abs_file_path);
+                var block_dict = Utils.DeserializeData<Dictionary<string, Scene>>(data);
                 return block_dict;
             }
             return null;
@@ -2032,7 +1617,7 @@ namespace SceneSaveState
             if (file == false)
             {
                 // get scenedata
-                block_dict = this.findAndLoadSceneData(backup: backup);
+                //block_dict = this.findAndLoadSceneData(backup: backup);
             }
             else
             {
@@ -2293,11 +1878,12 @@ namespace SceneSaveState
             try
             {
                 string filecont = this.game.file_get_content_utf8(filename);
-                var arr = Utils.DeserializeData<List<KeyValuePair<int, CamData>>>(filecont);
-                foreach (KeyValuePair<int, CamData> kv in arr)
+                List<CamData> arr = new List<CamData>(); // Utils.DeserializeData<List<KeyValuePair<int, CamData>>>(filecont); TODO
+                for (int i = 0; i < arr.Count; i++)
                 {
-                    var elem = kv.Value;
-                    var scenenum = kv.Key;
+                    
+                    var elem = arr[i];
+                    var scenenum = i;
                         var scene = this.block[scenenum];
                         var cam = scene.cams[elem.camnum];
                         cam.addata = elem.addata;
@@ -2437,7 +2023,8 @@ namespace SceneSaveState
                 byte[] sceneData = MessagePackSerializer.Serialize(this.block, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
                 pluginData.data["scenes"] = sceneData;
                 SetExtendedData(pluginData);
-                Debug.Log($"Saved {((double)sceneData.Length / 1000):N} Kbytes of scene data.");
+                var logger = game.GetLogger;
+                logger.LogDebug($"Saved {((double)sceneData.Length / 1000):N} Kbytes of scene data.");
             }
         }
 
@@ -2455,7 +2042,8 @@ namespace SceneSaveState
                 if (!sceneData.IsNullOrEmpty())
                 {
                     this.block = MessagePackSerializer.Deserialize<List<Scene>>(sceneData, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
-                    Debug.Log($"Loaded {((double)sceneData.Length / 1000):N} Kbytes of scene data.");
+                    var logger = game.GetLogger;
+                    logger.LogDebug($"Loaded {((double)sceneData.Length / 1000):N} Kbytes of scene data.");
                     this.cur_index = 0;
                 }
             }
