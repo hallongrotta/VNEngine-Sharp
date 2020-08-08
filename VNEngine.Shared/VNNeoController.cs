@@ -565,8 +565,8 @@ namespace VNEngine
         public void LoadTrackedActorsAndProps()
         {
             List<OCIFolder> folders = scene_get_all_folders_raw();
-            //_scenef_actors = new Dictionary<string, Actor>();
-            //_scenef_props = new Dictionary<string, Prop>();
+            _scenef_actors.Clear();
+            _scenef_props.Clear();
 
             foreach (OCIFolder fld in folders)
             {
