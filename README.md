@@ -2,6 +2,8 @@
 A C# port of VNEngine and SceneSaveState. Only SceneSaveState functionality for Koikatsu working currently, can not export to a VN.
 The intention of this port is to better integrate SceneSaveState and VNEngine with the current ecosystem of mods for Illusion games that use Bepinex.
 
+SceneConsole window is opened with 'B' by default.
+
 # Attributions
 
 VNEngine and SceneSaveState by @keitaro.
