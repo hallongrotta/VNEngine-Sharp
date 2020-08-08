@@ -5,6 +5,7 @@ using UnityEngine;
 using Studio;
 using static VNEngine.Utils;
 using static VNEngine.VNController;
+using MessagePack;
 
 namespace VNEngine
 {
@@ -39,6 +40,7 @@ namespace VNEngine
             }
         }
 
+        [MessagePackObject(keyAsPropertyName: true)]
         public struct CamData
         {
             public Vector3 position;
@@ -78,6 +80,16 @@ namespace VNEngine
                 this.addata = addata;
                 this.style = "";
                 this.hasVNData = false;
+            }
+
+            [SerializationConstructor]
+            public CamData(Vector3 position, Vector3 rotation, Vector3 distance, float fov, VNData addata, int camnum, float duration, string style, float zoom_delta, bool hasVNData) : this(position, rotation, distance, fov, addata)
+            {
+                this.camnum = camnum;
+                this.duration = duration;
+                this.style = style;
+                this.zoom_delta = zoom_delta;
+                this.hasVNData = hasVNData;
             }
         }
 

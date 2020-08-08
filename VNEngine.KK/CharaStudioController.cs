@@ -19,6 +19,8 @@ namespace VNEngine
         : VNNeoController
     {
 
+        new public static CharaStudioController Instance { get; private set; }
+
         public const string PluginName = "VN Controller";
         public const string GUID = "com.kasanari.bepinex.vncontroller";
         public const string Version = "1.0";
@@ -31,9 +33,16 @@ namespace VNEngine
 
         public CharaStudioController(List<string> vnButtonsStart, List<Utils.ButtonFunc_s> vnButtonsActionsStart) : base()
         {
+            if (Instance != null)
+            {
+                throw new InvalidOperationException("Can only create one instance of Controller");
+            }
+
             this.engine_name = "charastudio";
             this._vnButtons = vnButtonsStart;
             this._vnButtonsActions = vnButtonsActionsStart;
+            Instance = this;
+
         }
 
         public static ConfigEntry<KeyboardShortcut> VNControllerHotkey { get; private set; }

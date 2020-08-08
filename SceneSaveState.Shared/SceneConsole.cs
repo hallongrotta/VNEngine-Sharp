@@ -12,11 +12,15 @@ using static VNActor.Actor;
 using static VNActor.Prop;
 using RootMotion;
 using System.Text;
+using KKAPI.Studio.SaveLoad;
+using KKAPI.Utilities;
+using ExtensibleSaveFormat;
+using NodeCanvas.Tasks.Conditions;
 
 namespace SceneSaveState
 {
 
-    public class SceneConsole
+    public class SceneConsole : SceneCustomFunctionController
     {
 
         public int _normalheight;
@@ -93,7 +97,7 @@ namespace SceneSaveState
 
         public string funcLockedText;
 
-        public VNNeoController game;
+        //public VNNeoController game;
 
         public bool guiOnShow;
 
@@ -230,7 +234,17 @@ namespace SceneSaveState
         internal Vector2 vnss_wizard_ui_scroll;
 
 
-        public SceneConsole(VNNeoController game)
+        public VNNeoController game
+        {
+            get
+            {
+                return VNNeoController.Instance;
+            }
+        }
+
+        public static SceneConsole Instance { get; private set; }
+
+        public SceneConsole()
         {
             // init dict
             // initWordDict()
@@ -239,7 +253,6 @@ namespace SceneSaveState
             this._normalheight = 350;
             // self.drag_rect = Rect(0, 0, 10000, 50)
             // --- Basic settings ---
-            this.game = game;
             this.originalwindowwidth = 0;
             this.originalwindowheight = 0;
             this.originalWindowCallback = null;
@@ -370,6 +383,7 @@ namespace SceneSaveState
                 controller = game
             };
             this.skinDefault_sideApp = "";
+            Instance = this;
         }
 
 
@@ -552,7 +566,7 @@ namespace SceneSaveState
             {
                 this.cur_index += 1;
             }
-            this.block.Insert(this.cur_index, new Scene(this));
+            this.block.Insert(this.cur_index, new Scene());
             this.updateSceneStrings();
         }
 
@@ -1395,7 +1409,7 @@ namespace SceneSaveState
         {
             if (fld.name.Contains("-scene:"))
             {
-                var sc_dict = new Scene(this);
+                var sc_dict = new Scene();
                 foreach (var child in fld.treeNodeObject.child)
                 {
                     HSNeoOCIFolder sc_elements = HSNeoOCIFolder.create_from_treenode<HSNeoOCIFolder>(child);
@@ -1534,8 +1548,8 @@ namespace SceneSaveState
 
         public void saveSceneData(bool backup = false)
         {
-            Dictionary<object, object> diff;
-            Dictionary<object, object> bestResDiff;
+            ActorData diff;
+            ActorData bestResDiff;
             int bestRes;
             int bestInd;
             HSNeoOCIFolder data_fld;
@@ -1609,9 +1623,6 @@ namespace SceneSaveState
                     //ch_name_fld = self.createFld(ch_name, actor_fld)
                     bestInd = -1;
                     bestRes = 100000;
-                    bestResDiff = new Dictionary<object, object>
-                    {
-                    };
                     /* TODO
                     if (this.isSaveCompact && !backup)
                     {
@@ -1643,32 +1654,32 @@ namespace SceneSaveState
                         // no optimization
                         //print "non-opt"
                         //self.createFld(MessagePackSerializer.Serialize(ch_content, cls=SceneEncoder), ch_name_fld)
-                        this.createFldIfNo(Utils.SerializeData<Dictionary<string, object>>(new Dictionary<string, object> {
-                            {
-                                ch_name,
-                                ch_content}}), actor_fld, k);
+                        //this.createFldIfNo((new Dictionary<string, ActorData> { { ch_name, ch_content}}), actor_fld, k);
+                        this.createFldIfNo(Utils.SerializeData(scene.actors["act0"]), actor_fld, k);
                     }
+                    /* TODO
                     else
                     {
                         //self.createFld(MessagePackSerializer.Serialize({'_diff':[bestInd, bestResDiff]}, cls=SceneEncoder), ch_name_fld)
-                        this.createFldIfNo(Utils.SerializeData<Dictionary<string, object>>(new Dictionary<string, object> {
+                        this.createFldIfNo(Utils.SerializeData<Dictionary<string, ActorData>>(new Dictionary<string, ActorData> {
                             {
                                 ch_name,
-                                new Dictionary<string, object> {
+                                new Dictionary<string, ActorData> {
                                     {
                                         "_diff",
-                                        new List<object> {
+                                        new List<ActorData> {
                                             bestInd,
                                             bestResDiff
                                         }}}}}), actor_fld, k);
                     }
+                    */
                     k += 1;
                 }
                 this.restrict_to_child(cams_fld, scene.cams.Count);
                 foreach (var i in Enumerable.Range(0, scene.cams.Count - 0))
                 {
                     var cam_id_fld = this.createFldIfNo("-cam:" + i.ToString(), cams_fld, i);
-                    this.createFldIfNo(MessagePackSerializer.Serialize(scene.cams[i]).ToString(), cam_id_fld, 0);
+                    this.createFldIfNo(Utils.SerializeData(scene.cams[i]), cam_id_fld, 0);
                 }
                 this.restrict_to_child(props_fld, scene.props.Count);
                 k = 0;
@@ -1679,9 +1690,7 @@ namespace SceneSaveState
                     //prop_id_fld = self.createFld(prop_id, props_fld)
                     bestInd = -1;
                     bestRes = 100000;
-                    bestResDiff = new Dictionary<object, object>
-                    {
-                    };
+
                     /* TODO
                     if (this.isSaveCompact && !backup)
                     {
@@ -1719,6 +1728,7 @@ namespace SceneSaveState
                                 prop_id,
                                 prop_state}}), props_fld, k);
                     }
+                    /* TODO
                     else
                     {
                         //self.createFld(MessagePackSerializer.Serialize({'_diff': [bestInd, bestResDiff]}, cls=SceneEncoder), prop_id_fld)
@@ -1733,6 +1743,7 @@ namespace SceneSaveState
                                             bestResDiff
                                         }}}}}), props_fld, k);
                     }
+                    */
                     k += 1;
                 }
                 scene_id = scene_id + 1;
@@ -1977,7 +1988,7 @@ namespace SceneSaveState
                     //print actors
                     //print props
                     //print cams
-                    this.block.Add(new Scene(this, actors, props, cams));
+                    this.block.Add(new Scene(actors, props, cams));
                     this.scene_strings.Add("Scene " + key.ToString());
                     // id = int(key)
                     // for id in range(0,len(block_dict)):
@@ -2426,6 +2437,36 @@ namespace SceneSaveState
                     return "s";
                 }
             }
+        }
+
+        protected override void OnSceneSave()
+        {
+            var pluginData = new PluginData();
+            pluginData.data["scenes"] = MessagePackSerializer.Serialize(this.block, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
+            SetExtendedData(pluginData);
+            Console.WriteLine("Saved scene data.");
+        }
+
+        protected override void OnSceneLoad(SceneOperationKind operation, ReadOnlyDictionary<int, ObjectCtrlInfo> loadedItems)
+        {
+            var pluginData = GetExtendedData();
+            if (pluginData is null)
+            {
+                this.block = new List<Scene>();
+                this.cur_index = -1;
+            }
+            else
+            {
+                var sceneData = pluginData.data["scenes"] as byte[];
+                if (!sceneData.IsNullOrEmpty())
+                {
+                    this.block = MessagePackSerializer.Deserialize<List<Scene>>(sceneData, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
+                    Console.WriteLine("Loaded scene data.");
+                    this.cur_index = 0;
+                }
+            }
+            updateSceneStrings();
+            game.LoadTrackedActorsAndProps();
         }
     }
 }

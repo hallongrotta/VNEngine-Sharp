@@ -1,4 +1,5 @@
-﻿using Studio;
+﻿using MessagePack;
+using Studio;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,25 +52,26 @@ namespace VNActor
             internal float lineWidth;
         }
 
+        [MessagePackObject(keyAsPropertyName: true)]
         public struct PropData : IDataClass
         {
             // Prop
-            internal bool visible;
-            internal Vector3 move_to;
-            internal Vector3 rotate_to;
-            internal Vector3 scale_to;
-            internal Dictionary<int, Color> color;
-            internal float? alpha;
-            internal Panel? pnl_set;
+            public bool visible;
+            public Vector3 move_to;
+            public Vector3 rotate_to;
+            public Vector3 scale_to;
+            public Dictionary<int, Color> color;
+            public float? alpha;
+            public Panel? pnl_set;
             public PanelDetail_s? pnl_dtl;
-            internal Emission_s? emission;
+            public Emission_s? emission;
             public List<Vector3> fk_set;
-            internal float? anim_spd;
+            public float? anim_spd;
             public Dictionary<int, Pattern> ptn_set;
             public Dictionary<int, PatternDetail_s> ptn_dtl;
             public float? light_cancel;
-            internal Line_s? line;
-            internal Color? shadow_color;
+            public Line_s? line;
+            public Color? shadow_color;
             public bool? db_active;
 
             public void Remove(string key)
@@ -77,6 +79,7 @@ namespace VNActor
                 throw new NotImplementedException();
             }
 
+            
             public PropData(Prop p)
             {
                 // export full status of prop
@@ -177,6 +180,28 @@ namespace VNActor
                 {
                     db_active = null;
                 }
+            }
+
+            [SerializationConstructor]
+            public PropData(bool visible, Vector3 move_to, Vector3 rotate_to, Vector3 scale_to, Dictionary<int, Color> color, float? alpha, Panel? pnl_set, PanelDetail_s? pnl_dtl, Emission_s? emission, List<Vector3> fk_set, float? anim_spd, Dictionary<int, Pattern> ptn_set, Dictionary<int, PatternDetail_s> ptn_dtl, float? light_cancel, Line_s? line, Color? shadow_color, bool? db_active)
+            {
+                this.visible = visible;
+                this.move_to = move_to;
+                this.rotate_to = rotate_to;
+                this.scale_to = scale_to;
+                this.color = color;
+                this.alpha = alpha;
+                this.pnl_set = pnl_set;
+                this.pnl_dtl = pnl_dtl;
+                this.emission = emission;
+                this.fk_set = fk_set;
+                this.anim_spd = anim_spd;
+                this.ptn_set = ptn_set;
+                this.ptn_dtl = ptn_dtl;
+                this.light_cancel = light_cancel;
+                this.line = line;
+                this.shadow_color = shadow_color;
+                this.db_active = db_active;
             }
         }
 

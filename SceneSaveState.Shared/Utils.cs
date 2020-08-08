@@ -19,7 +19,7 @@ namespace SceneSaveState
     public static class Utils
     {
 
-        public static SceneConsole sceneConsole;
+        //public static SceneConsole.Instance SceneConsole.Instance;
 
         public static Dictionary<object, object> _conv_dict = new Dictionary<object, object>
         {
@@ -40,27 +40,27 @@ namespace SceneSaveState
                 return;
             }
             game.gdata.hook_update_allowed = true;
-            if (sceneConsole == null)
-            {
-                sceneConsole = new SceneConsole(game);
-            }
             UI.sceneConsoleGUIStart(game);
             game.LoadTrackedActorsAndProps();
             // if no blocks - autoload
-            if (sceneConsole.block.Count == 0)
+            if (SceneConsole.Instance.block.Count == 0)
             {
                 if (HSNeoOCIFolder.find_single_startswith("-scenesavestate:") != null)
                 {
-                    sceneConsole.loadSceneData();
-                    sceneConsole.show_blocking_message_time_sc("Scene data was auto-loaded!");
+                    SceneConsole.Instance.loadSceneData();
+                    SceneConsole.Instance.show_blocking_message_time_sc("Scene data was auto-loaded!");
                 }
             }
         }
+        
 
         public static string SerializeData<T>(T item)
         {
-            return ByteArrayDecode(MessagePackSerializer.Serialize<T>(item));
+            byte[] bytes = MessagePackSerializer.Serialize(item, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
+            string str = MessagePackSerializer.ToJson(bytes);
+            return str;
         }
+       
 
         public static T DeserializeData<T>(string s)
         {
@@ -69,12 +69,12 @@ namespace SceneSaveState
 
         public static byte[] StringEncode(string s) 
         {
-            return Encoding.UTF8.GetBytes(s);
+            return Encoding.ASCII.GetBytes(s);
         }
 
         public static string ByteArrayDecode(byte[] bytes)
         {
-            return Encoding.UTF8.GetString(bytes);
+            return Encoding.ASCII.GetString(bytes, 0, bytes.Length);
         }
 
 
@@ -123,11 +123,7 @@ namespace SceneSaveState
         // ::::: Console init and window :::::
         public static void toggle_scene_console(VNNeoController game)
         {
-            if (sceneConsole == null)
-            {
-                sceneConsole = new SceneConsole(game);
-            }
-            if (sceneConsole.guiOnShow)
+            if (SceneConsole.Instance.guiOnShow)
             {
                 sceneConsoleGUIClose();
             }
@@ -140,8 +136,6 @@ namespace SceneSaveState
         public static void resetConsole(VNNeoController game)
         {
             sceneConsoleGUIClose();
-            sceneConsole = null;
-            sceneConsole = new SceneConsole(game);
             UI.sceneConsoleGUIStart(game);
         }
 
@@ -149,41 +143,41 @@ namespace SceneSaveState
         {
             // Shortcuts
             /* TODO
-            sceneConsole.game.gdata.sc_shortcuts = new Dictionary<string, (Action, string)> {
+            SceneConsole.Instance.game.gdata.sc_shortcuts = new Dictionary<string, (Action, string)> {
             {
                 "Load Next",
                 (
-                    sceneConsole.goto_next,
+                    SceneConsole.Instance.goto_next,
                     null
                 )},
             {
                 "Load Prev",
                 (
-                    sceneConsole.goto_prev,
+                    SceneConsole.Instance.goto_prev,
                     null
                 )},
             {
                 "Load Next Scene",
                 (
-                    sceneConsole.goto_next_sc,
+                    SceneConsole.Instance.goto_next_sc,
                     null
                 )},
             {
                 "Load Prev Scene",
                 (
-                    sceneConsole.goto_prev_sc,
+                    SceneConsole.Instance.goto_prev_sc,
                     null
                 )},
             {
                 "Load First Scene",
                (
-                    sceneConsole.goto_first,
+                    SceneConsole.Instance.goto_first,
                     null
                 )},
             {
                 "Add Scene (Auto)",
                 (
-                    sceneConsole.addAutoWithMsg,
+                    SceneConsole.Instance.addAutoWithMsg,
                     null
                 )},
             {
@@ -195,18 +189,18 @@ namespace SceneSaveState
             {
                 "Save Scenedata",
                 (
-                    sceneConsole.saveSceneData,
+                    SceneConsole.Instance.saveSceneData,
                     null
                 )},
             {
                 "Add Camera",
                 (
-                    sceneConsole.changeSceneCam,
+                    SceneConsole.Instance.changeSceneCam,
                     null
                 )}};
             */
             /*
-            sceneConsole.shortcuts = new Dictionary<string, (string,string)>
+            SceneConsole.Instance.shortcuts = new Dictionary<string, (string,string)>
             {
             };
             */
@@ -217,12 +211,12 @@ namespace SceneSaveState
             {
                 var command = _tup_1.Item1;
                 var key = _tup_1.Item2;
-                foreach (var com in sceneConsole.game.gdata.sc_shortcuts.Keys)
+                foreach (var com in SceneConsole.Instance.game.gdata.sc_shortcuts.Keys)
                 {
                     if (command == com.ToLower())
                     {
-                        sceneConsole.game.gdata.sc_shortcuts[com].key = VNEngine.Utils.ParseKeyCode(key);
-                        sceneConsole.shortcuts[com] = key;
+                        SceneConsole.Instance.game.gdata.sc_shortcuts[com].key = VNEngine.Utils.ParseKeyCode(key);
+                        SceneConsole.Instance.shortcuts[com] = key;
                         break;
                     }
                 }
@@ -233,7 +227,7 @@ namespace SceneSaveState
         {
             var cfpath = "scenesavestate.ini";
             var content = "[Shortcuts]\n";
-            foreach (var _tup_1 in sceneConsole.shortcuts.Values)
+            foreach (var _tup_1 in SceneConsole.Instance.shortcuts.Values)
             {
                 var command = _tup_1.Value;
                 var key = _tup_1.Key;
@@ -241,9 +235,9 @@ namespace SceneSaveState
             }
             File.WriteAllText(cfpath, content);
             // reinit config
-            sceneConsole.game.event_unreg_listener("update", hook_update);
+            SceneConsole.Instance.game.event_unreg_listener("update", hook_update);
             loadConfig();
-            sceneConsole.game.event_reg_listener("update", hook_update);
+            SceneConsole.Instance.game.event_reg_listener("update", hook_update);
         }
 
         public static void hook_update(VNController game)
@@ -253,21 +247,21 @@ namespace SceneSaveState
                 return;
             }
             var dt = Time.deltaTime;
-            if (sceneConsole.game.visible)
+            if (SceneConsole.Instance.game.visible)
             {
                 // count only time when SSS is visible
-                sceneConsole.backupTimeCur -= dt;
+                SceneConsole.Instance.backupTimeCur -= dt;
                 //print sc.backupTimeCur
-                if (sceneConsole.backupTimeCur <= 0)
+                if (SceneConsole.Instance.backupTimeCur <= 0)
                 {
-                    sceneConsole.backupTimeCur = sceneConsole.backupTimeDuration;
-                    if (sceneConsole.block.Count > 0)
+                    SceneConsole.Instance.backupTimeCur = SceneConsole.Instance.backupTimeDuration;
+                    if (SceneConsole.Instance.block.Count > 0)
                     {
                         //print len(sc.block)
-                        Console.WriteLine(String.Format("VNGE SSS: try backup by timer (every {0} seconds)... ({1} scenes)", sceneConsole.backupTimeDuration.ToString(), sceneConsole.block.Count.ToString()));
+                        Console.WriteLine(String.Format("VNGE SSS: try backup by timer (every {0} seconds)... ({1} scenes)", SceneConsole.Instance.backupTimeDuration.ToString(), SceneConsole.Instance.block.Count.ToString()));
                         try
                         {
-                            sceneConsole.saveToFileDirect("_backuptimer");
+                            SceneConsole.Instance.saveToFileDirect("_backuptimer");
                             Console.WriteLine("VNGE SSS: made backup by timer!");
                         }
                         catch
@@ -278,7 +272,7 @@ namespace SceneSaveState
                 }
             }
             // param = sc.game.gdata.sc_shortcuts["loadnext"]
-           /* foreach (var _tup_1 in sceneConsole.game.gdata.sc_shortcuts.Values) //TODO look into this
+           /* foreach (var _tup_1 in SceneConsole.Instance.game.gdata.sc_shortcuts.Values) //TODO look into this
             {
                 var commands = _tup_1.Item1;
                 var param = _tup_1.Item2;
@@ -319,24 +313,24 @@ namespace SceneSaveState
         {
             // applying backup
             /*
-            if (!(sceneConsole.svname == ""))
+            if (!(SceneConsole.Instance.svname == ""))
             {
-                sceneConsole.saveToFile(backup: true);
+                SceneConsole.Instance.saveToFile(backup: true);
             }
             else
             {
                 //if sc.verify_load() != 0:
                 //sc.saveSceneData(backup=True)
-                sceneConsole.svname = "backup";
-                sceneConsole.saveToFile(backup: true);
+                SceneConsole.Instance.svname = "backup";
+                SceneConsole.Instance.saveToFile(backup: true);
             }
             */
-            //sceneConsole.game.event_unreg_listener("update", hook_update);
-            sceneConsole.guiOnShow = false;
-            sceneConsole.game.windowName = "";
+            //SceneConsole.Instance.game.event_unreg_listener("update", hook_update);
+            SceneConsole.Instance.guiOnShow = false;
+            SceneConsole.Instance.game.windowName = "";
             //sc.game.skin_set(sc.game_skin_saved)
-            //sceneConsole.game.skin_set(sceneConsole.game.gdata.sss_game_skin_saved);
-            //sceneConsole.game.gdata.sss_game_skin_saved = null;
+            //SceneConsole.Instance.game.skin_set(SceneConsole.Instance.game.gdata.sss_game_skin_saved);
+            //SceneConsole.Instance.game.gdata.sss_game_skin_saved = null;
             // sc.game.isShowDevConsole = False
             // sc.game.wwidth = sc.originalwindowwidth
             // sc.game.wheight = sc.originalwindowheight
@@ -359,8 +353,8 @@ namespace SceneSaveState
                 "Scene Utils"}};
             if (names.ContainsKey(index))
             {
-                sceneConsole.windowindex = index;
-                sceneConsole.game.windowName = names[index];
+                SceneConsole.Instance.windowindex = index;
+                SceneConsole.Instance.game.windowName = names[index];
             }
             else
             {
@@ -373,11 +367,11 @@ namespace SceneSaveState
             object col;
             if (isSelected)
             {
-                col = sceneConsole.sel_font_col;
+                col = SceneConsole.Instance.sel_font_col;
             }
             else
             {
-                col = sceneConsole.nor_font_col;
+                col = SceneConsole.Instance.nor_font_col;
             }
             return String.Format("<color={0}>{1}</color>", col, btntext);
         }
@@ -391,7 +385,7 @@ namespace SceneSaveState
             }
             else
             {
-                col = sceneConsole.nor_font_col;
+                col = SceneConsole.Instance.nor_font_col;
             }
             return String.Format("<color={0}>{1}</color>", col, btntext);
         }
@@ -400,10 +394,10 @@ namespace SceneSaveState
         {
             var ar = HSNeoOCIFolder.find_all_startswith("-msauto:vis:");
             ar.Sort();
-            sceneConsole.arAutoStatesItemsVis = ar;
+            SceneConsole.Instance.arAutoStatesItemsVis = ar;
             var ar2 = HSNeoOCIFolder.find_all_startswith("-msauto:choice:");
             ar2.Sort();
-            sceneConsole.arAutoStatesItemsChoice = ar2;
+            SceneConsole.Instance.arAutoStatesItemsChoice = ar2;
         }
 
         public static string sort_by_textname(HSNeoOCI el)
@@ -707,13 +701,13 @@ namespace SceneSaveState
         // scene utils UI
         public static void sceneUtilsUI()
         {
-            var game = sceneConsole.game;
-            var skin_def = sceneConsole.skinDefault;
+            var game = SceneConsole.Instance.game;
+            var skin_def = SceneConsole.Instance.skinDefault;
             // run scene utils if needed
-            if (sceneConsole.skinDefault_sideApp != "sceneutils")
+            if (SceneConsole.Instance.skinDefault_sideApp != "sceneutils")
             {
-                sceneConsole.skinDefault_sideApp = "sceneutils";
-                Utils.start(sceneConsole.game);
+                SceneConsole.Instance.skinDefault_sideApp = "sceneutils";
+                Utils.start(SceneConsole.Instance.game);
             }
             if (!game.isFuncLocked)
             {
@@ -745,7 +739,7 @@ namespace SceneSaveState
             else
             {
                 // render system message
-                skin_def.render_system(sceneConsole.funcLockedText);
+                skin_def.render_system(SceneConsole.Instance.funcLockedText);
             }
         }
 
@@ -761,7 +755,7 @@ namespace SceneSaveState
         // tree node
         public static bool treenode_check_select(TreeNodeObject treenode)
         {
-            VNNeoController game = sceneConsole.game;
+            VNNeoController game = SceneConsole.Instance.game;
             if (game.isCharaStudio)
             {
                 return game.studio.treeNodeCtrl.CheckSelect(treenode);

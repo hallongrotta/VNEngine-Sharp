@@ -12,24 +12,22 @@ namespace SceneSaveState
 
     public class Scene
     {
-        private SceneConsole sc;
+
         public List<CamData> cams;
         public Dictionary<string, ActorData> actors;
         public Dictionary<string, PropData> props;
         public VNEngine.System.SystemData sys;
 
-        public Scene(SceneConsole sc, Dictionary<string, ActorData> actors, Dictionary<string, PropData> props, List<CamData> cams)
+        public Scene(Dictionary<string, ActorData> actors, Dictionary<string, PropData> props, List<CamData> cams)
         {
-            this.sc = sc;
             this.cams = cams;
             this.actors = actors;
             this.props = props;
         }
 
-        public Scene(SceneConsole sc) : this(sc, new Dictionary<string, ActorData>(), new Dictionary<string, PropData>(), new List<CamData>())
+        public Scene() : this(new Dictionary<string, ActorData>(), new Dictionary<string, PropData>(), new List<CamData>())
         {
         }
-
 
         public Scene copy()
         {
@@ -41,7 +39,7 @@ namespace SceneSaveState
             Dictionary<string, ActorData> copied_actors = MessagePackSerializer.Deserialize<Dictionary<string, ActorData>>(stractors);
             Dictionary<string, PropData> copied_props = MessagePackSerializer.Deserialize<Dictionary<string, PropData>>(strprops);
             List<CamData> copied_cams = MessagePackSerializer.Deserialize<List<CamData>>(strcams);
-            return new Scene(sc, copied_actors, copied_props, copied_cams);
+            return new Scene(copied_actors, copied_props, copied_cams);
         }
 
 
@@ -99,9 +97,9 @@ namespace SceneSaveState
                     ActorData char_status = this.actors[actid];
                     try
                     {
-                        if (sc != null)
+                        if (SceneConsole.Instance != null)
                         {
-                            if (sc.skipClothesChanges)
+                            if (SceneConsole.Instance.skipClothesChanges)
                             {
                                     char_status.Remove("acc_all");
                                     char_status.Remove("cloth_all");

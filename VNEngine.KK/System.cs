@@ -7,6 +7,7 @@ using System.IO;
 using UnityEngine;
 using VNActor;
 using ADV.EventCG;
+using MessagePack;
 
 namespace VNEngine
 {
@@ -35,27 +36,27 @@ namespace VNEngine
             internal bool cameraLightShadow;
         }
 
+        [MessagePackObject(keyAsPropertyName: true)]
         public struct SystemData : IDataClass
         {
-            internal BGM_s bgm;
+            public BGM_s bgm;
 
-            internal Wav_s wav;
-            internal int map;
-            internal Vector3 map_pos;
-            internal Vector3 map_rot;
-            internal int map_sun;
-            internal bool map_opt;
+            public Wav_s wav;
+            public int map;
+            public Vector3 map_pos;
+            public Vector3 map_rot;
+            public int map_sun;
+            public bool map_opt;
 
-            internal string bg_png;
-            internal string fm_png;
+            public string bg_png;
+            public string fm_png;
 
-            internal CharLight_s char_light;
+            public CharLight_s char_light;
 
             public void Remove(string key)
             {
                 throw new NotImplementedException();
             }
-
 
             public SystemData(CharaStudioController game)
             {
@@ -96,6 +97,21 @@ namespace VNEngine
                     }
                 }
                 */
+            }
+
+            [SerializationConstructor]
+            public SystemData(BGM_s bgm, Wav_s wav, int map, Vector3 map_pos, Vector3 map_rot, int map_sun, bool map_opt, string bg_png, string fm_png, CharLight_s char_light)
+            {
+                this.bgm = bgm;
+                this.wav = wav;
+                this.map = map;
+                this.map_pos = map_pos;
+                this.map_rot = map_rot;
+                this.map_sun = map_sun;
+                this.map_opt = map_opt;
+                this.bg_png = bg_png;
+                this.fm_png = fm_png;
+                this.char_light = char_light;
             }
         }
 

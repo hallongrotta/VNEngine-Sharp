@@ -18,6 +18,8 @@ namespace VNEngine
         : VNController
     {
 
+        public static VNNeoController Instance { get; private set; }
+
         public static string actor_folder_prefix = "vnactor:";
         public static string prop_folder_prefix = "vnprop:";
 
@@ -29,7 +31,7 @@ namespace VNEngine
         private int? scLastRunnedState;
         public VNNeoController() : base()
         {
-           
+            Instance = this;
         }
 
 /*        public string calc_py_path()

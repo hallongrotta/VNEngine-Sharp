@@ -36,9 +36,11 @@ namespace SceneSaveState
             //KKAPI.Chara.CharacterApi.RegisterExtraBehaviour<CharaStudioController>(GUID);
             //StudioSaveLoadApi.RegisterExtraBehaviour<AnimationControllerSceneController>(GUID);
 
-            Utils.sceneConsole = new SceneConsole(game);
+            SceneConsole sc = new SceneConsole();
 
-            Utils.setWindowName(Utils.sceneConsole.windowindex);
+            KKAPI.Studio.SaveLoad.StudioSaveLoadApi.RegisterExtraBehaviour<SceneConsole>(GUID);
+
+            Utils.setWindowName(sc.windowindex);
 
             this.windowStyle = new GUIStyle("window");
             this.windowCallback = new GUI.WindowFunction(UI.sceneConsoleWindowFunc);
@@ -47,9 +49,9 @@ namespace SceneSaveState
 
         public void sceneConsoleSkinSetup()
         {
-            Utils.setWindowName(Utils.sceneConsole.windowindex);
-            this.wwidth = Utils.sceneConsole.windowwidth;
-            this.wheight = Utils.sceneConsole.windowheight;
+            Utils.setWindowName(SceneConsole.Instance.windowindex);
+            this.wwidth = SceneConsole.Instance.windowwidth;
+            this.wheight = SceneConsole.Instance.windowheight;
             // #game.windowRect = Rect (Screen.width / 2 - game.wwidth / 2, Screen.height - game.wheight - 10, game.wwidth, game.wheight)
             var x = Screen.width - game.wwidth * 1.3f;
             var y = Screen.height - game.wheight - 650;
@@ -64,7 +66,7 @@ namespace SceneSaveState
 
         public void OnGUI()
         {
-            if (Utils.sceneConsole.guiOnShow)
+            if (SceneConsole.Instance.guiOnShow)
             {
                 GUILayout.Window(0, this.windowRect, this.windowCallback, "sceneconsole");
             }    
@@ -77,7 +79,7 @@ namespace SceneSaveState
             {
                 UnityEngine.Debug.Log("UI Toggle");
                 //UI.sceneConsoleGUIStart(game);
-                Utils.sceneConsole.guiOnShow = !Utils.sceneConsole.guiOnShow;
+                SceneConsole.Instance.guiOnShow = !SceneConsole.Instance.guiOnShow;
             }              
         }
     }

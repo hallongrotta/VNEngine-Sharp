@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 
+using IK_node_s = System.Collections.Generic.Dictionary<string, UnityEngine.Vector3>;
 
 namespace VNActor
 {
@@ -14,28 +15,44 @@ namespace VNActor
         : IActor
     {
 
+        /*
         public struct IK_node_s
         {
             internal Vector3 pos;
             internal Vector3? rot;
         }
+        */
 
+        [Serializable]
+        [MessagePackObject]
         public struct Hands_s {
+            [Key(0)]
             internal int leftMotion;
+            [Key(1)]
             internal int rightMotion;
         }
 
+        [Serializable]
+        [MessagePackObject]
         public struct Son_s
         {
+            [Key(0)]
             internal bool visible;
+            [Key(1)]
             internal float length;
         }
 
+        [Serializable]
+        [MessagePackObject]
         public struct Animation_s
         {
+            [Key(0)]
             internal int group;
+            [Key(1)]
             internal int category;
+            [Key(2)]
             internal int no;
+            [Key(3)]
             internal float? normalizedTime;
         }
 
@@ -47,48 +64,89 @@ namespace VNActor
             IKFK
         }
 
+
+        [MessagePackObject(keyAsPropertyName: true)]
         public readonly struct ActorData : IDataClass
         {
+            [Key("visible")]
             public readonly bool visible;
+            [Key("position")]
             public readonly Vector3 position;
+            [Key("scale")]
             public readonly Vector3 scale;
+            [Key("rotation")]
             public readonly Vector3 rotation;
+            [Key("voiceRepeat")]
             public readonly int voiceRepeat;
             //public readonly bool shoesOn;
+            [Key("voiceList")]
             public readonly List<int[]> voiceList;
-            public readonly Dictionary<string, IK_node_s> ik;
-            public readonly bool[] ikActive;
+            [Key("fk")]
             public readonly Dictionary<int, Vector3> fk;
+            [Key("fkActive")]
             public readonly bool[] fkActive;
+            [Key("kinematicType")]
             public readonly KinematicMode kinematicType;
+            [Key("handMotions")]
             public readonly Hands_s handMotions;
+            [Key("ik")]
+            public readonly Dictionary<string, IK_node_s> ik;
+            [Key("ikActive")]
+            public readonly bool[] ikActive;
+            [Key("lipSync")]
             public readonly bool lipSync;
+            [Key("mouthOpen")]
             public readonly float mouthOpen;
+            [Key("mouthPattern")]
             public readonly int mouthPattern;
+            [Key("blinking")]
             public readonly bool blinking;
+            [Key("eyesOpen")]
             public readonly float eyesOpen;
+            [Key("eyePattern")]
             public readonly int eyePattern;
+            [Key("eyebrowPattern")]
             public readonly int eyebrowPattern;
+            [Key("neckPattern")]
             public readonly int neckPattern;
+            [Key("eyeLookPos")]
             public readonly Vector3 eyeLookPos;
+            [Key("eyeLookPattern")]
             public readonly int eyeLookPattern;
+            [Key("son")]
             public readonly Son_s son;
+            [Key("anim")]
             public readonly Animation_s anim;
+            [Key("simple")]
             public readonly bool simple;
+            [Key("simpleColor")]
             public readonly Color simpleColor;
+            [Key("tearLevel")]
             public readonly int tearLevel;
+            [Key("juice")]
             public readonly byte[] juice;
             //public readonly bool showAllAccessories;
+            [Key("accessoryStatus")]
             public readonly bool[] accessoryStatus;
+            [Key("cloth")]
             public readonly byte[] cloth;
+            [Key("animeSpeed")]
             public readonly float animeSpeed;
+            [Key("forceLoop")]
             public readonly bool forceLoop;
+            [Key("animePattern")]
             public readonly float animePattern;
+            [Key("animeOption")]
             public readonly AnimeOption_s animeOption;
+            [Key("coordinateType")]
             public readonly int coordinateType;
+            [Key("faceRedness")]
             public readonly float faceRedness;
+            [Key("nippleHardness")]
             public readonly float nippleHardness;
+            [Key("neck")]
             public readonly string neck;
+            [Key("shoesType")]
             public readonly int shoesType;
 
             public ActorData(Actor a)
@@ -180,6 +238,49 @@ namespace VNActor
                     Console.WriteLine("Error during get kkpedata");
                 }
                 */
+            }
+            [SerializationConstructor]
+            public ActorData(bool visible, Vector3 position, Vector3 scale, Vector3 rotation, int voiceRepeat, List<int[]> voiceList, Dictionary<string, IK_node_s> ik, bool[] ikActive, Dictionary<int, Vector3> fk, bool[] fkActive, KinematicMode kinematicType, Hands_s handMotions, bool lipSync, float mouthOpen, int mouthPattern, bool blinking, float eyesOpen, int eyePattern, int eyebrowPattern, int neckPattern, Vector3 eyeLookPos, int eyeLookPattern, Son_s son, Animation_s anim, bool simple, Color simpleColor, int tearLevel, byte[] juice, bool[] accessoryStatus, byte[] cloth, float animeSpeed, bool forceLoop, float animePattern, AnimeOption_s animeOption, int coordinateType, float faceRedness, float nippleHardness, string neck, int shoesType)
+            {
+                this.visible = visible;
+                this.position = position;
+                this.scale = scale;
+                this.rotation = rotation;
+                this.voiceRepeat = voiceRepeat;
+                this.voiceList = voiceList;
+                this.ik = ik;
+                this.ikActive = ikActive;
+                this.fk = fk;
+                this.fkActive = fkActive;
+                this.kinematicType = kinematicType;
+                this.handMotions = handMotions;
+                this.lipSync = lipSync;
+                this.mouthOpen = mouthOpen;
+                this.mouthPattern = mouthPattern;
+                this.blinking = blinking;
+                this.eyesOpen = eyesOpen;
+                this.eyePattern = eyePattern;
+                this.eyebrowPattern = eyebrowPattern;
+                this.neckPattern = neckPattern;
+                this.eyeLookPos = eyeLookPos;
+                this.eyeLookPattern = eyeLookPattern;
+                this.son = son;
+                this.anim = anim;
+                this.simple = simple;
+                this.simpleColor = simpleColor;
+                this.tearLevel = tearLevel;
+                this.juice = juice;
+                this.accessoryStatus = accessoryStatus;
+                this.cloth = cloth;
+                this.animeSpeed = animeSpeed;
+                this.forceLoop = forceLoop;
+                this.animePattern = animePattern;
+                this.animeOption = animeOption;
+                this.coordinateType = coordinateType;
+                this.faceRedness = faceRedness;
+                this.nippleHardness = nippleHardness;
+                this.neck = neck;
+                this.shoesType = shoesType;
             }
 
             public void Remove(string key)
@@ -561,11 +662,11 @@ namespace VNActor
                         var rot = itInfo.targetInfo.changeAmount.rot;
                         var rotClone = new Vector3(rot.x, rot.y, rot.z);
                         //rotClone = Vector3(rot.x if rot.x <= 180 else rot.x - 360, rot.y if rot.y <= 180 else rot.y - 360, rot.z if rot.z <= 180 else rot.z - 360)
-                        itDic[tgtName] = new IK_node_s { pos = posClone, rot = rotClone };
+                        itDic[tgtName] = new IK_node_s { {"pos", posClone}, {"rot", rotClone} };
                     }
                     else
                     {
-                        itDic[tgtName] = new IK_node_s { pos = posClone, rot = null };
+                        itDic[tgtName] = new IK_node_s { { "pos", posClone } };
                     }
                 }
             }
@@ -582,13 +683,13 @@ namespace VNActor
                 if (itDic.ContainsKey(ikTgName))
                 {
 
-                    ikTgt.targetInfo.changeAmount.pos = itDic[ikTgName].pos;
+                    ikTgt.targetInfo.changeAmount.pos = itDic[ikTgName]["pos"];
 
                     if (ikTgName.Contains("_hand_") || ikTgName.Contains("_leg03_"))
                     {
-                        if (itDic[ikTgName].rot is Vector3 rot)
+                        if (itDic[ikTgName].ContainsKey("rot"))
                         {
-                            ikTgt.targetInfo.changeAmount.rot = rot;
+                            ikTgt.targetInfo.changeAmount.rot = itDic[ikTgName]["rot"];
                         }
                     }
                 }

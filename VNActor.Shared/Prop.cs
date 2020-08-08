@@ -109,7 +109,7 @@ namespace VNActor
                 }
             }
         }
-
+        /*
         public Vector3 pos
         {
             get
@@ -145,6 +145,7 @@ namespace VNActor
                 this.objctrl.objectInfo.changeAmount.scale = value;
             }
         }
+        */
 
         public void move(Vector3 pos, Vector3 rot, Vector3 scale)
         {
