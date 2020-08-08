@@ -191,10 +191,25 @@ namespace VNActor
                 lipSync = a.lip_sync;
                 handMotions = a.hand_ptn;
                 kinematicType = a.kinematic;
-                fkActive = a.get_FK_active();
-                fk = a.export_fk_bone_info();
-                ikActive = a.get_IK_active();
-                ik = a.export_ik_target_info();
+
+                fkActive = null;
+                fk = null;
+                ikActive = null;
+                ik = null;
+
+                if (kinematicType == KinematicMode.FK || kinematicType == KinematicMode.IKFK)
+                {                 
+                    fkActive = new bool[a.get_FK_active().Length];
+                    Array.Copy(a.get_FK_active(), fkActive, fkActive.Length);
+                    fk = a.export_fk_bone_info();
+                }
+                if (kinematicType == KinematicMode.IK || kinematicType == KinematicMode.IKFK)
+                {
+                    ikActive = new bool[a.get_IK_active().Length];
+                    Array.Copy(a.get_IK_active(), ikActive, ikActive.Length);
+                    ik = a.export_ik_target_info();
+                }
+
                 voiceList = a.voice_lst;
                 voiceRepeat = a.voice_repeat;
                 shoesType = a.shoes_type;
@@ -535,7 +550,7 @@ namespace VNActor
                 // call ActiveKinematicMode to set pvCopy?
                 this.objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.IK, true, false);
             }
-            else if (mode == KinematicMode.IK)
+            else if (mode == KinematicMode.FK)
             {
                 if (this.objctrl.oiCharInfo.enableIK)
                 {
@@ -560,7 +575,7 @@ namespace VNActor
                     }
                 }
             }
-            else if (mode == KinematicMode.FK)
+            else if (mode == KinematicMode.IK)
             {
                 if (this.objctrl.oiCharInfo.enableFK)
                 {
@@ -890,12 +905,12 @@ namespace VNActor
             hand_ptn = a.handMotions;
             set_kinematic(a.kinematicType);
 
-            if (a.kinematicType == KinematicMode.FK)
+            if (a.kinematicType == KinematicMode.IK)
             {
                 set_IK_active(a.ikActive);
                 import_ik_target_info(a.ik);
             }
-            else if (a.kinematicType == KinematicMode.IK)
+            else if (a.kinematicType == KinematicMode.FK)
             {
                 set_FK_active(a.fkActive);
                 import_fk_bone_info(a.fk);
