@@ -58,7 +58,7 @@ namespace SceneSaveState
             return false;
         }
 
-        public void importCurScene(VNNeoController game, Dictionary<string, object> options)
+        public void importCurScene(VNNeoController game, bool importSys)
         {
             game.LoadTrackedActorsAndProps();
             this.actors = new Dictionary<string, ActorData>();
@@ -73,7 +73,7 @@ namespace SceneSaveState
             {
                 this.props[propid] = (PropData)props[propid].export_full_status();
             }
-            if (options.ContainsKey("sys"))
+            if (importSys)
             {
                 this.sys = (VNEngine.System.SystemData)VNEngine.System.export_sys_status(game);
             }
@@ -85,35 +85,27 @@ namespace SceneSaveState
         public void setSceneState(VNNeoController game)
         {
             foreach (var actid in this.actors.Keys)
-            {
-                if (actid == "sys")
+            {           
+                //char_import_status_diff_optimized(game.scenef_get_actor(actid),self.actors[actid])
+                ActorData char_status = this.actors[actid];
+                try
                 {
-                    //vnframe.act(game, {'sys': self.actors[actid]})
-                    Utils.sys_import_status_diff_optimized(game, this.actors[actid]);
-                }
-                else
-                {
-                    //char_import_status_diff_optimized(game.scenef_get_actor(actid),self.actors[actid])
-                    ActorData char_status = this.actors[actid];
-                    try
+                    if (SceneConsole.Instance != null)
                     {
-                        if (SceneConsole.Instance != null)
+                        if (SceneConsole.Instance.skipClothesChanges)
                         {
-                            if (SceneConsole.Instance.skipClothesChanges)
-                            {
-                                    char_status.Remove("acc_all");
-                                    char_status.Remove("cloth_all");
-                                    char_status.Remove("cloth_type");
-                            }
+                                char_status.Remove("acc_all");
+                                char_status.Remove("cloth_all");
+                                char_status.Remove("cloth_type");
                         }
                     }
-                    catch (Exception)
-                    {
-                    }
-                    //Utils.char_import_status_diff_optimized(game.scenef_get_actor(actid), char_status);
-                    var actor = game.scenef_get_actor(actid);
-                    actor?.import_status(this.actors[actid]);
                 }
+                catch (Exception)
+                {
+                }
+                //Utils.char_import_status_diff_optimized(game.scenef_get_actor(actid), char_status);
+                var actor = game.scenef_get_actor(actid);
+                actor?.import_status(char_status);               
             }
             foreach (var propid in this.props.Keys)
             {
@@ -121,7 +113,8 @@ namespace SceneSaveState
                 //print propid
                 //print game.scenef_get_all_props()
                 var prop = game.scenef_get_propf(propid);
-                prop?.import_status(this.props[propid]);
+                var status = this.props[propid];
+                prop?.import_status(status);
             }
         }
 

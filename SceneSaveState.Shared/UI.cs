@@ -459,7 +459,7 @@ namespace SceneSaveState
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
             GUILayout.Space(40);
-            if (!Instance.isSysTracking())
+            if (!Instance.isSysTracking)
             {
                 if (GUILayout.Button("Track scene environment", GUILayout.Height(50), GUILayout.Width(160)))
                 {

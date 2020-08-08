@@ -23,6 +23,8 @@ namespace SceneSaveState
     public class SceneConsole : SceneCustomFunctionController
     {
 
+        public bool isSysTracking = true;
+
         public int _normalheight;
 
         public int _normalwidth;
@@ -715,14 +717,7 @@ namespace SceneSaveState
                 }
             }
             var curscene = this.block[this.cur_index];
-            var options = new Dictionary<string, object>
-            {
-            };
-            if (this.isSysTracking())
-            {
-                options["sys"] = true;
-            }
-            curscene.importCurScene(this.game, options);
+            curscene.importCurScene(this.game, this.isSysTracking);
         }
 
         // Remove stuff
@@ -762,6 +757,10 @@ namespace SceneSaveState
         {
             var curscene = this.block[index];
             var game = VNNeoController.Instance;
+            if (isSysTracking)
+            {
+                VNEngine.System.import_status(curscene.sys);
+            }
             curscene.setSceneState(game);
         }
 
@@ -859,19 +858,7 @@ namespace SceneSaveState
             {
                 this.show_blocking_message_time_sc("Can't paste status 2");
             }
-        }
-
-        public bool isSysTracking()
-        {
-            if (this.block.Count > 0)
-            {
-                if (this.block[0].actors.ContainsKey("sys"))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
+        }   
 
         public void addSysTracking()
         {
@@ -884,6 +871,7 @@ namespace SceneSaveState
                     //scene.actors["sys"] = curstatus;
                     scene.sys = (VNEngine.System.SystemData)curstatus;
                 }
+                isSysTracking = true; 
             }
             else
             {
@@ -898,6 +886,7 @@ namespace SceneSaveState
                 var scene = this.block[i];
                 scene.actors.Remove("sys");
             }
+            isSysTracking = false;
         }
 
 
