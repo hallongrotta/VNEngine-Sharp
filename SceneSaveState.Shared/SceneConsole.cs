@@ -2399,7 +2399,7 @@ namespace SceneSaveState
                     }
                     else
                     {
-                        return keylist[-1];
+                        return keylist.Last();
                     }
                 }
                 else
@@ -2432,9 +2432,13 @@ namespace SceneSaveState
         protected override void OnSceneSave()
         {
             var pluginData = new PluginData();
-            pluginData.data["scenes"] = MessagePackSerializer.Serialize(this.block, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
-            SetExtendedData(pluginData);
-            Console.WriteLine("Saved scene data.");
+            if (block.Count > 0)
+            {
+                byte[] sceneData = MessagePackSerializer.Serialize(this.block, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
+                pluginData.data["scenes"] = sceneData;
+                SetExtendedData(pluginData);
+                Debug.Log($"Saved {((double)sceneData.Length / 1000):N} Kbytes of scene data.");
+            }
         }
 
         protected override void OnSceneLoad(SceneOperationKind operation, ReadOnlyDictionary<int, ObjectCtrlInfo> loadedItems)
@@ -2447,11 +2451,11 @@ namespace SceneSaveState
             }
             else
             {
-                var sceneData = pluginData.data["scenes"] as byte[];
+                byte[] sceneData = pluginData.data["scenes"] as byte[];
                 if (!sceneData.IsNullOrEmpty())
                 {
                     this.block = MessagePackSerializer.Deserialize<List<Scene>>(sceneData, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
-                    Console.WriteLine("Loaded scene data.");
+                    Debug.Log($"Loaded {((double)sceneData.Length / 1000):N} Kbytes of scene data.");
                     this.cur_index = 0;
                 }
             }
