@@ -28,7 +28,12 @@ namespace VNEngine
 
         public CharaStudioController() : base()
         {
+            if (Instance != null)
+            {
+                throw new InvalidOperationException("Can only create one instance of Controller");
+            }
             this.engine_name = "charastudio";
+            Instance = this;
         }
 
         public CharaStudioController(List<string> vnButtonsStart, List<Utils.ButtonFunc_s> vnButtonsActionsStart) : base()

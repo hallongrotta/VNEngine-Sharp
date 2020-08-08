@@ -32,7 +32,7 @@ namespace SceneSaveState
         {
             UnityEngine.Debug.Log("SceneSaveState started.");
             SSSHotkey = Config.Bind("Keyboard Shortcuts", "Toggle VN Controller Window", new KeyboardShortcut(KeyCode.B), "Show or hide the VN Controller window in Studio");
-            game = new CharaStudioController();
+            game = CharaStudioController.Instance;
             //KKAPI.Chara.CharacterApi.RegisterExtraBehaviour<CharaStudioController>(GUID);
             //StudioSaveLoadApi.RegisterExtraBehaviour<AnimationControllerSceneController>(GUID);
 
@@ -68,7 +68,7 @@ namespace SceneSaveState
         {
             if (SceneConsole.Instance.guiOnShow)
             {
-                GUILayout.Window(0, this.windowRect, this.windowCallback, "sceneconsole");
+                GUILayout.Window(34652, this.windowRect, this.windowCallback, "sceneconsole");
             }    
         }
 
