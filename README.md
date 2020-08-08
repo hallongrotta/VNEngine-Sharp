@@ -4,6 +4,8 @@ The intention of this port is to better integrate SceneSaveState and VNEngine wi
 
 SceneConsole window is opened with 'B' by default.
 
+Ported from VNEngine 16.0.
+
 # Attributions
 
 VNEngine and SceneSaveState by @keitaro.
