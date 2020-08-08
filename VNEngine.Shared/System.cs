@@ -324,7 +324,10 @@ namespace VNEngine
 
         public static void sys_wav(VNNeoController game, SystemData param)
         {
-            sys_wav(game, param.wav);
+            if (param.wav is Wav_s wav)
+            {
+                sys_wav(game, wav);
+            }         
         }
 
 
