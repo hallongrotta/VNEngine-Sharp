@@ -31,7 +31,7 @@ namespace SceneSaveState
             // sc.originalWindowCallback = game.windowCallback
             // sc.originalwindowwidth = game.wwidth
             // sc.originalwindowheight = game.wheight
-            SceneConsole.Instance.guiOnShow = true;
+            Instance.guiOnShow = true;
             // setWindowName(sc.windowindex)
             // game.wwidth = sc.windowwidth
             // game.wheight = sc.windowheight
@@ -45,9 +45,9 @@ namespace SceneSaveState
 
         public static void sceneConsoleSkinSetup(VNNeoController game)
         {
-            Utils.setWindowName(SceneConsole.Instance.windowindex);
-            game.wwidth = SceneConsole.Instance.windowwidth;
-            game.wheight = SceneConsole.Instance.windowheight;
+            Utils.setWindowName(Instance.windowindex);
+            game.wwidth = Instance.windowwidth;
+            game.wheight = Instance.windowheight;
             // #game.windowRect = Rect (Screen.width / 2 - game.wwidth / 2, Screen.height - game.wheight - 10, game.wwidth, game.wheight)
             var x = Utils.get_ini_value_def_int("WindowX", (int)(Screen.width - game.wwidth * 1.3));
             var y = Utils.get_ini_value_def_int("WindowY", Screen.height - game.wheight - 650);
@@ -72,26 +72,26 @@ namespace SceneSaveState
 
         public static void sceneConsoleWindowFunc(int id)
         {
-            SceneConsole.Instance.scene_str_array = SceneConsole.Instance.scene_strings.ToArray();
-            SceneConsole.Instance.fset = new List<string>(SceneConsole.Instance.nameset[0]);
-            SceneConsole.Instance.mset = new List<string>(SceneConsole.Instance.nameset[1]);
+            Instance.scene_str_array = Instance.scene_strings.ToArray();
+            Instance.fset = new List<string>(Instance.nameset[0]);
+            Instance.mset = new List<string>(Instance.nameset[1]);
             // prev_cam_index = sc.cur_cam
             // prev_sc_index = sc.cur_index
             // sc.prev_index = sc.cur_index
             try
             {
-                if (!(SceneConsole.Instance.warning_param is null))
+                if (!(Instance.warning_param is null))
                 {
-                    WarningParam_s warning_params = (WarningParam_s)SceneConsole.Instance.warning_param;
-                    warningUI(SceneConsole.Instance.warning_action, warning_params.func_param, msg: warning_params.msg, single_op: warning_params.single_op);
+                    WarningParam_s warning_params = (WarningParam_s)Instance.warning_param;
+                    warningUI(Instance.warning_action, warning_params.func_param, msg: warning_params.msg, single_op: warning_params.single_op);
                 }
-                else if (SceneConsole.Instance.isFuncLocked == true)
+                else if (Instance.isFuncLocked == true)
                 {
                     GUILayout.BeginVertical();
                     GUILayout.Space(10);
                     GUILayout.BeginHorizontal();
                     GUILayout.Space(10);
-                    GUILayout.Label("<size=20>" + SceneConsole.Instance.funcLockedText + "</size>");
+                    GUILayout.Label("<size=20>" + Instance.funcLockedText + "</size>");
                     // GUILayout.Label(sc.funcLockedText)
                     GUILayout.Space(10);
                     GUILayout.EndHorizontal();
@@ -99,7 +99,7 @@ namespace SceneSaveState
                     GUILayout.EndVertical();
                     if (GUILayout.Button("Ok.", GUILayout.Width(100)))
                     {
-                        SceneConsole.Instance.isFuncLocked = false;
+                        Instance.isFuncLocked = false;
                     }
                 }
                 else
@@ -109,42 +109,42 @@ namespace SceneSaveState
                     {
                         minimizeWindow();
                     }
-                    SceneConsole.Instance.windowindex = GUILayout.Toolbar(SceneConsole.Instance.windowindex, SceneConsole.Instance.consolenames);
+                    Instance.windowindex = GUILayout.Toolbar(Instance.windowindex, Instance.consolenames);
                     GUILayout.EndHorizontal();
                     GUILayout.Space(10);
-                    Utils.setWindowName(SceneConsole.Instance.windowindex);
+                    Utils.setWindowName(Instance.windowindex);
                     // Scene Console
-                    if (SceneConsole.Instance.windowindex == 0)
+                    if (Instance.windowindex == 0)
                     {
                         GUILayout.BeginVertical();
-                        SceneConsole.Instance.subwinindex = GUILayout.Toolbar(SceneConsole.Instance.subwinindex, SceneConsole.Instance.options);
+                        Instance.subwinindex = GUILayout.Toolbar(Instance.subwinindex, Instance.options);
                         GUILayout.Space(10);
                         // Edit window
-                        if (SceneConsole.Instance.subwinindex == 0)
+                        if (Instance.subwinindex == 0)
                         {
                             sceneConsoleEditUI();
                         }
-                        else if (SceneConsole.Instance.subwinindex == 1)
+                        else if (Instance.subwinindex == 1)
                         {
                             // Trackable window
                             sceneConsoleTrackable();
                         }
-                        else if (SceneConsole.Instance.subwinindex == 2)
+                        else if (Instance.subwinindex == 2)
                         {
                             // Load/Save window
                             sceneConsoleLdSvUI();
                         }
-                        else if (SceneConsole.Instance.subwinindex == 3)
+                        else if (Instance.subwinindex == 3)
                         {
                             // --------- Advanced controls -------------
                             sceneConsoleAdvUI();
                         }
-                        else if (SceneConsole.Instance.subwinindex == 4)
+                        else if (Instance.subwinindex == 4)
                         {
                             // Ministates window
                             sceneConsoleMinistates();
                         }
-                        else if (SceneConsole.Instance.subwinindex == 100)
+                        else if (Instance.subwinindex == 100)
                         {
                             // Render for advanced cam properties
                             //VNExt.render_wizard_ui(SceneConsole.Instance); TODO
@@ -155,31 +155,31 @@ namespace SceneSaveState
                         if (GUILayout.Button("About v" + mod_version, GUILayout.Width(100)))
                         {
                             //resetConsole(sc.game)
-                            SceneConsole.Instance.show_blocking_message_time_sc("SceneSaveState " + mod_version + "\n\nFrom @keitaro\nLightweight and crossplatform version of SceneConsole mod by @chickenManX\nOriginal code by @chickenManX\nSome cool features by @countd360\n\nAlso includes:\nPose Library (by @keitaro, original code by @chickenManX)\nScene Utils (by @keitaro)\n(with Body and Face Sliders) (by @countd360)\n", 5.0f);
+                            Instance.show_blocking_message_time_sc("SceneSaveState " + mod_version + "\n\nFrom @keitaro\nLightweight and crossplatform version of SceneConsole mod by @chickenManX\nOriginal code by @chickenManX\nSome cool features by @countd360\n\nAlso includes:\nPose Library (by @keitaro, original code by @chickenManX)\nScene Utils (by @keitaro)\n(with Body and Face Sliders) (by @countd360)\n", 5.0f);
                         }
                         GUILayout.FlexibleSpace();
                         if (GUILayout.Button("Reset console", GUILayout.Width(100)))
                         {
-                            Utils.resetConsole(SceneConsole.Instance.game);
+                            Utils.resetConsole(Instance.game);
                         }
                         if (GUILayout.Button("Close console", GUILayout.Width(100)))
                         {
-                            var col = SceneConsole.Instance.sel_font_col;
-                            SceneConsole.Instance.warning_action = Utils.sceneConsoleGUIClose;
-                            SceneConsole.Instance.warning_param = new SceneConsole.WarningParam_s(String.Format("Do you really want to close window? (<b><color={0}>Warning:</color> All current scenedata will be deleted</b>)", col), null, false);
+                            var col = Instance.sel_font_col;
+                            Instance.warning_action = Utils.sceneConsoleGUIClose;
+                            Instance.warning_param = new SceneConsole.WarningParam_s(String.Format("Do you really want to close window? (<b><color={0}>Warning:</color> All current scenedata will be deleted</b>)", col), null, false);
                         }
                         GUILayout.EndHorizontal();
                         GUILayout.EndVertical();
                         GUI.DragWindow();
                     }
-                    else if (SceneConsole.Instance.windowindex == 1)
+                    else if (Instance.windowindex == 1)
                     {
                         // Pose Console
                         //var _pc = posesavestate.init_from_sc(SceneConsole.Instance.game); //TODO add posesavestate
                         //posesavestate.poseConsoleUIFuncs();
                         //GUILayout.Label("No poses console for now ))")
                     }
-                    else if (SceneConsole.Instance.windowindex == 2)
+                    else if (Instance.windowindex == 2)
                     {
                         Utils.sceneUtilsUI();
                     }
@@ -189,7 +189,7 @@ namespace SceneSaveState
             {
                 Console.WriteLine("sceneSaveStateWindowGUI Exception: " + e.ToString());
                 Utils.sceneConsoleGUIClose();
-                SceneConsole.Instance.game.show_blocking_message_time("sceneSaveState error: " + e.ToString());
+                Instance.game.show_blocking_message_time("sceneSaveState error: " + e.ToString());
             }
         }
 
@@ -209,11 +209,11 @@ namespace SceneSaveState
                 if (GUILayout.Button("Yes", GUILayout.Height(100)))
                 {
                     func();
-                    SceneConsole.Instance.warning_param = null;
+                    Instance.warning_param = null;
                 }
                 if (GUILayout.Button("Hell No!", GUILayout.Height(100)))
                 {
-                    SceneConsole.Instance.warning_param = null;
+                    Instance.warning_param = null;
                 }
             }
             else
@@ -221,7 +221,7 @@ namespace SceneSaveState
                 GUILayout.FlexibleSpace();
                 if (GUILayout.Button("OK!", GUILayout.Height(100)))
                 {
-                    SceneConsole.Instance.warning_param = null;
+                    Instance.warning_param = null;
                 }
                 GUILayout.FlexibleSpace();
             }
@@ -245,11 +245,11 @@ namespace SceneSaveState
                 if (GUILayout.Button("Yes", GUILayout.Height(100)))
                 {
                     func(func_param);
-                    SceneConsole.Instance.warning_param = null;
+                    Instance.warning_param = null;
                 }
                 if (GUILayout.Button("Hell No!", GUILayout.Height(100)))
                 {
-                    SceneConsole.Instance.warning_param = null;
+                    Instance.warning_param = null;
                 }
             }
             else
@@ -257,7 +257,7 @@ namespace SceneSaveState
                 GUILayout.FlexibleSpace();
                 if (GUILayout.Button("OK!", GUILayout.Height(100)))
                 {
-                    SceneConsole.Instance.warning_param = null;
+                    Instance.warning_param = null;
                 }
                 GUILayout.FlexibleSpace();
             }
@@ -270,42 +270,42 @@ namespace SceneSaveState
             object v;
             int k;
             //SceneConsole.Instance = SceneConsole.Instance;
-            SceneConsole.Instance.adv_scroll = GUILayout.BeginScrollView(SceneConsole.Instance.adv_scroll);
+            Instance.adv_scroll = GUILayout.BeginScrollView(Instance.adv_scroll);
             GUILayout.Label("<b>Advanced controls</b>");
             GUILayout.Space(10);
             GUILayout.Label("Change character name:");
             GUILayout.BeginHorizontal();
-            SceneConsole.Instance.charname = GUILayout.TextField(SceneConsole.Instance.charname);
+            Instance.charname = GUILayout.TextField(Instance.charname);
             if (GUILayout.Button("Change selected", GUILayout.Width(110)))
             {
-                SceneConsole.Instance.changeCharName(SceneConsole.Instance.charname);
+                Instance.changeCharName(Instance.charname);
             }
             GUILayout.EndHorizontal();
             GUILayout.Label("Status operations:");
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Copy selected status"))
             {
-                SceneConsole.Instance.copySelectedStatus();
+                Instance.copySelectedStatus();
             }
             if (GUILayout.Button("Paste selected status"))
             {
-                SceneConsole.Instance.pasteSelectedStatus();
+                Instance.pasteSelectedStatus();
             }
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Copy selected status 2"))
             {
-                SceneConsole.Instance.copySelectedStatus2();
+                Instance.copySelectedStatus2();
             }
             if (GUILayout.Button("Paste selected status 2"))
             {
-                SceneConsole.Instance.pasteSelectedStatus2();
+                Instance.pasteSelectedStatus2();
             }
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Copy selected status to tracking chara with same name"))
             {
-                SceneConsole.Instance.copySelectedStatusToTracking(null);
+                Instance.copySelectedStatusToTracking(null);
             }
             // if GUILayout.Button("(without Pos)"):
             //     sc.copySelectedStatusToTracking(["pos"])
@@ -314,11 +314,11 @@ namespace SceneSaveState
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("VN: all cameras on"))
             {
-                SceneConsole.Instance.camSetAll(true);
+                Instance.camSetAll(true);
             }
             if (GUILayout.Button("VN: all cameras off"))
             {
-                SceneConsole.Instance.camSetAll(false);
+                Instance.camSetAll(false);
             }
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
@@ -342,15 +342,15 @@ namespace SceneSaveState
             }
             GUILayout.EndHorizontal();
             GUILayout.Space(20);
-            SceneConsole.Instance.autoLoad = GUILayout.Toggle(SceneConsole.Instance.autoLoad, "Load scene on select");
+            Instance.autoLoad = GUILayout.Toggle(Instance.autoLoad, "Load scene on select");
             GUILayout.Space(10);
-            SceneConsole.Instance.autoAddCam = GUILayout.Toggle(SceneConsole.Instance.autoAddCam, "Auto add cam for new scenes");
+            Instance.autoAddCam = GUILayout.Toggle(Instance.autoAddCam, "Auto add cam for new scenes");
             GUILayout.Space(10);
-            SceneConsole.Instance.promptOnDelete = GUILayout.Toggle(SceneConsole.Instance.promptOnDelete, "Prompt before delete (scene/cam/chars)");
+            Instance.promptOnDelete = GUILayout.Toggle(Instance.promptOnDelete, "Prompt before delete (scene/cam/chars)");
             GUILayout.Space(10);
-            SceneConsole.Instance.skipClothesChanges = GUILayout.Toggle(SceneConsole.Instance.skipClothesChanges, "Don't process clothes changes on scene change");
+            Instance.skipClothesChanges = GUILayout.Toggle(Instance.skipClothesChanges, "Don't process clothes changes on scene change");
             GUILayout.Space(10);
-            SceneConsole.Instance.paramAnimCamIfPossible = GUILayout.Toggle(SceneConsole.Instance.paramAnimCamIfPossible, "Animate cam if possible");
+            Instance.paramAnimCamIfPossible = GUILayout.Toggle(Instance.paramAnimCamIfPossible, "Animate cam if possible");
             GUILayout.Space(10);
             GUILayout.BeginHorizontal();
             GUILayout.Label("Camera anim params: duration ");
@@ -372,7 +372,7 @@ namespace SceneSaveState
             if (GUILayout.Button("Print char data"))
             {
                 Console.WriteLine("::::::::::::Debug::::::::::::");
-                var chara = Utils.getSelectedChar(SceneConsole.Instance.game);
+                var chara = Utils.getSelectedChar(Instance.game);
                 if (!(chara == null))
                 {
                     VNActor.Actor.ActorData state = (Actor.ActorData)chara.export_full_status();
@@ -390,7 +390,7 @@ namespace SceneSaveState
             if (GUILayout.Button("Print Item FK"))
             {
                 Console.WriteLine("::::::::::::Debug::::::::::::");
-                Prop obj = Utils.getSelectedItem(SceneConsole.Instance.game);
+                Prop obj = Utils.getSelectedItem(Instance.game);
                 if (!(obj == null))
                 {
                     PropData obst = (PropData)obj.export_full_status();
@@ -443,43 +443,43 @@ namespace SceneSaveState
             GUILayout.Space(40);
             if (GUILayout.Button("Add selected", GUILayout.Height(50), GUILayout.Width(160)))
             {
-                SceneConsole.Instance.addSelectedToTrack();
+                Instance.addSelectedToTrack();
             }
             GUILayout.Space(15);
             if (GUILayout.Button("Del selected", GUILayout.Height(50), GUILayout.Width(160)))
             {
-                SceneConsole.Instance.delSelectedFromTrack();
+                Instance.delSelectedFromTrack();
             }
             GUILayout.Space(15);
             if (GUILayout.Button("Refresh", GUILayout.Height(50), GUILayout.Width(80)))
             {
-                SceneConsole.Instance.game.LoadTrackedActorsAndProps();
+                Instance.game.LoadTrackedActorsAndProps();
             }
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
             GUILayout.Space(40);
-            if (!SceneConsole.Instance.isSysTracking())
+            if (!Instance.isSysTracking())
             {
                 if (GUILayout.Button("Track scene environment", GUILayout.Height(50), GUILayout.Width(160)))
                 {
-                    SceneConsole.Instance.addSysTracking();
+                    Instance.addSysTracking();
                 }
             }
             else if (GUILayout.Button("UnTrack scene environment", GUILayout.Height(50), GUILayout.Width(160)))
             {
-                SceneConsole.Instance.delSysTracking();
+                Instance.delSysTracking();
             }
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
             GUILayout.Space(40);
             GUILayout.Label("Pro: Change selected char ID to ", GUILayout.Width(210));
             //GUILayout.Label("  Who say:", GUILayout.Width(80))
-            SceneConsole.Instance.newid = GUILayout.TextField(SceneConsole.Instance.newid, GUILayout.Width(120));
+            Instance.newid = GUILayout.TextField(Instance.newid, GUILayout.Width(120));
             if (GUILayout.Button("Change", GUILayout.Width(60)))
             {
                 //sc.cam_whosay = sc.get_next_speaker(sc.cam_whosay, False)
-                SceneConsole.Instance.changeSelTrackID(SceneConsole.Instance.newid);
+                Instance.changeSelTrackID(Instance.newid);
             }
             GUILayout.EndHorizontal();
             GUILayout.Space(50);
@@ -490,9 +490,9 @@ namespace SceneSaveState
             GUILayout.EndHorizontal();
             GUILayout.Space(15);
             //GUILayout.BeginHorizontal()
-            SceneConsole.Instance.tracking_scroll = GUILayout.BeginScrollView(SceneConsole.Instance.tracking_scroll);
+            Instance.tracking_scroll = GUILayout.BeginScrollView(Instance.tracking_scroll);
             GUILayout.Label("Actors:");
-            var actors = SceneConsole.Instance.game.scenef_get_all_actors();
+            var actors = Instance.game.scenef_get_all_actors();
             foreach (var actorid in actors.Keys)
             {
                 //GUILayout.Label("  "+actorid+": "+actors[actorid].text_name)
@@ -502,7 +502,7 @@ namespace SceneSaveState
                 render_ui_for_tracking(actorid, actor);
             }
             GUILayout.Label("Props:");
-            var props = SceneConsole.Instance.game.scenef_get_all_props();
+            var props = Instance.game.scenef_get_all_props();
             foreach (var propid in props.Keys)
             {
                 render_ui_for_tracking(propid, props[propid]);
@@ -528,7 +528,7 @@ namespace SceneSaveState
             bool isSelected = Utils.treenode_check_select(elem.treeNodeObject);
             if (GUILayout.Button(Utils.btntext_get_if_selected(txt, isSelected)))
             {
-                SceneConsole.Instance.game.studio.treeNodeCtrl.SelectSingle(elem.treeNodeObject);
+                Instance.game.studio.treeNodeCtrl.SelectSingle(elem.treeNodeObject);
             }
             //GUILayout.Label(txt)
             GUILayout.FlexibleSpace();
@@ -540,11 +540,11 @@ namespace SceneSaveState
             int i;
             string[] ar;
             // updating autostates - every 200 step
-            if (SceneConsole.Instance.updAutoStatesTimer == 0)
+            if (Instance.updAutoStatesTimer == 0)
             {
                 Utils.recalc_autostates();
             }
-            SceneConsole.Instance.updAutoStatesTimer = (SceneConsole.Instance.updAutoStatesTimer + 1) % 200;
+            Instance.updAutoStatesTimer = (Instance.updAutoStatesTimer + 1) % 200;
             var tableLabelW = 90;
             var tableBtnW = 125;
             var tablePadding = 10;
@@ -560,39 +560,39 @@ namespace SceneSaveState
             GUILayout.Space(tablePadding);
             if (GUILayout.Button("Add state", GUILayout.Width(200)))
             {
-                SceneConsole.Instance.addSelectedMini();
+                Instance.addSelectedMini();
             }
             GUILayout.FlexibleSpace();
             GUILayout.Label("(optional) custom name: ");
             // GUILayout.Label("  Who say:", GUILayout.Width(80))
-            SceneConsole.Instance.mininewid = GUILayout.TextField(SceneConsole.Instance.mininewid, GUILayout.Width(120));
+            Instance.mininewid = GUILayout.TextField(Instance.mininewid, GUILayout.Width(120));
             GUILayout.Space(tablePadding);
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
             GUILayout.Space(tablePadding);
-            SceneConsole.Instance.isUseMsAuto = GUILayout.Toggle(SceneConsole.Instance.isUseMsAuto, "Use auto-states (operations with selected props)");
+            Instance.isUseMsAuto = GUILayout.Toggle(Instance.isUseMsAuto, "Use auto-states (operations with selected props)");
             GUILayout.Space(tablePadding);
             GUILayout.EndHorizontal();
-            if (SceneConsole.Instance.isUseMsAuto)
+            if (Instance.isUseMsAuto)
             {
                 GUILayout.BeginHorizontal();
                 GUILayout.Space(tablePadding);
                 if (GUILayout.Button("Add Show/Hide", GUILayout.Width(100)))
                 {
-                    SceneConsole.Instance.addSelectedAutoShow("vis");
+                    Instance.addSelectedAutoShow("vis");
                 }
                 if (GUILayout.Button("Add Choice", GUILayout.Width(100)))
                 {
-                    SceneConsole.Instance.addSelectedAutoShow("choice");
+                    Instance.addSelectedAutoShow("choice");
                 }
                 if (GUILayout.Button("Del selected", GUILayout.Width(100)))
                 {
-                    SceneConsole.Instance.delSelectedAutoShow();
+                    Instance.delSelectedAutoShow();
                 }
                 GUILayout.FlexibleSpace();
                 GUILayout.Label("(opt) name: ");
                 // GUILayout.Label("  Who say:", GUILayout.Width(80))
-                SceneConsole.Instance.autoshownewid = GUILayout.TextField(SceneConsole.Instance.autoshownewid, GUILayout.Width(100));
+                Instance.autoshownewid = GUILayout.TextField(Instance.autoshownewid, GUILayout.Width(100));
                 GUILayout.Space(tablePadding);
                 GUILayout.EndHorizontal();
                 GUILayout.BeginHorizontal();
@@ -610,10 +610,10 @@ namespace SceneSaveState
             GUILayout.Space(15);
             GUILayout.BeginHorizontal();
             GUILayout.Space(tablePadding);
-            SceneConsole.Instance.miniset_scroll = GUILayout.BeginScrollView(SceneConsole.Instance.miniset_scroll);
+            Instance.miniset_scroll = GUILayout.BeginScrollView(Instance.miniset_scroll);
             //for i in range(500):
             //    GUILayout.Label("State %s" % (str(i)))
-            var mslist = Ministates.ministates_get_list(SceneConsole.Instance.game);
+            var mslist = Ministates.ministates_get_list(Instance.game);
             // calculating prfixes
             var arPrefixes = new List<string> {
             ""
@@ -654,11 +654,11 @@ namespace SceneSaveState
                         {
                             try
                             {
-                                Ministates.ministates_run_elem(SceneConsole.Instance.game, el.obj);
+                                Ministates.ministates_run_elem(Instance.game, el.obj);
                             }
                             catch (Exception e)
                             {
-                                SceneConsole.Instance.show_blocking_message_time_sc(String.Format("Error during set state: {0}", e.ToString()));
+                                Instance.show_blocking_message_time_sc(String.Format("Error during set state: {0}", e.ToString()));
                                 //return
                                 //if i != 0 and (i % 3 == 0):
                             }
@@ -679,14 +679,14 @@ namespace SceneSaveState
             try
             {
                 // trying auto states - to avoid errors during making UI
-                foreach (var el0 in SceneConsole.Instance.arAutoStatesItemsVis)
+                foreach (var el0 in Instance.arAutoStatesItemsVis)
                 {
                     TreeNodeObject el = el0.treeNodeObject.parent;
                     if (el.textName != "")
                     {
                     }
                 }
-                foreach (var el0 in SceneConsole.Instance.arAutoStatesItemsChoice)
+                foreach (var el0 in Instance.arAutoStatesItemsChoice)
                 {
                     TreeNodeObject el = el0.treeNodeObject.parent;
                     if (el.textName != "")
@@ -703,7 +703,7 @@ namespace SceneSaveState
                     }
                 }
                 // rendering auto vis
-                if (SceneConsole.Instance.arAutoStatesItemsVis.Count > 0)
+                if (Instance.arAutoStatesItemsVis.Count > 0)
                 {
                     GUILayout.Space(6);
                     GUILayout.BeginHorizontal();
@@ -711,7 +711,7 @@ namespace SceneSaveState
                     GUILayout.BeginVertical();
                     GUILayout.BeginHorizontal();
                     i = 0;
-                    foreach (var vs in SceneConsole.Instance.arAutoStatesItemsVis)
+                    foreach (var vs in Instance.arAutoStatesItemsVis)
                     {
                         HSNeoOCIFolder vis = (HSNeoOCIFolder)vs;
                         ar = vis.text_name.Split(':');
@@ -730,19 +730,19 @@ namespace SceneSaveState
                                         }
                                         else
                                         {
-                                            SceneConsole.Instance.game.studio.treeNodeCtrl.SelectSingle(vis.treeNodeObject.parent);
+                                            Instance.game.studio.treeNodeCtrl.SelectSingle(vis.treeNodeObject.parent);
                                         }
                                     }
                                     else if (Utils.treenode_check_select(vis.treeNodeObject.parent))
                                     {
-                                        SceneConsole.Instance.game.studio.treeNodeCtrl.SelectSingle(vis.treeNodeObject.parent);
+                                        Instance.game.studio.treeNodeCtrl.SelectSingle(vis.treeNodeObject.parent);
                                     }
                                 }
                             }
                         }
                         catch (Exception e)
                         {
-                            SceneConsole.Instance.show_blocking_message_time_sc(String.Format("Error during set visible: {0}", e.ToString()));
+                            Instance.show_blocking_message_time_sc(String.Format("Error during set visible: {0}", e.ToString()));
                             // return
                             // if i != 0 and (i % 3 == 0):
                         }
@@ -759,7 +759,7 @@ namespace SceneSaveState
                     GUILayout.EndHorizontal();
                 }
                 // rendering choices
-                foreach (var ic in SceneConsole.Instance.arAutoStatesItemsChoice)
+                foreach (var ic in Instance.arAutoStatesItemsChoice)
                 {
                     GUILayout.Space(6);
                     GUILayout.BeginHorizontal();
@@ -803,7 +803,7 @@ namespace SceneSaveState
                                             }
                                         }
                                     }
-                                    SceneConsole.Instance.game.studio.treeNodeCtrl.SelectSingle(el);
+                                    Instance.game.studio.treeNodeCtrl.SelectSingle(el);
                                 }
                             }
                             catch (Exception e)
@@ -844,7 +844,7 @@ namespace SceneSaveState
             // GUILayout.Space(35)
             var btnBigHeight = 60;
             var btnSmallHeight = 50;
-            SceneConsole.Instance.saveload_scroll = GUILayout.BeginScrollView(SceneConsole.Instance.saveload_scroll);
+            Instance.saveload_scroll = GUILayout.BeginScrollView(Instance.saveload_scroll);
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
             GUILayout.Label(" ------------------------------------------    Data in scene folders    ------------------------------------------");
@@ -855,14 +855,14 @@ namespace SceneSaveState
             GUILayout.FlexibleSpace();
             if (GUILayout.Button("<color=#00ff00>Load</color> scene data", GUILayout.Height(btnBigHeight), GUILayout.Width(210)))
             {
-                if (SceneConsole.Instance.block.Count > 0)
+                if (Instance.block.Count > 0)
                 {
-                    SceneConsole.Instance.warning_action = SceneConsole.Instance.loadSceneData;
-                    SceneConsole.Instance.warning_param = new SceneConsole.WarningParam_s("Do you wish to load scenedata from current scene? (Will overwrite console data)", null, false);
+                    Instance.warning_action = Instance.loadSceneData;
+                    Instance.warning_param = new SceneConsole.WarningParam_s("Do you wish to load scenedata from current scene? (Will overwrite console data)", null, false);
                 }
                 else
                 {
-                    SceneConsole.Instance.loadSceneData();
+                    Instance.loadSceneData();
                 }
             }
             GUILayout.FlexibleSpace();
@@ -873,12 +873,12 @@ namespace SceneSaveState
                 fld = HSNeoOCIFolder.find_single_startswith("-scenesavestate:");
                 if (!(fld == null))
                 {
-                    SceneConsole.Instance.warning_action = SceneConsole.Instance.saveSceneData;
-                    SceneConsole.Instance.warning_param = new SceneConsole.WarningParam_s("Scenedata exists. Overwrite?", fld, false);
+                    Instance.warning_action = Instance.saveSceneData;
+                    Instance.warning_param = new SceneConsole.WarningParam_s("Scenedata exists. Overwrite?", fld, false);
                 }
                 else
                 {
-                    SceneConsole.Instance.saveSceneData(backup: false);
+                    Instance.saveSceneData(backup: false);
                 }
             }
             GUILayout.FlexibleSpace();
@@ -890,8 +890,8 @@ namespace SceneSaveState
             //sc.isSaveCompact = GUILayout.Toggle(sc.isSaveCompact, "Save compact (since 4.0)", GUILayout.Height(20), GUILayout.Width(210))
             //sc.isSaveCompact = GUILayout.Toggle(sc.isSaveCompact, "Save compact", GUILayout.Height(20),
             //                                     GUILayout.Width(100))
-            SceneConsole.Instance.isSaveVerify = GUILayout.Toggle(SceneConsole.Instance.isSaveVerify, "Verify save", GUILayout.Height(20), GUILayout.Width(80));
-            SceneConsole.Instance.isSaveOld = GUILayout.Toggle(SceneConsole.Instance.isSaveOld, "Old save 100%OK", GUILayout.Height(20), GUILayout.Width(125));
+            Instance.isSaveVerify = GUILayout.Toggle(Instance.isSaveVerify, "Verify save", GUILayout.Height(20), GUILayout.Width(80));
+            Instance.isSaveOld = GUILayout.Toggle(Instance.isSaveOld, "Old save 100%OK", GUILayout.Height(20), GUILayout.Width(125));
             // if GUILayout.Button("Save scene data", GUILayout.Height(80), GUILayout.Width(210)):
             //     # delete existing scenedata fld
             //     # fld = getFolder(sc.game, "-scenesavestate", True)
@@ -913,7 +913,7 @@ namespace SceneSaveState
             GUILayout.Space(40);
             GUILayout.Label("File name:");
             GUILayout.Space(20);
-            SceneConsole.Instance.svname = GUILayout.TextField(SceneConsole.Instance.svname, GUILayout.Width(300));
+            Instance.svname = GUILayout.TextField(Instance.svname, GUILayout.Width(300));
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
             GUILayout.Space(20);
@@ -921,30 +921,30 @@ namespace SceneSaveState
             GUILayout.FlexibleSpace();
             if (GUILayout.Button("<color=#00ff00>Load</color> from file", GUILayout.Height(btnBigHeight), GUILayout.Width(210)))
             {
-                if (SceneConsole.Instance.block.Count > 0)
+                if (Instance.block.Count > 0)
                 {
-                    SceneConsole.Instance.warning_action = SceneConsole.Instance.loadSceneData;
-                    SceneConsole.Instance.warning_param = new WarningParam_s("Do you wish to load scenedata from file? (Will overwrite console data)", new bool[] { true, false }, false);
+                    Instance.warning_action = Instance.loadSceneData;
+                    Instance.warning_param = new WarningParam_s("Do you wish to load scenedata from file? (Will overwrite console data)", new bool[] { true, false }, false);
                 }
                 else
                 {
-                    SceneConsole.Instance.loadSceneData(file: true, backup: false);
+                    Instance.loadSceneData(file: true, backup: false);
                 }
             }
             GUILayout.FlexibleSpace();
             if (GUILayout.Button("<color=#ff0000>Save</color> to file", GUILayout.Height(btnBigHeight), GUILayout.Width(210)))
             {
                 // delete existing scenedata fld
-                var fld_str = "-scfile:" + SceneConsole.Instance.svname;
-                fld = Utils.getFolder(SceneConsole.Instance.game, SceneConsole.Instance.svname, true);
+                var fld_str = "-scfile:" + Instance.svname;
+                fld = Utils.getFolder(Instance.game, Instance.svname, true);
                 if (!(fld == null))
                 {
-                    SceneConsole.Instance.warning_action = SceneConsole.Instance.saveToFile;
-                    SceneConsole.Instance.warning_param = new WarningParam_s("Scenedata exists. Overwrite?", false, false);
+                    Instance.warning_action = Instance.saveToFile;
+                    Instance.warning_param = new WarningParam_s("Scenedata exists. Overwrite?", false, false);
                 }
                 else
                 {
-                    SceneConsole.Instance.saveToFile(backup: false);
+                    Instance.saveToFile(backup: false);
                 }
             }
             GUILayout.FlexibleSpace();
@@ -960,41 +960,41 @@ namespace SceneSaveState
             GUILayout.FlexibleSpace();
             if (GUILayout.Button("Load backup scene data\n(scene/external file)", GUILayout.Height(btnSmallHeight), GUILayout.Width(210)))
             {
-                fld = Utils.getFolder(SceneConsole.Instance.game, "-scfile:", false);
-                if (SceneConsole.Instance.block.Count > 0)
+                fld = Utils.getFolder(Instance.game, "-scfile:", false);
+                if (Instance.block.Count > 0)
                 {
                     if (fld == null)
                     {
-                        SceneConsole.Instance.warning_action = SceneConsole.Instance.loadSceneData;
-                        SceneConsole.Instance.warning_param = new WarningParam_s("Do you wish to load backup scenedata from scene? (Will overwrite console data)", new bool[] { false, true }, false);
+                        Instance.warning_action = Instance.loadSceneData;
+                        Instance.warning_param = new WarningParam_s("Do you wish to load backup scenedata from scene? (Will overwrite console data)", new bool[] { false, true }, false);
                     }
                     else
                     {
-                        SceneConsole.Instance.warning_action = SceneConsole.Instance.loadSceneData;
-                        SceneConsole.Instance.warning_param = new WarningParam_s("Do you wish to load backup scenedata from file? (Will overwrite console data)", new bool[] { true, true }, false);
+                        Instance.warning_action = Instance.loadSceneData;
+                        Instance.warning_param = new WarningParam_s("Do you wish to load backup scenedata from file? (Will overwrite console data)", new bool[] { true, true }, false);
                     }
                 }
                 else if (fld == null)
                 {
-                    SceneConsole.Instance.loadSceneData(backup: true);
+                    Instance.loadSceneData(backup: true);
                 }
                 else
                 {
-                    SceneConsole.Instance.loadSceneData(file: true, backup: true);
+                    Instance.loadSceneData(file: true, backup: true);
                 }
             }
             GUILayout.FlexibleSpace();
             if (GUILayout.Button("Load auto-timer backup file", GUILayout.Height(btnSmallHeight), GUILayout.Width(210)))
             {
                 //sc.exportToVNSS()
-                if (SceneConsole.Instance.block.Count > 0)
+                if (Instance.block.Count > 0)
                 {
-                    SceneConsole.Instance.warning_action = SceneConsole.Instance.loadSceneDataBackupTimer;
-                    SceneConsole.Instance.warning_param = new SceneConsole.WarningParam_s("Do you wish to load backup scenedata from file auto-saved by timer? (Will overwrite console data)", null, false);
+                    Instance.warning_action = Instance.loadSceneDataBackupTimer;
+                    Instance.warning_param = new SceneConsole.WarningParam_s("Do you wish to load backup scenedata from file auto-saved by timer? (Will overwrite console data)", null, false);
                 }
                 else
                 {
-                    SceneConsole.Instance.loadSceneDataBackupTimer();
+                    Instance.loadSceneDataBackupTimer();
                 }
             }
             GUILayout.FlexibleSpace();
@@ -1012,28 +1012,28 @@ namespace SceneSaveState
             GUILayout.FlexibleSpace();
             if (GUILayout.Button("<color=#00ff00>Export</color> scenes and cams\nto VNSceneScript", GUILayout.Height(btnSmallHeight), GUILayout.Width(210)))
             {
-                SceneConsole.Instance.exportToVNSS();
+                Instance.exportToVNSS();
             }
             //GUILayout.Space(210)
             GUILayout.FlexibleSpace();
             if (GUILayout.Button("...or <color=#00ff00>run</color> VNSceneScript\nfrom beginning", GUILayout.Height(btnSmallHeight), GUILayout.Width(210)))
             {
-                SceneConsole.Instance.runVNSS();
+                Instance.runVNSS();
             }
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
             //GUILayout.Space(210)
-            SceneConsole.Instance.vnFastIsRunImmediately = GUILayout.Toggle(SceneConsole.Instance.vnFastIsRunImmediately, "And run from cur scene", GUILayout.Height(20), GUILayout.Width(210));
+            Instance.vnFastIsRunImmediately = GUILayout.Toggle(Instance.vnFastIsRunImmediately, "And run from cur scene", GUILayout.Height(20), GUILayout.Width(210));
             GUILayout.FlexibleSpace();
             if (GUILayout.Button("from scene", GUILayout.Height(20), GUILayout.Width(105)))
             {
-                SceneConsole.Instance.runVNSS("scene");
+                Instance.runVNSS("scene");
             }
             if (GUILayout.Button("from cam", GUILayout.Height(20), GUILayout.Width(105)))
             {
-                SceneConsole.Instance.runVNSS("cam");
+                Instance.runVNSS("cam");
             }
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
@@ -1051,12 +1051,12 @@ namespace SceneSaveState
             GUILayout.FlexibleSpace();
             if (GUILayout.Button("Export cam texts\nto sss_camtexts.txt", GUILayout.Height(btnSmallHeight), GUILayout.Width(210)))
             {
-                SceneConsole.Instance.exportCamTexts();
+                Instance.exportCamTexts();
             }
             GUILayout.FlexibleSpace();
             if (GUILayout.Button("Import cam texts\nfrom sss_camtexts.txt", GUILayout.Height(btnSmallHeight), GUILayout.Width(210)))
             {
-                SceneConsole.Instance.importCamTexts();
+                Instance.importCamTexts();
             }
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
@@ -1067,28 +1067,28 @@ namespace SceneSaveState
         {
             VNCamera.VNData.addprops_struct addprops;
             object col;
-            List<string> fset = SceneConsole.Instance.fset;
-            List<string> mset = SceneConsole.Instance.mset;
+            List<string> fset = Instance.fset;
+            List<string> mset = Instance.mset;
             GUILayout.BeginHorizontal();
             GUILayout.BeginVertical();
             // Scene tab
-            SceneConsole.Instance.scene_scroll = GUILayout.BeginScrollView(SceneConsole.Instance.scene_scroll, GUILayout.Width(SceneConsole.Instance.viewwidth));
-            if (SceneConsole.Instance.block.Count > 0)
+            Instance.scene_scroll = GUILayout.BeginScrollView(Instance.scene_scroll, GUILayout.Width(Instance.viewwidth));
+            if (Instance.block.Count > 0)
             {
-                foreach (var i in Enumerable.Range(0, SceneConsole.Instance.block.Count))
+                foreach (var i in Enumerable.Range(0, Instance.block.Count))
                 {
-                    if (i == SceneConsole.Instance.cur_index)
+                    if (i == Instance.cur_index)
                     {
-                        col = SceneConsole.Instance.sel_font_col;
+                        col = Instance.sel_font_col;
                     }
                     else
                     {
-                        col = SceneConsole.Instance.nor_font_col;
+                        col = Instance.nor_font_col;
                     }
-                    string scn_name = SceneConsole.Instance.scene_str_array[i];
-                    if (SceneConsole.Instance.block[i].cams.Count > 0 && SceneConsole.Instance.block[i].cams[0].hasVNData && SceneConsole.Instance.block[i].cams[0].addata.addparam)
+                    string scn_name = Instance.scene_str_array[i];
+                    if (Instance.block[i].cams.Count > 0 && Instance.block[i].cams[0].hasVNData && Instance.block[i].cams[0].addata.addparam)
                     {
-                        addprops = SceneConsole.Instance.block[i].cams[0].addata.addprops;
+                        addprops = Instance.block[i].cams[0].addata.addprops;
                         if (addprops.addprops["a1"])
                         {
                             string sname = addprops.a1o.name;
@@ -1100,10 +1100,10 @@ namespace SceneSaveState
                     }
                     if (GUILayout.Button(String.Format("<color={0}>{1}</color>", col, scn_name)))
                     {
-                        SceneConsole.Instance.cur_index = i;
-                        if (SceneConsole.Instance.autoLoad == true)
+                        Instance.cur_index = i;
+                        if (Instance.autoLoad == true)
                         {
-                            SceneConsole.Instance.loadCurrentScene();
+                            Instance.loadCurrentScene();
                             // sc.cur_index = GUILayout.SelectionGrid(sc.cur_index,sc.scene_str_array,1)
                         }
                     }
@@ -1113,32 +1113,32 @@ namespace SceneSaveState
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Move up"))
             {
-                SceneConsole.Instance.move_scene_up();
+                Instance.move_scene_up();
             }
             if (GUILayout.Button("Move down"))
             {
-                SceneConsole.Instance.move_scene_down();
+                Instance.move_scene_down();
             }
             GUILayout.EndHorizontal();
             GUILayout.EndVertical();
             GUILayout.BeginVertical();
             // Camera and character selection tabs
             GUILayout.BeginHorizontal();
-            if (SceneConsole.Instance.cur_index > -1)
+            if (Instance.cur_index > -1)
             {
                 GUILayout.BeginVertical();
-                SceneConsole.Instance.cam_scroll = GUILayout.BeginScrollView(SceneConsole.Instance.cam_scroll, GUILayout.Height(185), GUILayout.Width(SceneConsole.Instance.camviewwidth));
-                foreach (var i in Enumerable.Range(0, SceneConsole.Instance.block[SceneConsole.Instance.cur_index].cams.Count - 0))
+                Instance.cam_scroll = GUILayout.BeginScrollView(Instance.cam_scroll, GUILayout.Height(185), GUILayout.Width(Instance.camviewwidth));
+                foreach (var i in Enumerable.Range(0, Instance.block[Instance.cur_index].cams.Count - 0))
                 {
-                    if (i == SceneConsole.Instance.cur_cam)
+                    if (i == Instance.cur_cam)
                     {
-                        col = SceneConsole.Instance.sel_font_col;
+                        col = Instance.sel_font_col;
                     }
                     else
                     {
                         col = "#f9f9f9";
                     }
-                    var cam = SceneConsole.Instance.block[SceneConsole.Instance.cur_index].cams[i];
+                    var cam = Instance.block[Instance.cur_index].cams[i];
                     VNCamera.VNData addparams = cam.addata;
                     GUILayout.BeginHorizontal();
                     // show name if available
@@ -1156,13 +1156,13 @@ namespace SceneSaveState
                     }
                     if (GUILayout.Button(String.Format("<color={0}>{1}</color>", col, camtxt)))
                     {
-                        SceneConsole.Instance.cur_cam = i;
-                        SceneConsole.Instance.setCamera(false);
+                        Instance.cur_cam = i;
+                        Instance.setCamera(false);
                     }
                     if (GUILayout.Button(String.Format("<color={0}>a</color>", col), GUILayout.Width(22)))
                     {
-                        SceneConsole.Instance.cur_cam = i;
-                        SceneConsole.Instance.setCamera(true);
+                        Instance.cur_cam = i;
+                        Instance.setCamera(true);
                     }
                     GUILayout.EndHorizontal();
                 }
@@ -1172,38 +1172,38 @@ namespace SceneSaveState
                 // sc.setCamera()
                 GUILayout.Space(15);
                 GUILayout.BeginHorizontal();
-                if (GUILayout.Button("Add", GUILayout.Width(SceneConsole.Instance.camviewwidth * 0.7f)))
+                if (GUILayout.Button("Add", GUILayout.Width(Instance.camviewwidth * 0.7f)))
                 {
-                    SceneConsole.Instance.changeSceneCam("add");
+                    Instance.changeSceneCam("add");
                 }
-                if (GUILayout.Button("Del", GUILayout.Width(SceneConsole.Instance.camviewwidth * 0.3f)))
+                if (GUILayout.Button("Del", GUILayout.Width(Instance.camviewwidth * 0.3f)))
                 {
-                    if (SceneConsole.Instance.promptOnDelete)
+                    if (Instance.promptOnDelete)
                     {
-                        SceneConsole.Instance.warning_action = SceneConsole.Instance.changeSceneCam;
-                        SceneConsole.Instance.warning_param = new WarningParam_s("Delete selected cam?", "del", false);
+                        Instance.warning_action = Instance.changeSceneCam;
+                        Instance.warning_param = new WarningParam_s("Delete selected cam?", "del", false);
                     }
                     else
                     {
-                        SceneConsole.Instance.changeSceneCam("del");
+                        Instance.changeSceneCam("del");
                     }
                 }
                 GUILayout.EndHorizontal();
-                if (GUILayout.Button("Update", GUILayout.Width(SceneConsole.Instance.camviewwidth + 5)))
+                if (GUILayout.Button("Update", GUILayout.Width(Instance.camviewwidth + 5)))
                 {
-                    SceneConsole.Instance.changeSceneCam("upd");
+                    Instance.changeSceneCam("upd");
                 }
                 GUILayout.Label("Move cam:");
                 GUILayout.BeginHorizontal();
                 var up = "\u2191";
                 var down = "\u2193";
-                if (GUILayout.Button(up, GUILayout.Width(SceneConsole.Instance.camviewwidth / 2)))
+                if (GUILayout.Button(up, GUILayout.Width(Instance.camviewwidth / 2)))
                 {
-                    SceneConsole.Instance.move_cam_up();
+                    Instance.move_cam_up();
                 }
-                if (GUILayout.Button(down, GUILayout.Width(SceneConsole.Instance.camviewwidth / 2)))
+                if (GUILayout.Button(down, GUILayout.Width(Instance.camviewwidth / 2)))
                 {
-                    SceneConsole.Instance.move_cam_down();
+                    Instance.move_cam_down();
                 }
                 GUILayout.EndHorizontal();
                 GUILayout.EndVertical();
@@ -1212,20 +1212,20 @@ namespace SceneSaveState
             if (true)
             {
                 // len(sc.nameset[0])>0:
-                SceneConsole.Instance.fset_scroll = GUILayout.BeginScrollView(SceneConsole.Instance.fset_scroll, GUILayout.Width(SceneConsole.Instance.viewwidth), GUILayout.Height(SceneConsole.Instance.viewheight));
+                Instance.fset_scroll = GUILayout.BeginScrollView(Instance.fset_scroll, GUILayout.Width(Instance.viewwidth), GUILayout.Height(Instance.viewheight));
                 foreach (var i in Enumerable.Range(0, fset.Count - 0))
                 {
-                    if (i == SceneConsole.Instance.fset_index)
+                    if (i == Instance.fset_index)
                     {
-                        col = SceneConsole.Instance.sel_font_col;
+                        col = Instance.sel_font_col;
                     }
                     else
                     {
-                        col = SceneConsole.Instance.nor_font_col;
+                        col = Instance.nor_font_col;
                     }
                     if (GUILayout.Button(String.Format("<color={0}>{1}</color>", col, fset[i]), GUILayout.Height(40)))
                     {
-                        SceneConsole.Instance.fset_index = i;
+                        Instance.fset_index = i;
                     }
                 }
                 GUILayout.EndScrollView();
@@ -1237,12 +1237,12 @@ namespace SceneSaveState
                 //         sc.warning_param = (sc.changeSceneChars, "Delete selected female character?", (1, "del"), False)
                 //     else:
                 //         sc.changeSceneChars(1, "del")
-                if (SceneConsole.Instance.cur_index > -1 && SceneConsole.Instance.cur_cam > -1)
+                if (Instance.cur_index > -1 && Instance.cur_cam > -1)
                 {
                     GUILayout.Space(25);
                     if (GUILayout.Button("Copy cam set"))
                     {
-                        SceneConsole.Instance.copyCamSet();
+                        Instance.copyCamSet();
                     }
                 }
             }
@@ -1251,20 +1251,20 @@ namespace SceneSaveState
             if (true)
             {
                 // len(sc.nameset[1])>0:
-                SceneConsole.Instance.mset_scroll = GUILayout.BeginScrollView(SceneConsole.Instance.mset_scroll, GUILayout.Width(SceneConsole.Instance.viewwidth), GUILayout.Height(SceneConsole.Instance.viewheight));
+                Instance.mset_scroll = GUILayout.BeginScrollView(Instance.mset_scroll, GUILayout.Width(Instance.viewwidth), GUILayout.Height(Instance.viewheight));
                 foreach (var i in Enumerable.Range(0, mset.Count - 0))
                 {
-                    if (i == SceneConsole.Instance.mset_index)
+                    if (i == Instance.mset_index)
                     {
-                        col = SceneConsole.Instance.sel_font_col;
+                        col = Instance.sel_font_col;
                     }
                     else
                     {
-                        col = SceneConsole.Instance.nor_font_col;
+                        col = Instance.nor_font_col;
                     }
                     if (GUILayout.Button(String.Format("<color={0}>{1}</color>", col, mset[i]), GUILayout.Height(40)))
                     {
-                        SceneConsole.Instance.mset_index = i;
+                        Instance.mset_index = i;
                     }
                 }
                 GUILayout.EndScrollView();
@@ -1276,12 +1276,12 @@ namespace SceneSaveState
                 //         sc.warning_param = (sc.changeSceneChars, "Delete selected male character?", (0, "del"), False)
                 //     else:
                 //         sc.changeSceneChars(0, "del")
-                if (SceneConsole.Instance.cur_index > -1 && !SceneConsole.Instance.camset.IsNullOrEmpty())
+                if (Instance.cur_index > -1 && !Instance.camset.IsNullOrEmpty())
                 {
                     GUILayout.Space(25);
                     if (GUILayout.Button("Paste cam set"))
                     {
-                        SceneConsole.Instance.pasteCamSet();
+                        Instance.pasteCamSet();
                     }
                 }
             }
@@ -1293,20 +1293,20 @@ namespace SceneSaveState
             GUILayout.BeginVertical();
             if (GUILayout.Button("Insert scene", GUILayout.Height(25)))
             {
-                SceneConsole.Instance.addAuto(insert: true);
+                Instance.addAuto(insert: true);
             }
             if (GUILayout.Button("Dup scene", GUILayout.Height(25)))
             {
-                SceneConsole.Instance.dupScene();
+                Instance.dupScene();
             }
             GUILayout.EndVertical();
             if (GUILayout.Button("Add scene (auto)", GUILayout.Height(55), GUILayout.Width(175)))
             {
-                SceneConsole.Instance.addAuto();
+                Instance.addAuto();
             }
             if (GUILayout.Button("Update scene", GUILayout.Height(55)))
             {
-                SceneConsole.Instance.addAuto(addsc: false);
+                Instance.addAuto(addsc: false);
             }
             GUILayout.EndHorizontal();
             // if GUILayout.Button("Update props",GUILayout.Height(40)):
@@ -1324,14 +1324,14 @@ namespace SceneSaveState
             GUILayout.Space(10);
             if (GUILayout.Button("Delete scene"))
             {
-                if (SceneConsole.Instance.promptOnDelete == true)
+                if (Instance.promptOnDelete == true)
                 {
-                    SceneConsole.Instance.warning_action = SceneConsole.Instance.removeScene;
-                    SceneConsole.Instance.warning_param = new SceneConsole.WarningParam_s("Delete selected scene?", null, false);
+                    Instance.warning_action = Instance.removeScene;
+                    Instance.warning_param = new SceneConsole.WarningParam_s("Delete selected scene?", null, false);
                 }
                 else
                 {
-                    SceneConsole.Instance.removeScene();
+                    Instance.removeScene();
                 }
             }
             GUILayout.BeginHorizontal();
@@ -1340,36 +1340,36 @@ namespace SceneSaveState
             // if GUILayout.Button("Delete duplicate characters"):
             //     sc.removeDuplicates()
             GUILayout.EndHorizontal();
-            if (!(SceneConsole.Instance.autoLoad == true))
+            if (!(Instance.autoLoad == true))
             {
                 GUILayout.Space(10);
                 if (GUILayout.Button("Load Scene", GUILayout.Height(35)))
                 {
-                    SceneConsole.Instance.loadCurrentScene();
+                    Instance.loadCurrentScene();
                 }
             }
             GUILayout.Space(10);
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Load prev scene", GUILayout.Height(30)))
             {
-                SceneConsole.Instance.goto_prev_sc();
+                Instance.goto_prev_sc();
             }
             if (GUILayout.Button("Load next scene", GUILayout.Height(30)))
             {
-                SceneConsole.Instance.goto_next_sc();
+                Instance.goto_next_sc();
             }
             GUILayout.EndHorizontal();
             // char texts
             GUILayout.Space(25);
             GUILayout.BeginHorizontal();
-            SceneConsole.Instance.cam_addparam = GUILayout.Toggle(SceneConsole.Instance.cam_addparam, "  Use cam in Visual Novel");
+            Instance.cam_addparam = GUILayout.Toggle(Instance.cam_addparam, "  Use cam in Visual Novel");
             GUILayout.FlexibleSpace();
-            if (SceneConsole.Instance.cam_addparam)
+            if (Instance.cam_addparam)
             {
-                var txt = Utils.btntext_get_if_selected2("More", SceneConsole.Instance.cam_addprops.addprops["a1"] || SceneConsole.Instance.cam_addprops.addprops["a2"]);
+                var txt = Utils.btntext_get_if_selected2("More", Instance.cam_addprops.addprops["a1"] || Instance.cam_addprops.addprops["a2"]);
                 if (GUILayout.Button(txt, GUILayout.Height(20)))
                 {
-                    SceneConsole.Instance.subwinindex = 100;
+                    Instance.subwinindex = 100;
                 }
             }
             GUILayout.EndHorizontal();
@@ -1378,39 +1378,39 @@ namespace SceneSaveState
             //     sc.addAuto(allbase=False)
             // if GUILayout.Button("Delete duplicate characters"):
             //     sc.removeDuplicates()
-            if (SceneConsole.Instance.cam_addparam)
+            if (Instance.cam_addparam)
             {
                 GUILayout.BeginHorizontal();
                 GUILayout.Label("  Who say:", GUILayout.Width(90));
-                SceneConsole.Instance.cam_whosay = GUILayout.TextField(SceneConsole.Instance.cam_whosay, GUILayout.Width(210));
+                Instance.cam_whosay = GUILayout.TextField(Instance.cam_whosay, GUILayout.Width(210));
                 if (GUILayout.Button("<", GUILayout.Width(20)))
                 {
-                    SceneConsole.Instance.cam_whosay = SceneConsole.Instance.get_next_speaker(SceneConsole.Instance.cam_whosay, false);
+                    Instance.cam_whosay = Instance.get_next_speaker(Instance.cam_whosay, false);
                 }
                 if (GUILayout.Button(">", GUILayout.Width(20)))
                 {
-                    SceneConsole.Instance.cam_whosay = SceneConsole.Instance.get_next_speaker(SceneConsole.Instance.cam_whosay, true);
+                    Instance.cam_whosay = Instance.get_next_speaker(Instance.cam_whosay, true);
                 }
                 GUILayout.EndHorizontal();
                 GUILayout.BeginHorizontal();
                 GUILayout.Label("  What say:", GUILayout.Width(90));
-                SceneConsole.Instance.cam_whatsay = GUILayout.TextField(SceneConsole.Instance.cam_whatsay, GUILayout.Width(210));
+                Instance.cam_whatsay = GUILayout.TextField(Instance.cam_whatsay, GUILayout.Width(210));
                 if (GUILayout.Button("X", GUILayout.Width(20)))
                 {
-                    SceneConsole.Instance.cam_whatsay = "";
+                    Instance.cam_whatsay = "";
                 }
                 if (GUILayout.Button("...", GUILayout.Width(20)))
                 {
-                    SceneConsole.Instance.cam_whatsay = "...";
+                    Instance.cam_whatsay = "...";
                 }
                 GUILayout.EndHorizontal();
                 GUILayout.Space(5);
                 GUILayout.BeginHorizontal();
                 GUILayout.Label("  Adv VN cmds", GUILayout.Width(90));
-                SceneConsole.Instance.cam_addvncmds = GUILayout.TextArea(SceneConsole.Instance.cam_addvncmds, GUILayout.Width(235), GUILayout.Height(55));
+                Instance.cam_addvncmds = GUILayout.TextArea(Instance.cam_addvncmds, GUILayout.Width(235), GUILayout.Height(55));
                 if (GUILayout.Button("X", GUILayout.Width(20)))
                 {
-                    SceneConsole.Instance.cam_addvncmds = "";
+                    Instance.cam_addvncmds = "";
                 }
                 // if GUILayout.Button("X", GUILayout.Width(20)):
                 //     sc.cam_whatsay = ""
@@ -1427,7 +1427,7 @@ namespace SceneSaveState
 
         public static void minimizeWindow()
         {
-            SceneConsole sc = SceneConsole.Instance;
+            SceneConsole sc = Instance;
             if (sc.game.windowRect.width > 200)
             {
                 sc.consoleWidth = sc.game.windowRect.width;
@@ -1454,15 +1454,15 @@ namespace SceneSaveState
             {
                 if (GUILayout.Button("Expand", GUILayout.Width(100), GUILayout.Height(45)))
                 {
-                    SceneConsole.Instance.game.windowRect.width = SceneConsole.Instance.consoleWidth;
-                    SceneConsole.Instance.game.windowRect.height = SceneConsole.Instance.consoleHeight;
-                    SceneConsole.Instance.game.skin.funcWindowGUI = sceneConsoleSkinWindowGUI;
+                    Instance.game.windowRect.width = Instance.consoleWidth;
+                    Instance.game.windowRect.height = Instance.consoleHeight;
+                    Instance.game.skin.funcWindowGUI = sceneConsoleSkinWindowGUI;
                 }
                 GUI.DragWindow();
             }
             catch (Exception e)
             {
-                Console.WriteLine("sceneSaveStateWindowGUI Exception: " + e.ToString());               
+                Console.WriteLine("sceneSaveStateWindowGUI Exception: " + e.ToString());
                 Utils.sceneConsoleGUIClose();
                 //SceneConsole.Instance.game.show_blocking_message_time("sceneSaveState error: " + e.ToString()); TODO
             }
