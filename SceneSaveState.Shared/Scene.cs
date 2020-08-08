@@ -119,7 +119,15 @@ namespace SceneSaveState
                 }
                 //Utils.char_import_status_diff_optimized(game.scenef_get_actor(actid), char_status);
                 var actor = game.scenef_get_actor(actid);
-                actor?.import_status(char_status);               
+                try
+                {
+                    actor?.import_status(char_status);
+                }
+                catch (Exception e)
+                {
+                    SceneConsole.Instance.game.GetLogger.LogError($"Error occurred when importing Actor with id {actid}" + e.ToString());
+                    game.LoadTrackedActorsAndProps();
+                }                              
             }
             foreach (var propid in this.props.Keys)
             {
@@ -128,16 +136,31 @@ namespace SceneSaveState
                 //print game.scenef_get_all_props()
                 Prop prop = game.scenef_get_propf(propid);
                 PropData status = this.props[propid];
-                prop?.import_status(status);
-            }
+                try { 
+                    prop?.import_status(status);
+                }
+                    catch (Exception e)
+                {
+                    game.GetLogger.LogError($"Error occurred when importing Item with id {propid}" + e.ToString());
+                    game.LoadTrackedActorsAndProps();
+                }
+        }
             foreach (var lightid in this.lights.Keys)
             {
                 //vnframe.act(game, {propid: self.props[propid]})
                 //print propid
                 //print game.scenef_get_all_props()
                 Light light = game.scenef_get_light(lightid);
-                LightData status = this.lights[lightid];
-                light?.import_status(status);
+                LightData status = this.lights[lightid];         
+                try
+                {
+                    light?.import_status(status);
+                }
+                catch (Exception e)
+                {
+                    SceneConsole.Instance.game.GetLogger.LogError($"Error occurred when importing Item with id {lightid}" + e.ToString());
+                    game.LoadTrackedActorsAndProps();
+                }
             }
         }
 
