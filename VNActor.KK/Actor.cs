@@ -160,7 +160,10 @@ namespace VNActor
                 animePattern = a.animePattern;
                 tearLevel = a.tearLevel;
                 forceLoop = a.anime_forceloop;
-                accessoryStatus = a.accessory;
+
+                accessoryStatus = new bool[a.accessory.Length];
+                Array.Copy(a.accessory, accessoryStatus, accessoryStatus.Length);
+
                 faceRedness = a.facered;
                 son = a.son;
 
