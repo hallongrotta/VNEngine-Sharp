@@ -1,4 +1,5 @@
-﻿using Studio;
+﻿using MessagePack;
+using Studio;
 using System;
 using UnityEngine;
 
@@ -7,16 +8,21 @@ namespace VNActor
     public partial class Light : HSNeoOCILight, IProp
     {
 
-        new public OCILight objctrl;
-
+        [MessagePackObject]
         public struct LightData : IDataClass
         {
+            [Key(0)]
             public Color color;
-            internal bool enable;
-            internal float intensity;
-            internal bool shadow;
-            internal float range;
-            internal float angle;
+            [Key(1)]
+            public bool enable;
+            [Key(2)]
+            public float intensity;
+            [Key(3)]
+            public bool shadow;
+            [Key(4)]
+            public float range;
+            [Key(5)]
+            public float angle;
 
             public void Remove(string key)
             {
@@ -32,11 +38,22 @@ namespace VNActor
                 range = l.range;
                 angle = l.angle;
             }
+
+            [SerializationConstructor]
+            public LightData(Color color, bool enable, float intensity, bool shadow, float range, float angle)
+            {
+                this.color = color;
+                this.enable = enable;
+                this.intensity = intensity;
+                this.shadow = shadow;
+                this.range = range;
+                this.angle = angle;
+            }
         }
 
         public Light(OCILight objctrl) : base(objctrl)
         {
-            this.objctrl = objctrl;
+
         }
 
         override public IDataClass export_full_status()
@@ -44,15 +61,25 @@ namespace VNActor
             return new LightData(this);
         }
 
+        public void import_status(LightData l)
+        {
+            color = l.color;
+            enable = l.enable;
+            intensity = l.intensity;
+            shadow = l.shadow;
+            range = l.range;
+            angle = l.angle;
+        }
+
         public Color color
         {
             get
             {
-                return this.objctrl.lightInfo.color;
+                return objctrl.lightInfo.color;
             }
             set
             {
-                this.objctrl.SetColor(value);
+                objctrl.SetColor(value);
             }
         }
 
@@ -98,7 +125,7 @@ namespace VNActor
         {
             get
             {
-                return this.objctrl.lightInfo.range;
+                return objctrl.lightInfo.range;
             }
             set
             {

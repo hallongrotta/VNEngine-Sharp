@@ -57,7 +57,8 @@ namespace VNActor
                 if (obj is OCIItem item)
                 {
                     return create_from(item);
-                } else if (obj is OCIFolder fld)
+                }
+                else if (obj is OCIFolder fld)
                 {
                     return create_from(fld);
                 }
@@ -68,6 +69,10 @@ namespace VNActor
                 else if (obj is OCIRoute route)
                 {
                     return create_from(route);
+                }
+                else if (obj is OCILight light)
+                {
+                    return create_from(light);
                 }
                 else
                 {

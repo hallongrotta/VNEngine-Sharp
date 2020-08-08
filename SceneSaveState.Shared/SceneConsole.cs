@@ -16,6 +16,7 @@ using KKAPI.Studio.SaveLoad;
 using KKAPI.Utilities;
 using ExtensibleSaveFormat;
 using NodeCanvas.Tasks.Conditions;
+using static VNActor.Light;
 
 namespace SceneSaveState
 {
@@ -906,7 +907,7 @@ namespace SceneSaveState
             string id = "";
             foreach (var i in Enumerable.Range(0, 1000 - 0))
             {
-                id = "prp" + i.ToString();
+                id = "light" + i.ToString();
                 if (props.ContainsKey(id))
                 {
                 }
@@ -917,7 +918,7 @@ namespace SceneSaveState
             }
             if (prop is HSNeoOCILight)
             {
-                tagfld = HSNeoOCIFolder.add("-propchild:" + id);
+                tagfld = HSNeoOCIFolder.add(VNNeoController.light_folder_prefix + id);
                 prop.set_parent(tagfld);
             }
             else if (prop is HSNeoOCIRoute)
@@ -931,10 +932,18 @@ namespace SceneSaveState
                 tagfld.set_parent_treenodeobject(prop.treeNodeObject);
             }
             var curstatus = prop.export_full_status();
-            foreach (var i in Enumerable.Range(0, this.block.Count))
+            for (int i = 0; i < this.block.Count; i++)
             {
                 Scene scene = this.block[i];
-                scene.props[id] = (PropData)curstatus;
+
+                if (curstatus is PropData propData)
+                {
+                    scene.props[id] = propData;
+                }
+                else if (curstatus is LightData lightData)
+                {
+                    scene.lights[id] = lightData;
+                }             
                 // updating set
             }
         }
@@ -1563,7 +1572,7 @@ namespace SceneSaveState
                     //print actors
                     //print props
                     //print cams
-                    this.block.Add(new Scene(actors, props, cams));
+                    this.block.Add(new Scene(actors, props, null, cams));
                     this.scene_strings.Add("Scene " + key.ToString());
                     // id = int(key)
                     // for id in range(0,len(block_dict)):

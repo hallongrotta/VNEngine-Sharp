@@ -8,10 +8,11 @@ namespace VNActor
         : HSNeoOCIProp
     {
 
-        new OCILight objctrl;
+        new protected OCILight objctrl;
 
-        public HSNeoOCILight(ObjectCtrlInfo objctrl) : base(objctrl)
+        public HSNeoOCILight(OCILight objctrl) : base(objctrl)
         {
+            this.objctrl = objctrl;
         }
 
         public static HSNeoOCILight add_light(int no)

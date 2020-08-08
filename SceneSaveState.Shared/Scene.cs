@@ -6,6 +6,7 @@ using CamData = VNEngine.VNCamera.CamData;
 using MessagePack;
 using static VNActor.Actor;
 using static VNActor.Prop;
+using static VNActor.Light;
 
 namespace SceneSaveState
 {
@@ -16,16 +17,18 @@ namespace SceneSaveState
         public List<CamData> cams;
         public Dictionary<string, ActorData> actors;
         public Dictionary<string, PropData> props;
+        public Dictionary<string, LightData> lights;
         public VNEngine.System.SystemData sys;
 
-        public Scene(Dictionary<string, ActorData> actors, Dictionary<string, PropData> props, List<CamData> cams)
+        public Scene(Dictionary<string, ActorData> actors, Dictionary<string, PropData> props, Dictionary<string, LightData> lights, List<CamData> cams)
         {
             this.cams = cams;
             this.actors = actors;
             this.props = props;
+            this.lights = lights;
         }
 
-        public Scene() : this(new Dictionary<string, ActorData>(), new Dictionary<string, PropData>(), new List<CamData>())
+        public Scene() : this(new Dictionary<string, ActorData>(), new Dictionary<string, PropData>(), new Dictionary<string, LightData>(), new List<CamData>())
         {
         }
 
@@ -35,11 +38,14 @@ namespace SceneSaveState
             var stractors = Utils.SerializeData(this.actors);
             var strprops = Utils.SerializeData(this.props);
             var strcams = Utils.SerializeData(this.cams);
+            var strlights = Utils.SerializeData(this.lights);
 
             Dictionary<string, ActorData> copied_actors = Utils.DeserializeData<Dictionary<string, ActorData>>(stractors);
             Dictionary<string, PropData> copied_props = Utils.DeserializeData<Dictionary<string, PropData>>(strprops);
+            Dictionary<string, LightData> copied_lights = Utils.DeserializeData<Dictionary<string, LightData>>(strlights);
             List<CamData> copied_cams = Utils.DeserializeData<List<CamData>>(strcams);
-            return new Scene(copied_actors, copied_props, copied_cams);
+
+            return new Scene(copied_actors, copied_props, copied_lights, copied_cams);
         }
 
 
@@ -64,14 +70,22 @@ namespace SceneSaveState
             this.actors = new Dictionary<string, ActorData>();
             this.props = new Dictionary<string, PropData>();
             Dictionary<string, Actor> actors = game.scenef_get_all_actors();
-            Dictionary<string, Prop> props = game.scenef_get_all_props();
+            Dictionary<string, HSNeoOCIProp> props = game.scenef_get_all_props();
             foreach (string actid in actors.Keys)
             {
                 this.actors[actid] = (ActorData)actors[actid].export_full_status();
             }
             foreach (string propid in props.Keys)
             {
-                this.props[propid] = (PropData)props[propid].export_full_status();
+                var prop = props[propid];
+                if (prop is Prop p)
+                {
+                    this.props[propid] = (PropData)p.export_full_status();
+                }
+                else if (prop is Light l)
+                {
+                    this.lights[propid] = (LightData)l.export_full_status();
+                }               
             }
             if (importSys)
             {
@@ -112,9 +126,18 @@ namespace SceneSaveState
                 //vnframe.act(game, {propid: self.props[propid]})
                 //print propid
                 //print game.scenef_get_all_props()
-                var prop = game.scenef_get_propf(propid);
-                var status = this.props[propid];
+                Prop prop = game.scenef_get_propf(propid);
+                PropData status = this.props[propid];
                 prop?.import_status(status);
+            }
+            foreach (var lightid in this.lights.Keys)
+            {
+                //vnframe.act(game, {propid: self.props[propid]})
+                //print propid
+                //print game.scenef_get_all_props()
+                Light light = game.scenef_get_light(lightid);
+                LightData status = this.lights[lightid];
+                light?.import_status(status);
             }
         }
 

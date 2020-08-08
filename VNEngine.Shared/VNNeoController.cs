@@ -23,13 +23,14 @@ namespace VNEngine
 
         public static string actor_folder_prefix = "vnactor:";
         public static string prop_folder_prefix = "vnprop:";
+        public static string light_folder_prefix = "vnlight:";
 
         //public Dictionary<string, Actor> _scenef_actors;
 
         //public Dictionary<string, Prop> _scenef_props;
 
         public GameFunc runScAct;
-        private int? scLastRunnedState;
+
         public VNNeoController() : base()
         {
             Instance = this;
@@ -171,10 +172,6 @@ namespace VNEngine
         public string camera_calcstr_for_vnscene()
         {
             var st = 0;
-            if (this.scLastRunnedState != null)
-            {
-                st = (int)this.scLastRunnedState;
-            }
             var cdata = cameraData;
             var s1 = String.Format("%s,%s,%s,23.0", cdata.pos.ToString(), cdata.distance.ToString(), cdata.rotate.ToString());
             return String.Format("a:%s:camo:%s", st.ToString(), s1.Replace("(", "").Replace(")", "").Replace(" ", ""));
@@ -627,13 +624,29 @@ namespace VNEngine
                     {
                         HSNeoOCI oci = HSNeoOCI.create_from_treenode(fld.treeNodeObject.parent);
 
-                        if (oci is Prop prop)
+                        if (oci is Prop propOci)
                         {
-                            _scenef_props[propAlias] = prop;
+                            _scenef_props[propAlias] = propOci;
                             Logger.LogDebug("Registered prop: '" + Utils.to_roman(propAlias) + "' as " + Utils.to_roman(oci.text_name));
                         }
                     }
                 }
+                else if (fldName.StartsWith(light_folder_prefix))
+                {
+                    string propAlias = fldName.Substring(light_folder_prefix.Length).Trim();
+                    // register props
+
+                    if (!_scenef_props.ContainsKey(propAlias))
+                    {
+                        HSNeoOCI oci = HSNeoOCI.create_from_treenode(fld.treeNodeObject.child[0]);
+
+                        if (oci is VNActor.Light propOci)
+                        {
+                            _scenef_props[propAlias] = propOci;
+                            Logger.LogDebug("Registered light: '" + Utils.to_roman(propAlias) + "' as " + Utils.to_roman(oci.text_name));
+                        }
+                    }
+                }              
             }
         }
 
@@ -757,7 +770,7 @@ namespace VNEngine
             return this._scenef_actors;
         }
 
-        public Dictionary<string, Prop> scenef_get_all_props()
+        public Dictionary<string, HSNeoOCIProp> scenef_get_all_props()
         {
             return this._scenef_props;
         }
@@ -778,6 +791,16 @@ namespace VNEngine
             {
                 HSNeoOCIProp obj = this.scenef_get_all_props()[id];
                 return obj.as_prop;
+            }
+            return null;
+        }
+
+        public VNActor.Light scenef_get_light(string id)
+        {
+            if (this.scenef_get_all_props()[id] != null)
+            {
+                HSNeoOCIProp obj = this.scenef_get_all_props()[id];
+                return (VNActor.Light)obj;
             }
             return null;
         }
@@ -805,7 +828,7 @@ namespace VNEngine
         public void scenef_clean_actorsprops()
         {
             this._scenef_actors = new Dictionary<string, Actor>();
-            this._scenef_props = new Dictionary<string, Prop>();
+            this._scenef_props = new Dictionary<string, HSNeoOCIProp>();
         }
 
         // ---- lip sync ------- TODO

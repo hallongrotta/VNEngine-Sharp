@@ -31,7 +31,7 @@ namespace VNEngine
 
         protected Dictionary<string, Actor> _scenef_actors;
 
-        protected Dictionary<string, Prop> _scenef_props;
+        protected Dictionary<string, HSNeoOCIProp> _scenef_props;
 
         public List<string> _vnButtons;
 
@@ -245,7 +245,7 @@ namespace VNEngine
             //this.scenedata = new GData();
             this.gpersdata = new Dictionary<string, object>();
             this._scenef_actors = new Dictionary<string, Actor>();
-            this._scenef_props = new Dictionary<string, Prop>();
+            this._scenef_props = new Dictionary<string, HSNeoOCIProp>();
             this.current_game = "";
             this._eventListenerDic = new Dictionary<string, List<GameFunc>>();
             this.isfAutoLipSync = false;
@@ -276,7 +276,7 @@ namespace VNEngine
             this.gpersdata = new Dictionary<string, object>();
             //this.scenedata = new GData();
             this._scenef_actors = new Dictionary<string, Actor>();
-            this._scenef_props = new Dictionary<string, Prop>();
+            this._scenef_props = new Dictionary<string, HSNeoOCIProp>();
             this.current_game = "";
             // lip sync
             this.isfAutoLipSync = false;
