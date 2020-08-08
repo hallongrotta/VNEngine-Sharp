@@ -186,7 +186,7 @@ namespace SceneSaveState
                     }
                     else if (Instance.windowindex == 2)
                     {
-                        Utils.sceneUtilsUI();
+                        //Utils.sceneUtilsUI(); TODO
                     }
                 }
             }
@@ -453,7 +453,15 @@ namespace SceneSaveState
             GUILayout.Space(15);
             if (GUILayout.Button("Del selected", GUILayout.Height(50), GUILayout.Width(160)))
             {
-                Instance.delSelectedFromTrack();
+                if (Instance.promptOnDelete)
+                {
+                    Instance.warning_action = Instance.delSelectedFromTrack;
+                    Instance.warning_param = new WarningParam_s("Delete selected actor from scenes?", null, false);
+                }
+                else
+                {
+                    Instance.delSelectedFromTrack();
+                }
             }
             GUILayout.Space(15);
             if (GUILayout.Button("Refresh", GUILayout.Height(50), GUILayout.Width(80)))

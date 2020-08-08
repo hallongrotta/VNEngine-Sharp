@@ -300,7 +300,8 @@ namespace SceneSaveState
             // self.dupchars = self.getAllDupChars()
             // self.updateNameset()
             // :::: UI Data ::::
-            this.consolenames = new string[] { "SceneSaveState", "Pose Library", "Scene Utils" };
+            this.consolenames = new string[] { "SceneSaveState" };
+            //this.consolenames = new string[] { "SceneSaveState", "Pose Library", "Scene Utils" };
             this.options = new string[] { "Edit", "Tracking", "Load/Save", "Advanced", "Ministates" };
             // -- Main --
             this.sel_font_col = "#f24115";
@@ -901,31 +902,42 @@ namespace SceneSaveState
                 }
             }
 
-            string id = "";
+            string baseid = "";
+            string newid = "";
+            if (prop is Prop)
+            {
+                baseid = "item";
+            }
+            else if (prop is VNActor.Light)
+            {
+                baseid = "light";
+            }
             foreach (var i in Enumerable.Range(0, 1000 - 0))
             {
-                id = "light" + i.ToString();
+                var id = baseid + i;
+                
                 if (props.ContainsKey(id))
                 {
                 }
                 else
                 {
+                    newid = id;
                     break;
                 }
             }
             if (prop is HSNeoOCILight)
             {
-                tagfld = HSNeoOCIFolder.add(VNNeoController.light_folder_prefix + id);
+                tagfld = HSNeoOCIFolder.add(VNNeoController.light_folder_prefix + newid);
                 prop.set_parent(tagfld);
             }
             else if (prop is HSNeoOCIRoute)
             {
-                tagfld = HSNeoOCIFolder.add("-propgrandpa:" + id);
+                tagfld = HSNeoOCIFolder.add("-propgrandpa:" + newid);
                 tagfld.set_parent_treenodeobject(prop.treeNodeObject.child[0]);
             }
             else
             {
-                tagfld = HSNeoOCIFolder.add(VNNeoController.prop_folder_prefix + id);
+                tagfld = HSNeoOCIFolder.add(VNNeoController.prop_folder_prefix + newid);
                 tagfld.set_parent_treenodeobject(prop.treeNodeObject);
             }
             var curstatus = prop.export_full_status();
@@ -935,11 +947,11 @@ namespace SceneSaveState
 
                 if (curstatus is PropData propData)
                 {
-                    scene.props[id] = propData;
+                    scene.props[newid] = propData;
                 }
                 else if (curstatus is LightData lightData)
                 {
-                    scene.lights[id] = lightData;
+                    scene.lights[newid] = lightData;
                 }             
                 // updating set
             }
@@ -1121,6 +1133,7 @@ namespace SceneSaveState
                     if (actors[actid].objctrl == elem.objctrl)
                     {
                         // found
+                        id = actid;
                         break;
                     }
                 }
@@ -1136,7 +1149,13 @@ namespace SceneSaveState
             // updating set
             this.game.LoadTrackedActorsAndProps();
         }
-        
+
+        public void delSelectedFromTrack(object o)
+        {
+            delSelectedFromTrack();
+        } 
+
+
         public void delSelectedFromTrack()
         {
             var elem = HSNeoOCI.create_from_selected();
@@ -1154,6 +1173,7 @@ namespace SceneSaveState
                     if (actors[actid].objctrl == elem.objctrl)
                     {
                         // found
+                        id = actid;
                         break;
                     }
                 }
