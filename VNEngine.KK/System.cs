@@ -14,26 +14,39 @@ namespace VNEngine
     public partial class System
     {
 
+        [MessagePackObject]
         public struct Wav_s
         {
+            [Key(0)]
             public string fileName;
+            [Key(1)]
             public bool play;
+            [Key(2)]
             public bool repeat;
         }
 
+        [MessagePackObject]
         public struct BGM_s
         {
-            internal int no;
-            internal bool play;
+            [Key(0)]
+            public int no;
+            [Key(1)]
+            public bool play;
         }
 
+        [MessagePackObject]
         public struct CharLight_s
         {
-            internal Color rgbDiffuse;
-            internal float cameraLightIntensity;
-            internal float rot_y;
-            internal float rot_x;
-            internal bool cameraLightShadow;
+            [Key(0)]
+            public Color rgbDiffuse;
+            [Key(2)]
+            public float cameraLightIntensity;
+            [Key(3)]
+            public float rot_y;
+            [Key(4)]
+            public float rot_x;
+            [Key(5)]
+            public bool cameraLightShadow;
         }
 
         [MessagePackObject(keyAsPropertyName: true)]
@@ -41,7 +54,7 @@ namespace VNEngine
         {
             public BGM_s bgm;
 
-            public Wav_s wav;
+            public Wav_s? wav;
             public int map;
             public Vector3 map_pos;
             public Vector3 map_rot;
@@ -66,7 +79,14 @@ namespace VNEngine
 
                 bgm = new BGM_s { no = game.studio.bgmCtrl.no, play = game.studio.bgmCtrl.play };
 
-                wav = new Wav_s { fileName = game.studio.outsideSoundCtrl.fileName, play = game.studio.outsideSoundCtrl.play, repeat = game.studio.outsideSoundCtrl.repeat == BGMCtrl.Repeat.All };
+                if (game.studio.outsideSoundCtrl.fileName != "")
+                {
+                    wav = new Wav_s { fileName = game.studio.outsideSoundCtrl.fileName, play = game.studio.outsideSoundCtrl.play, repeat = game.studio.outsideSoundCtrl.repeat == BGMCtrl.Repeat.All };
+                }
+                else
+                {
+                    wav = null;
+                }
                 map = game.studio_scene.map;
                 map_pos = game.studio_scene.caMap.pos;
                 map_rot = game.studio_scene.caMap.rot;
@@ -100,7 +120,7 @@ namespace VNEngine
             }
 
             [SerializationConstructor]
-            public SystemData(BGM_s bgm, Wav_s wav, int map, Vector3 map_pos, Vector3 map_rot, int map_sun, bool map_opt, string bg_png, string fm_png, CharLight_s char_light)
+            public SystemData(BGM_s bgm, Wav_s? wav, int map, Vector3 map_pos, Vector3 map_rot, int map_sun, bool map_opt, string bg_png, string fm_png, CharLight_s char_light)
             {
                 this.bgm = bgm;
                 this.wav = wav;
@@ -113,6 +133,21 @@ namespace VNEngine
                 this.fm_png = fm_png;
                 this.char_light = char_light;
             }
+        }
+
+        public static void import_status(SystemData s)
+        {
+            var game = CharaStudioController.Instance;
+            sys_bgm(game, s);
+            sys_wav(game, s);
+            sys_map(game, s);
+            sys_map_pos(game, s);
+            sys_map_rot(game, s);
+            map_sun(game, s);
+            map_option(game, s);
+            sys_bg_png(game, s);
+            sys_fm_png(game, s);
+            sys_char_light(game, s);
         }
 
         public static void map_sun(CharaStudioController game, SystemData param)
