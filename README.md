@@ -12,4 +12,4 @@ VNEngine and SceneSaveState by @keitaro.
 Original SceneConsole code by chickenManX.
 
 [IllusionModdingAPI](https://github.com/IllusionMods/IllusionModdingAPI)
-ExtensibleSaveFormat(https://github.com/IllusionMods/BepisPlugins)
+[ExtensibleSaveFormat](https://github.com/IllusionMods/BepisPlugins)
