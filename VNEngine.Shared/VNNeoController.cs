@@ -206,7 +206,7 @@ namespace VNEngine
                 foreach (var id in props.Keys)
                 {
                     id_global = id;
-                    Item prop = this.scenef_get_propf(id);
+                    HSNeoOCIProp prop = this.scenef_get_propf(id);
                     status = prop.export_full_status();
                     //output += String.Format("'%s': ", id) + VNFrame.script2string(status) + ",\n"; TODO
                 }
@@ -440,9 +440,9 @@ namespace VNEngine
             return ar;
         }
 
-        public List<HSNeoOCIItem> scene_get_all_items()
+        public List<Item> scene_get_all_items()
         {
-            var ar = new List<HSNeoOCIItem>();
+            var ar = new List<Item>();
             var dobjctrl = this.studio.dicObjectCtrl;
             foreach (var key in dobjctrl.Keys)
             {
@@ -785,12 +785,12 @@ namespace VNEngine
             return null;
         }
 
-        public Item scenef_get_propf(string id)
+        public HSNeoOCIProp scenef_get_propf(string id)
         {
             if (this.scenef_get_all_props().ContainsKey(id))
             {
                 HSNeoOCIProp obj = this.scenef_get_all_props()[id];
-                return obj.as_prop;
+                return obj;
             }
             return null;
         }
@@ -859,7 +859,7 @@ namespace VNEngine
         }*/
 
         // --------- sync_h ---------
-        public void sync_h(IActor female, IActor male)
+        public void sync_h(Actor female, Actor male)
         {
             // if factor.isHAnime:
             female.anime_option_param = new Actor.AnimeOption_s { height = female.height, breast = female.breast };

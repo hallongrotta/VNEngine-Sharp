@@ -1,7 +1,93 @@
-﻿namespace VNActor
+﻿using Studio;
+using UnityEngine;
+
+namespace VNActor
 {
-    public partial class Light : HSNeoOCILight
+    public partial class Light : HSNeoOCIProp, IVNObject
     {
+
+        new protected OCILight objctrl;
+
+        public Light(OCILight objctrl) : base(objctrl)
+        {
+            this.objctrl = objctrl;
+        }
+
+        public static Light add_light(int no)
+        {
+            //no:0~8
+            var objctrl = AddObjectLight.Add(no);
+            return new Light(objctrl);
+        }
+
+        public void pos_add(Vector3 param)
+        {
+            // param = (pos_delta_x, pos_delta_y, pos_delta_z)
+            Vector3 cp = this.objctrl.objectInfo.changeAmount.pos;
+            Vector3 ncp = new Vector3(cp.x + param[0], cp.y + param[1], cp.z + param[2]);
+            this.objctrl.objectInfo.changeAmount.pos = ncp;
+        }
+
+        public void rot_add(Vector3 param)
+        {
+            // param = (rot_delta_x, rot_delta_y, rot_delta_z)
+            Vector3 rt = this.objctrl.objectInfo.changeAmount.rot;
+            Vector3 nrt = new Vector3(rt.x + param[0], rt.y + param[1], rt.z + param[2]);
+            this.objctrl.objectInfo.changeAmount.rot = nrt;
+        }
+
+        public bool enable
+        {
+            get
+            {
+                return objctrl.lightInfo.enable;
+            }
+            set
+            {
+                objctrl.SetEnable(value);
+            }
+        }
+
+        public LightType type
+        {
+            get
+            {
+                return objctrl.lightType;
+            }
+        }
+
+        public int no
+        {
+            get
+            {
+                return objctrl.lightInfo.no;
+            }
+        }
+
+        override public Vector3 pos
+        {
+            get
+            {
+                return this.objctrl.objectInfo.changeAmount.pos;
+            }
+            set
+            {
+                this.objctrl.objectInfo.changeAmount.pos = value;
+            }
+        }
+
+        override public Vector3 rot
+        {
+            get
+            {
+                return this.objctrl.objectInfo.changeAmount.rot;
+            }
+            set
+            {
+                this.objctrl.objectInfo.changeAmount.rot = value;
+            }
+        }
+
         public static void prop_enable(Light prop, LightData param)
         {
             // param = 0(hide)/1(show)
@@ -27,7 +113,5 @@
         {
             prop.range = param.range;
         }
-
-
     }
 }

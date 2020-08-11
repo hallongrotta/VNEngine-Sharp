@@ -45,7 +45,7 @@ namespace VNActor
             }
         }
 
-        public Vector3 pos
+        override public Vector3 pos
         {
             get
             {
@@ -57,7 +57,7 @@ namespace VNActor
             }
         }
 
-        public Vector3 rot
+        override public Vector3 rot
         {
             get
             {

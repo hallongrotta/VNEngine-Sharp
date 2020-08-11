@@ -44,6 +44,11 @@ namespace VNEngine
             }         
         }
 
+        public bool CheckConfigEntry(string category, string key)
+        {
+            return true;
+        }
+
         public void loadConfig()
         {
             Config.Bind("Keyboard Shortcuts", "ToggleVNControllerWindow", new KeyboardShortcut(KeyCode.F8, KeyCode.LeftControl), "Show or hide the VN Controller window in Studio.");

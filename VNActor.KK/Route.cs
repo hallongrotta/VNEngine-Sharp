@@ -6,19 +6,17 @@ using UnityEngine;
 
 namespace VNActor
 {
-    public partial class Route : HSNeoOCIRoute
+    public partial class Route : HSNeoOCIProp, IVNObject
     {
-
-        new public OCIRoute objctrl;
 
         public struct RouteData : IDataClass
         {
             internal RouteInfo? route_f;
             internal bool route_p;
 
-            public RouteData(Route r)
+            public RouteData(Route r, bool route_full = false)
             {
-                if (Utils.is_ini_value_true("ExportProp_RouteFull"))
+                if (route_full)
                 {
                     route_f = r.route_full;
                 }
@@ -239,6 +237,11 @@ namespace VNActor
         override public IDataClass export_full_status()
         {
             return new RouteData(this);
+        }
+
+        override public void import_status(IDataClass status)
+        {
+            throw new NotImplementedException();
         }
     }
 }

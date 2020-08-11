@@ -12,7 +12,7 @@ using IK_node_s = System.Collections.Generic.Dictionary<string, UnityEngine.Vect
 namespace VNActor
 {
     public partial class Actor
-        : IActor
+        : IVNObject
     {
 
         /*
@@ -71,11 +71,11 @@ namespace VNActor
             [Key("visible")]
             public readonly bool visible;
             [Key("position")]
-            public readonly Vector3 position;
+            public Vector3 Position { get; }
             [Key("scale")]
-            public readonly Vector3 scale;
+            public Vector3 Scale { get; }
             [Key("rotation")]
-            public readonly Vector3 rotation;
+            public Vector3 Rotation { get; }
             [Key("voiceRepeat")]
             public readonly int voiceRepeat;
             //public readonly bool shoesOn;
@@ -153,9 +153,9 @@ namespace VNActor
             {
 
                 visible = a.visible;
-                position = a.pos;
-                rotation = a.rot;
-                scale = a.scale;
+                Position = a.pos;
+                Rotation = a.rot;
+                Scale = a.scale;
                 animeSpeed = a.animeSpeed;
                 animePattern = a.animePattern;
                 tearLevel = a.tearLevel;
@@ -261,9 +261,9 @@ namespace VNActor
             public ActorData(bool visible, Vector3 position, Vector3 scale, Vector3 rotation, int voiceRepeat, List<int[]> voiceList, Dictionary<string, IK_node_s> ik, bool[] ikActive, Dictionary<int, Vector3> fk, bool[] fkActive, KinematicMode kinematicType, Hands_s handMotions, bool lipSync, float mouthOpen, int mouthPattern, bool blinking, float eyesOpen, int eyePattern, int eyebrowPattern, int neckPattern, Vector3 eyeLookPos, int eyeLookPattern, Son_s son, Animation_s anim, bool simple, Color simpleColor, int tearLevel, byte[] juice, bool[] accessoryStatus, byte[] cloth, float animeSpeed, bool forceLoop, float animePattern, AnimeOption_s animeOption, int coordinateType, float faceRedness, float nippleHardness, string neck, int shoesType)
             {
                 this.visible = visible;
-                this.position = position;
-                this.scale = scale;
-                this.rotation = rotation;
+                this.Position = position;
+                this.Scale = scale;
+                this.Rotation = rotation;
                 this.voiceRepeat = voiceRepeat;
                 this.voiceList = voiceList;
                 this.ik = ik;
@@ -869,9 +869,9 @@ namespace VNActor
         public void import_status(ActorData a)
         {
             visible = a.visible;
-            pos = a.position;
-            rot = a.rotation;
-            scale = a.scale;
+            pos = a.Position;
+            rot = a.Rotation;
+            scale = a.Scale;
             animeSpeed = a.animeSpeed;
             animePattern = a.animePattern;
             tearLevel = a.tearLevel;

@@ -41,20 +41,5 @@ namespace VNActor
             // return Array[Byte](list)
         }
 
-        public static bool is_ini_value_true(string elem)
-        {
-            int val = get_ini_value(elem);
-            if (val != null && val != 0)
-            {
-                return true;
-            }
-            return false;
-        }
-
-        public static int get_ini_value(string elem)
-        {
-            return -1;
-        }
-
     }
 }

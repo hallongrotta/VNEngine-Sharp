@@ -14,12 +14,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)HSNeoOCI.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HSNeoOCIChar.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HSNeoOCIFolder.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)HSNeoOCIItem.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)HSNeoOCILight.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HSNeoOCIProp.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)HSNeoOCIRoute.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)IActor.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)IProp.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IVNObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Light.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Item.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PropFuncs.cs" />

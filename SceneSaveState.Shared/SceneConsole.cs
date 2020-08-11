@@ -545,7 +545,7 @@ namespace SceneSaveState
                 }
                 else if (ochar is HSNeoOCIProp prop)
                 {
-                    ar.Add(prop.as_prop);
+                    ar.Add(prop);
                 }
                 else
                 {
@@ -800,7 +800,7 @@ namespace SceneSaveState
             }
             else if (elem is HSNeoOCIProp prop)
             {
-                this.clipboard_status = prop.as_prop.export_full_status();
+                this.clipboard_status = prop.export_full_status();
             }
             else
             {
@@ -817,7 +817,7 @@ namespace SceneSaveState
             }
             else if (elem is HSNeoOCIProp prop)
             {
-                prop.as_prop.import_status((ItemData)this.clipboard_status);
+                prop.import_status((ItemData)this.clipboard_status);
             }
             else
             {
@@ -834,7 +834,7 @@ namespace SceneSaveState
             }
             else if (elem is HSNeoOCIProp prop)
             {
-                this.clipboard_status2 = prop.as_prop.export_full_status();
+                this.clipboard_status2 = prop.export_full_status();
             }
             else
             {
@@ -851,7 +851,7 @@ namespace SceneSaveState
             }
             else if (elem is HSNeoOCIProp prop)
             {
-                prop.as_prop.import_status((ItemData)this.clipboard_status2);
+                prop.import_status((ItemData)this.clipboard_status2);
             }
             else
             {
@@ -894,7 +894,7 @@ namespace SceneSaveState
             HSNeoOCIFolder tagfld;
             var props = this.game.scenef_get_all_props();
 
-            foreach (Item p in props.Values)
+            foreach (HSNeoOCIProp p in props.Values)
             {
                 if (p.objctrl == prop.objctrl)
                 {
@@ -925,12 +925,12 @@ namespace SceneSaveState
                     break;
                 }
             }
-            if (prop is HSNeoOCILight)
+            if (prop is VNActor.Light)
             {
                 tagfld = HSNeoOCIFolder.add(VNNeoController.light_folder_prefix + newid);
                 prop.set_parent(tagfld);
             }
-            else if (prop is HSNeoOCIRoute)
+            else if (prop is Route)
             {
                 tagfld = HSNeoOCIFolder.add("-propgrandpa:" + newid);
                 tagfld.set_parent_treenodeobject(prop.treeNodeObject.child[0]);
@@ -1311,7 +1311,7 @@ namespace SceneSaveState
                 else
                 {
                     var chld = parent.treeNodeObject.child[childNum];
-                    fld = HSNeoOCI.create_from_treenode<HSNeoOCIFolder>(chld);
+                    fld = HSNeoOCI.create_from_treenode(chld) as HSNeoOCIFolder;
                     if (chld.textName != txt)
                     {
                         //print "hit! upd folder! %s" % txt

@@ -4,10 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+
 namespace VNActor
 {
 
-    public partial class Actor : HSNeoOCIChar
+    public partial class Actor : HSNeoOCIChar, IVNObject
     {
         public struct AnimeOption_s
         {
@@ -177,12 +178,6 @@ namespace VNActor
                     return new Animation_s { group = this.objctrl.oiCharInfo.animeInfo.group, category = this.objctrl.oiCharInfo.animeInfo.category, no = this.objctrl.oiCharInfo.animeInfo.no};
                 }
             }
-        }
-
-        public void restart_anime()
-        {
-            // restart current anime
-            this.objctrl.RestartAnime();
         }
 
         public float animeSpeed

@@ -6,11 +6,11 @@ using UnityEngine;
 
 namespace VNActor
 {
-    class LightNeoV2 : Prop
+    class Light : Prop
     {
 
         new OCILight objctrl;
-        public LightNeoV2(ObjectCtrlInfo objctrl) : base(objctrl)
+        public Light(ObjectCtrlInfo objctrl) : base(objctrl)
         {
         }
 

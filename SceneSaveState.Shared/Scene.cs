@@ -134,7 +134,7 @@ namespace SceneSaveState
                 //vnframe.act(game, {propid: self.props[propid]})
                 //print propid
                 //print game.scenef_get_all_props()
-                Item prop = game.scenef_get_propf(propid);
+                Item prop = game.scenef_get_propf(propid) as Item;
                 ItemData status = this.props[propid];
                 try { 
                     prop?.import_status(status);

@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace VNActor
 {
-    public partial class Item : IProp
+    public partial class Item : IVNObject
     {
 
         [MessagePackObject]
@@ -84,9 +84,9 @@ namespace VNActor
         {
             // Item
             public bool visible;
-            public Vector3 move_to;
-            public Vector3 rotate_to;
-            public Vector3 scale_to;
+            public Vector3 Position { get; }
+            public Vector3 Rotation { get; }
+            public Vector3 Scale { get; }
             public Dictionary<int, Color> color;
             public float? alpha;
             public Panel? pnl_set;
@@ -111,9 +111,9 @@ namespace VNActor
             {
                 // export full status of prop
                 visible = p.visible;
-                move_to = p.pos;
-                rotate_to = p.rot;
-                scale_to = p.scale;
+                Position = p.pos;
+                Rotation = p.rot;
+                Scale = p.scale;
                 if (p.isAnime)
                 {
                     anim_spd = p.anime_speed;
@@ -213,9 +213,9 @@ namespace VNActor
             public ItemData(bool visible, Vector3 move_to, Vector3 rotate_to, Vector3 scale_to, Dictionary<int, Color> color, float? alpha, Panel? pnl_set, PanelDetail_s? pnl_dtl, Emission_s? emission, List<Vector3> fk_set, float? anim_spd, Dictionary<int, Pattern> ptn_set, Dictionary<int, PatternDetail_s> ptn_dtl, float? light_cancel, Line_s? line, Color? shadow_color, bool? db_active)
             {
                 this.visible = visible;
-                this.move_to = move_to;
-                this.rotate_to = rotate_to;
-                this.scale_to = scale_to;
+                this.Position = move_to;
+                this.Rotation = rotate_to;
+                this.Scale = scale_to;
                 this.color = color;
                 this.alpha = alpha;
                 this.pnl_set = pnl_set;
@@ -708,13 +708,21 @@ namespace VNActor
             prop.color = param;
         }
 
+        override public void import_status(IDataClass p)
+        {
+            if (p is ItemData)
+            {
+                import_status(p);
+            }
+        }
+
         public void import_status(ItemData p)
         {
             // export full status of prop
             visible = p.visible;
-            pos = p.move_to;
-            rot = p.rotate_to;
-            scale = p.scale_to;
+            pos = p.Position;
+            rot = p.Rotation;
+            scale = p.Scale;
             if (p.anim_spd is float f)
             {
                 anime_speed = f;

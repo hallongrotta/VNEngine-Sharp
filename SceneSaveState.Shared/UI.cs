@@ -193,7 +193,7 @@ namespace SceneSaveState
             catch (Exception e)
             {
                 Console.WriteLine("sceneSaveStateWindowGUI Exception: " + e.ToString());
-                Utils.sceneConsoleGUIClose();
+                //Utils.sceneConsoleGUIClose();
                 Instance.game.show_blocking_message_time("sceneSaveState error: " + e.ToString());
             }
         }
@@ -1477,7 +1477,7 @@ namespace SceneSaveState
             catch (Exception e)
             {
                 Console.WriteLine("sceneSaveStateWindowGUI Exception: " + e.ToString());
-                Utils.sceneConsoleGUIClose();
+                //Utils.sceneConsoleGUIClose();
                 //SceneConsole.Instance.game.show_blocking_message_time("sceneSaveState error: " + e.ToString()); TODO
             }
         }

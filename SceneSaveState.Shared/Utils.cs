@@ -473,8 +473,8 @@ namespace SceneSaveState
                 var oitem = HSNeoOCI.create_from_treenode(node);
                 if (oitem.objctrl is OCIItem)
                 {
-                    HSNeoOCIProp prop = (HSNeoOCIProp)oitem;
-                    ar.Add(prop.as_prop);
+                    Item prop = (Item)oitem;
+                    ar.Add(prop);
                 }
             }
             if (ar.Count > 0)
@@ -496,8 +496,8 @@ namespace SceneSaveState
                 var oitem = HSNeoOCI.create_from_treenode(node);
                 if (oitem.objctrl is OCIItem)
                 {
-                    HSNeoOCIProp prop = (HSNeoOCIProp)oitem;
-                    ar.Add(prop.as_prop);
+                    Item prop = (Item)oitem;
+                    ar.Add(prop);
                 }
             }
             if (ar.Count > 0)

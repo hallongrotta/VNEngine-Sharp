@@ -248,14 +248,14 @@ namespace VNActor
         {
             // param = (pos_delta_x, pos_delta_y, pos_delta_z)
             var cp = chara.pos;
-            var ncp = new Vector3(cp.x + param.position.x, cp.y + param.position.y, cp.z + param.position.z);
+            var ncp = new Vector3(cp.x + param.Position.x, cp.y + param.Position.y, cp.z + param.Position.z);
             chara.pos = ncp;
         }
 
         public static void char_move_to(Actor chara, ActorData param)
         {
             // param = (pos_dst_x, pos_dst_y, pos_dst_z)
-            chara.pos = param.position;
+            chara.pos = param.Position;
         }
 
         /* TODO
@@ -280,12 +280,12 @@ namespace VNActor
         {
             // param = (rot_x, rot_y, rot_z)
             // for rotate x and z
-            chara.rot = param.rotation;
+            chara.rot = param.Rotation;
         }
 
         public static void char_scale_to(Actor chara, ActorData param)
         {
-            chara.scale = param.scale;
+            chara.scale = param.Scale;
         }
 
         public static void char_kinematic(Actor chara, ActorData param)

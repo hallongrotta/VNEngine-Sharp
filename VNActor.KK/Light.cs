@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace VNActor
 {
-    public partial class Light : HSNeoOCILight, IProp
+    public partial class Light : HSNeoOCIProp, IVNObject
     {
 
         [MessagePackObject]
@@ -24,6 +24,10 @@ namespace VNActor
             [Key(5)]
             public float angle;
 
+            public Vector3 Position { get; }
+
+            public Vector3 Rotation { get; }
+
             public void Remove(string key)
             {
                 throw new NotImplementedException();
@@ -31,6 +35,8 @@ namespace VNActor
 
             public LightData(Light l)
             {
+                Position = l.pos;
+                Rotation = l.rot;
                 color = l.color;
                 enable = l.enable;
                 intensity = l.intensity;
@@ -40,8 +46,10 @@ namespace VNActor
             }
 
             [SerializationConstructor]
-            public LightData(Color color, bool enable, float intensity, bool shadow, float range, float angle)
+            public LightData(Vector3 pos, Vector3 rot, Color color, bool enable, float intensity, bool shadow, float range, float angle)
             {
+                Position = pos;
+                Rotation = rot;
                 this.color = color;
                 this.enable = enable;
                 this.intensity = intensity;
@@ -49,11 +57,6 @@ namespace VNActor
                 this.range = range;
                 this.angle = angle;
             }
-        }
-
-        public Light(OCILight objctrl) : base(objctrl)
-        {
-
         }
 
         override public IDataClass export_full_status()
@@ -69,6 +72,14 @@ namespace VNActor
             shadow = l.shadow;
             range = l.range;
             angle = l.angle;
+        }
+
+        override public void import_status(IDataClass status)
+        {
+            if (status is LightData)
+            {
+                import_status(status);
+            }
         }
 
         public Color color

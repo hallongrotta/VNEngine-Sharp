@@ -110,7 +110,7 @@ namespace VNEngine
             }
         }
 
-        public static string item_dump(HSNeoOCIItem item)
+        public static string item_dump(Item item)
         {
             var addparams = "";
             try
@@ -140,9 +140,9 @@ namespace VNEngine
         public static void _dump_item_tree(StreamWriter f, HSNeoOCI item, int level)
         {
             var txt1 = "";
-            if (item is HSNeoOCIItem)
+            if (item is Item)
             {
-                txt1 = item_dump((HSNeoOCIItem)item);
+                txt1 = item_dump((Item)item);
             } else if (item is HSNeoOCIFolder)
             {
                 txt1 = folder_dump((HSNeoOCIFolder)item);
@@ -213,7 +213,7 @@ namespace VNEngine
             }
             else
             {
-                HSNeoOCIItem item = HSNeoOCIItem.add_item(obj.group, obj.category, (int)obj.no);
+                Item item = Item.add_item(obj.group, obj.category, (int)obj.no);
                 if (itemparenttobj != null)
                 {
                     item.set_parent_treenodeobject(itemparenttobj);

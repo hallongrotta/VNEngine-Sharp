@@ -1,8 +1,9 @@
 ﻿using Studio;
+using UnityEngine;
 
 namespace VNActor
 {
-    public class HSNeoOCI
+    public abstract class HSNeoOCI
     {
 
         public ObjectCtrlInfo objctrl;
@@ -13,35 +14,20 @@ namespace VNActor
             return;
         }
 
+        public abstract Vector3 pos { get; set; }
+        public abstract Vector3 rot { get; set; }
+
         public static HSNeoOCIChar create_from(OCIChar objctrl) { return new Actor(objctrl); }
 
-        public static HSNeoOCIItem create_from(OCIItem objctrl) { return new Item(objctrl); }
+        public static Item create_from(OCIItem objctrl) { return new Item(objctrl); }
 
-        public static HSNeoOCILight create_from(OCILight objctrl) { return new Light(objctrl); }
+        public static Light create_from(OCILight objctrl) { return new Light(objctrl); }
 
-        public static HSNeoOCIRoute create_from(OCIRoute objctrl) { return new Route(objctrl); }
+        public static Route create_from(OCIRoute objctrl) { return new Route(objctrl); }
 
         public static HSNeoOCIFolder create_from(OCIFolder objctrl) { return new HSNeoOCIFolder(objctrl); }
 
-        public static HSNeoOCI create_from(ObjectCtrlInfo objctrl) { return new HSNeoOCI(objctrl); }
-
-        public static T create_from_treenode<T>(TreeNodeObject treenode) where T : HSNeoOCI
-        {
-            if (treenode == null)
-            {
-                return null;
-            }
-            Studio.Studio studio = Studio.Studio.Instance;
-            var dobjctrl = studio.dicInfo;
-            var obj = dobjctrl[treenode];
-            if (obj != null)
-            {
-                HSNeoOCI item = create_from(obj);
-                return (T)item;
-                
-            }
-            return null;
-        }
+        //public static HSNeoOCI create_from(ObjectCtrlInfo objctrl) { return new HSNeoOCI(objctrl); }
 
         public static HSNeoOCI create_from_treenode(TreeNodeObject treenode)
         {
@@ -76,7 +62,7 @@ namespace VNActor
                 }
                 else
                 {
-                    return create_from(obj);
+                    return null;
                 }      
             }
             return null;
@@ -138,5 +124,4 @@ namespace VNActor
             }
         }
     }
-
 }

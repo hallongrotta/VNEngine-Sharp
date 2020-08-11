@@ -2,21 +2,14 @@
 
 namespace VNActor
 {
-    abstract public class HSNeoOCIProp : HSNeoOCI
+    abstract public class HSNeoOCIProp : HSNeoOCI, IVNObject
     {
 
         public HSNeoOCIProp(ObjectCtrlInfo objctrl) : base(objctrl)
         {
         }
 
-        public Item as_prop
-        {
-            get
-            {
-                return (Item)this;
-            }
-        }
-
-        abstract public IDataClass export_full_status();
+        public abstract IDataClass export_full_status();
+        public abstract void import_status(IDataClass status);
     }
 }
