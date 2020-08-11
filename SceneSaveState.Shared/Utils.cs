@@ -464,10 +464,10 @@ namespace SceneSaveState
             return ar[0];
         }
 
-        public static Prop getSelectedItem(VNNeoController game)
+        public static Item getSelectedItem(VNNeoController game)
         {
             var mtreeman = game.studio.treeNodeCtrl;
-            var ar = new List<Prop>();
+            var ar = new List<Item>();
             foreach (var node in mtreeman.selectNodes)
             {
                 var oitem = HSNeoOCI.create_from_treenode(node);
@@ -487,10 +487,10 @@ namespace SceneSaveState
             }
         }
 
-        public static List<Prop> getSelectedItems(VNNeoController game)
+        public static List<Item> getSelectedItems(VNNeoController game)
         {
             var mtreeman = game.studio.treeNodeCtrl;
-            var ar = new List<Prop>();
+            var ar = new List<Item>();
             foreach (var node in mtreeman.selectNodes)
             {
                 var oitem = HSNeoOCI.create_from_treenode(node);
@@ -695,7 +695,6 @@ namespace SceneSaveState
             if (SceneConsole.Instance.skinDefault_sideApp != "sceneutils")
             {
                 SceneConsole.Instance.skinDefault_sideApp = "sceneutils";
-                Utils.start(SceneConsole.Instance.game);
             }
             if (!game.isFuncLocked)
             {

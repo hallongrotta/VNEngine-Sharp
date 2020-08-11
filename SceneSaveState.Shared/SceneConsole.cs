@@ -9,7 +9,7 @@ using static VNEngine.VNCamera;
 using System.IO;
 using Studio;
 using static VNActor.Actor;
-using static VNActor.Prop;
+using static VNActor.Item;
 using RootMotion;
 using System.Text;
 using KKAPI.Studio.SaveLoad;
@@ -894,7 +894,7 @@ namespace SceneSaveState
             HSNeoOCIFolder tagfld;
             var props = this.game.scenef_get_all_props();
 
-            foreach (Prop p in props.Values)
+            foreach (Item p in props.Values)
             {
                 if (p.objctrl == prop.objctrl)
                 {
@@ -904,7 +904,7 @@ namespace SceneSaveState
 
             string baseid = "";
             string newid = "";
-            if (prop is Prop)
+            if (prop is Item)
             {
                 baseid = "item";
             }

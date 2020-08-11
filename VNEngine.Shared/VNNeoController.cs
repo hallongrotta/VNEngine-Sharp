@@ -27,7 +27,7 @@ namespace VNEngine
 
         //public Dictionary<string, Actor> _scenef_actors;
 
-        //public Dictionary<string, Prop> _scenef_props;
+        //public Dictionary<string, Item> _scenef_props;
 
         public GameFunc runScAct;
 
@@ -206,7 +206,7 @@ namespace VNEngine
                 foreach (var id in props.Keys)
                 {
                     id_global = id;
-                    Prop prop = this.scenef_get_propf(id);
+                    Item prop = this.scenef_get_propf(id);
                     status = prop.export_full_status();
                     //output += String.Format("'%s': ", id) + VNFrame.script2string(status) + ",\n"; TODO
                 }
@@ -449,7 +449,7 @@ namespace VNEngine
                 var objctrl = dobjctrl[key];
                 if (objctrl is OCIItem item)
                 {
-                    ar.Add(new Prop(item));
+                    ar.Add(new Item(item));
                 }
             }
             return ar;
@@ -486,7 +486,7 @@ namespace VNEngine
         public void vnscenescript_run_current(GameFunc onEnd, string startState = "0")
         {
             //print "Run current!"
-            /* TODO
+            /*
             MenuFunc func = VNSceneScript.start_menu;
             this.run_menu(func, new Dictionary<string, string> {
                 {
@@ -549,7 +549,7 @@ namespace VNEngine
                 if (obj is OCIItem item)
                 {
                     string id = "prp" + this._scenef_props.Count;
-                    this._scenef_props[id] = new Prop(item); // TODO dont make a new one each time
+                    this._scenef_props[id] = new Item(item); // TODO dont make a new one each time
                 }
                 else if (obj is OCIChar chara) 
                 {
@@ -624,7 +624,7 @@ namespace VNEngine
                     {
                         HSNeoOCI oci = HSNeoOCI.create_from_treenode(fld.treeNodeObject.parent);
 
-                        if (oci is Prop propOci)
+                        if (oci is Item propOci)
                         {
                             _scenef_props[propAlias] = propOci;
                             Logger.LogDebug("Registered prop: '" + Utils.to_roman(propAlias) + "' as " + Utils.to_roman(oci.text_name));
@@ -661,7 +661,7 @@ namespace VNEngine
             game._scenef_actors = new Dictionary<string, Actor>
             {
             };
-            game._scenef_props = new Dictionary<string, Prop>
+            game._scenef_props = new Dictionary<string, Item>
             {
             };
             // get all from scene
@@ -735,7 +735,7 @@ namespace VNEngine
                     // register props
                     HSNeoOCI oci = HSNeoOCI.create_from_treenode(fld.treeNodeObject.parent);
 
-                    if (oci is Prop prop) {
+                    if (oci is Item prop) {
                         game._scenef_props[propAlias] = prop;
                     }
                     
@@ -747,7 +747,7 @@ namespace VNEngine
                     propAlias = ftn.Substring("-propchild:".Length).Trim();
                     // register props
                     hsobj = HSNeoOCI.create_from_treenode(fld.treeNodeObject.child[0]);
-                    game._scenef_props[propAlias] = (Prop)hsobj;
+                    game._scenef_props[propAlias] = (Item)hsobj;
                     Console.WriteLine("Registered prop: '" + Utils.to_roman(propAlias) + "' as " + Utils.to_roman(hsobj.text_name));
                 }
                 else if (ftn.StartsWith("-propgrandpa:"))
@@ -756,7 +756,7 @@ namespace VNEngine
                     propAlias = ftn.Substring("-propgrandpa:".Length).Trim();
                     // register props
                     hsobj = HSNeoOCI.create_from_treenode(fld.treeNodeObject.parent.parent);
-                    game._scenef_props[propAlias] = (Prop)hsobj;
+                    game._scenef_props[propAlias] = (Item)hsobj;
                     Console.WriteLine("Registered prop: '" + Utils.to_roman(propAlias) + "' as " + Utils.to_roman(hsobj.text_name));
                 }
             }
@@ -785,9 +785,9 @@ namespace VNEngine
             return null;
         }
 
-        public Prop scenef_get_propf(string id)
+        public Item scenef_get_propf(string id)
         {
-            if (this.scenef_get_all_props()[id] != null)
+            if (this.scenef_get_all_props().ContainsKey(id))
             {
                 HSNeoOCIProp obj = this.scenef_get_all_props()[id];
                 return obj.as_prop;
@@ -797,7 +797,7 @@ namespace VNEngine
 
         public VNActor.Light scenef_get_light(string id)
         {
-            if (this.scenef_get_all_props()[id] != null)
+            if (this.scenef_get_all_props().ContainsKey(id))
             {
                 HSNeoOCIProp obj = this.scenef_get_all_props()[id];
                 return (VNActor.Light)obj;
@@ -807,7 +807,7 @@ namespace VNEngine
 
         public Actor scenef_get_actor(string id)
         {
-            if (this.scenef_get_all_actors()[id] != null)
+            if (this.scenef_get_all_actors().ContainsKey(id))
             {
                 Actor obj = this.scenef_get_all_actors()[id];
                 return obj;
@@ -820,7 +820,7 @@ namespace VNEngine
             this._scenef_actors[id] = actor;
         }
 
-        public void scenef_reg_prop(string id, Prop prop)
+        public void scenef_reg_prop(string id, Item prop)
         {
             this._scenef_props[id] = prop;
         }

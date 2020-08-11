@@ -21,7 +21,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)IActor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IProp.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Light.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Prop.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Item.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PropFuncs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Route.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utils.cs" />

@@ -4,24 +4,24 @@ using UnityEngine;
 
 namespace VNActor
 {
-    public partial class Prop
+    public partial class Item
     {
 
         //===============================================================================================
         // prop action wrapper functions
         // All scripts: func(prop, param)
-        public static void prop_visible(Prop prop, PropData param)
+        public static void prop_visible(Item prop, PropData param)
         {
             // param = 0(hide)/1(show)
             prop.visible = param.visible;
         }
 
-        public static void prop_move(Prop prop, PropData param)
+        public static void prop_move(Item prop, PropData param)
         {
             prop_move(prop, param.move_to);
         }
 
-        public static void prop_move(Prop prop, Vector3 param)
+        public static void prop_move(Item prop, Vector3 param)
         {
             // param = (pos_delta_x, pos_delta_y, pos_delta_z)
             var cp = prop.pos;
@@ -29,22 +29,22 @@ namespace VNActor
             prop.pos = ncp;
         }
 
-        public static void prop_move_to(Prop prop, PropData param)
+        public static void prop_move_to(Item prop, PropData param)
         {
             prop_move_to(prop, param.move_to);
         }
 
-        public static void prop_move_to(Prop prop, Vector3 param)
+        public static void prop_move_to(Item prop, Vector3 param)
         {
             prop.pos = param;
         }
 
-        public static void prop_rotate(Prop prop, PropData param)
+        public static void prop_rotate(Item prop, PropData param)
         {
             prop_rotate(prop, param.rotate_to);
         }
 
-        public static void prop_rotate(Prop prop, Vector3 param)
+        public static void prop_rotate(Item prop, Vector3 param)
         {
             // param = (rot_delta_x, rot_delta_y, rot_delta_z)
             var rt = prop.rot;
@@ -52,40 +52,40 @@ namespace VNActor
             prop.rot = nrt;
         }
 
-        public static void prop_rotate_to(Prop prop, PropData param)
+        public static void prop_rotate_to(Item prop, PropData param)
         {
             prop_rotate_to(prop, param.rotate_to);
         }
 
-        public static void prop_rotate_to(Prop prop, Vector3 param)
+        public static void prop_rotate_to(Item prop, Vector3 param)
         {
             prop.rot = param;
         }
 
-        public static void prop_scale_to(Prop prop, PropData param)
+        public static void prop_scale_to(Item prop, PropData param)
         {
             prop_scale_to(prop, param.scale_to);
         }
 
-        public static void prop_scale_to(Prop prop, Vector3 param)
+        public static void prop_scale_to(Item prop, Vector3 param)
         {
             prop.scale = param;
         }
 
         /*
-        public static void prop_color_neo(Prop prop, (Color, Color, float, float) param)
+        public static void prop_color_neo(Item prop, (Color, Color, float, float) param)
         {
 
         }
         */
 
         /*
-        public static void prop_color_neo(Prop prop, ((Color, Color, float, float), (float color, float color2, float, float)) param)
+        public static void prop_color_neo(Item prop, ((Color, Color, float, float), (float color, float color2, float, float)) param)
         {
             prop.color = param;
         }
 
-        public static void prop_color_neo(Prop prop, int[] param)
+        public static void prop_color_neo(Item prop, int[] param)
         {
             object col2;
             object col1;
@@ -166,19 +166,19 @@ namespace VNActor
 
 
 
-        public static void prop_fk_set(Prop prop, List<Vector3> param)
+        public static void prop_fk_set(Item prop, List<Vector3> param)
         {
             // param: a list/tuple of Vector3 or tuple(3), as the rot of prop's FK bone
             prop.import_fk_bone_info(param);
         }
 
-        public static void prop_dynamicbone_enable(Prop prop, bool param)
+        public static void prop_dynamicbone_enable(Item prop, bool param)
         {
             // param: 0/1
             prop.dynamicbone_enable = param;
         }
 
-        public static void prop_anime_speed(Prop prop, float param)
+        public static void prop_anime_speed(Item prop, float param)
         {
             // param = speed (0~3)
             prop.anime_speed = param;

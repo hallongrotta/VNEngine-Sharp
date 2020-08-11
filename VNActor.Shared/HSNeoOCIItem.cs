@@ -18,7 +18,7 @@ namespace VNActor
         public static HSNeoOCIItem add_item(int group, int category, int no)
         {
             var objctrl = AddObjectItem.Add(group, category, no); //TODO make this right
-            return new Prop(objctrl);
+            return new Item(objctrl);
         }
 
         public void pos_add(float[] param)

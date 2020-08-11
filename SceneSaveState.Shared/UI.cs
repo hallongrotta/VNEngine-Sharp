@@ -7,7 +7,7 @@ using VNEngine;
 using VNActor;
 using System.Linq;
 using ADV;
-using static VNActor.Prop;
+using static VNActor.Item;
 using static SceneSaveState.SceneConsole;
 
 namespace SceneSaveState
@@ -395,7 +395,7 @@ namespace SceneSaveState
             if (GUILayout.Button("Print Item FK"))
             {
                 Console.WriteLine("::::::::::::Debug::::::::::::");
-                Prop obj = Utils.getSelectedItem(Instance.game);
+                Item obj = Utils.getSelectedItem(Instance.game);
                 if (!(obj == null))
                 {
                     PropData obst = (PropData)obj.export_full_status();

@@ -6,10 +6,10 @@ using UnityEngine;
 namespace VNActor
 {
 
-    public partial class Prop : HSNeoOCIItem
+    public partial class Item : HSNeoOCIItem
     {
         
-        public Prop(OCIItem objctrl) : base(objctrl)
+        public Item(OCIItem objctrl) : base(objctrl)
         {
             this.objctrl = objctrl;
         }

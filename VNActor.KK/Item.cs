@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace VNActor
 {
-    public partial class Prop : IProp
+    public partial class Item : IProp
     {
 
         [MessagePackObject]
@@ -82,7 +82,7 @@ namespace VNActor
         [MessagePackObject(keyAsPropertyName: true)]
         public struct PropData : IDataClass
         {
-            // Prop
+            // Item
             public bool visible;
             public Vector3 move_to;
             public Vector3 rotate_to;
@@ -107,7 +107,7 @@ namespace VNActor
             }
 
             
-            public PropData(Prop p)
+            public PropData(Item p)
             {
                 // export full status of prop
                 visible = p.visible;
@@ -427,7 +427,7 @@ namespace VNActor
                 }
                 else
                 {
-                    throw new Exception("Prop does not have panel.");
+                    throw new Exception("Item does not have panel.");
                 }
             }
         }
@@ -458,7 +458,7 @@ namespace VNActor
                 }
                 else
                 {
-                    throw new Exception("Prop does not have panel.");
+                    throw new Exception("Item does not have panel.");
                 }
             }
         }
@@ -685,25 +685,25 @@ namespace VNActor
             return new PropData(this);
         }
 
-        public static void prop_line(Prop prop, PropData param)
+        public static void prop_line(Item prop, PropData param)
         {
             // param: (color, width)
             prop.line = (Line_s)param.line;
         }
 
-        public static void prop_shadow_color(Prop prop, PropData param)
+        public static void prop_shadow_color(Item prop, PropData param)
         {
             // param: shadow color
             prop.shadow_color = (Color)param.shadow_color;
         }
 
-        public static void prop_light_cancel(Prop prop, PropData param)
+        public static void prop_light_cancel(Item prop, PropData param)
         {
             // param: light cancel
             prop.light_cancel = (float)param.light_cancel;
         }
 
-        public static void prop_color(Prop prop, Dictionary<int, Color> param)
+        public static void prop_color(Item prop, Dictionary<int, Color> param)
         {
             prop.color = param;
         }
@@ -777,7 +777,7 @@ namespace VNActor
 
         /* TODO
 
-        public static void prop_color(Prop prop, Color param)
+        public static void prop_color(Item prop, Color param)
         {
             object ncolor;
             // param = ((R, G, B, A), (R, G, B, A), ...) or ((R, G, B), (R, G, B), ...) or (R, G, B) or (R, G, B, A) or (Color, Color, ...) or Color
@@ -824,7 +824,7 @@ namespace VNActor
         }
         */
 
-        public delegate void PropActFunction(Prop p, PropData data);
+        public delegate void PropActFunction(Item p, PropData data);
 
         /* TODO
 

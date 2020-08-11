@@ -15,7 +15,7 @@ namespace VNActor
 
         public static HSNeoOCIChar create_from(OCIChar objctrl) { return new Actor(objctrl); }
 
-        public static HSNeoOCIItem create_from(OCIItem objctrl) { return new Prop(objctrl); }
+        public static HSNeoOCIItem create_from(OCIItem objctrl) { return new Item(objctrl); }
 
         public static HSNeoOCILight create_from(OCILight objctrl) { return new Light(objctrl); }
 

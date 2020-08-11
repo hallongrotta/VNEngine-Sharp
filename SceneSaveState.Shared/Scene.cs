@@ -5,7 +5,7 @@ using VNActor;
 using CamData = VNEngine.VNCamera.CamData;
 using MessagePack;
 using static VNActor.Actor;
-using static VNActor.Prop;
+using static VNActor.Item;
 using static VNActor.Light;
 
 namespace SceneSaveState
@@ -78,7 +78,7 @@ namespace SceneSaveState
             foreach (string propid in props.Keys)
             {
                 var prop = props[propid];
-                if (prop is Prop p)
+                if (prop is Item p)
                 {
                     this.props[propid] = (PropData)p.export_full_status();
                 }
@@ -134,7 +134,7 @@ namespace SceneSaveState
                 //vnframe.act(game, {propid: self.props[propid]})
                 //print propid
                 //print game.scenef_get_all_props()
-                Prop prop = game.scenef_get_propf(propid);
+                Item prop = game.scenef_get_propf(propid);
                 PropData status = this.props[propid];
                 try { 
                     prop?.import_status(status);

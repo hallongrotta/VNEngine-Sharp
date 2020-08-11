@@ -9,11 +9,11 @@ namespace VNActor
         {
         }
 
-        public Prop as_prop
+        public Item as_prop
         {
             get
             {
-                return (Prop)this;
+                return (Item)this;
             }
         }
 
