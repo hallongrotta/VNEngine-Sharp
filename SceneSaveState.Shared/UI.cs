@@ -398,7 +398,7 @@ namespace SceneSaveState
                 Item obj = Utils.getSelectedItem(Instance.game);
                 if (!(obj == null))
                 {
-                    PropData obst = (PropData)obj.export_full_status();
+                    ItemData obst = (ItemData)obj.export_full_status();
                     for (int i = 0; i < obst.fk_set.Count; i++)
                     {
                         Vector3 vector = obst.fk_set[i];

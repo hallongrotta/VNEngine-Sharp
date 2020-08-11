@@ -80,7 +80,7 @@ namespace VNActor
         }
 
         [MessagePackObject(keyAsPropertyName: true)]
-        public struct PropData : IDataClass
+        public struct ItemData : IDataClass
         {
             // Item
             public bool visible;
@@ -107,7 +107,7 @@ namespace VNActor
             }
 
             
-            public PropData(Item p)
+            public ItemData(Item p)
             {
                 // export full status of prop
                 visible = p.visible;
@@ -210,7 +210,7 @@ namespace VNActor
             }
 
             [SerializationConstructor]
-            public PropData(bool visible, Vector3 move_to, Vector3 rotate_to, Vector3 scale_to, Dictionary<int, Color> color, float? alpha, Panel? pnl_set, PanelDetail_s? pnl_dtl, Emission_s? emission, List<Vector3> fk_set, float? anim_spd, Dictionary<int, Pattern> ptn_set, Dictionary<int, PatternDetail_s> ptn_dtl, float? light_cancel, Line_s? line, Color? shadow_color, bool? db_active)
+            public ItemData(bool visible, Vector3 move_to, Vector3 rotate_to, Vector3 scale_to, Dictionary<int, Color> color, float? alpha, Panel? pnl_set, PanelDetail_s? pnl_dtl, Emission_s? emission, List<Vector3> fk_set, float? anim_spd, Dictionary<int, Pattern> ptn_set, Dictionary<int, PatternDetail_s> ptn_dtl, float? light_cancel, Line_s? line, Color? shadow_color, bool? db_active)
             {
                 this.visible = visible;
                 this.move_to = move_to;
@@ -682,22 +682,22 @@ namespace VNActor
 
         override public IDataClass export_full_status()
         {
-            return new PropData(this);
+            return new ItemData(this);
         }
 
-        public static void prop_line(Item prop, PropData param)
+        public static void prop_line(Item prop, ItemData param)
         {
             // param: (color, width)
             prop.line = (Line_s)param.line;
         }
 
-        public static void prop_shadow_color(Item prop, PropData param)
+        public static void prop_shadow_color(Item prop, ItemData param)
         {
             // param: shadow color
             prop.shadow_color = (Color)param.shadow_color;
         }
 
-        public static void prop_light_cancel(Item prop, PropData param)
+        public static void prop_light_cancel(Item prop, ItemData param)
         {
             // param: light cancel
             prop.light_cancel = (float)param.light_cancel;
@@ -708,7 +708,7 @@ namespace VNActor
             prop.color = param;
         }
 
-        public void import_status(PropData p)
+        public void import_status(ItemData p)
         {
             // export full status of prop
             visible = p.visible;
@@ -824,7 +824,7 @@ namespace VNActor
         }
         */
 
-        public delegate void PropActFunction(Item p, PropData data);
+        public delegate void PropActFunction(Item p, ItemData data);
 
         /* TODO
 

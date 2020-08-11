@@ -10,13 +10,13 @@ namespace VNActor
         //===============================================================================================
         // prop action wrapper functions
         // All scripts: func(prop, param)
-        public static void prop_visible(Item prop, PropData param)
+        public static void prop_visible(Item prop, ItemData param)
         {
             // param = 0(hide)/1(show)
             prop.visible = param.visible;
         }
 
-        public static void prop_move(Item prop, PropData param)
+        public static void prop_move(Item prop, ItemData param)
         {
             prop_move(prop, param.move_to);
         }
@@ -29,7 +29,7 @@ namespace VNActor
             prop.pos = ncp;
         }
 
-        public static void prop_move_to(Item prop, PropData param)
+        public static void prop_move_to(Item prop, ItemData param)
         {
             prop_move_to(prop, param.move_to);
         }
@@ -39,7 +39,7 @@ namespace VNActor
             prop.pos = param;
         }
 
-        public static void prop_rotate(Item prop, PropData param)
+        public static void prop_rotate(Item prop, ItemData param)
         {
             prop_rotate(prop, param.rotate_to);
         }
@@ -52,7 +52,7 @@ namespace VNActor
             prop.rot = nrt;
         }
 
-        public static void prop_rotate_to(Item prop, PropData param)
+        public static void prop_rotate_to(Item prop, ItemData param)
         {
             prop_rotate_to(prop, param.rotate_to);
         }
@@ -62,7 +62,7 @@ namespace VNActor
             prop.rot = param;
         }
 
-        public static void prop_scale_to(Item prop, PropData param)
+        public static void prop_scale_to(Item prop, ItemData param)
         {
             prop_scale_to(prop, param.scale_to);
         }

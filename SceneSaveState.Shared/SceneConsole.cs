@@ -817,7 +817,7 @@ namespace SceneSaveState
             }
             else if (elem is HSNeoOCIProp prop)
             {
-                prop.as_prop.import_status((PropData)this.clipboard_status);
+                prop.as_prop.import_status((ItemData)this.clipboard_status);
             }
             else
             {
@@ -851,7 +851,7 @@ namespace SceneSaveState
             }
             else if (elem is HSNeoOCIProp prop)
             {
-                prop.as_prop.import_status((PropData)this.clipboard_status2);
+                prop.as_prop.import_status((ItemData)this.clipboard_status2);
             }
             else
             {
@@ -945,7 +945,7 @@ namespace SceneSaveState
             {
                 Scene scene = this.block[i];
 
-                if (curstatus is PropData propData)
+                if (curstatus is ItemData propData)
                 {
                     scene.props[newid] = propData;
                 }
@@ -1489,7 +1489,7 @@ namespace SceneSaveState
         {
             public Dictionary<string, ActorData> actors;
             public List<CamData> cams;
-            public Dictionary<string, PropData> props;
+            public Dictionary<string, ItemData> props;
 
             public save_data()
             {

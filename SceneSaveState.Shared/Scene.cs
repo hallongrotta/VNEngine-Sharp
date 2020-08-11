@@ -16,11 +16,11 @@ namespace SceneSaveState
 
         public List<CamData> cams;
         public Dictionary<string, ActorData> actors;
-        public Dictionary<string, PropData> props;
+        public Dictionary<string, ItemData> props;
         public Dictionary<string, LightData> lights;
         public VNEngine.System.SystemData sys;
 
-        public Scene(Dictionary<string, ActorData> actors, Dictionary<string, PropData> props, Dictionary<string, LightData> lights, List<CamData> cams)
+        public Scene(Dictionary<string, ActorData> actors, Dictionary<string, ItemData> props, Dictionary<string, LightData> lights, List<CamData> cams)
         {
             this.cams = cams;
             this.actors = actors;
@@ -28,7 +28,7 @@ namespace SceneSaveState
             this.lights = lights;
         }
 
-        public Scene() : this(new Dictionary<string, ActorData>(), new Dictionary<string, PropData>(), new Dictionary<string, LightData>(), new List<CamData>())
+        public Scene() : this(new Dictionary<string, ActorData>(), new Dictionary<string, ItemData>(), new Dictionary<string, LightData>(), new List<CamData>())
         {
         }
 
@@ -41,7 +41,7 @@ namespace SceneSaveState
             var strlights = Utils.SerializeData(this.lights);
 
             Dictionary<string, ActorData> copied_actors = Utils.DeserializeData<Dictionary<string, ActorData>>(stractors);
-            Dictionary<string, PropData> copied_props = Utils.DeserializeData<Dictionary<string, PropData>>(strprops);
+            Dictionary<string, ItemData> copied_props = Utils.DeserializeData<Dictionary<string, ItemData>>(strprops);
             Dictionary<string, LightData> copied_lights = Utils.DeserializeData<Dictionary<string, LightData>>(strlights);
             List<CamData> copied_cams = Utils.DeserializeData<List<CamData>>(strcams);
 
@@ -68,7 +68,7 @@ namespace SceneSaveState
         {
             game.LoadTrackedActorsAndProps();
             this.actors = new Dictionary<string, ActorData>();
-            this.props = new Dictionary<string, PropData>();
+            this.props = new Dictionary<string, ItemData>();
             Dictionary<string, Actor> actors = game.scenef_get_all_actors();
             Dictionary<string, HSNeoOCIProp> props = game.scenef_get_all_props();
             foreach (string actid in actors.Keys)
@@ -80,7 +80,7 @@ namespace SceneSaveState
                 var prop = props[propid];
                 if (prop is Item p)
                 {
-                    this.props[propid] = (PropData)p.export_full_status();
+                    this.props[propid] = (ItemData)p.export_full_status();
                 }
                 else if (prop is Light l)
                 {
@@ -135,7 +135,7 @@ namespace SceneSaveState
                 //print propid
                 //print game.scenef_get_all_props()
                 Item prop = game.scenef_get_propf(propid);
-                PropData status = this.props[propid];
+                ItemData status = this.props[propid];
                 try { 
                     prop?.import_status(status);
                 }
