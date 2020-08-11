@@ -861,64 +861,6 @@ namespace SceneSaveState
             Instance.saveload_scroll = GUILayout.BeginScrollView(Instance.saveload_scroll);
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
-            GUILayout.Label(" ------------------------------------------    Data in scene folders    ------------------------------------------");
-            GUILayout.FlexibleSpace();
-            GUILayout.EndHorizontal();
-            GUILayout.Space(15);
-            GUILayout.BeginHorizontal();
-            GUILayout.FlexibleSpace();
-            if (GUILayout.Button("<color=#00ff00>Load</color> scene data", GUILayout.Height(btnBigHeight), GUILayout.Width(210)))
-            {
-                if (Instance.block.Count > 0)
-                {
-                    Instance.warning_action = Instance.loadSceneData;
-                    Instance.warning_param = new SceneConsole.WarningParam_s("Do you wish to load scenedata from current scene? (Will overwrite console data)", null, false);
-                }
-                else
-                {
-                    Instance.loadSceneData();
-                }
-            }
-            GUILayout.FlexibleSpace();
-            if (GUILayout.Button("<color=#ff0000>Save</color> scene data", GUILayout.Height(btnBigHeight), GUILayout.Width(210)))
-            {
-                // delete existing scenedata fld
-                //fld = getFolder(sc.game, "-scenesavestate", True)
-                fld = HSNeoOCIFolder.find_single_startswith("-scenesavestate:");
-                if (!(fld == null))
-                {
-                    Instance.warning_action = Instance.saveSceneData;
-                    Instance.warning_param = new SceneConsole.WarningParam_s("Scenedata exists. Overwrite?", fld, false);
-                }
-                else
-                {
-                    //Instance.saveSceneData(backup: false);
-                }
-            }
-            GUILayout.FlexibleSpace();
-            GUILayout.EndHorizontal();
-            GUILayout.BeginHorizontal();
-            GUILayout.FlexibleSpace();
-            GUILayout.Space(210);
-            GUILayout.FlexibleSpace();
-            //sc.isSaveCompact = GUILayout.Toggle(sc.isSaveCompact, "Save compact (since 4.0)", GUILayout.Height(20), GUILayout.Width(210))
-            //sc.isSaveCompact = GUILayout.Toggle(sc.isSaveCompact, "Save compact", GUILayout.Height(20),
-            //                                     GUILayout.Width(100))
-            Instance.isSaveVerify = GUILayout.Toggle(Instance.isSaveVerify, "Verify save", GUILayout.Height(20), GUILayout.Width(80));
-            Instance.isSaveOld = GUILayout.Toggle(Instance.isSaveOld, "Old save 100%OK", GUILayout.Height(20), GUILayout.Width(125));
-            // if GUILayout.Button("Save scene data", GUILayout.Height(80), GUILayout.Width(210)):
-            //     # delete existing scenedata fld
-            //     # fld = getFolder(sc.game, "-scenesavestate", True)
-            //     fld = HSNeoOCIFolder.find_single_startswith("-scenesavestate:")
-            //     if not fld == None:
-            //         sc.warning_param = (sc.saveSceneData, 'Scenedata exists. Overwrite?', fld, False)
-            //     else:
-            //         sc.saveSceneData(fld=None, backup=False)
-            GUILayout.FlexibleSpace();
-            GUILayout.EndHorizontal();
-            GUILayout.Space(20);
-            GUILayout.BeginHorizontal();
-            GUILayout.FlexibleSpace();
             GUILayout.Label(" ----------------------------------------    Data on external file    ----------------------------------------");
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
