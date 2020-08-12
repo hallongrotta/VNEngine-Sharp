@@ -7,44 +7,8 @@ using System.Linq;
 
 namespace VNActor
 {
-    public partial class Prop : IProp
+    public partial class Item : IProp
     {
-        public struct PropData : IDataClass
-        {
-            // Prop
-            internal bool visible;
-            internal bool option;
-            internal bool db_active;
-            internal Vector3 move_to;
-            internal Vector3 rotate_to;
-            internal Vector3 scale_to;
-            internal Color[] color;
-            internal float alpha;
-            internal Pattern[] ptn_set;
-            internal PatternDetail[] ptn_dtl;
-            internal (string, bool) pnl_set;
-            internal Prop.PatternDetail pnl_dtl;
-            internal List<(float, float)> metallic;
-            internal (Color, float) emission;
-            internal bool fk_active;
-            public List<Vector3> fk_set;
-            internal float anim_spd;
-            internal int anim_ptn;
-            //Light
-            internal object enable;
-            internal float intensity;
-            internal bool shadow;
-            internal float range;
-            internal float angle;
-            //Route
-            internal Route route_f;
-            internal bool route_p;
-
-            public void Remove(string key)
-            {
-                throw new NotImplementedException();
-            }
-        }
 
         OCIItem objctrl;
         private object enable;
@@ -840,67 +804,67 @@ namespace VNActor
             return fs;
         }
 
-        public static void prop_pattern(Prop prop, Prop.Pattern[] param)
+        public static void prop_pattern(Item prop, Item.Pattern[] param)
         {
             // param: a set of ((key, filepath, clamp), (key, filepath, clamp), (key, filepath, clamp))
             prop.set_pattern(param);
         }
 
-        public static void prop_pattern_detail(Prop prop, Prop.PatternDetail[] param)
+        public static void prop_pattern_detail(Item prop, Item.PatternDetail[] param)
         {
             // param: a set of ((color, ut, vt, us, vs, rot), (color, ut, vt, us, vs, rot), (color, ut, vt, us, vs, rot))
             prop.set_pattern_detail(param);
         }
 
-        public static void prop_panel(Prop prop, (string, bool) param)
+        public static void prop_panel(Item prop, (string, bool) param)
         {
             // param: a set of (filepath, clamp)
             prop.set_panel(param);
         }
 
-        public static void prop_panel_detail(Prop prop, PatternDetail param)
+        public static void prop_panel_detail(Item prop, PatternDetail param)
         {
             // param: a set of (color, ut, vt, us, vs, rot)
             prop.set_panel_detail(param);
         }
 
-        public static void prop_metallic(Prop prop, List<(float metallic, float glossiness)> param)
+        public static void prop_metallic(Item prop, List<(float metallic, float glossiness)> param)
         {
             // param: a list of ((metallic, glossiness), (metallic, glossiness), ...)
             prop.set_metallic(param);
         }
 
-        public static void prop_emission(Prop prop, (Color, float) param)
+        public static void prop_emission(Item prop, (Color, float) param)
         {
             // param: (color, power)
             prop.set_emission(param);
         }
 
-        public static void prop_alpha(Prop prop, float param)
+        public static void prop_alpha(Item prop, float param)
         {
             // param = 0~1
             prop.set_alpha(param);
         }
 
-        public static void prop_option(Prop prop, object param)
+        public static void prop_option(Item prop, object param)
         {
             // param = 0(hide)/1(show)
             prop.set_option((bool)param);
         }
 
-        public static void prop_fk_enable(Prop prop, object param)
+        public static void prop_fk_enable(Item prop, object param)
         {
             // param = 0/1
             prop.set_fk_enable((bool)param);
         }
 
-        public static void prop_anime_pattern(Prop prop, int param)
+        public static void prop_anime_pattern(Item prop, int param)
         {
             // param = pattern index
             prop.anime_pattern = param;
         }
 
-        public delegate void PropActFunction(Prop p, PropData data);
+        public delegate void PropActFunction(Item p, PropData data);
 
         protected static Dictionary<string, (PropActFunction, bool)> prop_act_funcs = new Dictionary<string, (PropActFunction, bool)> {
         {

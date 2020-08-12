@@ -41,7 +41,7 @@
   <ItemGroup>
     <Compile Include="Actor.cs" />
     <Compile Include="Light.cs" />
-    <Compile Include="Prop.cs" />
+    <Compile Include="Item.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
