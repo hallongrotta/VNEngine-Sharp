@@ -1031,7 +1031,7 @@ namespace SceneSaveState
             {
                 foreach (var i in Enumerable.Range(0, Instance.block.Count))
                 {
-                    if (i == Instance.cur_index)
+                    if (i == Instance.currentSceneIndex)
                     {
                         col = Instance.sel_font_col;
                     }
@@ -1054,7 +1054,7 @@ namespace SceneSaveState
                     }
                     if (GUILayout.Button(String.Format("<color={0}>{1}</color>", col, scn_name)))
                     {
-                        Instance.cur_index = i;
+                        Instance.currentSceneIndex = i;
                         if (Instance.autoLoad == true)
                         {
                             Instance.loadCurrentScene();
@@ -1078,11 +1078,11 @@ namespace SceneSaveState
             GUILayout.BeginVertical();
             // Camera and character selection tabs
             GUILayout.BeginHorizontal();
-            if (Instance.cur_index > -1)
+            if (Instance.currentSceneIndex > -1)
             {
                 GUILayout.BeginVertical();
                 Instance.cam_scroll = GUILayout.BeginScrollView(Instance.cam_scroll, GUILayout.Height(185), GUILayout.Width(Instance.camviewwidth));
-                foreach (var i in Enumerable.Range(0, Instance.block[Instance.cur_index].cams.Count - 0))
+                foreach (var i in Enumerable.Range(0, Instance.block[Instance.currentSceneIndex].cams.Count - 0))
                 {
                     if (i == Instance.cur_cam)
                     {
@@ -1092,7 +1092,7 @@ namespace SceneSaveState
                     {
                         col = "#f9f9f9";
                     }
-                    var cam = Instance.block[Instance.cur_index].cams[i];
+                    var cam = Instance.block[Instance.currentSceneIndex].cams[i];
                     VNCamera.VNData addparams = cam.addata;
                     GUILayout.BeginHorizontal();
                     // show name if available
@@ -1191,7 +1191,7 @@ namespace SceneSaveState
                 //         sc.warning_param = (sc.changeSceneChars, "Delete selected female character?", (1, "del"), False)
                 //     else:
                 //         sc.changeSceneChars(1, "del")
-                if (Instance.cur_index > -1 && Instance.cur_cam > -1)
+                if (Instance.currentSceneIndex > -1 && Instance.cur_cam > -1)
                 {
                     GUILayout.Space(25);
                     if (GUILayout.Button("Copy cam set"))
@@ -1230,7 +1230,7 @@ namespace SceneSaveState
                 //         sc.warning_param = (sc.changeSceneChars, "Delete selected male character?", (0, "del"), False)
                 //     else:
                 //         sc.changeSceneChars(0, "del")
-                if (Instance.cur_index > -1 && !Instance.camset.IsNullOrEmpty())
+                if (Instance.currentSceneIndex > -1 && !Instance.camset.IsNullOrEmpty())
                 {
                     GUILayout.Space(25);
                     if (GUILayout.Button("Paste cam set"))

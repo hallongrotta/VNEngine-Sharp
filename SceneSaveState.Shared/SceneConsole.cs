@@ -87,22 +87,24 @@ namespace SceneSaveState
 
         public int cur_cam;
 
-        public int cur_index 
+        private int currentIndex;
+
+        public int currentSceneIndex 
         {
-            get { return cur_index; }
+            get { return currentIndex; }
             set 
             {
-                if (value > block.Count - 1)
+                if (value > block.Count)
                 {
-                    cur_index = block.Count - 1;
+                    currentIndex = block.Count - 1;
                 } 
                 else if ( value < -1)
                 {
-                    cur_index = -1;
+                    currentIndex = -1;
                 }
                 else
                 {
-                    cur_index = value;
+                    currentIndex = value;
                 }               
             } 
         }
@@ -380,7 +382,7 @@ namespace SceneSaveState
             this.scene_strings = new List<string>();
             this.scene_str_array = new string[] { "<Empty>" };
             this.scene_cam_str = new string[] {"<Empty>" };
-            this.cur_index = -1;
+            this.currentSceneIndex = -1;
             this.prev_index = -1;
             this.cur_cam = -1;
             this.prev_cam = -1;
@@ -579,21 +581,21 @@ namespace SceneSaveState
         {
             if (insert == false)
             {
-                this.cur_index = this.block.Count;
-                this.prev_index = this.cur_index;
+                this.currentSceneIndex = this.block.Count;
+                this.prev_index = this.currentSceneIndex;
             }
             else
             {
-                this.cur_index += 1;
+                this.currentSceneIndex += 1;
             }
-            this.block.Insert(this.cur_index, new Scene());
+            this.block.Insert(this.currentSceneIndex, new Scene());
             this.updateSceneStrings();
         }
 
         public void getSceneCamString()
         {
             var cam_str = new List<string>();
-            foreach (var i in Enumerable.Range(0, this.block[this.cur_index].cams.Count - 0))
+            foreach (var i in Enumerable.Range(0, this.block[this.currentSceneIndex].cams.Count - 0))
             {
                 cam_str.Add("Cam " + i.ToString());
             }
@@ -617,15 +619,15 @@ namespace SceneSaveState
             var cam_data = new CamData(cdata.pos, cdata.rotate, cdata.distance, cdata.parse, addata);
             if (task == "" || task == "add")
             {
-                this.cur_cam = this.block[this.cur_index].addCam(cam_data);
+                this.cur_cam = this.block[this.currentSceneIndex].addCam(cam_data);
             }
             else if (task == "upd")
             {
-                this.block[this.cur_index].updateCam(this.cur_cam, cam_data);
+                this.block[this.currentSceneIndex].updateCam(this.cur_cam, cam_data);
             }
             else if (task == "del")
             {
-                this.cur_cam = this.block[this.cur_index].deleteCam(this.cur_cam);
+                this.cur_cam = this.block[this.currentSceneIndex].deleteCam(this.cur_cam);
                 if (this.cur_cam > -1)
                 {
                     this.setCamera();
@@ -644,7 +646,7 @@ namespace SceneSaveState
 
         public void setCamera(bool isAnimated)
         {
-            VNCamera.CamData camera_data = this.block[this.cur_index].cams[this.cur_cam];
+            VNCamera.CamData camera_data = this.block[this.currentSceneIndex].cams[this.cur_cam];
             // check and run adv command
             var keepCamera = false;
             if (camera_data.hasVNData)
@@ -735,7 +737,7 @@ namespace SceneSaveState
                     this.changeSceneCam("add");
                 }
             }
-            var curscene = this.block[this.cur_index];
+            var curscene = this.block[this.currentSceneIndex];
             curscene.importCurScene(this.game, this.isSysTracking);
         }
 
@@ -749,8 +751,8 @@ namespace SceneSaveState
         {
             if (this.block.Count > 0)
             {
-                this.block.RemoveAt(this.cur_index);
-                this.cur_index = this.cur_index - 1;
+                this.block.RemoveAt(this.currentSceneIndex);
+                this.currentSceneIndex = this.currentSceneIndex - 1;
                 this.scene_strings.RemoveAt(scene_strings.Count - 1);
                 this.scene_str_array = this.scene_strings.ToArray();
             }
@@ -760,7 +762,7 @@ namespace SceneSaveState
         public void loadCurrentScene()
         {
             this.setSceneState();
-            if (block.Count > 0 && this.block[this.cur_index].cams.Count > 0)
+            if (block.Count > 0 && this.block[this.currentSceneIndex].cams.Count > 0)
             {
                 this.cur_cam = 0;
                 this.setCamera();
@@ -769,7 +771,7 @@ namespace SceneSaveState
 
         public void setSceneState()
         {
-            setSceneState(this.cur_index);
+            setSceneState(this.currentSceneIndex);
         }
 
         public void setSceneState(int index)
@@ -1696,7 +1698,7 @@ namespace SceneSaveState
             {
                 if (this.block.Count > 0)
                 {
-                    this.cur_index = 0;
+                    this.currentSceneIndex = 0;
                     this.cur_cam = 0;
                 }
             }
@@ -1722,7 +1724,7 @@ namespace SceneSaveState
                 //import copy
                 // we have a problem with copy, so... just serialize and back it
                 //objstr = MessagePackSerializer.Serialize(self.block[self.cur_index])
-                this.block.Insert(this.cur_index, this.block[this.cur_index].copy());
+                this.block.Insert(this.currentSceneIndex, this.block[this.currentSceneIndex].copy());
                 this.updateSceneStrings();
             }
         }
@@ -1730,76 +1732,76 @@ namespace SceneSaveState
         // Copy/paste cam set
         public void copyCamSet()
         {
-            if (this.cur_index > -1)
+            if (this.currentSceneIndex > -1)
             {
                 if (this.camset is null)
                 {
                     this.camset = new List<CamData>();
                 }
-                this.camset = this.block[this.cur_index].cams;
+                this.camset = this.block[this.currentSceneIndex].cams;
             }
         }
 
         public void pasteCamSet()
         {
-            if (this.cur_index > -1)
+            if (this.currentSceneIndex > -1)
             {
-                this.block[this.cur_index].cams.AddRange(this.camset);
+                this.block[this.currentSceneIndex].cams.AddRange(this.camset);
             }
         }
 
         // Move cam (up/down)
         public void move_cam_up()
         {
-            if (this.cur_index > -1 && this.cur_cam > 0)
+            if (this.currentSceneIndex > -1 && this.cur_cam > 0)
             {
-                var curcam = this.block[this.cur_index].cams[this.cur_cam];
-                this.block[this.cur_index].cams[this.cur_cam] = this.block[this.cur_index].cams[this.cur_cam - 1];
+                var curcam = this.block[this.currentSceneIndex].cams[this.cur_cam];
+                this.block[this.currentSceneIndex].cams[this.cur_cam] = this.block[this.currentSceneIndex].cams[this.cur_cam - 1];
                 this.cur_cam -= 1;
-                this.block[this.cur_index].cams[this.cur_cam] = curcam;
+                this.block[this.currentSceneIndex].cams[this.cur_cam] = curcam;
             }
         }
 
         public void move_cam_down()
         {
-            if (this.cur_index > -1 && this.cur_cam < this.block[this.cur_index].cams.Count - 1)
+            if (this.currentSceneIndex > -1 && this.cur_cam < this.block[this.currentSceneIndex].cams.Count - 1)
             {
-                var curcam = this.block[this.cur_index].cams[this.cur_cam];
-                this.block[this.cur_index].cams[this.cur_cam] = this.block[this.cur_index].cams[this.cur_cam + 1];
+                var curcam = this.block[this.currentSceneIndex].cams[this.cur_cam];
+                this.block[this.currentSceneIndex].cams[this.cur_cam] = this.block[this.currentSceneIndex].cams[this.cur_cam + 1];
                 this.cur_cam += 1;
-                this.block[this.cur_index].cams[this.cur_cam] = curcam;
+                this.block[this.currentSceneIndex].cams[this.cur_cam] = curcam;
             }
         }
 
         // Move scene(up/down)
         public void move_scene_up()
         {
-            if (this.cur_index > 0)
+            if (this.currentSceneIndex > 0)
             {
-                var cursc = this.block[this.cur_index];
-                this.block[this.cur_index] = this.block[this.cur_index - 1];
-                this.cur_index -= 1;
-                this.block[this.cur_index] = cursc;
+                var cursc = this.block[this.currentSceneIndex];
+                this.block[this.currentSceneIndex] = this.block[this.currentSceneIndex - 1];
+                this.currentSceneIndex -= 1;
+                this.block[this.currentSceneIndex] = cursc;
             }
         }
 
         public void move_scene_down()
         {
-            if (this.cur_index < this.block.Count - 1)
+            if (this.currentSceneIndex < this.block.Count - 1)
             {
-                var cursc = this.block[this.cur_index];
-                this.block[this.cur_index] = this.block[this.cur_index + 1];
-                this.cur_index += 1;
-                this.block[this.cur_index] = cursc;
+                var cursc = this.block[this.currentSceneIndex];
+                this.block[this.currentSceneIndex] = this.block[this.currentSceneIndex + 1];
+                this.currentSceneIndex += 1;
+                this.block[this.currentSceneIndex] = cursc;
             }
         }
 
         // Goto next/prev
         public void goto_first()
         {
-            this.cur_index = 0;
+            this.currentSceneIndex = 0;
             this.loadCurrentScene();
-            this.prev_index = this.cur_index;
+            this.prev_index = this.currentSceneIndex;
         }
 
         public void goto_next(VNController game, int i)
@@ -1811,7 +1813,7 @@ namespace SceneSaveState
         {
             if (this.block.Count > 0)
             {
-                if (this.block[this.cur_index].cams.Count > 0 && this.cur_cam < this.block[this.cur_index].cams.Count - 1)
+                if (this.block[this.currentSceneIndex].cams.Count > 0 && this.cur_cam < this.block[this.currentSceneIndex].cams.Count - 1)
                 {
                     this.cur_cam += 1;
                     this.setCamera();
@@ -1829,7 +1831,7 @@ namespace SceneSaveState
         {
             if (this.block.Count > 0)
             {
-                this.prev_index = this.cur_index;
+                this.prev_index = this.currentSceneIndex;
                 this.prev_cam = this.cur_cam;
                 if (this.cur_cam > 0)
                 {
@@ -1847,11 +1849,11 @@ namespace SceneSaveState
 
         public void goto_next_sc()
         {
-            if (this.block.Count > 0 && this.cur_index < this.block.Count - 1)
+            if (this.block.Count > 0 && this.currentSceneIndex < this.block.Count - 1)
             {
-                this.cur_index += 1;
+                this.currentSceneIndex += 1;
                 this.loadCurrentScene();
-                this.prev_index = this.cur_index;
+                this.prev_index = this.currentSceneIndex;
             }
         }
 
@@ -1862,14 +1864,14 @@ namespace SceneSaveState
 
         public void goto_prev_sc(bool lastcam = false)
         {
-            if (this.block.Count > 0 && this.cur_index > 0)
+            if (this.block.Count > 0 && this.currentSceneIndex > 0)
             {
-                this.cur_index -= 1;
+                this.currentSceneIndex -= 1;
                 this.loadCurrentScene();
-                this.prev_index = this.cur_index;
-                if (lastcam == true && this.block[this.cur_index].cams.Count > 0)
+                this.prev_index = this.currentSceneIndex;
+                if (lastcam == true && this.block[this.currentSceneIndex].cams.Count > 0)
                 {
-                    this.cur_cam = this.block[this.cur_index].cams.Count - 1;
+                    this.cur_cam = this.block[this.currentSceneIndex].cams.Count - 1;
                     this.setCamera();
                 }
             }
@@ -1990,20 +1992,21 @@ namespace SceneSaveState
             game.set_text_s("...");
             game.set_buttons(new List<Button_s>() { new Button_s(">>", this.goto_next, 1) });
             this.game.skin_set(rpySkin);
+            game.visible = true;
             if (starfrom == "cam")
             {
                 //print self.cur_index, self.cur_cam
-                calcPos = (this.cur_index + 1) * 100 + this.cur_cam;
+                calcPos = (this.currentSceneIndex + 1) * 100 + this.cur_cam;
             }
             else if (starfrom == "scene")
             {
-                calcPos = (this.cur_index + 1) * 100;
+                calcPos = (this.currentSceneIndex + 1) * 100;
             }
             else
             {
                 calcPos = 0;
             }
-            this.cur_index = calcPos;
+            this.currentSceneIndex = calcPos;
             Console.WriteLine(String.Format("Run VNSS from state {0}", calcPos.ToString()));
             this.game.vnscenescript_run_current(this.onEndVNSS, calcPos.ToString());
         }
@@ -2074,7 +2077,7 @@ namespace SceneSaveState
         {
             SetExtendedData(new PluginData() { data = null });
             this.block = new List<Scene>();
-            this.cur_index = -1;
+            this.currentSceneIndex = -1;
             updateSceneStrings();
             game.LoadTrackedActorsAndProps();
         }
@@ -2098,7 +2101,7 @@ namespace SceneSaveState
             if (pluginData == null || pluginData?.data == null)
             {
                 this.block = new List<Scene>();
-                this.cur_index = -1;
+                this.currentSceneIndex = -1;
             }
             else
             {
@@ -2110,7 +2113,7 @@ namespace SceneSaveState
                     {
                         this.block = MessagePackSerializer.Deserialize<List<Scene>>(sceneData, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
                         logger.LogDebug($"Loaded {((double)sceneData.Length / 1000):N} Kbytes of scene data.");
-                        this.cur_index = 0;
+                        this.currentSceneIndex = 0;
                     }
                     catch (Exception e)
                     {
