@@ -364,12 +364,12 @@ namespace VNActor
             }
         }
 
-        public static void char_ext_faceshapes(Actor chara, List<float> param)
+        public static void char_ext_faceshapes(Actor chara, float[] param)
         {
             // param = face shape array
             try
             {
-                chara.set_face_shapes_all(param);
+                chara.face_shapes_all = param;
             }
             catch (Exception e)
             {

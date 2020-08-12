@@ -857,7 +857,7 @@ namespace VNActor
         {
             get
             {
-                return this.get_face_shapes_all().Count;
+                return this.face_shapes_all.Length;
             }
         }
 

@@ -969,22 +969,24 @@ get
 
         // face sliders
 
-        public List<float> get_face_shapes_all()
+        public float[] face_shapes_all
         {
-            var ct = this.face_shapes_count;
-            var res = new List<float>();
-            foreach (var i in Enumerable.Range(0, ct))
+            get
             {
-                res.Add(this.face_shape[i]);
+                var ct = this.face_shapes_count;
+                var res = new float[ct];
+                for (int i = 0; i < ct; i++)
+                {
+                    res[i] = this.face_shape[i];
+                }
+                return res;
             }
-            return res;
-        }
-
-        public void set_face_shapes_all(List<float> arr)
-        {
-            foreach (var i in Enumerable.Range(0, arr.Count))
+            set
             {
-                this.set_face_shape(i, arr[i]);
+                for (int i = 0; i < value.Length; i++)
+                {
+                    this.set_face_shape(i, value[i]);
+                }
             }
         }
     }
