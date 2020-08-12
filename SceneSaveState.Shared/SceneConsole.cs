@@ -2076,10 +2076,17 @@ namespace SceneSaveState
                 byte[] sceneData = pluginData.data["scenes"] as byte[];
                 if (!sceneData.IsNullOrEmpty())
                 {
-                    this.block = MessagePackSerializer.Deserialize<List<Scene>>(sceneData, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
                     var logger = game.GetLogger;
-                    logger.LogDebug($"Loaded {((double)sceneData.Length / 1000):N} Kbytes of scene data.");
-                    this.cur_index = 0;
+                    try
+                    {
+                        this.block = MessagePackSerializer.Deserialize<List<Scene>>(sceneData, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
+                        logger.LogDebug($"Loaded {((double)sceneData.Length / 1000):N} Kbytes of scene data.");
+                        this.cur_index = 0;
+                    }
+                    catch (Exception e)
+                    {
+                        logger.LogError("Error occurred while loading scene data: " + e.ToString());
+                    }
                 }
             }
             updateSceneStrings();

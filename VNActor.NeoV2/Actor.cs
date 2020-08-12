@@ -1,69 +1,13 @@
-﻿using Studio;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using AIChara;
-using System.Linq;
-using UnityEngine;
 using System.IO;
+using System.Linq;
 
 namespace VNActor
 {
 
-    public partial class Actor : IActor
+    public partial class Actor
     {
-
-        public struct ActorData : IDataClass
-        {
-            public bool visible;
-            public Vector3 position;
-            public Vector3 scale;
-            public Vector3 rotation;
-            public int voiceRepeat;
-            public bool shoesOn;
-            public List<int[]> voiceList;
-            public Dictionary<string, (Vector3 pos, Vector3 rot)> ik;
-            public bool[] ikActive;
-            public Dictionary<int, Vector3> fk;
-            public bool[] fkActive;
-            public int kinematicType;
-            public float y_rotation;
-            public (int, int) handMotions;
-            public bool lipSync;
-            public float mouthOpen;
-            public int mouthPattern;
-            public bool blinking;
-            public float eyesOpen;
-            public float wetness;
-            public int eyePattern;
-            public int eyebrowPattern;
-            public int neckPattern;
-            public Vector3 eyeLookPos;
-            public int eyeLookPattern;
-            public bool son;
-            public bool simple;
-            public Color simpleColor;
-            public int tearLevel;
-            public byte[] juice;
-            public bool showAllAccessories;
-            public bool[] accessoryStatus;
-            public (int clothIndex, int clothState) cloth;
-            public (int accIndex, bool accShow) accessory;
-            public float animeSpeed;
-            public bool forceLoop;
-            public float animePattern;
-            public (float height, float breast) animeOption;
-            public string clothLoad;
-            public int coordinateType;
-            public float faceRedness;
-            public float nippleHardness;
-            public float tuya;
-            public string neck;
-
-            public void Remove(string key)
-            {
-                return;
-            }
-        }
 
         public float height
         {
@@ -433,7 +377,7 @@ namespace VNActor
                 var ikTgName = ikTgt.boneObject.name;
                 if (itDic.ContainsKey(ikTgName))
                 {
-                   ikTgt.targetInfo.changeAmount.pos = itDic[ikTgName].pos;
+                    ikTgt.targetInfo.changeAmount.pos = itDic[ikTgName].pos;
 
                     if ((ikTgName.Contains("_Hand_") || ikTgName.Contains("_Foot01_")))
                     {
@@ -554,7 +498,7 @@ namespace VNActor
 
         public string get_aipedata()
         {
-                return AIPE.GetCharaSettingsText(this.objctrl);
+            return AIPE.GetCharaSettingsText(this.objctrl);
         }
 
         public void set_aipedata(object aipedata)
@@ -562,7 +506,7 @@ namespace VNActor
             if (aipedata != "")
             {
 
-                    AIPE.SetCharaSettingsText(this.objctrl, aipedata);
+                AIPE.SetCharaSettingsText(this.objctrl, aipedata);
 
             }
         }
@@ -854,7 +798,7 @@ namespace VNActor
             return (gcDic[1].name, gcDic[3].name, gcDic[5].name, gcDic[7].name, gcDic[9].name);
         }
 
-        
+
         public static List<string> get_hanime_category_names(int group)
         {
             var info = Info.Instance;
@@ -870,7 +814,7 @@ namespace VNActor
                 return (from v in cDic.Values select v.name).ToList();
             }
         }
-        
+
         public static List<string> get_hanime_no_names(int group, int category)
         {
             var info = Info.Instance;
@@ -904,7 +848,7 @@ namespace VNActor
             if (chara is Actor aiChara)
             {
                 aiChara.set_accessory(param.accessory.accIndex, param.accessory.accShow);
-            }  
+            }
         }
 
         public static void char_accessory(Actor chara, ActorData param)

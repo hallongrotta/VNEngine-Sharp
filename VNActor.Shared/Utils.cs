@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 
 
@@ -13,7 +12,7 @@ namespace VNActor
     }
 
     class Utils
-    { 
+    {
 
         /*
         public static Color tuple4_2_color((float, float, float, float) param)

@@ -1,10 +1,7 @@
 ﻿using BepInEx;
-using BepInEx.Logging;
 using BepInEx.Configuration;
 using UnityEngine;
 using VNEngine;
-using RootMotion.FinalIK;
-using System;
 
 namespace SceneSaveState
 {
@@ -69,17 +66,17 @@ namespace SceneSaveState
             if (SceneConsole.Instance.guiOnShow)
             {
                 GUILayout.Window(34652, this.windowRect, this.windowCallback, "sceneconsole");
-            }    
+            }
         }
 
         internal void Update()
         {
-            
+
             if (SSSHotkey.Value.IsDown())
             {
                 //UI.sceneConsoleGUIStart(game);
                 SceneConsole.Instance.guiOnShow = !SceneConsole.Instance.guiOnShow;
-            }              
+            }
         }
     }
 }

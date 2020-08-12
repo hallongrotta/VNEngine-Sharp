@@ -63,7 +63,7 @@ namespace VNActor
                 else
                 {
                     return null;
-                }      
+                }
             }
             return null;
         }

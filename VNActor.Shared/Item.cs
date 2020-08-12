@@ -198,7 +198,7 @@ namespace VNActor
                     return false;
                 }
             }
-        }          
+        }
 
         public void move(Vector3 pos, Vector3 rot, Vector3 scale)
         {
@@ -337,7 +337,7 @@ namespace VNActor
             }
         }
 
-        
+
         /*
         public void import_status(IDataClass status)
         {

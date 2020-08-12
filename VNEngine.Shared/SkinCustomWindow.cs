@@ -1,8 +1,5 @@
-﻿using Manager;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using UnityEngine;
 
 namespace VNEngine
 {
@@ -33,7 +30,7 @@ namespace VNEngine
         {
 
             this.funcWindowGUI(windowid);
-            
+
         }
 
         public override void render_main(string text_author, string text, List<string> btnsTexts, List<Utils.ButtonFunc_s> btnsActions, string btnStyle)

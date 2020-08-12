@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Studio;
-using UnityEngine;
-using VNActor;
+﻿using Studio;
 using System.IO;
 using System.Linq;
-using static VNEngine.VNController;
-using static VNEngine.VNCamera;
+using UnityEngine;
+using VNActor;
 using static VNEngine.Utils;
+using static VNEngine.VNCamera;
 
 namespace VNEngine
 {
@@ -327,12 +323,12 @@ namespace VNEngine
             if (param.wav is Wav_s wav)
             {
                 sys_wav(game, wav);
-            }         
+            }
         }
 
 
 
-     
+
 
         public static void sys_wav(VNNeoController game, Wav_s param)
         {
@@ -663,7 +659,7 @@ namespace VNEngine
         }
         */
 
-        
-   
+
+
     }
 }

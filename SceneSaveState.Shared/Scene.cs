@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using VNEngine;
 using VNActor;
-using CamData = VNEngine.VNCamera.CamData;
-using MessagePack;
+using VNEngine;
 using static VNActor.Actor;
 using static VNActor.Item;
 using static VNActor.Light;
+using static VNEngine.System;
+using CamData = VNEngine.VNCamera.CamData;
 
 namespace SceneSaveState
 {
@@ -85,7 +85,7 @@ namespace SceneSaveState
                 else if (prop is Light l)
                 {
                     this.lights[propid] = (LightData)l.export_full_status();
-                }               
+                }
             }
             if (importSys)
             {
@@ -99,7 +99,7 @@ namespace SceneSaveState
         public void setSceneState(VNNeoController game)
         {
             foreach (var actid in this.actors.Keys)
-            {           
+            {
                 //char_import_status_diff_optimized(game.scenef_get_actor(actid),self.actors[actid])
                 ActorData char_status = this.actors[actid];
                 try
@@ -108,9 +108,9 @@ namespace SceneSaveState
                     {
                         if (SceneConsole.Instance.skipClothesChanges)
                         {
-                                char_status.Remove("acc_all");
-                                char_status.Remove("cloth_all");
-                                char_status.Remove("cloth_type");
+                            char_status.Remove("acc_all");
+                            char_status.Remove("cloth_all");
+                            char_status.Remove("cloth_type");
                         }
                     }
                 }
@@ -127,7 +127,7 @@ namespace SceneSaveState
                 {
                     SceneConsole.Instance.game.GetLogger.LogError($"Error occurred when importing Actor with id {actid}" + e.ToString());
                     game.LoadTrackedActorsAndProps();
-                }                              
+                }
             }
             foreach (var propid in this.props.Keys)
             {
@@ -136,22 +136,23 @@ namespace SceneSaveState
                 //print game.scenef_get_all_props()
                 Item prop = game.scenef_get_propf(propid) as Item;
                 ItemData status = this.props[propid];
-                try { 
+                try
+                {
                     prop?.import_status(status);
                 }
-                    catch (Exception e)
+                catch (Exception e)
                 {
                     game.GetLogger.LogError($"Error occurred when importing Item with id {propid}" + e.ToString());
                     game.LoadTrackedActorsAndProps();
                 }
-        }
+            }
             foreach (var lightid in this.lights.Keys)
             {
                 //vnframe.act(game, {propid: self.props[propid]})
                 //print propid
                 //print game.scenef_get_all_props()
                 Light light = game.scenef_get_light(lightid);
-                LightData status = this.lights[lightid];         
+                LightData status = this.lights[lightid];
                 try
                 {
                     light?.import_status(status);
@@ -174,7 +175,7 @@ namespace SceneSaveState
 
         public void updateCam(int index, CamData cam_data)
         {
-            this.cams[index] = cam_data;  
+            this.cams[index] = cam_data;
         }
 
         public int deleteCam(int index)
@@ -187,7 +188,8 @@ namespace SceneSaveState
                     return index;
                 }
                 return index - 1;
-            } else
+            }
+            else
             {
                 throw new Exception("No camera to delete!");
             }

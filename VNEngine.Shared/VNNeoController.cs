@@ -1,17 +1,12 @@
-﻿using System;
+﻿using HarmonyLib;
+using Studio;
+using System;
 using System.Collections.Generic;
-using System.Text;
+using System.IO;
+using System.Linq;
 using UnityEngine;
 using VNActor;
-using Studio;
-using HarmonyLib;
-using System.IO;
-using Manager;
-using ADV.EventCG;
 using static VNEngine.VNCamera;
-using KKAPI.Studio;
-using System.Linq;
-using BepInEx.Logging;
 
 namespace VNEngine
 {
@@ -36,14 +31,14 @@ namespace VNEngine
             Instance = this;
         }
 
-/*        public string calc_py_path()
-        {
-            var rootfolder = Path.GetFullPath(Path.Combine(Application.dataPath, ".."));
-            // os.path.splitext(__file__)[0] + '.ini'
-            var pydirname = path.dirname(@__file__);
-            return path.relpath(pydirname, rootfolder);
-        }
- */
+        /*        public string calc_py_path()
+                {
+                    var rootfolder = Path.GetFullPath(Path.Combine(Application.dataPath, ".."));
+                    // os.path.splitext(__file__)[0] + '.ini'
+                    var pydirname = path.dirname(@__file__);
+                    return path.relpath(pydirname, rootfolder);
+                }
+         */
 
         // 
         //         camobj = self.get_camera_num(camnum)
@@ -86,7 +81,8 @@ namespace VNEngine
             }
         }
 
-        public static Studio.CameraControl.CameraData cameraData {
+        public static Studio.CameraControl.CameraData cameraData
+        {
             get
             {
                 Studio.Studio studio = Studio.Studio.Instance;
@@ -102,14 +98,14 @@ namespace VNEngine
             Studio.CameraControl.CameraData cdata = cameraData;
             Studio.CameraControl c = studio.cameraCtrl;
 
-            cdata.pos = cam.position;       
+            cdata.pos = cam.position;
 
             cdata.distance = cam.distance;
 
-            cdata.rotate = cam.rotation;         
+            cdata.rotate = cam.rotation;
 
-            cdata.parse = cam.fov;             
-            
+            cdata.parse = cam.fov;
+
         }
 
         override public void move_camera_direct(Vector3? pos = null, Vector3? distance = null, Vector3? rotate = null, float? fov = null)
@@ -364,7 +360,7 @@ namespace VNEngine
             this.show_blocking_message_time("Scene dumped!");
         }
 
-        
+
         public override void dump_scene()
         {
             if (this.onDumpSceneOverride != null)
@@ -375,7 +371,7 @@ namespace VNEngine
             {
                 this.hsneo_dump_scene();
             }
-        } 
+        }
 
         public ObjectCtrlInfo get_objctrl_num(int num)
         {
@@ -461,7 +457,7 @@ namespace VNEngine
             var dobjctrl = this.studio.dicObjectCtrl;
             foreach (OCIFolder folder in dobjctrl.Values.OfType<OCIFolder>())
             {
-               ar.Add(folder);
+                ar.Add(folder);
             }
             return ar;
         }
@@ -646,7 +642,7 @@ namespace VNEngine
                             Logger.LogDebug("Registered light: '" + Utils.to_roman(propAlias) + "' as " + Utils.to_roman(oci.text_name));
                         }
                     }
-                }              
+                }
             }
         }
 
@@ -763,7 +759,7 @@ namespace VNEngine
             Console.WriteLine("-- Framework: register actors and props end --");
         }
        */
-        
+
 
         public Dictionary<string, Actor> scenef_get_all_actors()
         {
@@ -832,31 +828,31 @@ namespace VNEngine
         }
 
         // ---- lip sync ------- TODO
-/*        new public void set_text(string character, string text)
-        {
-            base.set_text(character, text);
-            if (this.isfAutoLipSync)
-            {
-                try
+        /*        new public void set_text(string character, string text)
                 {
-                    this._flipsync_text_handler(character, text);
-                }
-                catch (Exception e)
+                    base.set_text(character, text);
+                    if (this.isfAutoLipSync)
+                    {
+                        try
+                        {
+                            this._flipsync_text_handler(character, text);
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine("Error in flipsync: " + e.ToString());
+                        }
+                    }
+                }*/
+
+        /*        public object _flipsync_text_handler(object character, object text)
                 {
-                    Console.WriteLine("Error in flipsync: " + e.ToString());
+                    vngelipsync.flipsync_text_handler(character, text);
                 }
-            }
-        }*/
 
-/*        public object _flipsync_text_handler(object character, object text)
-        {
-            vngelipsync.flipsync_text_handler(character, text);
-        }
-
-        public object fake_lipsync_stop()
-        {
-            vngelipsync.fake_lipsync_stop(this);
-        }*/
+                public object fake_lipsync_stop()
+                {
+                    vngelipsync.fake_lipsync_stop(this);
+                }*/
 
         // --------- sync_h ---------
         public void sync_h(Actor female, Actor male)

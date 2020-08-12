@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.IO;
-using UnityEngine;
-using Studio;
-using KKAPI;
-using BepInEx;
+﻿using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
+using Studio;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using UnityEngine;
 
 namespace VNEngine
 {
@@ -30,7 +28,7 @@ namespace VNEngine
 
         public CharaStudioController() : base()
         {
-            
+
             if (Instance != null)
             {
                 throw new InvalidOperationException("Can only create one instance of Controller");

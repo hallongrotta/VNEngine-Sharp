@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using UnityEngine;
-using Studio;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using VNActor;
 
 namespace VNEngine
 {

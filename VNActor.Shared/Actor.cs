@@ -443,7 +443,7 @@ namespace VNActor
                 }
                 else
                 {
-                    return new Animation_s { group = this.objctrl.oiCharInfo.animeInfo.group, category = this.objctrl.oiCharInfo.animeInfo.category, no = this.objctrl.oiCharInfo.animeInfo.no};
+                    return new Animation_s { group = this.objctrl.oiCharInfo.animeInfo.group, category = this.objctrl.oiCharInfo.animeInfo.category, no = this.objctrl.oiCharInfo.animeInfo.no };
                 }
             }
         }
@@ -548,8 +548,11 @@ namespace VNActor
         {
             get
             {
-                return new Son_s {visible = this.objctrl.oiCharInfo.visibleSon,
-                length = this.objctrl.oiCharInfo.sonLength };
+                return new Son_s
+                {
+                    visible = this.objctrl.oiCharInfo.visibleSon,
+                    length = this.objctrl.oiCharInfo.sonLength
+                };
             }
             set
             {

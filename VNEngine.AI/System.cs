@@ -1,8 +1,5 @@
-﻿using Studio;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using VNActor;
 using VNEngine;
 
 namespace VNEngineNEOV2

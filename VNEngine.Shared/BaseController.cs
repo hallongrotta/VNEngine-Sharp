@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using UnityEngine;
-using BepInEx;
+﻿using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
+using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace VNEngine
 {
@@ -41,7 +40,7 @@ namespace VNEngine
             else
             {
                 return false;
-            }         
+            }
         }
 
         public bool CheckConfigEntry(string category, string key)
@@ -79,7 +78,8 @@ namespace VNEngine
 
         }
 
-        public void EnableCamera(bool value) {
+        public void EnableCamera(bool value)
+        {
             if (this.lastCameraState != value)
             {
                 lastCameraState = value;
@@ -116,13 +116,15 @@ namespace VNEngine
 
             try
             {
-                if (!gameCursor) {
+                if (!gameCursor)
+                {
                     gameCursor = UnityEngine.Object.FindObjectOfType<GameCursor>();
                 }
             }
 
 
-            catch (Exception) {
+            catch (Exception)
+            {
                 //Logger.LogError("VNGE: passable error in Start:" + exception); //TODO
             }
         }
@@ -140,16 +142,17 @@ namespace VNEngine
         }
         */
 
-        
+
         public void Update()
         {
 
             // Update is called less so better place to check keystate
 
-            if (checkKeyCode("ToggleVNControllerWindow")) {
+            if (checkKeyCode("ToggleVNControllerWindow"))
+            {
                 visible = !visible;
             }
         }
-        
+
     }
 }

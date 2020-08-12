@@ -1,12 +1,8 @@
-﻿using KKAPI.Studio.SaveLoad;
+﻿using ExtensibleSaveFormat;
+using KKAPI.Studio.SaveLoad;
 using KKAPI.Utilities;
 using Studio;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using BepInEx;
-using ExtensibleSaveFormat;
 
 namespace SceneSaveState
 {

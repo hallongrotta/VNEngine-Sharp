@@ -7,50 +7,50 @@ namespace VNEngine
     public class Ministates
     {
 
-            public struct MiniState_s
+        public struct MiniState_s
         {
             public string name;
             public TreeNodeObject obj;
         }
 
-            public static List<MiniState_s> ministates_get_list(VNController game)
+        public static List<MiniState_s> ministates_get_list(VNController game)
+        {
+            var fld = HSNeoOCIFolder.find_single("-ministates:1.0");
+            if (fld == null)
             {
-                var fld = HSNeoOCIFolder.find_single("-ministates:1.0");
-                if (fld == null)
-                {
-                    return new List<MiniState_s>();
-                }
-                var ar = new List<MiniState_s>();
-                foreach (var fldMiniState in fld.treeNodeObject.child)
-                {
-                    ar.Add(new MiniState_s { name = fldMiniState.textName, obj = fldMiniState });
-                }
-                return ar;
+                return new List<MiniState_s>();
             }
-
-            public static void ministates_run_elem(VNNeoController game, TreeNodeObject elem)
+            var ar = new List<MiniState_s>();
+            foreach (var fldMiniState in fld.treeNodeObject.child)
             {
-                var state = ministates_get_elem(game, elem);
-                ministates_run_savedstate(game, state);
+                ar.Add(new MiniState_s { name = fldMiniState.textName, obj = fldMiniState });
             }
+            return ar;
+        }
 
-            public static Dictionary<string, TreeNodeObject> ministates_get_elem(VNNeoController game, TreeNodeObject elem)
+        public static void ministates_run_elem(VNNeoController game, TreeNodeObject elem)
+        {
+            var state = ministates_get_elem(game, elem);
+            ministates_run_savedstate(game, state);
+        }
+
+        public static Dictionary<string, TreeNodeObject> ministates_get_elem(VNNeoController game, TreeNodeObject elem)
+        {
+            var res = new Dictionary<string, TreeNodeObject>
             {
-                var res = new Dictionary<string, TreeNodeObject>
-                {
-                };
-                foreach (var elData in elem.child)
-                {
+            };
+            foreach (var elData in elem.child)
+            {
 
-                    var elDataObj = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, TreeNodeObject>>(elData.textName);
+                var elDataObj = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, TreeNodeObject>>(elData.textName);
 
-                    foreach (KeyValuePair<string, TreeNodeObject> kv in elDataObj)
-                    {
-                        res[kv.Key] = kv.Value;
-                    }
+                foreach (KeyValuePair<string, TreeNodeObject> kv in elDataObj)
+                {
+                    res[kv.Key] = kv.Value;
                 }
-                return res;
             }
+            return res;
+        }
 
         public static void ministates_run_savedstate(VNNeoController game, Dictionary<string, TreeNodeObject> state)
         {
@@ -78,43 +78,43 @@ namespace VNEngine
             }
         */
 
-            public static TreeNodeObject ministates_get_elem_by_name(VNNeoController game, string name)
+        public static TreeNodeObject ministates_get_elem_by_name(VNNeoController game, string name)
+        {
+            var list = ministates_get_list(game);
+            foreach (var elemFull in list)
             {
-                var list = ministates_get_list(game);
-                foreach (var elemFull in list)
+                if (elemFull.name == name)
                 {
-                    if (elemFull.name == name)
-                    {
-                        return elemFull.obj;
-                    }
-                }
-                return null;
-            }
-
-            public static void ministates_run_elem_by_name(VNNeoController game, string name)
-            {
-                var elem = ministates_get_elem_by_name(game, name);
-                if (elem != null)
-                {
-                    ministates_run_elem(game, elem);
+                    return elemFull.obj;
                 }
             }
+            return null;
+        }
 
-            public static string[] ministates_calc_prefix(string name)
+        public static void ministates_run_elem_by_name(VNNeoController game, string name)
+        {
+            var elem = ministates_get_elem_by_name(game, name);
+            if (elem != null)
             {
-                var ar = name.Split('-');
-                if (ar.Length == 1)
-                {
-                    return new string[] {
-                "",
-                name
-            };
-                }
-                else
-                {
-                    return ar;
-                }
+                ministates_run_elem(game, elem);
             }
         }
 
+        public static string[] ministates_calc_prefix(string name)
+        {
+            var ar = name.Split('-');
+            if (ar.Length == 1)
+            {
+                return new string[] {
+                "",
+                name
+            };
+            }
+            else
+            {
+                return ar;
+            }
+        }
     }
+
+}

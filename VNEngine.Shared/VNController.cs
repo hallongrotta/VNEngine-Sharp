@@ -1,5 +1,4 @@
-﻿using ADV.Commands.Base;
-using BepInEx.Configuration;
+﻿using BepInEx.Configuration;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -324,7 +323,7 @@ namespace VNEngine
                         if (this.skin is SkinDefault skinDefault)
                         {
                             skinDefault.render_dev_console();
-                        }                       
+                        }
                     }
                     catch (Exception e)
                     {
@@ -354,7 +353,7 @@ namespace VNEngine
         }
 
 
-        
+
         new public void Update()
         {
             base.Update();
@@ -387,7 +386,7 @@ namespace VNEngine
             this.UpdateKeyChecks();
             this.event_dispatch("update", null);
         }
-        
+
 
         public void UpdateKeyChecks()
         {
@@ -970,7 +969,7 @@ namespace VNEngine
         public void menu_finish(int result)
         {
             this.menu_result = result;
-           GameFunc endFunc = _menuStack.Last();
+            GameFunc endFunc = _menuStack.Last();
             _menuStack.RemoveAt(-1);
             this.call_game_func(endFunc);
         }
@@ -1217,7 +1216,7 @@ namespace VNEngine
             if (this._onCameraEnd != null)
             {
                 this.call_game_func(this._onCameraEnd);
-            }      
+            }
             return;
         }
 
@@ -1351,42 +1350,42 @@ namespace VNEngine
         }
     }*/
 
- /*       public object file_get_firstline(object filename)
-        {
-            if (os.path.exists(filename))
-            {
-                var fp = open(filename, "r");
-                var content = fp.readline();
-                fp.close();
-                return content;
-            }
-            return "";
-        }
+        /*       public object file_get_firstline(object filename)
+               {
+                   if (os.path.exists(filename))
+                   {
+                       var fp = open(filename, "r");
+                       var content = fp.readline();
+                       fp.close();
+                       return content;
+                   }
+                   return "";
+               }
 
-        public object file_get_firstline_utf8(object filename)
-        {
-            if (os.path.exists(filename))
-            {
-                var fp = codecs.open(filename, "r", encoding: "utf-8");
-                var content = fp.readline();
-                fp.close();
-                return content;
-            }
-            return "";
-        }
+               public object file_get_firstline_utf8(object filename)
+               {
+                   if (os.path.exists(filename))
+                   {
+                       var fp = codecs.open(filename, "r", encoding: "utf-8");
+                       var content = fp.readline();
+                       fp.close();
+                       return content;
+                   }
+                   return "";
+               }
 
-        public object file_get_content(object filename)
-        {
-            if (os.path.exists(filename))
-            {
-                var fp = open(filename, "r");
-                var content = fp.read();
-                fp.close();
-                return content;
-            }
-            return "";
-        }
- */
+               public object file_get_content(object filename)
+               {
+                   if (os.path.exists(filename))
+                   {
+                       var fp = open(filename, "r");
+                       var content = fp.read();
+                       fp.close();
+                       return content;
+                   }
+                   return "";
+               }
+        */
         public string file_get_content_utf8(string filename)
         {
             if (File.Exists(filename))
@@ -1472,8 +1471,8 @@ namespace VNEngine
                 if (this.gpersdata_exists())
                 {
 
-                        //this.gpersdata = pickle.load(f2);
-                    
+                    //this.gpersdata = pickle.load(f2);
+
                     msg = "gpersdata loaded!";
                 }
                 else
@@ -1496,7 +1495,7 @@ namespace VNEngine
 
                 //pickle.dump(this.gpersdata, f);
                 return "";
-                
+
             }
             catch (Exception e)
             {
@@ -1513,7 +1512,7 @@ namespace VNEngine
             return this.gpersdata_save();
         }
 
-        
+
         public Dictionary<string, Checkpoint> gpersdata_get(string param)
         {
             /* TODO
@@ -1663,7 +1662,7 @@ namespace VNEngine
             try
             {
                 SkinBase skin;
-                switch(skinname)
+                switch (skinname)
                 {
                     case "skin_default":
                         skin = new SkinDefault();

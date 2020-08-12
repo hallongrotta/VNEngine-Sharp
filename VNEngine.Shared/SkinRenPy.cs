@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
 using static VNEngine.Utils;
 using static VNEngine.VNController;
@@ -78,7 +77,7 @@ namespace VNEngine.Shared
             //GUI.backgroundColor.a = 0.7
         }
 
-        public  void ren_start()
+        public void ren_start()
         {
             // this is an ugly way to draw gray alpha background
             GUI.Box(new Rect(-10, 0, this.wwidth + 10, this.wheight + 5), "");
@@ -88,7 +87,7 @@ namespace VNEngine.Shared
             GUILayout.Space((float)(this.wwidth * (1 - this.contentWidthProp) / 2));
         }
 
-        public  void ren_end()
+        public void ren_end()
         {
             if (!this.isEndButton)
             {
@@ -182,92 +181,92 @@ namespace VNEngine.Shared
             } else {
             */
 
-                // --------- normal render ----------
-                //GUILayout.BeginHorizontal()
-                if (charinfo.showname != "")
-                {
-                    GUILayout.Label(String.Format("<color=#%sff><b>%s</b></color>", charinfo.color, charinfo.showname), style, GUILayout.Width(fullw));
-                    GUILayout.Space(2);
-                }
-                /*
-                // -- special processing for translation --
-                if (this.controller.engineOptions["usetranslator"] == "1" && this.controller.engineOptions["translatetexts"] == "1")
-                {
-                    GUILayout.Label(translateText(text), style, GUILayout.Width(fullw));
-                }
-                */
+            // --------- normal render ----------
+            //GUILayout.BeginHorizontal()
+            if (charinfo.showname != "")
+            {
+                GUILayout.Label(String.Format("<color=#%sff><b>%s</b></color>", charinfo.color, charinfo.showname), style, GUILayout.Width(fullw));
+                GUILayout.Space(2);
+            }
+            /*
+            // -- special processing for translation --
+            if (this.controller.engineOptions["usetranslator"] == "1" && this.controller.engineOptions["translatetexts"] == "1")
+            {
+                GUILayout.Label(translateText(text), style, GUILayout.Width(fullw));
+            }
+            */
 
-                GUILayout.Label(text, style, GUILayout.Width(fullw));
-                
-                GUILayout.FlexibleSpace();
-                // ---- show buttons ---
-                if (!this.controller.isHideGameButtons)
+            GUILayout.Label(text, style, GUILayout.Width(fullw));
+
+            GUILayout.FlexibleSpace();
+            // ---- show buttons ---
+            if (!this.controller.isHideGameButtons)
+            {
+                if (btnStyle == "compact")
                 {
-                    if (btnStyle == "compact")
+                    GUILayout.BeginHorizontal();
+                }
+                foreach (var i in Enumerable.Range(0, btnsTexts.Count))
+                {
+                    // preparing button texts
+                    var restext = btnsTexts[i];
+                    /*
+                    if (this.controller.engineOptions["usetranslator"] == "1" && this.controller.engineOptions["translatebuttons"] == "1")
                     {
-                        GUILayout.BeginHorizontal();
+                        restext = translateText(restext);
                     }
-                    foreach (var i in Enumerable.Range(0, btnsTexts.Count))
+                    */
+                    var fintext = restext;
+                    if (this.controller.GetConfigEntry("Skins", "usekeysforbuttons"))
                     {
-                        // preparing button texts
-                        var restext = btnsTexts[i];
-                        /*
-                        if (this.controller.engineOptions["usetranslator"] == "1" && this.controller.engineOptions["translatebuttons"] == "1")
+                        if (this.controller.arKeyKodes.Length > i)
                         {
-                            restext = translateText(restext);
+                            fintext = this.controller.arKeyKodes[i].ToUpper() + ": " + fintext;
                         }
-                        */
-                        var fintext = restext;
-                        if (this.controller.GetConfigEntry("Skins", "usekeysforbuttons"))
+                    }
+                    // render button
+                    if (btnStyle == "normal")
+                    {
+                        if (btnsTexts.Count > 1)
                         {
-                            if (this.controller.arKeyKodes.Length > i)
-                            {
-                                fintext = this.controller.arKeyKodes[i].ToUpper() + ": " + fintext;
-                            }
-                        }
-                        // render button
-                        if (btnStyle == "normal")
-                        {
-                            if (btnsTexts.Count > 1)
-                            {
-                                if (GUILayout.Button(fintext, customButton, GUILayout.Width(fullw), GUILayout.Height(this.buttonHeight)))
-                                {
-                                    this.controller.call_game_func(btnsActions[i]);
-                                }
-                            }
-                            else
-                            {
-                                // special case for 1 button
-                                GUILayout.BeginHorizontal();
-                                GUILayout.FlexibleSpace();
-                                customButton.fontSize = (int)(customButton.fontSize * 1.2);
-                                if (GUILayout.Button(fintext, customButton, GUILayout.Width(fullw * 0.25f), GUILayout.Height(this.buttonHeight * 1.5f)))
-                                {
-                                    this.controller.call_game_func(btnsActions[i]);
-                                }
-                                GUILayout.EndHorizontal();
-                            }
-                        }
-                        if (btnStyle == "compact")
-                        {
-                            if (GUILayout.Button(fintext, customButton, GUILayout.Width(fullw / 2 - 2), GUILayout.Height(this.buttonHeight)))
+                            if (GUILayout.Button(fintext, customButton, GUILayout.Width(fullw), GUILayout.Height(this.buttonHeight)))
                             {
                                 this.controller.call_game_func(btnsActions[i]);
                             }
-                            if (i % 2 == 1)
+                        }
+                        else
+                        {
+                            // special case for 1 button
+                            GUILayout.BeginHorizontal();
+                            GUILayout.FlexibleSpace();
+                            customButton.fontSize = (int)(customButton.fontSize * 1.2);
+                            if (GUILayout.Button(fintext, customButton, GUILayout.Width(fullw * 0.25f), GUILayout.Height(this.buttonHeight * 1.5f)))
                             {
-                                GUILayout.EndHorizontal();
-                                GUILayout.BeginHorizontal();
-                                // pass
+                                this.controller.call_game_func(btnsActions[i]);
                             }
+                            GUILayout.EndHorizontal();
                         }
                     }
                     if (btnStyle == "compact")
                     {
-                        GUILayout.EndHorizontal();
+                        if (GUILayout.Button(fintext, customButton, GUILayout.Width(fullw / 2 - 2), GUILayout.Height(this.buttonHeight)))
+                        {
+                            this.controller.call_game_func(btnsActions[i]);
+                        }
+                        if (i % 2 == 1)
+                        {
+                            GUILayout.EndHorizontal();
+                            GUILayout.BeginHorizontal();
+                            // pass
+                        }
                     }
                 }
-            
+                if (btnStyle == "compact")
+                {
+                    GUILayout.EndHorizontal();
+                }
+            }
+
             GUILayout.Space(16);
             GUILayout.EndVertical();
             this.ren_end();

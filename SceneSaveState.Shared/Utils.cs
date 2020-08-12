@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Collections;
-using UnityEngine;
-using UnityEngine.UI;
+﻿using MessagePack;
 using Studio;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using UnityEngine;
 using VNActor;
 using VNEngine;
-using System.Linq;
-using System.Linq.Expressions;
-using System.IO;
-using MessagePack;
-using System.Security.Cryptography;
-using System.Security.Policy;
 
 namespace SceneSaveState
 {
@@ -52,13 +46,13 @@ namespace SceneSaveState
                 }
             }
         }
-        
+
 
         public static byte[] SerializeData<T>(T item)
         {
             return MessagePackSerializer.Serialize(item, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
         }
-       
+
 
         public static T DeserializeData<T>(byte[] s)
         {
@@ -85,7 +79,8 @@ namespace SceneSaveState
             return true;
         }
 
-        public static bool is_status_statuses_equal(Dictionary<string, IDataClass> oldstatus, Dictionary<string, IDataClass> status) {
+        public static bool is_status_statuses_equal(Dictionary<string, IDataClass> oldstatus, Dictionary<string, IDataClass> status)
+        {
             /*
         if (oldstatus.Count != status.Count) {
             return false;
@@ -104,7 +99,7 @@ namespace SceneSaveState
         return true;
             */
             return false;
-    }
+        }
 
 
         // main class
@@ -260,31 +255,31 @@ namespace SceneSaveState
                 }
             }
             // param = sc.game.gdata.sc_shortcuts["loadnext"]
-           /* foreach (var _tup_1 in SceneConsole.Instance.game.gdata.sc_shortcuts.Values) //TODO look into this
-            {
-                var commands = _tup_1.Item1;
-                var param = _tup_1.Item2;
-                (_, icode, ictrl, ialt, ishift) = param[1];
-                if (Input.GetKeyDown(icode))
-                {
-                    // unity sucks for checking meta keys
-                    var _tup_2 = unity_util.metakey_state();
-                    var ctrl = _tup_2.Item1;
-                    var alt = _tup_2.Item2;
-                    var shift = _tup_2.Item3;
-                    // print "detected key down:"
-                    // print "tgt:", game.gdata.startShortcut
-                    // print "cur: ctrl=%s, alt=%s, shift=%s"%(str(ctrl), str(alt), str(shift))
-                    if (ctrl == ictrl && alt == ialt && shift == ishift)
-                    {
-                        // need to stop processing for about 0.5 seconds - avoid duplicate key proc
-                        game.gdata.hook_update_allowed = false;
-                        game.set_timer(0.3f, hook_upd_restore);
-                        param[0]();
-                        break;
-                    }
-                }
-            } */
+            /* foreach (var _tup_1 in SceneConsole.Instance.game.gdata.sc_shortcuts.Values) //TODO look into this
+             {
+                 var commands = _tup_1.Item1;
+                 var param = _tup_1.Item2;
+                 (_, icode, ictrl, ialt, ishift) = param[1];
+                 if (Input.GetKeyDown(icode))
+                 {
+                     // unity sucks for checking meta keys
+                     var _tup_2 = unity_util.metakey_state();
+                     var ctrl = _tup_2.Item1;
+                     var alt = _tup_2.Item2;
+                     var shift = _tup_2.Item3;
+                     // print "detected key down:"
+                     // print "tgt:", game.gdata.startShortcut
+                     // print "cur: ctrl=%s, alt=%s, shift=%s"%(str(ctrl), str(alt), str(shift))
+                     if (ctrl == ictrl && alt == ialt && shift == ishift)
+                     {
+                         // need to stop processing for about 0.5 seconds - avoid duplicate key proc
+                         game.gdata.hook_update_allowed = false;
+                         game.set_timer(0.3f, hook_upd_restore);
+                         param[0]();
+                         break;
+                     }
+                 }
+             } */
         }
 
         public static void hook_upd_restore(VNController game)
@@ -429,23 +424,23 @@ namespace SceneSaveState
                     ar.Add(chara);
                 }
             }
-                var am = new List<Actor>();
-                var af = new List<Actor>();
-                foreach (var chara in ar)
+            var am = new List<Actor>();
+            var af = new List<Actor>();
+            foreach (var chara in ar)
+            {
+                if (chara.sex == 0)
                 {
-                    if (chara.sex == 0)
-                    {
-                        am.Add(chara);
-                    }
-                    else
-                    {
-                        af.Add(chara);
-                    }
+                    am.Add(chara);
                 }
-                return new List<List<Actor>> {
+                else
+                {
+                    af.Add(chara);
+                }
+            }
+            return new List<List<Actor>> {
                 af,
                 am
-            };  
+            };
         }
 
         public static Actor getSelectedChar(VNNeoController game)
@@ -714,7 +709,7 @@ namespace SceneSaveState
                     // show dev console
                     try
                     {
-                        
+
                         skin_def.render_dev_console();
                     }
                     catch (Exception e)

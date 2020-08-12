@@ -1,8 +1,6 @@
-﻿using System;
+﻿using Studio;
+using System;
 using System.Collections.Generic;
-using System.Text;
-using VNEngine;
-using Studio;
 using UnityEngine;
 
 namespace VNEngine

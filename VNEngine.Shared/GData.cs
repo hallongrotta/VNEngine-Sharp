@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using static VNEngine.VNController;
 
 namespace VNEngine
@@ -8,7 +7,8 @@ namespace VNEngine
     public class GData
     {
 
-        public struct ShortCut_s {
+        public struct ShortCut_s
+        {
             internal Action command;
             string key;
         }

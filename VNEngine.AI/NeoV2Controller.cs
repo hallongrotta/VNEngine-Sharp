@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.IO;
-using UnityEngine;
-using Studio;
 
 namespace VNEngine
 {
@@ -13,7 +10,7 @@ namespace VNEngine
 
         public NeoV2Controller(List<string> vnButtonsStart, List<(Action<object>, object)> vnButtonsActionsStart) : base()
         {
-            this.engine_name = "neov2";        
+            this.engine_name = "neov2";
             this._vnButtons = vnButtonsStart;
             this._vnButtonsActions = vnButtonsActionsStart;
         }

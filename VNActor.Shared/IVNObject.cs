@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace VNActor
+﻿namespace VNActor
 {
     interface IVNObject
     {
-      void import_status(IDataClass status);
+        void import_status(IDataClass status);
 
-      IDataClass export_full_status();
+        IDataClass export_full_status();
 
     }
 }

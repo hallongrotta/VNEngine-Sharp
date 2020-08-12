@@ -1,8 +1,5 @@
-﻿using Studio;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using UnityEngine;
 using System.Linq;
 
 namespace VNActor
@@ -68,7 +65,8 @@ namespace VNActor
                     cl[3] = this.objctrl.itemInfo.colors[3].mainColor;
                 }
                 return cl;
-            } else
+            }
+            else
             {
                 throw new Exception("not colorable");
             }
@@ -127,7 +125,8 @@ namespace VNActor
                     }
                 }
                 return pt;
-            } else
+            }
+            else
             {
                 return null;
             }
@@ -172,9 +171,9 @@ namespace VNActor
         {
             public Color color;
             public float ut;
-            public float vt; 
-            public float us; 
-            public float vs; 
+            public float vt;
+            public float us;
+            public float vs;
             public float rot;
 
             public PatternDetail(Color color, float ut, float vt, float us, float vs, float rot)
@@ -203,7 +202,8 @@ namespace VNActor
                     }
                 }
                 return pt;
-            } else
+            }
+            else
             {
                 return null;
             }
@@ -234,7 +234,8 @@ namespace VNActor
                 PatternInfo pi = this.objctrl.itemInfo.panel;
                 PatternInfo p0 = this.objctrl.itemInfo.colors[0].pattern;
                 return (pi.filePath, p0.clamp);
-            } else
+            }
+            else
             {
                 throw new Exception("no panel to get");
             }
@@ -440,7 +441,8 @@ namespace VNActor
             if (this.isFK)
             {
                 return this.objctrl.itemInfo.enableFK;
-            } else
+            }
+            else
             {
                 return false;
             }
@@ -476,7 +478,8 @@ namespace VNActor
             if (this.isDynamicBone)
             {
                 return this.objctrl.itemInfo.enableDynamicBone;
-            } else
+            }
+            else
             {
                 return false;
             }
@@ -504,7 +507,8 @@ namespace VNActor
             if (this.hasAnimePattern)
             {
                 return this.objctrl.itemInfo.animePattern;
-            } else
+            }
+            else
             {
                 throw new Exception("No pattern");
             }
@@ -541,7 +545,8 @@ namespace VNActor
             {
                 OCIRoute route = (OCIRoute)base.objctrl;
                 return route.isPlay;
-            } else
+            }
+            else
             {
                 return false;
             }
@@ -560,7 +565,7 @@ namespace VNActor
             {
                 try
                 {
-                    OCIRoute route = (OCIRoute) base.objctrl;
+                    OCIRoute route = (OCIRoute)base.objctrl;
                     // route_f, full route setting
                     route.Stop();
                     Route cur_status = this.get_route_full();
@@ -594,26 +599,26 @@ namespace VNActor
                                     continue;
                                 }
                                 var pi = route.routeInfo.route[j];
-                                        // pt pos
-                                        pi.changeAmount.pos = pt.pt_pos;
+                                // pt pos
+                                pi.changeAmount.pos = pt.pt_pos;
 
-                                        // pt rot
-                                        pi.changeAmount.rot = pt.rot;
+                                // pt rot
+                                pi.changeAmount.rot = pt.rot;
 
-                                        // aid pos
-                                        pi.aidInfo.changeAmount.pos = pt.aid_pos;
+                                // aid pos
+                                pi.aidInfo.changeAmount.pos = pt.aid_pos;
 
-                                        // speed
-                                        pi.speed = pt.speed;
+                                // speed
+                                pi.speed = pt.speed;
 
-                                        // easeType
-                                        pi.easeType = pt.easeType;
+                                // easeType
+                                pi.easeType = pt.easeType;
 
-                                        // connection
-                                        pi.connection = pt.connection;
+                                // connection
+                                pi.connection = pt.connection;
 
-                                        // link
-                                        pi.link = pt.link;
+                                // link
+                                pi.link = pt.link;
                             }
                             route.UpdateLine();
                         }
@@ -699,12 +704,13 @@ namespace VNActor
                 foreach (OIRoutePointInfo pi in ri.route)
                 {
                     // (pt pos, pt rot, aid pos, speed, easeType, connection, link)
-                    pts.Add(new Point(pi.changeAmount.pos, pi.changeAmount.rot, pi.aidInfo.changeAmount.pos, pi.speed, pi.easeType, pi.connection, pi.link) );
+                    pts.Add(new Point(pi.changeAmount.pos, pi.changeAmount.rot, pi.aidInfo.changeAmount.pos, pi.speed, pi.easeType, pi.connection, pi.link));
                 }
                 // (orient, loop, points, active)
                 Route rs = new Route(ri.orient, ri.loop, pts, ri.active);
                 return rs;
-            } else
+            }
+            else
             {
                 throw new Exception("not a route");
             }

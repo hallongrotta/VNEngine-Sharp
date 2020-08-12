@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.IO;
+using System.Linq;
+using System.Reflection;
 using UnityEngine;
 using VNActor;
-using System.Reflection;
-using UnityEngine.SceneManagement;
-using System.Linq;
-using System.IO;
-using BepInEx;
-using BepInEx.Logging;
-using BepInEx.Configuration;
 
 namespace VNEngine
 {
@@ -82,7 +77,7 @@ namespace VNEngine
             return game;
         }
         */
-        
+
         //changed by chickenman
         /*
         public static object vngame_window_neo(object vnButtonsStart, object vnButtonsActionsStart)
@@ -97,7 +92,7 @@ namespace VNEngine
             var game = vngameenginephstudio.vngame_window_phstudio(vnButtonsStart, vnButtonsActionsStart);
             return game;
         }
-        */ 
+        */
 
         // ---------------- --- dumping item tree -----------------
         public static void dump_selected_item_tree()
@@ -143,7 +138,8 @@ namespace VNEngine
             if (item is Item)
             {
                 txt1 = item_dump((Item)item);
-            } else if (item is HSNeoOCIFolder)
+            }
+            else if (item is HSNeoOCIFolder)
             {
                 txt1 = folder_dump((HSNeoOCIFolder)item);
             }
@@ -298,7 +294,7 @@ namespace VNEngine
         {
             GUISkin newskin = new GUISkin();
 
-     
+
 
             var props = newskin.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.SetProperty);
 

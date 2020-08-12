@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using UnityEngine;
+﻿using MessagePack;
 using Studio;
+using System.Collections.Generic;
+using UnityEngine;
 using static VNEngine.Utils;
-using static VNEngine.VNController;
-using MessagePack;
 
 namespace VNEngine
 {
@@ -20,7 +17,7 @@ namespace VNEngine
             public string addvncmds;
             public bool add_props;
             public addprops_struct addprops;
-                       
+
             public struct addprops_struct
             {
 
@@ -41,7 +38,7 @@ namespace VNEngine
         }
 
         [MessagePackObject(keyAsPropertyName: true)]
-        public struct CamData
+        public class CamData
         {
             public Vector3 position;
             public Vector3 rotation;
@@ -82,14 +79,9 @@ namespace VNEngine
                 this.hasVNData = false;
             }
 
-            [SerializationConstructor]
-            public CamData(Vector3 position, Vector3 rotation, Vector3 distance, float fov, VNData addata, int camnum, float duration, string style, float zoom_delta, bool hasVNData) : this(position, rotation, distance, fov, addata)
+            public CamData()
             {
-                this.camnum = camnum;
-                this.duration = duration;
-                this.style = style;
-                this.zoom_delta = zoom_delta;
-                this.hasVNData = hasVNData;
+
             }
         }
 
@@ -144,7 +136,7 @@ namespace VNEngine
         {
             game.anim_to_camera(param.duration, pos: param.position, distance: param.distance, rotate: param.rotation, fov: param.fov, style: param.style);
         }
-        
+
 
         public static void cam_rotate(VNNeoController game, Vector3 param)
         {

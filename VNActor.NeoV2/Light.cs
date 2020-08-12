@@ -1,12 +1,6 @@
-﻿using Studio;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using UnityEngine;
-
-namespace VNActor
+﻿namespace VNActor
 {
-    class Light : Prop
+    class Light : Item
     {
 
         new OCILight objctrl;
@@ -19,7 +13,7 @@ namespace VNActor
             var c = Utils.tuple4_2_color(color);
 
             this.objctrl.SetColor(c);
-        
+
         }
 
         new public Color get_color()
