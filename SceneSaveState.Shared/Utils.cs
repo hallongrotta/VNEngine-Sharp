@@ -425,7 +425,7 @@ namespace SceneSaveState
                 var ochar = HSNeoOCI.create_from_treenode(node);
                 if (ochar.objctrl is OCIChar)
                 {
-                    HSNeoOCIChar chara = (HSNeoOCIChar)ochar;
+                    Actor chara = (Actor)ochar;
                     ar.Add(chara.as_actor);
                 }
             }
@@ -457,7 +457,7 @@ namespace SceneSaveState
                 var ochar = HSNeoOCI.create_from_treenode(node);
                 if (ochar.objctrl is OCIChar)
                 {
-                    HSNeoOCIChar chara = (HSNeoOCIChar)ochar;
+                    Actor chara = (Actor)ochar;
                     ar.Add(chara.as_actor);
                 }
             }

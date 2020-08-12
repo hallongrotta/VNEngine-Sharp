@@ -511,7 +511,7 @@ namespace SceneSaveState
                 //GUILayout.Label("  "+actorid+": "+actors[actorid].text_name)
                 //txt += "  "+actorid+": "+actors[actorid].text_name+"\n"
                 //GUILayout.Label(txt)
-                HSNeoOCIChar actor = actors[actorid];
+                Actor actor = actors[actorid];
                 render_ui_for_tracking(actorid, actor);
             }
             GUILayout.Label("Props:");

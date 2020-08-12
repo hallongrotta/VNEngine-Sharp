@@ -17,7 +17,7 @@ namespace VNActor
         public abstract Vector3 pos { get; set; }
         public abstract Vector3 rot { get; set; }
 
-        public static HSNeoOCIChar create_from(OCIChar objctrl) { return new Actor(objctrl); }
+        public static Actor create_from(OCIChar objctrl) { return new Actor(objctrl); }
 
         public static Item create_from(OCIItem objctrl) { return new Item(objctrl); }
 

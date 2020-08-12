@@ -231,7 +231,7 @@ namespace VNEngine
         {
             // wait anime of actor play once: param = actorID
             // return True if anime is over or actor not found
-            HSNeoOCIChar actor = game.scenef_get_actor(param);
+            Actor actor = game.scenef_get_actor(param);
             if (actor is Actor act)
             {
                 return act.isAnimeOver;
@@ -251,7 +251,7 @@ namespace VNEngine
         {
             // wait voice of actor over: param = actorID
             // return True if voice is over or actor not found
-            HSNeoOCIChar actor = game.scenef_get_actor(param);
+            Actor actor = game.scenef_get_actor(param);
             if (actor is Actor act)
             {
                 return !act.isVoicePlay;

@@ -931,14 +931,14 @@ namespace VNEngine
             this.anim_to_camera_obj(duration, this.get_camera_num(camnum), style, onCameraEnd);
         }
 
-        public List<HSNeoOCIChar> scene_get_all_females()
+        public List<Actor> scene_get_all_females()
         {
-            return new List<HSNeoOCIChar>();
+            return new List<Actor>();
         }
 
-        public List<HSNeoOCIChar> scene_get_all_males()
+        public List<Actor> scene_get_all_males()
         {
-            return new List<HSNeoOCIChar>();
+            return new List<Actor>();
         }
 
         public void debug_print_all_chars()

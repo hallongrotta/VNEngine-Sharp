@@ -431,7 +431,7 @@ namespace SceneSaveState
             {
                 //print actprop
                 //if hasattr(actprop, 'as_prop'):
-                if (actprop is HSNeoOCIChar chara)
+                if (actprop is Actor chara)
                 {
                     //id = self.find_item_in_objlist(actprop.objctrl)
                 }
@@ -539,7 +539,7 @@ namespace SceneSaveState
             foreach (var node in mtreeman.selectNodes)
             {
                 var ochar = HSNeoOCI.create_from_treenode(node);
-                if (ochar is HSNeoOCIChar chara)
+                if (ochar is Actor chara)
                 {
                     ar.Add(chara.as_actor);
                 }
@@ -766,7 +766,7 @@ namespace SceneSaveState
         public void copySelectedStatusToTracking(List<string> exclude)
         {
             var elem = HSNeoOCI.create_from_selected();
-            if (elem is HSNeoOCIChar chara)
+            if (elem is Actor chara)
             {
                 var tmp_status = chara.as_actor.export_full_status();
                 var actors = this.game.scenef_get_all_actors();
@@ -794,7 +794,7 @@ namespace SceneSaveState
         public void copySelectedStatus()
         {
             var elem = HSNeoOCI.create_from_selected();
-            if (elem is HSNeoOCIChar chara)
+            if (elem is Actor chara)
             {
                 this.clipboard_status = ((Actor)chara).export_full_status();
             }
@@ -811,7 +811,7 @@ namespace SceneSaveState
         public void pasteSelectedStatus()
         {
             var elem = HSNeoOCI.create_from_selected();
-            if (elem is HSNeoOCIChar chara)
+            if (elem is Actor chara)
             {
                 chara.as_actor.import_status(this.clipboard_status);
             }
@@ -828,7 +828,7 @@ namespace SceneSaveState
         public void copySelectedStatus2()
         {
             var elem = HSNeoOCI.create_from_selected();
-            if (elem is HSNeoOCIChar chara)
+            if (elem is Actor chara)
             {
                 this.clipboard_status2 = chara.as_actor.export_full_status();
             }
@@ -845,7 +845,7 @@ namespace SceneSaveState
         public void pasteSelectedStatus2()
         {
             var elem = HSNeoOCI.create_from_selected();
-            if (elem is HSNeoOCIChar chara)
+            if (elem is Actor chara)
             {
                 chara.as_actor.import_status((ActorData)this.clipboard_status2);
             }
@@ -957,7 +957,7 @@ namespace SceneSaveState
             }
         }
 
-        public void addSelectedToTrack(HSNeoOCIChar chara)
+        public void addSelectedToTrack(Actor chara)
         {
             var actors = this.game.scenef_get_all_actors();
 
@@ -1044,7 +1044,7 @@ namespace SceneSaveState
                 this.show_blocking_message_time_sc("Nothing selected");
                 return;
             }
-            if (elem is HSNeoOCIChar chara)
+            if (elem is Actor chara)
             {
                 var actors = this.game.scenef_get_all_actors();
                 var id = "";
@@ -1124,7 +1124,7 @@ namespace SceneSaveState
                 this.show_blocking_message_time_sc("Nothing selected");
                 return;
             }
-            if (elem is HSNeoOCIChar chara)
+            if (elem is Actor chara)
             {
                 var actors = this.game.scenef_get_all_actors();
                 string id = "";
@@ -1164,7 +1164,7 @@ namespace SceneSaveState
                 this.show_blocking_message_time_sc("Nothing selected");
                 return;
             }
-            if (elem is HSNeoOCIChar chara)
+            if (elem is Actor chara)
             {
                 var actors = this.game.scenef_get_all_actors();
                 var id = "";

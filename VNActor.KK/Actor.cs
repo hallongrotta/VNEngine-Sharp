@@ -858,7 +858,7 @@ namespace VNActor
             }
         }
 
-        override public IDataClass export_full_status()
+        public IDataClass export_full_status()
         {
             return new ActorData(this);
         }

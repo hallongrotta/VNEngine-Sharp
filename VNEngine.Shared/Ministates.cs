@@ -66,7 +66,7 @@ namespace VNEngine
                     var elId = Convert.ToInt32(key[4]);
                     var objctrl = game.studio.dicObjectCtrl[elId];
                     var actprop = HSNeoOCI.create_from(objctrl);
-                    if (actprop is HSNeoOCIChar chara)
+                    if (actprop is Actor chara)
                     {
                         chara.as_actor.import_status_diff_optimized(elDataObj[key]);
                     }

@@ -244,7 +244,7 @@ namespace VNEngine
             string id = "";
             try
             {
-                HSNeoOCIChar fem = (HSNeoOCIChar)HSNeoOCI.create_from_selected();
+                Actor fem = (Actor)HSNeoOCI.create_from_selected();
                 var actor = (Actor)fem;
                 id = actor.text_name;
                 var status = actor.export_full_status();
@@ -386,15 +386,15 @@ namespace VNEngine
             return dobjctrl[num];
         }
 
-        public HSNeoOCIChar get_objctrl_num_tochar(int num)
+        public Actor get_objctrl_num_tochar(int num)
         {
-            // return HSNeoOCIChar by num
+            // return Actor by num
             return new Actor((OCIChar)this.get_objctrl_num(num));
         }
 
-        new public List<HSNeoOCIChar> scene_get_all_females()
+        new public List<Actor> scene_get_all_females()
         {
-            var ar = new List<HSNeoOCIChar>();
+            var ar = new List<Actor>();
             var dobjctrl = this.studio.dicObjectCtrl;
             foreach (var key in dobjctrl.Keys)
             {
@@ -408,9 +408,9 @@ namespace VNEngine
             return ar;
         }
 
-        new public List<HSNeoOCIChar> scene_get_all_males()
+        new public List<Actor> scene_get_all_males()
         {
-            var ar = new List<HSNeoOCIChar>();
+            var ar = new List<Actor>();
             var dobjctrl = this.studio.dicObjectCtrl;
             foreach (var key in dobjctrl.Keys)
             {
@@ -598,14 +598,14 @@ namespace VNEngine
                     {
                         var hsociChar = HSNeoOCI.create_from_treenode(fld.treeNodeObject.parent.parent.parent);
 
-                        if (hsociChar is HSNeoOCIChar chara)
+                        if (hsociChar is Actor chara)
                         {
                             if (actorTitle is null)
                             {
                                 actorTitle = hsociChar.text_name;
                             }
 
-                            _scenef_actors[actorAlias] = chara.as_actor;
+                            _scenef_actors[actorAlias] = chara;
 
                             register_char(actorAlias, actorColor, actorTitle);
 
@@ -697,7 +697,7 @@ namespace VNEngine
                     try
                     {
                         var hsociChar = HSNeoOCI.create_from_treenode(fld.treeNodeObject.parent.parent.parent);
-                        if (hsociChar is HSNeoOCIChar chara)
+                        if (hsociChar is Actor chara)
                         {
                             if (actorTitle is null)
                             {

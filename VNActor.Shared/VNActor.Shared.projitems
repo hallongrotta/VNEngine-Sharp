@@ -12,7 +12,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Actor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ActorFuncs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HSNeoOCI.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)HSNeoOCIChar.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HSNeoOCIFolder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HSNeoOCIProp.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IVNObject.cs" />
