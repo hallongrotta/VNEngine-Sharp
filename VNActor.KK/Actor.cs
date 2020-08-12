@@ -7,22 +7,19 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 
-using IK_node_s = System.Collections.Generic.Dictionary<string, UnityEngine.Vector3>;
-
 namespace VNActor
 {
+    // Koikatsu Actor
     public partial class Actor
         : IVNObject
     {
-
-        /*
+      
         public struct IK_node_s
         {
             internal Vector3 pos;
             internal Vector3? rot;
         }
-        */
-
+        
         [Serializable]
         [MessagePackObject]
         public struct Hands_s {
@@ -681,11 +678,11 @@ namespace VNActor
                         var rot = itInfo.targetInfo.changeAmount.rot;
                         var rotClone = new Vector3(rot.x, rot.y, rot.z);
                         //rotClone = Vector3(rot.x if rot.x <= 180 else rot.x - 360, rot.y if rot.y <= 180 else rot.y - 360, rot.z if rot.z <= 180 else rot.z - 360)
-                        itDic[tgtName] = new IK_node_s { {"pos", posClone}, {"rot", rotClone} };
+                        itDic[tgtName] = new IK_node_s { pos = posClone, rot = rotClone };
                     }
                     else
                     {
-                        itDic[tgtName] = new IK_node_s { { "pos", posClone } };
+                        itDic[tgtName] = new IK_node_s { pos = posClone, rot = null };
                     }
                 }
             }
@@ -702,13 +699,13 @@ namespace VNActor
                 if (itDic.ContainsKey(ikTgName))
                 {
 
-                    ikTgt.targetInfo.changeAmount.pos = itDic[ikTgName]["pos"];
+                    ikTgt.targetInfo.changeAmount.pos = itDic[ikTgName].pos;
 
                     if (ikTgName.Contains("_hand_") || ikTgName.Contains("_leg03_"))
                     {
-                        if (itDic[ikTgName].ContainsKey("rot"))
+                        if (itDic[ikTgName].rot is Vector3 ik_rot)
                         {
-                            ikTgt.targetInfo.changeAmount.rot = itDic[ikTgName]["rot"];
+                            ikTgt.targetInfo.changeAmount.rot = ik_rot;
                         }
                     }
                 }
