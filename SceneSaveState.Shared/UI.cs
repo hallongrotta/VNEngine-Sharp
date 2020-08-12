@@ -270,8 +270,6 @@ namespace SceneSaveState
 
         public static void sceneConsoleAdvUI()
         {
-            object v;
-            int k;
             //SceneConsole.Instance = SceneConsole.Instance;
             Instance.adv_scroll = GUILayout.BeginScrollView(Instance.adv_scroll);
             GUILayout.Label("<b>Advanced controls</b>");
@@ -281,7 +279,7 @@ namespace SceneSaveState
             Instance.charname = GUILayout.TextField(Instance.charname);
             if (GUILayout.Button("Change selected", GUILayout.Width(110)))
             {
-                Instance.changeCharName(Instance.charname);
+                changeCharName(Instance.game, Instance.charname);
             }
             GUILayout.EndHorizontal();
             GUILayout.Label("Status operations:");
@@ -383,8 +381,8 @@ namespace SceneSaveState
                     Console.WriteLine("fk_set = {");
                     foreach (KeyValuePair<int, Vector3> entry in fk_dic)
                     {
-                        k = entry.Key;
-                        v = entry.Value;
+                        var k = entry.Key;
+                        var v = entry.Value;
                         Console.WriteLine(k.ToString(), ":", v, ",");
                     }
                     Console.WriteLine("}");
@@ -1128,24 +1126,24 @@ namespace SceneSaveState
                 GUILayout.BeginHorizontal();
                 if (GUILayout.Button("Add", GUILayout.Width(Instance.camviewwidth * 0.7f)))
                 {
-                    Instance.changeSceneCam("add");
+                    Instance.changeSceneCam(CamTask.ADD);
                 }
                 if (GUILayout.Button("Del", GUILayout.Width(Instance.camviewwidth * 0.3f)))
                 {
                     if (Instance.promptOnDelete)
                     {
-                        Instance.warning_action = Instance.changeSceneCam;
-                        Instance.warning_param = new WarningParam_s("Delete selected cam?", "del", false);
+                        Instance.warning_action = Instance.deleteSceneCam;
+                        Instance.warning_param = new WarningParam_s("Delete selected cam?", CamTask.DELETE, false);
                     }
                     else
                     {
-                        Instance.changeSceneCam("del");
+                        Instance.changeSceneCam(CamTask.DELETE);
                     }
                 }
                 GUILayout.EndHorizontal();
                 if (GUILayout.Button("Update", GUILayout.Width(Instance.camviewwidth + 5)))
                 {
-                    Instance.changeSceneCam("upd");
+                    Instance.changeSceneCam(CamTask.UPDATE);
                 }
                 GUILayout.Label("Move cam:");
                 GUILayout.BeginHorizontal();

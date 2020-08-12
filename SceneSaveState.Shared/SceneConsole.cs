@@ -602,30 +602,37 @@ namespace SceneSaveState
             scene_cam_str = cam_str.ToArray();
         }
 
-        public void changeSceneCam(object param)
+        public void deleteSceneCam(object param)
         {
-            changeSceneCam((string)param);
+            changeSceneCam(CamTask.DELETE);
         }
-
+             
         public void changeSceneCam()
         {
-            changeSceneCam(task: "");
+            changeSceneCam(task: CamTask.ADD);
         }
 
-        public void changeSceneCam(string task = "")
+        public enum CamTask
+        {
+            UPDATE,
+            DELETE,
+            ADD
+        }
+
+        public void changeSceneCam(CamTask task)
         {
             var cdata = VNNeoController.cameraData;
             var addata = new VNData(cam_addparam, cam_whosay, cam_whatsay, cam_addvncmds, cam_addprops);
             var cam_data = new CamData(cdata.pos, cdata.rotate, cdata.distance, cdata.parse, addata);
-            if (task == "" || task == "add")
+            if (task == CamTask.ADD)
             {
                 cur_cam = block[currentSceneIndex].addCam(cam_data);
             }
-            else if (task == "upd")
+            else if (task == CamTask.UPDATE)
             {
                 block[currentSceneIndex].updateCam(cur_cam, cam_data);
             }
-            else if (task == "del")
+            else if (task == CamTask.DELETE)
             {
                 cur_cam = block[currentSceneIndex].deleteCam(cur_cam);
                 if (cur_cam > -1)
@@ -633,7 +640,7 @@ namespace SceneSaveState
                     setCamera();
                 }
             }
-            if (!(task == "upd"))
+            if (!(task == CamTask.UPDATE))
             {
                 getSceneCamString();
             }
@@ -734,7 +741,7 @@ namespace SceneSaveState
                 addScene(insert);
                 if (autoAddCam == true)
                 {
-                    changeSceneCam("add");
+                    changeSceneCam(CamTask.ADD);
                 }
             }
             var curscene = block[currentSceneIndex];
@@ -1017,7 +1024,7 @@ namespace SceneSaveState
         {
             var objects = KKAPI.Studio.StudioAPI.GetSelectedObjects();
 
-            if (objects == null)
+            if (objects.Count() == 0)
             {
                 show_blocking_message_time_sc("Nothing selected");
                 return;
