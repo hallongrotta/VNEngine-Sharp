@@ -224,8 +224,8 @@ namespace SceneSaveState
             public WarningParam_s(string msg, object p, bool v2) : this()
             {
                 this.msg = msg;
-                this.func_param = p;
-                this.single_op = v2;
+                func_param = p;
+                single_op = v2;
             }
         }
 
@@ -270,141 +270,141 @@ namespace SceneSaveState
             // init dict
             // initWordDict()
             // --- Some constants ---
-            this._normalwidth = 500;
-            this._normalheight = 350;
+            _normalwidth = 500;
+            _normalheight = 350;
             // self.drag_rect = Rect(0, 0, 10000, 50)
             // --- Basic settings ---
-            this.originalwindowwidth = 0;
-            this.originalwindowheight = 0;
-            this.originalWindowCallback = null;
-            this.guiOnShow = false;
-            this.windowwidth = this._normalwidth;
-            this.windowheight = this._normalheight;
-            this.windowindex = 0;
-            this.subwinindex = 0;
+            originalwindowwidth = 0;
+            originalwindowheight = 0;
+            originalWindowCallback = null;
+            guiOnShow = false;
+            windowwidth = _normalwidth;
+            windowheight = _normalheight;
+            windowindex = 0;
+            subwinindex = 0;
             // --- Essential Data ---
-            this.versionSceneDataParsing = "7.0";
-            this.dict = new List<object>();
-            this.sdict = new List<object>();
-            this.dictparse = new Dictionary<object, object>
+            versionSceneDataParsing = "7.0";
+            dict = new List<object>();
+            sdict = new List<object>();
+            dictparse = new Dictionary<object, object>
             {
             };
-            this.scenefile = "";
-            this.block = new List<Scene>();
-            this.basechars = new List<List<object>> {
+            scenefile = "";
+            block = new List<Scene>();
+            basechars = new List<List<object>> {
                 new List<object>(),
                 new List<object>()
             };
-            this.dupchars = new List<List<object>> {
+            dupchars = new List<List<object>> {
                 new List<object>(),
                 new List<object>()
             };
-            this.last_acc_id = 0;
-            this.all_acc = new Dictionary<object, object>
+            last_acc_id = 0;
+            all_acc = new Dictionary<object, object>
             {
             };
-            this.baseacc = new Dictionary<object, object>
+            baseacc = new Dictionary<object, object>
             {
             };
-            this.accstate = new Dictionary<object, object>
+            accstate = new Dictionary<object, object>
             {
             };
-            this.propfldtag = new List<object>();
-            this.basepropflds = new Dictionary<object, object>
+            propfldtag = new List<object>();
+            basepropflds = new Dictionary<object, object>
             {
             };
-            this.proptag = new List<object>();
-            this.baseprops = new Dictionary<object, object>
+            proptag = new List<object>();
+            baseprops = new Dictionary<object, object>
             {
             };
             // self.basechars = self.getAllBaseChars()
             // self.dupchars = self.getAllDupChars()
             // self.updateNameset()
             // :::: UI Data ::::
-            this.consolenames = new string[] { "SceneSaveState" };
+            consolenames = new string[] { "SceneSaveState" };
             //this.consolenames = new string[] { "SceneSaveState", "Pose Library", "Scene Utils" };
-            this.options = new string[] { "Edit", "Tracking", "Load/Save", "Advanced", "Ministates" };
+            options = new string[] { "Edit", "Tracking", "Load/Save", "Advanced", "Ministates" };
             // -- Main --
-            this.sel_font_col = "#f24115";
-            this.nor_font_col = "#f9f9f9";
-            this.scene_scroll = new Vector2(0, 0);
-            this.cam_scroll = new Vector2(0, 0);
-            this.mset_scroll = new Vector2(0, 0);
-            this.fset_scroll = new Vector2(0, 0);
-            this.miniset_scroll = new Vector2(0, 0);
-            this.tracking_scroll = new Vector2(0, 0);
-            this.saveload_scroll = new Vector2(0, 0);
-            this.fset_index = 0;
-            this.mset_index = 0;
-            this.viewwidth = 120;
-            this.viewheight = 200;
-            this.camviewwidth = 120;
+            sel_font_col = "#f24115";
+            nor_font_col = "#f9f9f9";
+            scene_scroll = new Vector2(0, 0);
+            cam_scroll = new Vector2(0, 0);
+            mset_scroll = new Vector2(0, 0);
+            fset_scroll = new Vector2(0, 0);
+            miniset_scroll = new Vector2(0, 0);
+            tracking_scroll = new Vector2(0, 0);
+            saveload_scroll = new Vector2(0, 0);
+            fset_index = 0;
+            mset_index = 0;
+            viewwidth = 120;
+            viewheight = 200;
+            camviewwidth = 120;
             // self.char_name = ""
-            this.cam_whosay = "";
-            this.cam_whatsay = "";
-            this.cam_addvncmds = "";
-            this.cam_addparam = false;
-            this.cam_addprops.addprops = new Dictionary<string, bool> {
+            cam_whosay = "";
+            cam_whatsay = "";
+            cam_addvncmds = "";
+            cam_addparam = false;
+            cam_addprops.addprops = new Dictionary<string, bool> {
                 {
                     "a1",
                     false},
                 {
                     "a2",
                     false}};
-            this.newid = "";
-            this.mininewid = "";
-            this.autoshownewid = "";
-            this.isUseMsAuto = false;
+            newid = "";
+            mininewid = "";
+            autoshownewid = "";
+            isUseMsAuto = false;
             // -- Load/Save --
-            this.svname = "";
-            this.ldname = "";
+            svname = "";
+            ldname = "";
             // self.optionint = 0
             // -- Advanced --
-            this.adv_scroll = new Vector2(0, 0);
-            this.temp_states = null;
-            this.charname = "";
-            this.autoLoad = true;
-            this.autoAddCam = true;
-            this.promptOnDelete = true;
-            this.skipClothesChanges = false;
+            adv_scroll = new Vector2(0, 0);
+            temp_states = null;
+            charname = "";
+            autoLoad = true;
+            autoAddCam = true;
+            promptOnDelete = true;
+            skipClothesChanges = false;
             //this.shortcuts = new Dictionary<string, (string, string)>();
-            this.paramAnimCamDuration = 1.5f;
-            this.paramAnimCamStyle = "fast-slow";
-            this.paramAnimCamZoomOut = 0.0f;
-            this.paramAnimCamIfPossible = Utils.is_ini_value_true("AnimateCamIfPossible");
+            paramAnimCamDuration = 1.5f;
+            paramAnimCamStyle = "fast-slow";
+            paramAnimCamZoomOut = 0.0f;
+            paramAnimCamIfPossible = Utils.is_ini_value_true("AnimateCamIfPossible");
             // self.nwindowRect = None
             // -- Edit window --
             // Common data
-            this.nameset = new List<List<string>> {
+            nameset = new List<List<string>> {
                 new List<string>(),
                 new List<string>()
             };
-            this.scene_strings = new List<string>();
-            this.scene_str_array = new string[] { "<Empty>" };
-            this.scene_cam_str = new string[] {"<Empty>" };
-            this.currentSceneIndex = -1;
-            this.prev_index = -1;
-            this.cur_cam = -1;
-            this.prev_cam = -1;
-            this.camset = new List<CamData>();
-            this.isSaveCompact = true;
-            this.isSaveVerify = true;
-            this.isSaveOld = false;
-            this.updAutoStatesTimer = 0;
-            this.arAutoStatesItemsVis = new List<HSNeoOCIFolder>();
-            this.arAutoStatesItemsChoice = new List<HSNeoOCIFolder>();
-            this.backupTimeDuration = Utils.get_ini_value_def_int("AutoBackupTimeInSeconds", 600);
-            this.backupTimeCur = this.backupTimeDuration;
-            this.vnFastIsRunImmediately = false;
+            scene_strings = new List<string>();
+            scene_str_array = new string[] { "<Empty>" };
+            scene_cam_str = new string[] {"<Empty>" };
+            currentSceneIndex = -1;
+            prev_index = -1;
+            cur_cam = -1;
+            prev_cam = -1;
+            camset = new List<CamData>();
+            isSaveCompact = true;
+            isSaveVerify = true;
+            isSaveOld = false;
+            updAutoStatesTimer = 0;
+            arAutoStatesItemsVis = new List<HSNeoOCIFolder>();
+            arAutoStatesItemsChoice = new List<HSNeoOCIFolder>();
+            backupTimeDuration = Utils.get_ini_value_def_int("AutoBackupTimeInSeconds", 600);
+            backupTimeCur = backupTimeDuration;
+            vnFastIsRunImmediately = false;
             // blocking message
-            this.funcLockedText = "...";
-            this.isFuncLocked = false;
+            funcLockedText = "...";
+            isFuncLocked = false;
             // skin_default internal
-            this.skinDefault = new SkinDefault
+            skinDefault = new SkinDefault
             {
                 controller = game
             };
-            this.skinDefault_sideApp = "";
+            skinDefault_sideApp = "";
             Instance = this;
         }
 
@@ -412,40 +412,40 @@ namespace SceneSaveState
         // Blocking message functions
         public void show_blocking_message(string text = "...")
         {
-            this.funcLockedText = text;
-            this.isFuncLocked = true;
+            funcLockedText = text;
+            isFuncLocked = true;
         }
 
         public void hide_blocking_message(object game = null)
         {
-            this.isFuncLocked = false;
+            isFuncLocked = false;
         }
 
         public void show_blocking_message_time_sc(string text = "...", float duration = 3f)
         {
-            this.show_blocking_message(text);
-            this.game.set_timer(duration, this.hide_blocking_message);
+            show_blocking_message(text);
+            game.set_timer(duration, hide_blocking_message);
         }
 
         // other
         public void updateSceneStrings()
         {
-            this.scene_strings = new List<string>();
-            foreach (var id in Enumerable.Range(0, this.block.Count - 0))
+            scene_strings = new List<string>();
+            foreach (var id in Enumerable.Range(0, block.Count - 0))
             {
-                this.scene_strings.Add(String.Format("Scene {0}", id + 1));
+                scene_strings.Add(String.Format("Scene {0}", id + 1));
             }
-            this.scene_str_array = this.scene_strings.ToArray();
+            scene_str_array = scene_strings.ToArray();
         }
 
         // ---------- ministates ------------
         public void addSelectedAutoShow(string param)
         {
             // get list of sel objs
-            var arSel = this.get_selected_objs();
+            var arSel = get_selected_objs();
             if (arSel.Count == 0)
             {
-                this.show_blocking_message_time_sc("No selection!");
+                show_blocking_message_time_sc("No selection!");
                 return;
             }
             foreach (var actprop in arSel)
@@ -458,7 +458,7 @@ namespace SceneSaveState
                 }
                 else
                 {
-                    var txtname = this.autoshownewid;
+                    var txtname = autoshownewid;
                     if (txtname == "")
                     {
                         txtname = actprop.text_name;
@@ -469,16 +469,16 @@ namespace SceneSaveState
                 }
             }
             Utils.recalc_autostates();
-            this.autoshownewid = "";
+            autoshownewid = "";
         }
 
         public void delSelectedAutoShow()
         {
             // get list of sel objs
-            var arSel = this.get_selected_objs();
+            var arSel = get_selected_objs();
             if (arSel.Count == 0)
             {
-                this.show_blocking_message_time_sc("No selection!");
+                show_blocking_message_time_sc("No selection!");
                 return;
             }
             var arSel0 = arSel[0];
@@ -502,16 +502,16 @@ namespace SceneSaveState
                 fld = HSNeoOCIFolder.add("-ministates:1.0");
             }
             // calc name
-            var name = this.mininewid;
+            var name = mininewid;
             if (name == "")
             {
                 name = "state";
             }
             // get list of sel objs
-            var arSel = this.get_selected_objs();
+            var arSel = get_selected_objs();
             if (arSel.Count == 0)
             {
-                this.show_blocking_message_time_sc("No selection!");
+                show_blocking_message_time_sc("No selection!");
                 return;
             }
             var objSave = new Dictionary<string, IDataClass>
@@ -520,7 +520,7 @@ namespace SceneSaveState
             foreach (Actor actprop in arSel)
             {
                 //if isinstance(actprop, Actor):
-                var id = this.find_item_in_objlist(actprop.objctrl);
+                var id = find_item_in_objlist(actprop.objctrl);
                 objSave[String.Format("__id{0}", id.ToString())] = actprop.export_full_status();
                 //elif isinstance(actprop, Actor):
                 //print objSave
@@ -536,12 +536,12 @@ namespace SceneSaveState
             //
             // fldObj = HSNeoOCIFolder.add(MessagePackSerializer.Serialize(objSave))
             // fldObj.set_parent(fldName)
-            this.mininewid = "";
+            mininewid = "";
         }
 
         public int find_item_in_objlist(ObjectCtrlInfo obj)
         {
-            var dobjctrl = this.game.studio.dicObjectCtrl;
+            var dobjctrl = game.studio.dicObjectCtrl;
             foreach (var key in dobjctrl.Keys)
             {
                 var objctrl = dobjctrl[key];
@@ -555,7 +555,7 @@ namespace SceneSaveState
 
         public List<HSNeoOCI> get_selected_objs()
         {
-            var mtreeman = this.game.studio.treeNodeCtrl;
+            var mtreeman = game.studio.treeNodeCtrl;
             var ar = new List<HSNeoOCI>();
             foreach (var node in mtreeman.selectNodes)
             {
@@ -581,25 +581,25 @@ namespace SceneSaveState
         {
             if (insert == false)
             {
-                this.currentSceneIndex = this.block.Count;
-                this.prev_index = this.currentSceneIndex;
+                currentSceneIndex = block.Count;
+                prev_index = currentSceneIndex;
             }
             else
             {
-                this.currentSceneIndex += 1;
+                currentSceneIndex += 1;
             }
-            this.block.Insert(this.currentSceneIndex, new Scene());
-            this.updateSceneStrings();
+            block.Insert(currentSceneIndex, new Scene());
+            updateSceneStrings();
         }
 
         public void getSceneCamString()
         {
             var cam_str = new List<string>();
-            foreach (var i in Enumerable.Range(0, this.block[this.currentSceneIndex].cams.Count - 0))
+            foreach (var i in Enumerable.Range(0, block[currentSceneIndex].cams.Count - 0))
             {
                 cam_str.Add("Cam " + i.ToString());
             }
-            this.scene_cam_str = cam_str.ToArray();
+            scene_cam_str = cam_str.ToArray();
         }
 
         public void changeSceneCam(object param)
@@ -615,38 +615,38 @@ namespace SceneSaveState
         public void changeSceneCam(string task = "")
         {
             var cdata = VNNeoController.cameraData;
-            var addata = new VNData(this.cam_addparam, this.cam_whosay, this.cam_whatsay, this.cam_addvncmds, this.cam_addprops);
+            var addata = new VNData(cam_addparam, cam_whosay, cam_whatsay, cam_addvncmds, cam_addprops);
             var cam_data = new CamData(cdata.pos, cdata.rotate, cdata.distance, cdata.parse, addata);
             if (task == "" || task == "add")
             {
-                this.cur_cam = this.block[this.currentSceneIndex].addCam(cam_data);
+                cur_cam = block[currentSceneIndex].addCam(cam_data);
             }
             else if (task == "upd")
             {
-                this.block[this.currentSceneIndex].updateCam(this.cur_cam, cam_data);
+                block[currentSceneIndex].updateCam(cur_cam, cam_data);
             }
             else if (task == "del")
             {
-                this.cur_cam = this.block[this.currentSceneIndex].deleteCam(this.cur_cam);
-                if (this.cur_cam > -1)
+                cur_cam = block[currentSceneIndex].deleteCam(cur_cam);
+                if (cur_cam > -1)
                 {
-                    this.setCamera();
+                    setCamera();
                 }
             }
             if (!(task == "upd"))
             {
-                this.getSceneCamString();
+                getSceneCamString();
             }
         }
 
         public void setCamera()
         {
-            setCamera(this.paramAnimCamIfPossible);
+            setCamera(paramAnimCamIfPossible);
         }
 
         public void setCamera(bool isAnimated)
         {
-            VNCamera.CamData camera_data = this.block[this.currentSceneIndex].cams[this.cur_cam];
+            VNCamera.CamData camera_data = block[currentSceneIndex].cams[cur_cam];
             // check and run adv command
             var keepCamera = false;
             if (camera_data.hasVNData)
@@ -669,33 +669,33 @@ namespace SceneSaveState
                     style["target_camera_zooming_in"] = this.paramAnimCamZoomOut;
                 } */ //TODO fix this
                 var style = "linear";
-                this.game.anim_to_camera(this.paramAnimCamDuration, pos: camera_data.position, distance: camera_data.distance, rotate: camera_data.rotation, fov: camera_data.fov, style: style);
+                game.anim_to_camera(paramAnimCamDuration, pos: camera_data.position, distance: camera_data.distance, rotate: camera_data.rotation, fov: camera_data.fov, style: style);
             }
             else
             {
-                this.game.move_camera(camera_data);
+                game.move_camera(camera_data);
                 //this.game.move_camera(pos: camera_data.position, distance: camera_data.distance, rotate: camera_data.rotation, fov: camera_data.fov);
             }
             if (camera_data.addata is VNCamera.VNData addata)
             {
-                this.cam_addparam = addata.addparam;
-                this.cam_whosay = addata.whosay;
-                this.cam_whatsay = addata.whatsay;
+                cam_addparam = addata.addparam;
+                cam_whosay = addata.whosay;
+                cam_whatsay = addata.whatsay;
                 if (addata.addvncmds != null)
                 {
-                    this.cam_addvncmds = addata.addvncmds;
+                    cam_addvncmds = addata.addvncmds;
                 }
                 else
                 {
-                    this.cam_addvncmds = "";
+                    cam_addvncmds = "";
                 }
                 if (addata.addprops.addprops != null)
                 {
-                    this.cam_addprops = addata.addprops;
+                    cam_addprops = addata.addprops;
                 }
                 else
                 {
-                    this.cam_addprops.addprops = new Dictionary<string, bool> {
+                    cam_addprops.addprops = new Dictionary<string, bool> {
                         {
                             "a1",
                             false},
@@ -707,11 +707,11 @@ namespace SceneSaveState
             }
             else
             {
-                this.cam_addparam = false;
-                this.cam_whosay = "";
-                this.cam_whatsay = "";
-                this.cam_addvncmds = "";
-                this.cam_addprops.addprops = new Dictionary<string, bool> {
+                cam_addparam = false;
+                cam_whosay = "";
+                cam_whatsay = "";
+                cam_addvncmds = "";
+                cam_addprops.addprops = new Dictionary<string, bool> {
                     {
                         "a1",
                         false},
@@ -723,22 +723,22 @@ namespace SceneSaveState
 
         public void addAutoWithMsg()
         {
-            this.addAuto();
-            this.show_blocking_message_time_sc("Scene added!", 2.0f);
+            addAuto();
+            show_blocking_message_time_sc("Scene added!", 2.0f);
         }
 
         public void addAuto(bool insert = false, bool addsc = true, bool allbase = true)
         {
             if (addsc == true)
             {
-                this.addScene(insert);
-                if (this.autoAddCam == true)
+                addScene(insert);
+                if (autoAddCam == true)
                 {
-                    this.changeSceneCam("add");
+                    changeSceneCam("add");
                 }
             }
-            var curscene = this.block[this.currentSceneIndex];
-            curscene.importCurScene(this.game, this.isSysTracking);
+            var curscene = block[currentSceneIndex];
+            curscene.importCurScene(game, isSysTracking);
         }
 
         // Remove stuff
@@ -749,34 +749,34 @@ namespace SceneSaveState
         }
         public void removeScene()
         {
-            if (this.block.Count > 0)
+            if (block.Count > 0)
             {
-                this.block.RemoveAt(this.currentSceneIndex);
-                this.currentSceneIndex = this.currentSceneIndex - 1;
-                this.scene_strings.RemoveAt(scene_strings.Count - 1);
-                this.scene_str_array = this.scene_strings.ToArray();
+                block.RemoveAt(currentSceneIndex);
+                currentSceneIndex = currentSceneIndex - 1;
+                scene_strings.RemoveAt(scene_strings.Count - 1);
+                scene_str_array = scene_strings.ToArray();
             }
         }
 
         // Load scene
         public void loadCurrentScene()
         {
-            this.setSceneState();
-            if (block.Count > 0 && this.block[this.currentSceneIndex].cams.Count > 0)
+            setSceneState();
+            if (block.Count > 0 && block[currentSceneIndex].cams.Count > 0)
             {
-                this.cur_cam = 0;
-                this.setCamera();
+                cur_cam = 0;
+                setCamera();
             }
         }
 
         public void setSceneState()
         {
-            setSceneState(this.currentSceneIndex);
+            setSceneState(currentSceneIndex);
         }
 
         public void setSceneState(int index)
         {
-            var curscene = this.block[index];
+            var curscene = block[index];
             var game = VNNeoController.Instance;
             if (isSysTracking)
             {
@@ -791,7 +791,7 @@ namespace SceneSaveState
             if (elem is Actor chara)
             {
                 var tmp_status = chara.export_full_status();
-                var actors = this.game.scenef_get_all_actors();
+                var actors = game.scenef_get_all_actors();
                 foreach (var key in actors.Keys)
                 {
                     Actor actor = (Actor)actors[key];
@@ -805,11 +805,11 @@ namespace SceneSaveState
                         return;
                     }
                 }
-                this.show_blocking_message_time_sc("Can't find tracking char with same name");
+                show_blocking_message_time_sc("Can't find tracking char with same name");
             }
             else
             {
-                this.show_blocking_message_time_sc("Can't copy status");
+                show_blocking_message_time_sc("Can't copy status");
             }
         }
 
@@ -818,15 +818,15 @@ namespace SceneSaveState
             var elem = HSNeoOCI.create_from_selected();
             if (elem is Actor chara)
             {
-                this.clipboard_status = ((Actor)chara).export_full_status();
+                clipboard_status = ((Actor)chara).export_full_status();
             }
             else if (elem is HSNeoOCIProp prop)
             {
-                this.clipboard_status = prop.export_full_status();
+                clipboard_status = prop.export_full_status();
             }
             else
             {
-                this.show_blocking_message_time_sc("Can't copy status");
+                show_blocking_message_time_sc("Can't copy status");
             }
         }
 
@@ -835,15 +835,15 @@ namespace SceneSaveState
             var elem = HSNeoOCI.create_from_selected();
             if (elem is Actor chara)
             {
-                chara.import_status(this.clipboard_status);
+                chara.import_status(clipboard_status);
             }
             else if (elem is HSNeoOCIProp prop)
             {
-                prop.import_status((ItemData)this.clipboard_status);
+                prop.import_status((ItemData)clipboard_status);
             }
             else
             {
-                this.show_blocking_message_time_sc("Can't paste status");
+                show_blocking_message_time_sc("Can't paste status");
             }
         }
 
@@ -852,15 +852,15 @@ namespace SceneSaveState
             var elem = HSNeoOCI.create_from_selected();
             if (elem is Actor chara)
             {
-                this.clipboard_status2 = chara.export_full_status();
+                clipboard_status2 = chara.export_full_status();
             }
             else if (elem is HSNeoOCIProp prop)
             {
-                this.clipboard_status2 = prop.export_full_status();
+                clipboard_status2 = prop.export_full_status();
             }
             else
             {
-                this.show_blocking_message_time_sc("Can't copy status 2");
+                show_blocking_message_time_sc("Can't copy status 2");
             }
         }
 
@@ -869,26 +869,26 @@ namespace SceneSaveState
             var elem = HSNeoOCI.create_from_selected();
             if (elem is Actor chara)
             {
-                chara.import_status((ActorData)this.clipboard_status2);
+                chara.import_status((ActorData)clipboard_status2);
             }
             else if (elem is HSNeoOCIProp prop)
             {
-                prop.import_status((ItemData)this.clipboard_status2);
+                prop.import_status((ItemData)clipboard_status2);
             }
             else
             {
-                this.show_blocking_message_time_sc("Can't paste status 2");
+                show_blocking_message_time_sc("Can't paste status 2");
             }
         }   
 
         public void addSysTracking()
         {
-            if (this.block.Count > 0)
+            if (block.Count > 0)
             {
-                var curstatus = VNEngine.System.export_sys_status(this.game);
-                foreach (var i in Enumerable.Range(0, this.block.Count))
+                var curstatus = VNEngine.System.export_sys_status(game);
+                foreach (var i in Enumerable.Range(0, block.Count))
                 {
-                    Scene scene = this.block[i];
+                    Scene scene = block[i];
                     //scene.actors["sys"] = curstatus;
                     scene.sys = (VNEngine.System.SystemData)curstatus;
                 }
@@ -902,9 +902,9 @@ namespace SceneSaveState
 
         public void delSysTracking()
         {
-            foreach (var i in Enumerable.Range(0, this.block.Count))
+            foreach (var i in Enumerable.Range(0, block.Count))
             {
-                var scene = this.block[i];
+                var scene = block[i];
                 scene.actors.Remove("sys");
             }
             isSysTracking = false;
@@ -914,7 +914,7 @@ namespace SceneSaveState
         public void addSelectedToTrack(HSNeoOCIProp prop)
         {
             HSNeoOCIFolder tagfld;
-            var props = this.game.scenef_get_all_props();
+            var props = game.scenef_get_all_props();
 
             foreach (HSNeoOCIProp p in props.Values)
             {
@@ -963,9 +963,9 @@ namespace SceneSaveState
                 tagfld.set_parent_treenodeobject(prop.treeNodeObject);
             }
             var curstatus = prop.export_full_status();
-            for (int i = 0; i < this.block.Count; i++)
+            for (int i = 0; i < block.Count; i++)
             {
-                Scene scene = this.block[i];
+                Scene scene = block[i];
 
                 if (curstatus is ItemData propData)
                 {
@@ -981,7 +981,7 @@ namespace SceneSaveState
 
         public void addSelectedToTrack(Actor chara)
         {
-            var actors = this.game.scenef_get_all_actors();
+            var actors = game.scenef_get_all_actors();
 
             foreach (Actor actor in actors.Values)
             {
@@ -1006,9 +1006,9 @@ namespace SceneSaveState
             var tagfld = HSNeoOCIFolder.add(VNNeoController.actor_folder_prefix + id);
             tagfld.set_parent_treenodeobject(chara.treeNodeObject.child[0].child[0]);
             var curstatus = (ActorData)chara.export_full_status();
-            foreach (var i in Enumerable.Range(0, this.block.Count))
+            foreach (var i in Enumerable.Range(0, block.Count))
             {
-                Scene scene = this.block[i];
+                Scene scene = block[i];
                 scene.actors[id] = curstatus;
             }
         }
@@ -1019,7 +1019,7 @@ namespace SceneSaveState
 
             if (objects == null)
             {
-                this.show_blocking_message_time_sc("Nothing selected");
+                show_blocking_message_time_sc("Nothing selected");
                 return;
             } 
             else
@@ -1137,18 +1137,18 @@ namespace SceneSaveState
         {
             if (toId == "")
             {
-                this.show_blocking_message_time_sc("Please, set ID to change to first");
+                show_blocking_message_time_sc("Please, set ID to change to first");
                 return;
             }
             var elem = HSNeoOCI.create_from_selected();
             if (elem == null)
             {
-                this.show_blocking_message_time_sc("Nothing selected");
+                show_blocking_message_time_sc("Nothing selected");
                 return;
             }
             if (elem is Actor chara)
             {
-                var actors = this.game.scenef_get_all_actors();
+                var actors = game.scenef_get_all_actors();
                 string id = "";
                 foreach (var actid in actors.Keys)
                 {
@@ -1162,14 +1162,14 @@ namespace SceneSaveState
                 //self.delActorFromTrack(actid)
                 if (id == "")
                 {
-                    this.show_blocking_message_time_sc("Can't find actor to change ID");
+                    show_blocking_message_time_sc("Can't find actor to change ID");
                     return;
                 }
                 // actually changing ID
-                this.changeActorTrackId(id, toId);
+                changeActorTrackId(id, toId);
             }
             // updating set
-            this.game.LoadTrackedActorsAndProps();
+            game.LoadTrackedActorsAndProps();
         }
 
         public void delSelectedFromTrack(object o)
@@ -1183,12 +1183,12 @@ namespace SceneSaveState
             var elem = HSNeoOCI.create_from_selected();
             if (elem == null)
             {
-                this.show_blocking_message_time_sc("Nothing selected");
+                show_blocking_message_time_sc("Nothing selected");
                 return;
             }
             if (elem is Actor chara)
             {
-                var actors = this.game.scenef_get_all_actors();
+                var actors = game.scenef_get_all_actors();
                 var id = "";
                 foreach (var actid in actors.Keys)
                 {
@@ -1201,14 +1201,14 @@ namespace SceneSaveState
                 }
                 if (id == "")
                 {
-                    this.show_blocking_message_time_sc("Can't delete; seems this actor is not tracking yet");
+                    show_blocking_message_time_sc("Can't delete; seems this actor is not tracking yet");
                     return;
                 }
-                this.delActorFromTrack(id);
+                delActorFromTrack(id);
             }
             else if (elem is HSNeoOCIProp)
             {
-                var props = this.game.scenef_get_all_props();
+                var props = game.scenef_get_all_props();
                 var id = "";
                 foreach (var propid in props.Keys)
                 {
@@ -1218,10 +1218,10 @@ namespace SceneSaveState
                         break;
                     }
                 }
-                this.delPropFromTrack(id);
+                delPropFromTrack(id);
             }
             // updating set
-            this.game.LoadTrackedActorsAndProps();
+            game.LoadTrackedActorsAndProps();
         }
 
         public void delActorFromTrack(string actid)
@@ -1239,9 +1239,9 @@ namespace SceneSaveState
                 {
                     fld.delete();
                 }
-                foreach (var i in Enumerable.Range(0, this.block.Count))
+                foreach (var i in Enumerable.Range(0, block.Count))
                 {
-                    var scene = this.block[i];
+                    var scene = block[i];
                     scene.actors.Remove(actid);
                 }
             }
@@ -1265,9 +1265,9 @@ namespace SceneSaveState
                 //print lastelems
                 fld.name = VNNeoController.actor_folder_prefix + toid + lastelems;
                 //
-                foreach (var i in Enumerable.Range(0, this.block.Count))
+                foreach (var i in Enumerable.Range(0, block.Count))
                 {
-                    var scene = this.block[i];
+                    var scene = block[i];
                     scene.actors[toid] = scene.actors[actid];
                     scene.actors.Remove(actid);
                     foreach (var camid in Enumerable.Range(0, scene.cams.Count))
@@ -1294,9 +1294,9 @@ namespace SceneSaveState
                 {
                     fld.delete();
                 }
-                foreach (var i in Enumerable.Range(0, this.block.Count))
+                foreach (var i in Enumerable.Range(0, block.Count))
                 {
-                    var scene = this.block[i];
+                    var scene = block[i];
                     scene.props.Remove(propid);
                 }
             }
@@ -1379,17 +1379,17 @@ namespace SceneSaveState
         {
             try
             {
-                var blockold = this.block;
+                var blockold = block;
                 List<Scene> blocknew;
                 try
                 {
-                    this.loadSceneData(setToFirst: false);
-                    blocknew = this.block;
-                    this.block = blockold;
+                    loadSceneData(setToFirst: false);
+                    blocknew = block;
+                    block = blockold;
                 }
                 catch (Exception e)
                 {
-                    this.block = blockold;
+                    block = blockold;
                     Console.WriteLine(String.Format("Error verify loading data - {0}", e.ToString()));
                     return -100000;
                 }
@@ -1438,29 +1438,29 @@ namespace SceneSaveState
         {
             //dt = Time.deltaTime
             //self.show_blocking_message_time_sc("Data saved in %.1f s!" % (dt))
-            if (!this.isSaveVerify)
+            if (!isSaveVerify)
             {
-                this.show_blocking_message_time_sc("Data saved!");
+                show_blocking_message_time_sc("Data saved!");
             }
             else
             {
                 //diff = get_status_diff_optimized(blockold,blocknew)
-                var diffs = this.verify_load();
+                var diffs = verify_load();
                 if (diffs == 0)
                 {
-                    this.show_blocking_message_time_sc("Data saved! (Verify: OK)");
+                    show_blocking_message_time_sc("Data saved! (Verify: OK)");
                 }
                 else if (diffs == -100000)
                 {
-                    this.show_blocking_message_time_sc("Data saved! (Verify: INTERNAL ERROR!)");
+                    show_blocking_message_time_sc("Data saved! (Verify: INTERNAL ERROR!)");
                 }
-                else if (this.isSaveOld)
+                else if (isSaveOld)
                 {
-                    this.show_blocking_message_time_sc(String.Format("Data saved! (Verify: OK)\n(some {0} potential misequals, seems be ok)", diffs.ToString()));
+                    show_blocking_message_time_sc(String.Format("Data saved! (Verify: OK)\n(some {0} potential misequals, seems be ok)", diffs.ToString()));
                 }
                 else
                 {
-                    this.show_blocking_message_time_sc(String.Format("Data saved! (Verify: {0} potential problems, see Console!)", diffs.ToString()));
+                    show_blocking_message_time_sc(String.Format("Data saved! (Verify: {0} potential problems, see Console!)", diffs.ToString()));
                 }
             }
         }
@@ -1476,34 +1476,34 @@ namespace SceneSaveState
             HSNeoOCIFolder fld;
             // Template
             // template = {"fchars":{}, "mchars":{}, "propflds":{}, "cams":[], "accs":{}, "props":{}}
-            if (this.svname == "")
+            if (svname == "")
             {
-                fld = Utils.getFolder(this.game, "-scfile:", false);
+                fld = Utils.getFolder(game, "-scfile:", false);
                 if (!(fld == null))
                 {
-                    this.svname = fld.text_name.Substring("-scfile:".Length);
+                    svname = fld.text_name.Substring("-scfile:".Length);
                 }
             }
             else
             {
-                fld = Utils.getFolder(this.game, "-scfile:" + this.svname, true);
+                fld = Utils.getFolder(game, "-scfile:" + svname, true);
                 if (fld == null)
                 {
                     // create pointer fld
-                    this.createFld("-scfile:" + this.svname, parent: null, ret: false);
+                    createFld("-scfile:" + svname, parent: null, ret: false);
                 }
             }
-            if (!(this.svname == ""))
+            if (!(svname == ""))
             {
                 if (backup == false)
                 {
-                    filename = this.svname.ToString();
+                    filename = svname.ToString();
                 }
                 else
                 {
-                    filename = this.svname.ToString() + "_backup";
+                    filename = svname.ToString() + "_backup";
                 }
-                this.saveToFileDirect(filename);
+                saveToFileDirect(filename);
             }
         }
 
@@ -1522,7 +1522,7 @@ namespace SceneSaveState
         public void saveToFileDirect(string filename)
         {
             var save_data = new List<save_data>();
-            foreach (var i in Enumerable.Range(0, this.block.Count - 0))
+            foreach (var i in Enumerable.Range(0, block.Count - 0))
             {
                 save_data[i].actors = block[i].actors;
                 save_data[i].cams = block[i].cams;
@@ -1552,7 +1552,7 @@ namespace SceneSaveState
             */
         }
 
-        public Dictionary<string, Scene> loadFromFileDirect(string filename)
+        public static Dictionary<string, Scene> loadFromFileDirect(string filename)
         {
             var script_dir = Path.GetDirectoryName(Application.dataPath);
             var folder_path = "sssdata/";
@@ -1572,23 +1572,23 @@ namespace SceneSaveState
             if (!(block_dict == null))
             {
                 // init zero
-                this.dict = new List<object>();
-                this.dictparse = new Dictionary<object, object>
+                dict = new List<object>();
+                dictparse = new Dictionary<object, object>
                 {
                 };
-                this.scenefile = "";
-                this.block = new List<Scene>();
-                this.baseacc = new Dictionary<object, object>
+                scenefile = "";
+                block = new List<Scene>();
+                baseacc = new Dictionary<object, object>
                 {
                 };
-                this.accstate = new Dictionary<object, object>
+                accstate = new Dictionary<object, object>
                 {
                 };
-                this.nameset = new List<List<string>> {
+                nameset = new List<List<string>> {
                     new List<string>(),
                     new List<string>()
                 };
-                this.scene_strings = new List<string>();
+                scene_strings = new List<string>();
                 // attaining data
                 foreach (var key in block_dict.Keys.ToList())
                 {
@@ -1611,8 +1611,8 @@ namespace SceneSaveState
                     //print actors
                     //print props
                     //print cams
-                    this.block.Add(new Scene(actors, props, null, cams));
-                    this.scene_strings.Add("Scene " + key.ToString());
+                    block.Add(new Scene(actors, props, null, cams));
+                    scene_strings.Add("Scene " + key.ToString());
                     // id = int(key)
                     // for id in range(0,len(block_dict)):
                     // fchars = block_dict[key]["fchars"]
@@ -1647,8 +1647,8 @@ namespace SceneSaveState
 
         public void loadSceneDataBackupTimer()
         {
-            var block_dict = this.loadFromFileDirect("_backuptimer");
-            this.loadSceneDataInternalDict(block_dict, true);
+            var block_dict = loadFromFileDirect("_backuptimer");
+            loadSceneDataInternalDict(block_dict, true);
         }
 
         public void loadSceneData(object param)
@@ -1660,7 +1660,7 @@ namespace SceneSaveState
         public void loadSceneData(bool file = false, bool backup = false, bool setToFirst = true)
         {
             string filename;
-            this.game.LoadTrackedActorsAndProps();
+            game.LoadTrackedActorsAndProps();
             Dictionary<string, Scene> block_dict = null;
             if (file == false)
             {
@@ -1669,45 +1669,45 @@ namespace SceneSaveState
             }
             else
             {
-                if (this.svname == "")
+                if (svname == "")
                 {
-                    var fld = Utils.getFolder(this.game, "-scfile:", false);
+                    var fld = Utils.getFolder(game, "-scfile:", false);
                     if (!(fld == null))
                     {
-                        this.svname = fld.text_name.Substring("-scfile:".Length);
+                        svname = fld.text_name.Substring("-scfile:".Length);
                     }
                 }
                 if (backup == false)
                 {
-                    filename = this.svname.ToString();
+                    filename = svname.ToString();
                 }
                 else
                 {
-                    filename = this.svname.ToString() + "_backup";
+                    filename = svname.ToString() + "_backup";
                 }
                 // abs_file_path = os.Path.Combine(script_dir, file_path)
                 // if os.File.Exists(abs_file_path):
                 //     f = open(abs_file_path, "r")
                 //     block_dict = Utils.DeserializeData(f.read(), object_hook=sceneDecoder)  # , indent = 4, separators = (","," : ")))
                 //     f.close()
-                block_dict = this.loadFromFileDirect(filename);
+                block_dict = loadFromFileDirect(filename);
             }
-            this.loadSceneDataInternalDict(block_dict, file);
+            loadSceneDataInternalDict(block_dict, file);
             // loading
             if (setToFirst)
             {
-                if (this.block.Count > 0)
+                if (block.Count > 0)
                 {
-                    this.currentSceneIndex = 0;
-                    this.cur_cam = 0;
+                    currentSceneIndex = 0;
+                    cur_cam = 0;
                 }
             }
         }
 
         // Change name
-        public void changeCharName(string name)
+        public static void changeCharName(VNNeoController game, string name)
         {
-            var chara = Utils.getSelectedChar(this.game);
+            var chara = Utils.getSelectedChar(game);
             var old_name = chara.text_name;
             chara.objctrl.treeNodeObject.textName = name;
             // for sex in range(len(self.basechars)):
@@ -1719,89 +1719,89 @@ namespace SceneSaveState
 
         public void dupScene()
         {
-            if (this.block.Count > 0)
+            if (block.Count > 0)
             {
                 //import copy
                 // we have a problem with copy, so... just serialize and back it
                 //objstr = MessagePackSerializer.Serialize(self.block[self.cur_index])
-                this.block.Insert(this.currentSceneIndex, this.block[this.currentSceneIndex].copy());
-                this.updateSceneStrings();
+                block.Insert(currentSceneIndex, block[currentSceneIndex].copy());
+                updateSceneStrings();
             }
         }
 
         // Copy/paste cam set
         public void copyCamSet()
         {
-            if (this.currentSceneIndex > -1)
+            if (currentSceneIndex > -1)
             {
-                if (this.camset is null)
+                if (camset is null)
                 {
-                    this.camset = new List<CamData>();
+                    camset = new List<CamData>();
                 }
-                this.camset = this.block[this.currentSceneIndex].cams;
+                camset = block[currentSceneIndex].cams;
             }
         }
 
         public void pasteCamSet()
         {
-            if (this.currentSceneIndex > -1)
+            if (currentSceneIndex > -1)
             {
-                this.block[this.currentSceneIndex].cams.AddRange(this.camset);
+                block[currentSceneIndex].cams.AddRange(camset);
             }
         }
 
         // Move cam (up/down)
         public void move_cam_up()
         {
-            if (this.currentSceneIndex > -1 && this.cur_cam > 0)
+            if (currentSceneIndex > -1 && cur_cam > 0)
             {
-                var curcam = this.block[this.currentSceneIndex].cams[this.cur_cam];
-                this.block[this.currentSceneIndex].cams[this.cur_cam] = this.block[this.currentSceneIndex].cams[this.cur_cam - 1];
-                this.cur_cam -= 1;
-                this.block[this.currentSceneIndex].cams[this.cur_cam] = curcam;
+                var curcam = block[currentSceneIndex].cams[cur_cam];
+                block[currentSceneIndex].cams[cur_cam] = block[currentSceneIndex].cams[cur_cam - 1];
+                cur_cam -= 1;
+                block[currentSceneIndex].cams[cur_cam] = curcam;
             }
         }
 
         public void move_cam_down()
         {
-            if (this.currentSceneIndex > -1 && this.cur_cam < this.block[this.currentSceneIndex].cams.Count - 1)
+            if (currentSceneIndex > -1 && cur_cam < block[currentSceneIndex].cams.Count - 1)
             {
-                var curcam = this.block[this.currentSceneIndex].cams[this.cur_cam];
-                this.block[this.currentSceneIndex].cams[this.cur_cam] = this.block[this.currentSceneIndex].cams[this.cur_cam + 1];
-                this.cur_cam += 1;
-                this.block[this.currentSceneIndex].cams[this.cur_cam] = curcam;
+                var curcam = block[currentSceneIndex].cams[cur_cam];
+                block[currentSceneIndex].cams[cur_cam] = block[currentSceneIndex].cams[cur_cam + 1];
+                cur_cam += 1;
+                block[currentSceneIndex].cams[cur_cam] = curcam;
             }
         }
 
         // Move scene(up/down)
         public void move_scene_up()
         {
-            if (this.currentSceneIndex > 0)
+            if (currentSceneIndex > 0)
             {
-                var cursc = this.block[this.currentSceneIndex];
-                this.block[this.currentSceneIndex] = this.block[this.currentSceneIndex - 1];
-                this.currentSceneIndex -= 1;
-                this.block[this.currentSceneIndex] = cursc;
+                var cursc = block[currentSceneIndex];
+                block[currentSceneIndex] = block[currentSceneIndex - 1];
+                currentSceneIndex -= 1;
+                block[currentSceneIndex] = cursc;
             }
         }
 
         public void move_scene_down()
         {
-            if (this.currentSceneIndex < this.block.Count - 1)
+            if (currentSceneIndex < block.Count - 1)
             {
-                var cursc = this.block[this.currentSceneIndex];
-                this.block[this.currentSceneIndex] = this.block[this.currentSceneIndex + 1];
-                this.currentSceneIndex += 1;
-                this.block[this.currentSceneIndex] = cursc;
+                var cursc = block[currentSceneIndex];
+                block[currentSceneIndex] = block[currentSceneIndex + 1];
+                currentSceneIndex += 1;
+                block[currentSceneIndex] = cursc;
             }
         }
 
         // Goto next/prev
         public void goto_first()
         {
-            this.currentSceneIndex = 0;
-            this.loadCurrentScene();
-            this.prev_index = this.currentSceneIndex;
+            currentSceneIndex = 0;
+            loadCurrentScene();
+            prev_index = currentSceneIndex;
         }
 
         public void goto_next(VNController game, int i)
@@ -1811,49 +1811,49 @@ namespace SceneSaveState
 
         public void goto_next()
         {
-            if (this.block.Count > 0)
+            if (block.Count > 0)
             {
-                if (this.block[this.currentSceneIndex].cams.Count > 0 && this.cur_cam < this.block[this.currentSceneIndex].cams.Count - 1)
+                if (block[currentSceneIndex].cams.Count > 0 && cur_cam < block[currentSceneIndex].cams.Count - 1)
                 {
-                    this.cur_cam += 1;
-                    this.setCamera();
+                    cur_cam += 1;
+                    setCamera();
                 }
                 else
                 {
                     // elif self.cur_index < (len(self.block) - 1):
                     // self.cur_index += 1
-                    this.goto_next_sc();
+                    goto_next_sc();
                 }
             }
         }
 
         public void goto_prev()
         {
-            if (this.block.Count > 0)
+            if (block.Count > 0)
             {
-                this.prev_index = this.currentSceneIndex;
-                this.prev_cam = this.cur_cam;
-                if (this.cur_cam > 0)
+                prev_index = currentSceneIndex;
+                prev_cam = cur_cam;
+                if (cur_cam > 0)
                 {
-                    this.cur_cam -= 1;
-                    this.setCamera();
+                    cur_cam -= 1;
+                    setCamera();
                 }
                 else
                 {
                     // elif self.cur_index > 0:
                     // self.cur_index -= 1
-                    this.goto_prev_sc(lastcam: true);
+                    goto_prev_sc(lastcam: true);
                 }
             }
         }
 
         public void goto_next_sc()
         {
-            if (this.block.Count > 0 && this.currentSceneIndex < this.block.Count - 1)
+            if (block.Count > 0 && currentSceneIndex < block.Count - 1)
             {
-                this.currentSceneIndex += 1;
-                this.loadCurrentScene();
-                this.prev_index = this.currentSceneIndex;
+                currentSceneIndex += 1;
+                loadCurrentScene();
+                prev_index = currentSceneIndex;
             }
         }
 
@@ -1864,15 +1864,15 @@ namespace SceneSaveState
 
         public void goto_prev_sc(bool lastcam = false)
         {
-            if (this.block.Count > 0 && this.currentSceneIndex > 0)
+            if (block.Count > 0 && currentSceneIndex > 0)
             {
-                this.currentSceneIndex -= 1;
-                this.loadCurrentScene();
-                this.prev_index = this.currentSceneIndex;
-                if (lastcam == true && this.block[this.currentSceneIndex].cams.Count > 0)
+                currentSceneIndex -= 1;
+                loadCurrentScene();
+                prev_index = currentSceneIndex;
+                if (lastcam == true && block[currentSceneIndex].cams.Count > 0)
                 {
-                    this.cur_cam = this.block[this.currentSceneIndex].cams.Count - 1;
-                    this.setCamera();
+                    cur_cam = block[currentSceneIndex].cams.Count - 1;
+                    setCamera();
                 }
             }
         }
@@ -1889,9 +1889,9 @@ namespace SceneSaveState
 
 // var f = codecs.open(filename, "w+", encoding: "utf-8");
                     w.Write("[\n");
-                foreach (var i in Enumerable.Range(0, this.block.Count))
+                foreach (var i in Enumerable.Range(0, block.Count))
                 {
-                    Scene scene = this.block[i];
+                    Scene scene = block[i];
                     // only process scene if 1 cam is VN cam - other, skip
                     //cam = scene.cams[0]
                     foreach (var j in Enumerable.Range(0, scene.cams.Count))
@@ -1918,10 +1918,10 @@ namespace SceneSaveState
             }
             catch (Exception e)
             {
-                this.show_blocking_message_time_sc(String.Format("Can't write to file {0} in game root folder\nerr: {1}", filename, e.ToString()));
+                show_blocking_message_time_sc(String.Format("Can't write to file {0} in game root folder\nerr: {1}", filename, e.ToString()));
                 return;
             }
-            this.show_blocking_message_time_sc("Cam VN texts exported to sss_camtexts.txt!\nFormat: scene, cam, isVNcam, whosay, whatsay");
+            show_blocking_message_time_sc("Cam VN texts exported to sss_camtexts.txt!\nFormat: scene, cam, isVNcam, whosay, whatsay");
         }
 
         // export cam texts
@@ -1930,14 +1930,14 @@ namespace SceneSaveState
             var filename = "sss_camtexts.txt";
             try
             {
-                string filecont = this.game.file_get_content_utf8(filename);
+                string filecont = game.file_get_content_utf8(filename);
                 List<CamData> arr = new List<CamData>(); // Utils.DeserializeData<List<KeyValuePair<int, CamData>>>(filecont); TODO
                 for (int i = 0; i < arr.Count; i++)
                 {
                     
                     var elem = arr[i];
                     var scenenum = i;
-                        var scene = this.block[scenenum];
+                        var scene = block[scenenum];
                         var cam = scene.cams[elem.camnum];
                         cam.addata = elem.addata;
                         
@@ -1947,17 +1947,17 @@ namespace SceneSaveState
             }
             catch (Exception e)
             {
-                this.show_blocking_message_time_sc(String.Format("Can't import file {0} in game root folder\nerr: {1}", filename, e.ToString()));
+                show_blocking_message_time_sc(String.Format("Can't import file {0} in game root folder\nerr: {1}", filename, e.ToString()));
                 return;
             }
-            this.show_blocking_message_time_sc("Cam VN texts import success!");
+            show_blocking_message_time_sc("Cam VN texts import success!");
         }
 
         public void camSetAll(bool state)
         {
-            foreach (var i in Enumerable.Range(0, this.block.Count))
+            foreach (var i in Enumerable.Range(0, block.Count))
             {
-                var scene = this.block[i];
+                var scene = block[i];
                 // only process scene if 1 cam is VN cam - other, skip
                 // cam = scene.cams[0]
                 foreach (var j in Enumerable.Range(0, scene.cams.Count))
@@ -1966,16 +1966,16 @@ namespace SceneSaveState
                     cam.hasVNData = state;
                 }
             }
-            this.show_blocking_message_time_sc("Cams changed!");
+            show_blocking_message_time_sc("Cams changed!");
         }
 
         // export to VNSceneScript
         public void exportToVNSS()
         {
             //VNExt.exportToVNSS(this, new Dictionary<object, object>()); TODO
-            if (this.vnFastIsRunImmediately)
+            if (vnFastIsRunImmediately)
             {
-                this.runVNSS("cam");
+                runVNSS("cam");
             }
         }
 
@@ -1988,27 +1988,27 @@ namespace SceneSaveState
             int calcPos;
             rpySkin.isEndButton = true;
             rpySkin.endButtonTxt = "X";
-            rpySkin.endButtonCall = this.endVNSSbtn;
+            rpySkin.endButtonCall = endVNSSbtn;
             game.set_text_s("...");
-            game.set_buttons(new List<Button_s>() { new Button_s(">>", this.goto_next, 1) });
-            this.game.skin_set(rpySkin);
+            game.set_buttons(new List<Button_s>() { new Button_s(">>", goto_next, 1) });
+            game.skin_set(rpySkin);
             game.visible = true;
             if (starfrom == "cam")
             {
                 //print self.cur_index, self.cur_cam
-                calcPos = (this.currentSceneIndex + 1) * 100 + this.cur_cam;
+                calcPos = (currentSceneIndex + 1) * 100 + cur_cam;
             }
             else if (starfrom == "scene")
             {
-                calcPos = (this.currentSceneIndex + 1) * 100;
+                calcPos = (currentSceneIndex + 1) * 100;
             }
             else
             {
                 calcPos = 0;
             }
-            this.currentSceneIndex = calcPos;
+            currentSceneIndex = calcPos;
             Console.WriteLine(String.Format("Run VNSS from state {0}", calcPos.ToString()));
-            this.game.vnscenescript_run_current(this.onEndVNSS, calcPos.ToString());
+            game.vnscenescript_run_current(onEndVNSS, calcPos.ToString());
         }
 
         public void endVNSSbtn(VNNeoController game)
@@ -2026,7 +2026,7 @@ namespace SceneSaveState
         public string get_next_speaker(string curSpeakAlias, bool next)
         {
             // next from unknown speaker
-            var all_actors = this.game.scenef_get_all_actors();
+            var all_actors = game.scenef_get_all_actors();
             var keylist = all_actors.Keys.ToList();
             if (curSpeakAlias != "s" && !all_actors.ContainsKey(curSpeakAlias))
             {
@@ -2076,8 +2076,8 @@ namespace SceneSaveState
         public void deleteSaveData()
         {
             SetExtendedData(new PluginData() { data = null });
-            this.block = new List<Scene>();
-            this.currentSceneIndex = -1;
+            block = new List<Scene>();
+            currentSceneIndex = -1;
             updateSceneStrings();
             game.LoadTrackedActorsAndProps();
         }
@@ -2087,7 +2087,7 @@ namespace SceneSaveState
             var pluginData = new PluginData();
             if (block.Count > 0)
             {
-                byte[] sceneData = MessagePackSerializer.Serialize(this.block, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
+                byte[] sceneData = MessagePackSerializer.Serialize(block, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
                 pluginData.data["scenes"] = sceneData;
                 SetExtendedData(pluginData);
                 var logger = game.GetLogger;
@@ -2100,8 +2100,8 @@ namespace SceneSaveState
             var pluginData = GetExtendedData();
             if (pluginData == null || pluginData?.data == null)
             {
-                this.block = new List<Scene>();
-                this.currentSceneIndex = -1;
+                block = new List<Scene>();
+                currentSceneIndex = -1;
             }
             else
             {
@@ -2111,9 +2111,9 @@ namespace SceneSaveState
                     var logger = game.GetLogger;
                     try
                     {
-                        this.block = MessagePackSerializer.Deserialize<List<Scene>>(sceneData, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
+                        block = MessagePackSerializer.Deserialize<List<Scene>>(sceneData, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
                         logger.LogDebug($"Loaded {((double)sceneData.Length / 1000):N} Kbytes of scene data.");
-                        this.currentSceneIndex = 0;
+                        currentSceneIndex = 0;
                     }
                     catch (Exception e)
                     {
