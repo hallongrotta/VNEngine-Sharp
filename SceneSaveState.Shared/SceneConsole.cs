@@ -541,7 +541,7 @@ namespace SceneSaveState
                 var ochar = HSNeoOCI.create_from_treenode(node);
                 if (ochar is Actor chara)
                 {
-                    ar.Add(chara.as_actor);
+                    ar.Add(chara);
                 }
                 else if (ochar is HSNeoOCIProp prop)
                 {
@@ -768,7 +768,7 @@ namespace SceneSaveState
             var elem = HSNeoOCI.create_from_selected();
             if (elem is Actor chara)
             {
-                var tmp_status = chara.as_actor.export_full_status();
+                var tmp_status = chara.export_full_status();
                 var actors = this.game.scenef_get_all_actors();
                 foreach (var key in actors.Keys)
                 {
@@ -813,7 +813,7 @@ namespace SceneSaveState
             var elem = HSNeoOCI.create_from_selected();
             if (elem is Actor chara)
             {
-                chara.as_actor.import_status(this.clipboard_status);
+                chara.import_status(this.clipboard_status);
             }
             else if (elem is HSNeoOCIProp prop)
             {
@@ -830,7 +830,7 @@ namespace SceneSaveState
             var elem = HSNeoOCI.create_from_selected();
             if (elem is Actor chara)
             {
-                this.clipboard_status2 = chara.as_actor.export_full_status();
+                this.clipboard_status2 = chara.export_full_status();
             }
             else if (elem is HSNeoOCIProp prop)
             {
@@ -847,7 +847,7 @@ namespace SceneSaveState
             var elem = HSNeoOCI.create_from_selected();
             if (elem is Actor chara)
             {
-                chara.as_actor.import_status((ActorData)this.clipboard_status2);
+                chara.import_status((ActorData)this.clipboard_status2);
             }
             else if (elem is HSNeoOCIProp prop)
             {

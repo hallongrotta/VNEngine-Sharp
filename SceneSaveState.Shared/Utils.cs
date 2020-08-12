@@ -426,7 +426,7 @@ namespace SceneSaveState
                 if (ochar.objctrl is OCIChar)
                 {
                     Actor chara = (Actor)ochar;
-                    ar.Add(chara.as_actor);
+                    ar.Add(chara);
                 }
             }
                 var am = new List<Actor>();
@@ -458,7 +458,7 @@ namespace SceneSaveState
                 if (ochar.objctrl is OCIChar)
                 {
                     Actor chara = (Actor)ochar;
-                    ar.Add(chara.as_actor);
+                    ar.Add(chara);
                 }
             }
             return ar[0];
