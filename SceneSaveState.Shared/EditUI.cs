@@ -9,7 +9,6 @@ namespace SceneSaveState
 {
     partial class UI
     {
-
         public static void sceneConsoleEditUI()
         {
             VNCamera.VNData.addprops_struct addprops;
