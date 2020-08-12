@@ -37,7 +37,7 @@ namespace SceneSaveState
 
             KKAPI.Studio.SaveLoad.StudioSaveLoadApi.RegisterExtraBehaviour<SceneConsole>(GUID);
 
-            Utils.setWindowName(sc.windowindex);
+            UI.setWindowName(UI.windowindex);
 
             this.windowStyle = new GUIStyle("window");
             this.windowCallback = new GUI.WindowFunction(UI.sceneConsoleWindowFunc);
@@ -46,9 +46,9 @@ namespace SceneSaveState
 
         public void sceneConsoleSkinSetup()
         {
-            Utils.setWindowName(SceneConsole.Instance.windowindex);
-            this.wwidth = SceneConsole.Instance.windowwidth;
-            this.wheight = SceneConsole.Instance.windowheight;
+            UI.setWindowName(UI.windowindex);
+            this.wwidth = UI.windowwidth;
+            this.wheight = UI.windowheight;
             // #game.windowRect = Rect (Screen.width / 2 - game.wwidth / 2, Screen.height - game.wheight - 10, game.wwidth, game.wheight)
             var x = Screen.width - game.wwidth * 1.1f;
             var y = Screen.height - game.wheight - 600;

@@ -18,7 +18,7 @@ namespace SceneSaveState
             GUILayout.BeginHorizontal();
             GUILayout.BeginVertical();
             // Scene tab
-            Instance.scene_scroll = GUILayout.BeginScrollView(Instance.scene_scroll, GUILayout.Width(Instance.viewwidth));
+            scene_scroll = GUILayout.BeginScrollView(scene_scroll, GUILayout.Width(viewwidth));
             if (Instance.block.Count > 0)
             {
                 for (int i = 0; i < Instance.block.Count; i++)
@@ -70,10 +70,10 @@ namespace SceneSaveState
             GUILayout.BeginVertical();
             // Camera and character selection tabs
             GUILayout.BeginHorizontal();
-            if (Instance.currentSceneIndex > -1)
+            if (Instance.currentSceneIndex > -1 && Instance.block.Count > 0)
             {
                 GUILayout.BeginVertical();
-                Instance.cam_scroll = GUILayout.BeginScrollView(Instance.cam_scroll, GUILayout.Height(185), GUILayout.Width(Instance.camviewwidth));
+                cam_scroll = GUILayout.BeginScrollView(cam_scroll, GUILayout.Height(185), GUILayout.Width(camviewwidth));
                 for ( int i = 0; i < Instance.block[Instance.currentSceneIndex].cams.Count - 0; i++)
                 {
                     if (i == Instance.cur_cam)
@@ -118,16 +118,16 @@ namespace SceneSaveState
                 // sc.setCamera()
                 GUILayout.Space(15);
                 GUILayout.BeginHorizontal();
-                if (GUILayout.Button("Add", GUILayout.Width(Instance.camviewwidth * 0.7f)))
+                if (GUILayout.Button("Add", GUILayout.Width(camviewwidth * 0.7f)))
                 {
                     Instance.changeSceneCam(CamTask.ADD);
                 }
-                if (GUILayout.Button("Del", GUILayout.Width(Instance.camviewwidth * 0.3f)))
+                if (GUILayout.Button("Del", GUILayout.Width(camviewwidth * 0.3f)))
                 {
                     if (Instance.promptOnDelete)
                     {
-                        Instance.warning_action = Instance.deleteSceneCam;
-                        Instance.warning_param = new WarningParam_s("Delete selected cam?", CamTask.DELETE, false);
+                        warning_action = Instance.deleteSceneCam;
+                        warning_param = new WarningParam_s("Delete selected cam?", CamTask.DELETE, false);
                     }
                     else
                     {
@@ -135,7 +135,7 @@ namespace SceneSaveState
                     }
                 }
                 GUILayout.EndHorizontal();
-                if (GUILayout.Button("Update", GUILayout.Width(Instance.camviewwidth + 5)))
+                if (GUILayout.Button("Update", GUILayout.Width(camviewwidth + 5)))
                 {
                     Instance.changeSceneCam(CamTask.UPDATE);
                 }
@@ -143,11 +143,11 @@ namespace SceneSaveState
                 GUILayout.BeginHorizontal();
                 var up = "\u2191";
                 var down = "\u2193";
-                if (GUILayout.Button(up, GUILayout.Width(Instance.camviewwidth / 2)))
+                if (GUILayout.Button(up, GUILayout.Width(camviewwidth / 2)))
                 {
                     Instance.move_cam_up();
                 }
-                if (GUILayout.Button(down, GUILayout.Width(Instance.camviewwidth / 2)))
+                if (GUILayout.Button(down, GUILayout.Width(camviewwidth / 2)))
                 {
                     Instance.move_cam_down();
                 }
@@ -158,7 +158,7 @@ namespace SceneSaveState
             if (true)
             {
                 // len(sc.nameset[0])>0:
-                Instance.fset_scroll = GUILayout.BeginScrollView(Instance.fset_scroll, GUILayout.Width(Instance.viewwidth), GUILayout.Height(Instance.viewheight));
+                fset_scroll = GUILayout.BeginScrollView(fset_scroll, GUILayout.Width(viewwidth), GUILayout.Height(viewheight));
                 for (int i = 0; i < fset.Count - 0; i++)
                 {
                     if (i == Instance.fset_index)
@@ -197,7 +197,7 @@ namespace SceneSaveState
             if (true)
             {
                 // len(sc.nameset[1])>0:
-                Instance.mset_scroll = GUILayout.BeginScrollView(Instance.mset_scroll, GUILayout.Width(Instance.viewwidth), GUILayout.Height(Instance.viewheight));
+                mset_scroll = GUILayout.BeginScrollView(mset_scroll, GUILayout.Width(viewwidth), GUILayout.Height(viewheight));
                 for (int i = 0; i < mset.Count - 0; i++)
                 {
                     if (i == Instance.mset_index)
@@ -272,8 +272,8 @@ namespace SceneSaveState
             {
                 if (Instance.promptOnDelete == true)
                 {
-                    Instance.warning_action = Instance.removeScene;
-                    Instance.warning_param = new SceneConsole.WarningParam_s("Delete selected scene?", null, false);
+                    warning_action = Instance.removeScene;
+                    warning_param = new WarningParam_s("Delete selected scene?", null, false);
                 }
                 else
                 {

@@ -16,7 +16,7 @@ namespace SceneSaveState
             // GUILayout.Space(35)
             var btnBigHeight = 60;
             var btnSmallHeight = 50;
-            Instance.saveload_scroll = GUILayout.BeginScrollView(Instance.saveload_scroll);
+            saveload_scroll = GUILayout.BeginScrollView(saveload_scroll);
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
             GUILayout.Label(" ----------------------------------------    Data on external file    ----------------------------------------");
@@ -37,8 +37,8 @@ namespace SceneSaveState
             {
                 if (Instance.block.Count > 0)
                 {
-                    Instance.warning_action = Instance.loadSceneData;
-                    Instance.warning_param = new WarningParam_s("Do you wish to load scenedata from file? (Will overwrite console data)", new bool[] { true, false }, false);
+                    warning_action = Instance.loadSceneData;
+                    warning_param = new WarningParam_s("Do you wish to load scenedata from file? (Will overwrite console data)", new bool[] { true, false }, false);
                 }
                 else
                 {
@@ -53,8 +53,8 @@ namespace SceneSaveState
                 fld = Utils.getFolder(Instance.game, Instance.svname, true);
                 if (!(fld == null))
                 {
-                    Instance.warning_action = Instance.saveToFile;
-                    Instance.warning_param = new WarningParam_s("Scenedata exists. Overwrite?", false, false);
+                    warning_action = Instance.saveToFile;
+                    warning_param = new WarningParam_s("Scenedata exists. Overwrite?", false, false);
                 }
                 else
                 {
@@ -79,13 +79,13 @@ namespace SceneSaveState
                 {
                     if (fld == null)
                     {
-                        Instance.warning_action = Instance.loadSceneData;
-                        Instance.warning_param = new WarningParam_s("Do you wish to load backup scenedata from scene? (Will overwrite console data)", new bool[] { false, true }, false);
+                        warning_action = Instance.loadSceneData;
+                        warning_param = new WarningParam_s("Do you wish to load backup scenedata from scene? (Will overwrite console data)", new bool[] { false, true }, false);
                     }
                     else
                     {
-                        Instance.warning_action = Instance.loadSceneData;
-                        Instance.warning_param = new WarningParam_s("Do you wish to load backup scenedata from file? (Will overwrite console data)", new bool[] { true, true }, false);
+                        warning_action = Instance.loadSceneData;
+                        warning_param = new WarningParam_s("Do you wish to load backup scenedata from file? (Will overwrite console data)", new bool[] { true, true }, false);
                     }
                 }
                 else if (fld == null)
@@ -103,8 +103,8 @@ namespace SceneSaveState
                 //sc.exportToVNSS()
                 if (Instance.block.Count > 0)
                 {
-                    Instance.warning_action = Instance.loadSceneDataBackupTimer;
-                    Instance.warning_param = new SceneConsole.WarningParam_s("Do you wish to load backup scenedata from file auto-saved by timer? (Will overwrite console data)", null, false);
+                    warning_action = Instance.loadSceneDataBackupTimer;
+                    warning_param = new WarningParam_s("Do you wish to load backup scenedata from file auto-saved by timer? (Will overwrite console data)", null, false);
                 }
                 else
                 {

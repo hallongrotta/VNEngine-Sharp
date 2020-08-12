@@ -15,6 +15,65 @@ namespace SceneSaveState
         private static string mod_version = "1.0";
         public static int subwinindex = 0;
 
+        private static int viewheight = 200;
+
+        private static int viewwidth = 120;
+
+        internal static int windowheight = 350;
+
+        internal static int windowindex = 0;
+
+        internal static int windowwidth = 500;
+
+        private static int camviewwidth = 120;
+
+        public static Vector2 cam_scroll = new Vector2(0, 0);
+        public static Vector2 fset_scroll = new Vector2(0, 0);
+        public static Vector2 miniset_scroll = new Vector2(0, 0);
+        public static Vector2 mset_scroll = new Vector2(0, 0);
+        public static Vector2 saveload_scroll = new Vector2(0, 0);
+        public static Vector2 scene_scroll = new Vector2(0, 0);
+        public static Vector2 tracking_scroll = new Vector2(0, 0);
+        public struct WarningParam_s
+        {
+            public string msg;
+            public object func_param;
+            public bool single_op;
+
+            public WarningParam_s(string msg, object p, bool v2) : this()
+            {
+                this.msg = msg;
+                func_param = p;
+                single_op = v2;
+            }
+        }
+
+        public static WarningParam_s? warning_param;
+        public static Action<object> warning_action;
+
+        public static void setWindowName(int index)
+        {
+            var names = new Dictionary<int, string> {
+            {
+                0,
+                "SceneSaveState"},
+            {
+                1,
+                "Pose Library"},
+            {
+                2,
+                "Scene Utils"}};
+            if (names.ContainsKey(index))
+            {
+                UI.windowindex = index;
+                SceneConsole.Instance.game.windowName = names[index];
+            }
+            else
+            {
+                Console.WriteLine("Invalid index:", index);
+            }
+        }
+
         public static void sceneConsoleGUIStart(VNNeoController game)
         {
             //sc.game_skin_saved = game.skin
@@ -44,9 +103,9 @@ namespace SceneSaveState
 
         public static void sceneConsoleSkinSetup(VNNeoController game)
         {
-            Utils.setWindowName(Instance.windowindex);
-            game.wwidth = Instance.windowwidth;
-            game.wheight = Instance.windowheight;
+            setWindowName(windowindex);
+            game.wwidth = windowwidth;
+            game.wheight = windowheight;
             // #game.windowRect = Rect (Screen.width / 2 - game.wwidth / 2, Screen.height - game.wheight - 10, game.wwidth, game.wheight)
             var x = Utils.get_ini_value_def_int("WindowX", (int)(Screen.width - game.wwidth * 1.3));
             var y = Utils.get_ini_value_def_int("WindowY", Screen.height - game.wheight - 650);
@@ -80,10 +139,10 @@ namespace SceneSaveState
             GUI.DragWindow(new Rect(0, 0, 10000, 20));
             try
             {
-                if (!(Instance.warning_param is null))
+                if (!(warning_param is null))
                 {
-                    WarningParam_s warning_params = (WarningParam_s)Instance.warning_param;
-                    warningUI(Instance.warning_action, warning_params.func_param, msg: warning_params.msg, single_op: warning_params.single_op);
+                    WarningParam_s warning_params = (WarningParam_s)warning_param;
+                    warningUI(warning_action, warning_params.func_param, msg: warning_params.msg, single_op: warning_params.single_op);
                 }
                 else if (Instance.isFuncLocked == true)
                 {
@@ -109,12 +168,12 @@ namespace SceneSaveState
                     {
                         minimizeWindow();
                     }
-                    Instance.windowindex = GUILayout.Toolbar(Instance.windowindex, Instance.consolenames);
+                    windowindex = GUILayout.Toolbar(windowindex, Instance.consolenames);
                     GUILayout.EndHorizontal();
                     GUILayout.Space(10);
-                    Utils.setWindowName(Instance.windowindex);
+                    setWindowName(windowindex);
                     // Scene Console
-                    if (Instance.windowindex == 0)
+                    if (windowindex == 0)
                     {
                         GUILayout.BeginVertical();
                         subwinindex = GUILayout.Toolbar(subwinindex, Instance.options);
@@ -169,21 +228,21 @@ namespace SceneSaveState
                         if (GUILayout.Button("Close console", GUILayout.Width(100)))
                         {
                             var col = Instance.sel_font_col;
-                            Instance.warning_action = Utils.sceneConsoleGUIClose;
-                            Instance.warning_param = new SceneConsole.WarningParam_s(String.Format("Do you really want to close window? (<b><color={0}>Warning:</color> All current scenedata will be deleted</b>)", col), null, false);
+                            warning_action = Utils.sceneConsoleGUIClose;
+                            warning_param = new WarningParam_s(String.Format("Do you really want to close window? (<b><color={0}>Warning:</color> All current scenedata will be deleted</b>)", col), null, false);
                         }
                         GUILayout.EndHorizontal();
                         GUILayout.EndVertical();
                         GUI.DragWindow();
                     }
-                    else if (Instance.windowindex == 1)
+                    else if (windowindex == 1)
                     {
                         // Pose Console
                         //var _pc = posesavestate.init_from_sc(SceneConsole.Instance.game); //TODO add posesavestate
                         //posesavestate.poseConsoleUIFuncs();
                         //GUILayout.Label("No poses console for now ))")
                     }
-                    else if (Instance.windowindex == 2)
+                    else if (windowindex == 2)
                     {
                         //Utils.sceneUtilsUI(); TODO
                     }
@@ -213,11 +272,11 @@ namespace SceneSaveState
                 if (GUILayout.Button("Yes", GUILayout.Height(100)))
                 {
                     func();
-                    Instance.warning_param = null;
+                    warning_param = null;
                 }
                 if (GUILayout.Button("Hell No!", GUILayout.Height(100)))
                 {
-                    Instance.warning_param = null;
+                    warning_param = null;
                 }
             }
             else
@@ -225,7 +284,7 @@ namespace SceneSaveState
                 GUILayout.FlexibleSpace();
                 if (GUILayout.Button("OK!", GUILayout.Height(100)))
                 {
-                    Instance.warning_param = null;
+                    warning_param = null;
                 }
                 GUILayout.FlexibleSpace();
             }
@@ -249,11 +308,11 @@ namespace SceneSaveState
                 if (GUILayout.Button("Yes", GUILayout.Height(100)))
                 {
                     func(func_param);
-                    Instance.warning_param = null;
+                    warning_param = null;
                 }
                 if (GUILayout.Button("Hell No!", GUILayout.Height(100)))
                 {
-                    Instance.warning_param = null;
+                    warning_param = null;
                 }
             }
             else
@@ -261,7 +320,7 @@ namespace SceneSaveState
                 GUILayout.FlexibleSpace();
                 if (GUILayout.Button("OK!", GUILayout.Height(100)))
                 {
-                    Instance.warning_param = null;
+                    warning_param = null;
                 }
                 GUILayout.FlexibleSpace();
             }

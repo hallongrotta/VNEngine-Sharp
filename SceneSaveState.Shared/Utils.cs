@@ -322,28 +322,7 @@ namespace SceneSaveState
             // sc.game.windowCallback = sc.originalWindowCallback
         }
 
-        public static void setWindowName(int index)
-        {
-            var names = new Dictionary<int, string> {
-            {
-                0,
-                "SceneSaveState"},
-            {
-                1,
-                "Pose Library"},
-            {
-                2,
-                "Scene Utils"}};
-            if (names.ContainsKey(index))
-            {
-                SceneConsole.Instance.windowindex = index;
-                SceneConsole.Instance.game.windowName = names[index];
-            }
-            else
-            {
-                Console.WriteLine("Invalid index:", index);
-            }
-        }
+
 
         public static string btntext_get_if_selected(string btntext, bool isSelected)
         {

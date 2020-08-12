@@ -31,11 +31,11 @@ namespace SceneSaveState
 
         public int _normalwidth;
 
-        public Dictionary<object, object> accstate;
+        public Dictionary<string, object> accstate;
 
         public Vector2 adv_scroll;
 
-        public Dictionary<object, object> all_acc;
+        public Dictionary<string, object> all_acc;
 
         public List<HSNeoOCIFolder> arAutoStatesItemsChoice;
 
@@ -51,13 +51,13 @@ namespace SceneSaveState
 
         public double backupTimeDuration;
 
-        public Dictionary<object, object> baseacc;
+        public Dictionary<string, object> baseacc;
 
         public List<List<object>> basechars;
 
-        public Dictionary<object, object> basepropflds;
+        public Dictionary<string, object> basepropflds;
 
-        public Dictionary<object, object> baseprops;
+        public Dictionary<string, object> baseprops;
 
         public List<Scene> block;
 
@@ -67,15 +67,11 @@ namespace SceneSaveState
 
         public string cam_addvncmds;
 
-        public Vector2 cam_scroll;
-
         public string cam_whatsay;
 
         public string cam_whosay;
 
         public List<CamData> camset;
-
-        public int camviewwidth;
 
         public string charname;
 
@@ -94,7 +90,7 @@ namespace SceneSaveState
             get { return currentIndex; }
             set 
             {
-                if (value > block.Count)
+                if (value > block.Count - 1)
                 {
                     currentIndex = block.Count - 1;
                 } 
@@ -111,13 +107,13 @@ namespace SceneSaveState
 
         public List<object> dict;
 
-        public Dictionary<object, object> dictparse;
+        public Dictionary<string, object> dictparse;
 
         public List<List<object>> dupchars;
 
         public int fset_index;
 
-        public Vector2 fset_scroll;
+
 
         public string funcLockedText;
 
@@ -141,11 +137,7 @@ namespace SceneSaveState
 
         public string mininewid;
 
-        public Vector2 miniset_scroll;
-
         public int mset_index;
-
-        public Vector2 mset_scroll;
 
         public List<List<string>> nameset;
 
@@ -154,12 +146,6 @@ namespace SceneSaveState
         public string nor_font_col;
 
         public string[] options;
-
-        public Action originalWindowCallback;
-
-        public int originalwindowheight;
-
-        public int originalwindowwidth;
 
         public float paramAnimCamDuration;
 
@@ -179,11 +165,7 @@ namespace SceneSaveState
 
         public List<object> proptag;
 
-        public Vector2 saveload_scroll;
-
         public string[] scene_cam_str;
-
-        public Vector2 scene_scroll;
 
         public string[] scene_str_array;
 
@@ -207,39 +189,9 @@ namespace SceneSaveState
 
         public object temp_states;
 
-        public Vector2 tracking_scroll;
-
         public int updAutoStatesTimer;
 
-        public Action<object> warning_action;
-
-        public struct WarningParam_s
-        {
-            public string msg;
-            public object func_param;
-            public bool single_op;
-
-            public WarningParam_s(string msg, object p, bool v2) : this()
-            {
-                this.msg = msg;
-                func_param = p;
-                single_op = v2;
-            }
-        }
-
-        public WarningParam_s? warning_param;
-
         public string versionSceneDataParsing;
-
-        public int viewheight;
-
-        public int viewwidth;
-
-        public int windowheight;
-
-        public int windowindex;
-
-        public int windowwidth;
 
         public bool vnFastIsRunImmediately;
         internal float consoleWidth;
@@ -268,24 +220,12 @@ namespace SceneSaveState
             // init dict
             // initWordDict()
             // --- Some constants ---
-            _normalwidth = 500;
-            _normalheight = 350;
-            // self.drag_rect = Rect(0, 0, 10000, 50)
-            // --- Basic settings ---
-            originalwindowwidth = 0;
-            originalwindowheight = 0;
-            originalWindowCallback = null;
             guiOnShow = false;
-            windowwidth = _normalwidth;
-            windowheight = _normalheight;
-            windowindex = 0;
             // --- Essential Data ---
             versionSceneDataParsing = "7.0";
             dict = new List<object>();
             sdict = new List<object>();
-            dictparse = new Dictionary<object, object>
-            {
-            };
+            dictparse = new Dictionary<string, object>();
             scenefile = "";
             block = new List<Scene>();
             basechars = new List<List<object>> {
@@ -297,21 +237,13 @@ namespace SceneSaveState
                 new List<object>()
             };
             last_acc_id = 0;
-            all_acc = new Dictionary<object, object>
-            {
-            };
-            baseacc = new Dictionary<object, object>
-            {
-            };
-            accstate = new Dictionary<object, object>
-            {
-            };
+            all_acc = new Dictionary<string, object>();
+            baseacc = new Dictionary<string, object>();
+            accstate = new Dictionary<string, object>();
             propfldtag = new List<object>();
-            basepropflds = new Dictionary<object, object>
-            {
-            };
+            basepropflds = new Dictionary<string, object>();
             proptag = new List<object>();
-            baseprops = new Dictionary<object, object>
+            baseprops = new Dictionary<string, object>
             {
             };
             // self.basechars = self.getAllBaseChars()
@@ -324,18 +256,10 @@ namespace SceneSaveState
             // -- Main --
             sel_font_col = "#f24115";
             nor_font_col = "#f9f9f9";
-            scene_scroll = new Vector2(0, 0);
-            cam_scroll = new Vector2(0, 0);
-            mset_scroll = new Vector2(0, 0);
-            fset_scroll = new Vector2(0, 0);
-            miniset_scroll = new Vector2(0, 0);
-            tracking_scroll = new Vector2(0, 0);
-            saveload_scroll = new Vector2(0, 0);
+
             fset_index = 0;
             mset_index = 0;
-            viewwidth = 120;
-            viewheight = 200;
-            camviewwidth = 120;
+            
             // self.char_name = ""
             cam_whosay = "";
             cam_whatsay = "";
@@ -1058,85 +982,6 @@ namespace SceneSaveState
             }
         }
 
-        /*
-        public void addSelectedToTrack()
-        {
-            Scene scene;
-            IDataClass curstatus;
-            HSNeoOCIFolder tagfld;
-            var elem = HSNeoOCI.create_from_selected();
-            if (elem == null)
-            {
-                this.show_blocking_message_time_sc("Nothing selected");
-                return;
-            }
-            if (elem is Actor chara)
-            {
-                var actors = this.game.scenef_get_all_actors();
-                var id = "";
-                foreach (var i in Enumerable.Range(0, 1000 - 0))
-                {
-                    id = "act" + i.ToString();
-                    if (actors.ContainsKey(id))
-                    {
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-                tagfld = HSNeoOCIFolder.add("-actor:" + id);
-                tagfld.set_parent_treenodeobject(elem.treeNodeObject.child[0].child[0]);
-                this.game.scenef_register_actorsprops();
-                curstatus = chara.as_actor.export_full_status();
-                foreach (var i in Enumerable.Range(0, this.block.Count))
-                {
-                    scene = this.block[i];
-                    scene.actors[id] = (ActorData)curstatus;
-                }
-            }
-            else if (elem is HSNeoOCIProp prop)
-            {
-                var props = this.game.scenef_get_all_props();
-                string id = "";
-                foreach (var i in Enumerable.Range(0, 1000 - 0))
-                {
-                    id = "prp" + i.ToString();
-                    if (props.ContainsKey(id))
-                    {
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-                if (elem is HSNeoOCILight)
-                {
-                    tagfld = HSNeoOCIFolder.add("-propchild:" + id);
-                    elem.set_parent(tagfld);
-                }
-                else if (elem is HSNeoOCIRoute)
-                {
-                    tagfld = HSNeoOCIFolder.add("-propgrandpa:" + id);
-                    tagfld.set_parent_treenodeobject(elem.treeNodeObject.child[0]);
-                }
-                else
-                {
-                    tagfld = HSNeoOCIFolder.add("-prop:" + id);
-                    tagfld.set_parent_treenodeobject(elem.treeNodeObject);
-                }
-                this.game.scenef_register_actorsprops();
-                curstatus = prop.as_prop.export_full_status();
-                foreach (var i in Enumerable.Range(0, this.block.Count))
-                {
-                    scene = this.block[i];
-                    scene.props[id] = (PropData)curstatus;
-                    // updating set
-                }
-            }
-        }
-        */
-
         public void changeSelTrackID(string toId)
         {
             if (toId == "")
@@ -1577,15 +1422,15 @@ namespace SceneSaveState
             {
                 // init zero
                 dict = new List<object>();
-                dictparse = new Dictionary<object, object>
+                dictparse = new Dictionary<string, object>
                 {
                 };
                 scenefile = "";
                 block = new List<Scene>();
-                baseacc = new Dictionary<object, object>
+                baseacc = new Dictionary<string, object>
                 {
                 };
-                accstate = new Dictionary<object, object>
+                accstate = new Dictionary<string, object>
                 {
                 };
                 nameset = new List<List<string>> {

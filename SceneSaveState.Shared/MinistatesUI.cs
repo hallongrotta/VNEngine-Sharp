@@ -86,7 +86,7 @@ namespace SceneSaveState
             GUILayout.Space(15);
             GUILayout.BeginHorizontal();
             GUILayout.Space(tablePadding);
-            Instance.miniset_scroll = GUILayout.BeginScrollView(Instance.miniset_scroll);
+            miniset_scroll = GUILayout.BeginScrollView(miniset_scroll);
             //for i in range(500):
             //    GUILayout.Label("State %s" % (str(i)))
             var mslist = Ministates.ministates_get_list(Instance.game);

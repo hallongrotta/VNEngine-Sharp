@@ -31,8 +31,8 @@ namespace SceneSaveState
             {
                 if (Instance.promptOnDelete)
                 {
-                    Instance.warning_action = Instance.delSelectedFromTrack;
-                    Instance.warning_param = new WarningParam_s("Delete selected actor from scenes?", null, false);
+                    warning_action = Instance.delSelectedFromTrack;
+                    warning_param = new WarningParam_s("Delete selected actor from scenes?", null, false);
                 }
                 else
                 {
@@ -79,7 +79,7 @@ namespace SceneSaveState
             GUILayout.EndHorizontal();
             GUILayout.Space(15);
             //GUILayout.BeginHorizontal()
-            Instance.tracking_scroll = GUILayout.BeginScrollView(Instance.tracking_scroll);
+            tracking_scroll = GUILayout.BeginScrollView(tracking_scroll);
             GUILayout.Label("Actors:");
             var actors = Instance.game.scenef_get_all_actors();
             foreach (var actorid in actors.Keys)
