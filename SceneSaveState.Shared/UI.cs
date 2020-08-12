@@ -13,6 +13,7 @@ namespace SceneSaveState
     public static partial class UI
     {
         private static string mod_version = "1.0";
+        public static int subwinindex = 0;
 
         public static void sceneConsoleGUIStart(VNNeoController game)
         {
@@ -116,34 +117,34 @@ namespace SceneSaveState
                     if (Instance.windowindex == 0)
                     {
                         GUILayout.BeginVertical();
-                        Instance.subwinindex = GUILayout.Toolbar(Instance.subwinindex, Instance.options);
+                        subwinindex = GUILayout.Toolbar(subwinindex, Instance.options);
                         GUILayout.Space(10);
                         // Edit window
-                        if (Instance.subwinindex == 0)
+                        if (subwinindex == 0)
                         {
                             sceneConsoleEditUI();
                         }
-                        else if (Instance.subwinindex == 1)
+                        else if (subwinindex == 1)
                         {
                             // Trackable window
                             sceneConsoleTrackable();
                         }
-                        else if (Instance.subwinindex == 2)
+                        else if (subwinindex == 2)
                         {
                             // Load/Save window
                             sceneConsoleLdSvUI();
                         }
-                        else if (Instance.subwinindex == 3)
+                        else if (subwinindex == 3)
                         {
                             // --------- Advanced controls -------------
                             sceneConsoleAdvUI();
                         }
-                        else if (Instance.subwinindex == 4)
+                        else if (subwinindex == 4)
                         {
                             // Ministates window
                             sceneConsoleMinistates();
                         }
-                        else if (Instance.subwinindex == 100)
+                        else if (subwinindex == 100)
                         {
                             // Render for advanced cam properties
                             //VNExt.render_wizard_ui(SceneConsole.Instance); TODO

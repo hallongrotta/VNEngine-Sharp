@@ -315,7 +315,7 @@ namespace SceneSaveState
                 var txt = Utils.btntext_get_if_selected2("More", Instance.cam_addprops.addprops["a1"] || Instance.cam_addprops.addprops["a2"]);
                 if (GUILayout.Button(txt, GUILayout.Height(20)))
                 {
-                    Instance.subwinindex = 100;
+                    subwinindex = 100;
                 }
             }
             GUILayout.EndHorizontal();

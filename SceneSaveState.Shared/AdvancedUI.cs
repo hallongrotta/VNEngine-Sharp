@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using VNActor;
 using VNEngine;
 using static SceneSaveState.SceneConsole;
+using static VNActor.Item;
 
 namespace SceneSaveState
 {

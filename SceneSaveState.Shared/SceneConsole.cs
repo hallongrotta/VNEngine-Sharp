@@ -203,8 +203,6 @@ namespace SceneSaveState
 
         public bool skipClothesChanges;
 
-        public int subwinindex;
-
         public string svname = "";
 
         public object temp_states;
@@ -281,7 +279,6 @@ namespace SceneSaveState
             windowwidth = _normalwidth;
             windowheight = _normalheight;
             windowindex = 0;
-            subwinindex = 0;
             // --- Essential Data ---
             versionSceneDataParsing = "7.0";
             dict = new List<object>();
