@@ -1,5 +1,4 @@
 ﻿using MessagePack;
-using Sirenix.OdinInspector.Demos;
 using Studio;
 using System;
 using System.Collections.Generic;
@@ -13,16 +12,17 @@ namespace VNActor
     public partial class Actor
         : IVNObject
     {
-      
+
         public struct IK_node_s
         {
             internal Vector3 pos;
             internal Vector3? rot;
         }
-        
+
         [Serializable]
         [MessagePackObject]
-        public struct Hands_s {
+        public struct Hands_s
+        {
             [Key(0)]
             public int leftMotion;
             [Key(1)]
@@ -63,96 +63,101 @@ namespace VNActor
 
 
         [MessagePackObject(keyAsPropertyName: true)]
-        public readonly struct ActorData : IDataClass
+        public class ActorData : IDataClass
         {
             [Key("visible")]
-            public readonly bool visible;
+            public bool visible;
             [Key("position")]
-            public Vector3 Position { get; }
+            public Vector3 position;
             [Key("scale")]
-            public Vector3 Scale { get; }
+            public Vector3 scale;
             [Key("rotation")]
-            public Vector3 Rotation { get; }
+            public Vector3 rotation;
             [Key("voiceRepeat")]
-            public readonly int voiceRepeat;
-            //public readonly bool shoesOn;
+            public int voiceRepeat;
+            //public Itembool shoesOn;
             [Key("voiceList")]
-            public readonly List<int[]> voiceList;
+            public List<int[]> voiceList;
             [Key("fk")]
-            public readonly Dictionary<int, Vector3> fk;
+            public Dictionary<int, Vector3> fk;
             [Key("fkActive")]
-            public readonly bool[] fkActive;
+            public bool[] fkActive;
             [Key("kinematicType")]
-            public readonly KinematicMode kinematicType;
+            public KinematicMode kinematicType;
             [Key("handMotions")]
-            public readonly Hands_s handMotions;
+            public Hands_s handMotions;
             [Key("ik")]
-            public readonly Dictionary<string, IK_node_s> ik;
+            public Dictionary<string, IK_node_s> ik;
             [Key("ikActive")]
-            public readonly bool[] ikActive;
+            public bool[] ikActive;
             [Key("lipSync")]
-            public readonly bool lipSync;
+            public bool lipSync;
             [Key("mouthOpen")]
-            public readonly float mouthOpen;
+            public float mouthOpen;
             [Key("mouthPattern")]
-            public readonly int mouthPattern;
+            public int mouthPattern;
             [Key("blinking")]
-            public readonly bool blinking;
+            public bool blinking;
             [Key("eyesOpen")]
-            public readonly float eyesOpen;
+            public float eyesOpen;
             [Key("eyePattern")]
-            public readonly int eyePattern;
+            public int eyePattern;
             [Key("eyebrowPattern")]
-            public readonly int eyebrowPattern;
+            public int eyebrowPattern;
             [Key("neckPattern")]
-            public readonly int neckPattern;
+            public int neckPattern;
             [Key("eyeLookPos")]
-            public readonly Vector3 eyeLookPos;
+            public Vector3 eyeLookPos;
             [Key("eyeLookPattern")]
-            public readonly int eyeLookPattern;
+            public int eyeLookPattern;
             [Key("son")]
-            public readonly Son_s son;
+            public Son_s son;
             [Key("anim")]
-            public readonly Animation_s anim;
+            public Animation_s anim;
             [Key("simple")]
-            public readonly bool simple;
+            public bool simple;
             [Key("simpleColor")]
-            public readonly Color simpleColor;
+            public Color simpleColor;
             [Key("tearLevel")]
-            public readonly int tearLevel;
+            public int tearLevel;
             [Key("juice")]
-            public readonly byte[] juice;
-            //public readonly bool showAllAccessories;
+            public byte[] juice;
+            //public bool showAllAccessories;
             [Key("accessoryStatus")]
-            public readonly bool[] accessoryStatus;
+            public bool[] accessoryStatus;
             [Key("cloth")]
-            public readonly byte[] cloth;
+            public byte[] cloth;
             [Key("animeSpeed")]
-            public readonly float animeSpeed;
+            public float animeSpeed;
             [Key("forceLoop")]
-            public readonly bool forceLoop;
+            public bool forceLoop;
             [Key("animePattern")]
-            public readonly float animePattern;
+            public float animePattern;
             [Key("animeOption")]
-            public readonly AnimeOption_s animeOption;
+            public AnimeOption_s animeOption;
             [Key("coordinateType")]
-            public readonly int coordinateType;
+            public int coordinateType;
             [Key("faceRedness")]
-            public readonly float faceRedness;
+            public float faceRedness;
             [Key("nippleHardness")]
-            public readonly float nippleHardness;
+            public float nippleHardness;
             [Key("neck")]
-            public readonly string neck;
+            public string neck;
             [Key("shoesType")]
-            public readonly int shoesType;
+            public int shoesType;
+
+            public ActorData()
+            {
+
+            }
 
             public ActorData(Actor a)
             {
 
                 visible = a.visible;
-                Position = a.pos;
-                Rotation = a.rot;
-                Scale = a.scale;
+                position = a.pos;
+                rotation = a.rot;
+                scale = a.scale;
                 animeSpeed = a.animeSpeed;
                 animePattern = a.animePattern;
                 tearLevel = a.tearLevel;
@@ -166,7 +171,7 @@ namespace VNActor
 
                 anim = a.animate;
 
-                animeOption = new AnimeOption_s { height =  a.height, breast = a.breast };
+                animeOption = new AnimeOption_s { height = a.height, breast = a.breast };
 
                 coordinateType = a.coordinate_type;
                 cloth = a.cloth;
@@ -198,7 +203,7 @@ namespace VNActor
                 ik = null;
 
                 if (kinematicType == KinematicMode.FK || kinematicType == KinematicMode.IKFK)
-                {                 
+                {
                     fkActive = new bool[a.get_FK_active().Length];
                     Array.Copy(a.get_FK_active(), fkActive, fkActive.Length);
                     fk = a.export_fk_bone_info();
@@ -253,49 +258,6 @@ namespace VNActor
                     Console.WriteLine("Error during get kkpedata");
                 }
                 */
-            }
-            [SerializationConstructor]
-            public ActorData(bool visible, Vector3 position, Vector3 scale, Vector3 rotation, int voiceRepeat, List<int[]> voiceList, Dictionary<string, IK_node_s> ik, bool[] ikActive, Dictionary<int, Vector3> fk, bool[] fkActive, KinematicMode kinematicType, Hands_s handMotions, bool lipSync, float mouthOpen, int mouthPattern, bool blinking, float eyesOpen, int eyePattern, int eyebrowPattern, int neckPattern, Vector3 eyeLookPos, int eyeLookPattern, Son_s son, Animation_s anim, bool simple, Color simpleColor, int tearLevel, byte[] juice, bool[] accessoryStatus, byte[] cloth, float animeSpeed, bool forceLoop, float animePattern, AnimeOption_s animeOption, int coordinateType, float faceRedness, float nippleHardness, string neck, int shoesType)
-            {
-                this.visible = visible;
-                this.Position = position;
-                this.Scale = scale;
-                this.Rotation = rotation;
-                this.voiceRepeat = voiceRepeat;
-                this.voiceList = voiceList;
-                this.ik = ik;
-                this.ikActive = ikActive;
-                this.fk = fk;
-                this.fkActive = fkActive;
-                this.kinematicType = kinematicType;
-                this.handMotions = handMotions;
-                this.lipSync = lipSync;
-                this.mouthOpen = mouthOpen;
-                this.mouthPattern = mouthPattern;
-                this.blinking = blinking;
-                this.eyesOpen = eyesOpen;
-                this.eyePattern = eyePattern;
-                this.eyebrowPattern = eyebrowPattern;
-                this.neckPattern = neckPattern;
-                this.eyeLookPos = eyeLookPos;
-                this.eyeLookPattern = eyeLookPattern;
-                this.son = son;
-                this.anim = anim;
-                this.simple = simple;
-                this.simpleColor = simpleColor;
-                this.tearLevel = tearLevel;
-                this.juice = juice;
-                this.accessoryStatus = accessoryStatus;
-                this.cloth = cloth;
-                this.animeSpeed = animeSpeed;
-                this.forceLoop = forceLoop;
-                this.animePattern = animePattern;
-                this.animeOption = animeOption;
-                this.coordinateType = coordinateType;
-                this.faceRedness = faceRedness;
-                this.nippleHardness = nippleHardness;
-                this.neck = neck;
-                this.shoesType = shoesType;
             }
 
             public void Remove(string key)
@@ -406,7 +368,7 @@ namespace VNActor
             }
         }
 
-        public  void SetAccessory(int accIndex, bool accShow)
+        public void SetAccessory(int accIndex, bool accShow)
         {
             this.objctrl.ShowAccessory(accIndex, accShow);
         }
@@ -800,7 +762,7 @@ namespace VNActor
             if (tmp_status is ActorData data)
             {
                 import_status(data);
-            }          
+            }
         }
 
         public float[] body_shapes_all
@@ -866,9 +828,9 @@ namespace VNActor
         public void import_status(ActorData a)
         {
             visible = a.visible;
-            pos = a.Position;
-            rot = a.Rotation;
-            scale = a.Scale;
+            pos = a.position;
+            rot = a.rotation;
+            scale = a.scale;
             animeSpeed = a.animeSpeed;
             animePattern = a.animePattern;
             tearLevel = a.tearLevel;
@@ -923,7 +885,7 @@ namespace VNActor
                 import_fk_bone_info(a.fk);
             }
 
-                //voice_lst = a.voiceList;
+            //voice_lst = a.voiceList;
             voice_repeat = a.voiceRepeat;
             shoes_type = a.shoesType;
         }
@@ -1374,5 +1336,5 @@ namespace VNActor
             (char_pl_kkpedata, false)},
         */
         };
-        }
+    }
 }

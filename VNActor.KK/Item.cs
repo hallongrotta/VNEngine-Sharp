@@ -11,7 +11,8 @@ namespace VNActor
     {
 
         [MessagePackObject]
-        public struct Panel {
+        public struct Panel
+        {
             [Key(0)]
             internal string filepath;
             [Key(1)]
@@ -19,7 +20,8 @@ namespace VNActor
         }
 
         [MessagePackObject]
-        public struct PanelDetail_s {
+        public struct PanelDetail_s
+        {
             [Key(0)]
             internal Color color;
             [Key(1)]
@@ -44,7 +46,8 @@ namespace VNActor
         }
 
         [MessagePackObject]
-        public struct Pattern {
+        public struct Pattern
+        {
             [Key(0)]
             internal int key;
             [Key(1)]
@@ -55,7 +58,8 @@ namespace VNActor
 
 
         [MessagePackObject]
-        public struct PatternDetail_s {
+        public struct PatternDetail_s
+        {
             [Key(0)]
             internal Color color;
             [Key(1)]
@@ -80,7 +84,7 @@ namespace VNActor
         }
 
         [MessagePackObject(keyAsPropertyName: true)]
-        public struct ItemData : IDataClass
+        public class ItemData : IDataClass
         {
             // Item
             public bool visible;
@@ -106,7 +110,11 @@ namespace VNActor
                 throw new NotImplementedException();
             }
 
-            
+            public ItemData()
+            {
+
+            }
+
             public ItemData(Item p)
             {
                 // export full status of prop
@@ -207,28 +215,6 @@ namespace VNActor
                 {
                     db_active = null;
                 }
-            }
-
-            [SerializationConstructor]
-            public ItemData(bool visible, Vector3 move_to, Vector3 rotate_to, Vector3 scale_to, Dictionary<int, Color> color, float? alpha, Panel? pnl_set, PanelDetail_s? pnl_dtl, Emission_s? emission, List<Vector3> fk_set, float? anim_spd, Dictionary<int, Pattern> ptn_set, Dictionary<int, PatternDetail_s> ptn_dtl, float? light_cancel, Line_s? line, Color? shadow_color, bool? db_active)
-            {
-                this.visible = visible;
-                this.Position = move_to;
-                this.Rotation = rotate_to;
-                this.Scale = scale_to;
-                this.color = color;
-                this.alpha = alpha;
-                this.pnl_set = pnl_set;
-                this.pnl_dtl = pnl_dtl;
-                this.emission = emission;
-                this.fk_set = fk_set;
-                this.anim_spd = anim_spd;
-                this.ptn_set = ptn_set;
-                this.ptn_dtl = ptn_dtl;
-                this.light_cancel = light_cancel;
-                this.line = line;
-                this.shadow_color = shadow_color;
-                this.db_active = db_active;
             }
         }
 
@@ -386,7 +372,7 @@ namespace VNActor
                         {
                             var color = this.objctrl.itemInfo.color[i + 3];
                             var pi = this.objctrl.itemInfo.pattern[i];
-                            pt[i] = new PatternDetail_s { color = color, ut = pi.ut, vt = pi.vt, us = pi.us, vs =  pi.vs, rot = pi.rot };
+                            pt[i] = new PatternDetail_s { color = color, ut = pi.ut, vt = pi.vt, us = pi.us, vs = pi.vs, rot = pi.rot };
                         }
                     }
                     return pt;
@@ -755,19 +741,19 @@ namespace VNActor
                 if (p.line is Line_s line_s)
                 {
                     line = line_s;
-                }              
+                }
             }
             if (hasShadowColor)
             {
                 if (p.shadow_color is Color c)
                 {
                     shadow_color = c;
-                }               
+                }
             }
             if (hasLightCancel)
             {
                 if (p.light_cancel is float cancel)
-                light_cancel = cancel;
+                    light_cancel = cancel;
             }
             if (isFK)
             {
@@ -778,10 +764,10 @@ namespace VNActor
                 if (p.db_active is bool b)
                 {
                     dynamicbone_enable = b;
-                }             
+                }
             }
         }
-    
+
 
         /* TODO
 

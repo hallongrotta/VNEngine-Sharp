@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using VNEngine;
+﻿using MessagePack;
 using Studio;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using VNActor;
-using ADV.EventCG;
-using MessagePack;
 
 namespace VNEngine
 {
@@ -50,7 +47,7 @@ namespace VNEngine
         }
 
         [MessagePackObject(keyAsPropertyName: true)]
-        public struct SystemData : IDataClass
+        public class SystemData : IDataClass
         {
             public BGM_s bgm;
 
@@ -58,7 +55,7 @@ namespace VNEngine
             public int map;
             public Vector3 map_pos;
             public Vector3 map_rot;
-            public int map_sun;
+            public int sun;
             public bool map_opt;
 
             public string bg_png;
@@ -69,6 +66,11 @@ namespace VNEngine
             public void Remove(string key)
             {
                 throw new NotImplementedException();
+            }
+
+            public SystemData()
+            {
+
             }
 
             public SystemData(CharaStudioController game)
@@ -91,19 +93,19 @@ namespace VNEngine
                 map_pos = game.studio_scene.caMap.pos;
                 map_rot = game.studio_scene.caMap.rot;
 
-                map_sun = game.studio_scene.sunLightType;
-                
+                sun = game.studio_scene.sunLightType;
+
 
                 map_opt = game.studio_scene.mapOption;
-                
+
                 bg_png = game.scene_get_bg_png_orig();
 
                 fm_png = game.scene_get_framefile();
-                
+
 
                 var cl = game.studio_scene.charaLight;
-                char_light = new CharLight_s { rgbDiffuse =  cl.color, cameraLightIntensity = cl.intensity, rot_y = cl.rot[0], rot_x = cl.rot[1], cameraLightShadow = cl.shadow };
-                
+                char_light = new CharLight_s { rgbDiffuse = cl.color, cameraLightIntensity = cl.intensity, rot_y = cl.rot[0], rot_x = cl.rot[1], cameraLightShadow = cl.shadow };
+
                 /* TODO
                 if (game.isStudioNEO || game.isCharaStudio)
                 {
@@ -117,21 +119,6 @@ namespace VNEngine
                     }
                 }
                 */
-            }
-
-            [SerializationConstructor]
-            public SystemData(BGM_s bgm, Wav_s? wav, int map, Vector3 map_pos, Vector3 map_rot, int map_sun, bool map_opt, string bg_png, string fm_png, CharLight_s char_light)
-            {
-                this.bgm = bgm;
-                this.wav = wav;
-                this.map = map;
-                this.map_pos = map_pos;
-                this.map_rot = map_rot;
-                this.map_sun = map_sun;
-                this.map_opt = map_opt;
-                this.bg_png = bg_png;
-                this.fm_png = fm_png;
-                this.char_light = char_light;
             }
         }
 
@@ -152,7 +139,7 @@ namespace VNEngine
 
         public static void map_sun(CharaStudioController game, SystemData param)
         {
-            map_sun(game, param.map_sun);
+            map_sun(game, param.sun);
         }
 
         public static void map_sun(CharaStudioController game, int param)
@@ -229,6 +216,10 @@ namespace VNEngine
             }
         }
 
+        public static void sys_map(CharaStudioController game, SystemData s)
+            {
+                sys_map(game, s.map);
+            }
         public static void sys_map(CharaStudioController game, int param)
         {
             // set map

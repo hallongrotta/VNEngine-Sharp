@@ -1,5 +1,4 @@
 ﻿using MessagePack;
-using Studio;
 using System;
 using UnityEngine;
 
@@ -9,7 +8,7 @@ namespace VNActor
     {
 
         [MessagePackObject]
-        public struct LightData : IDataClass
+        public class LightData : IDataClass
         {
             [Key(0)]
             public Color color;
@@ -23,39 +22,31 @@ namespace VNActor
             public float range;
             [Key(5)]
             public float angle;
-
-            public Vector3 Position { get; }
-
-            public Vector3 Rotation { get; }
+            [Key(6)]
+            public Vector3 position;
+            [Key(7)]
+            public Vector3 rotation;
 
             public void Remove(string key)
             {
                 throw new NotImplementedException();
             }
 
+            public LightData()
+            {
+
+            }
+
             public LightData(Light l)
             {
-                Position = l.pos;
-                Rotation = l.rot;
+                position = l.pos;
+                rotation = l.rot;
                 color = l.color;
                 enable = l.enable;
                 intensity = l.intensity;
                 shadow = l.shadow;
                 range = l.range;
                 angle = l.angle;
-            }
-
-            [SerializationConstructor]
-            public LightData(Vector3 pos, Vector3 rot, Color color, bool enable, float intensity, bool shadow, float range, float angle)
-            {
-                Position = pos;
-                Rotation = rot;
-                this.color = color;
-                this.enable = enable;
-                this.intensity = intensity;
-                this.shadow = shadow;
-                this.range = range;
-                this.angle = angle;
             }
         }
 
@@ -66,6 +57,8 @@ namespace VNActor
 
         public void import_status(LightData l)
         {
+            pos = l.position;
+            rot = l.rotation;
             color = l.color;
             enable = l.enable;
             intensity = l.intensity;
