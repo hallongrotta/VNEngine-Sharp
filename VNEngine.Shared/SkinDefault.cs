@@ -53,8 +53,7 @@ namespace VNEngine
         override public void render_main(
             string text_author,
             string text,
-            List<string> btnsTexts,
-            List<ButtonFunc_s> btnsActions,
+            List<Button_s> btnsActions,
             string btnStyle)
         {
             RegisteredChar_s charinfo;
@@ -126,9 +125,9 @@ namespace VNEngine
                 {
                     GUILayout.BeginHorizontal();
                 }
-                foreach (var i in Enumerable.Range(0, btnsTexts.Count))
+                foreach (var i in Enumerable.Range(0, btnsActions.Count))
                 {
-                    var restext = btnsTexts[i];
+                    var restext = btnsActions[i].label;
                     /*
                         if (this.controller.engineOptions["usetranslator"] == "1" && this.controller.engineOptions["translatebuttons"] == "1")
                         {

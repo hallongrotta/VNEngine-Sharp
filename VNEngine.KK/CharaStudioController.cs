@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using static VNEngine.Utils;
 
 namespace VNEngine
 {
@@ -37,7 +38,7 @@ namespace VNEngine
             Instance = this;
         }
 
-        public CharaStudioController(List<string> vnButtonsStart, List<Utils.ButtonFunc_s> vnButtonsActionsStart) : base()
+        public CharaStudioController(List<Button_s> vnButtonsStart) : base()
         {
             if (Instance != null)
             {
@@ -45,7 +46,6 @@ namespace VNEngine
             }
             this.engine_name = "charastudio";
             this._vnButtons = vnButtonsStart;
-            this._vnButtonsActions = vnButtonsActionsStart;
             Instance = this;
 
         }

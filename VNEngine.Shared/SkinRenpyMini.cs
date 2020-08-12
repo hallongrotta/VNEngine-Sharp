@@ -111,8 +111,7 @@ namespace VNEngine
         override public void render_main(
             string text_author,
             string text,
-            List<string> btnsTexts,
-            List<ButtonFunc_s> btnsActions,
+            List<Button_s> btnsActions,
             string btnStyle)
         {
             RegisteredChar_s charinfo;
@@ -185,7 +184,7 @@ namespace VNEngine
             //GUILayout.BeginHorizontal()
             if (charinfo.showname != "")
             {
-                GUILayout.Label(String.Format("<color=#%sff><b>%s</b></color>", charinfo.color, charinfo.showname), style, GUILayout.Width(fullw0));
+                GUILayout.Label(String.Format("<color=#{0}ff><b>{1}</b></color>", charinfo.color, charinfo.showname), style, GUILayout.Width(fullw0));
                 GUILayout.Space(0);
             }
 
@@ -212,10 +211,10 @@ namespace VNEngine
                     GUILayout.BeginHorizontal();
                 }
                 var isOneButton = false;
-                foreach (var i in Enumerable.Range(0, btnsTexts.Count))
+                foreach (var i in Enumerable.Range(0, btnsActions.Count))
                 {
                     // preparing button texts
-                    var restext = btnsTexts[i];
+                    var restext = btnsActions[i].label;
                     /*
                     if (this.controller.engineOptions["usetranslator"] == "1" && this.controller.engineOptions["translatebuttons"] == "1")
                     {
@@ -233,7 +232,7 @@ namespace VNEngine
                     // render button
                     if (btnStyle == "normal")
                     {
-                        if (btnsTexts.Count > 1)
+                        if (btnsActions.Count > 1)
                         {
                             if (GUILayout.Button(fintext, customButton, GUILayout.Width(fullw1), GUILayout.Height(this.buttonHeight)))
                             {

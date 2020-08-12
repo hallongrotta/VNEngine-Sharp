@@ -33,7 +33,7 @@ namespace VNEngine
 
         }
 
-        public override void render_main(string text_author, string text, List<string> btnsTexts, List<Utils.ButtonFunc_s> btnsActions, string btnStyle)
+        public override void render_main(string text_author, string text, List<Utils.Button_s> btnsActions, string btnStyle)
         {
             throw new NotImplementedException();
         }

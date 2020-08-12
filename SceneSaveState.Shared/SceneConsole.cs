@@ -17,6 +17,7 @@ using KKAPI.Utilities;
 using ExtensibleSaveFormat;
 using NodeCanvas.Tasks.Conditions;
 using static VNActor.Light;
+using static VNEngine.Utils;
 
 namespace SceneSaveState
 {
@@ -86,7 +87,25 @@ namespace SceneSaveState
 
         public int cur_cam;
 
-        public int cur_index;
+        public int cur_index 
+        {
+            get { return cur_index; }
+            set 
+            {
+                if (value > block.Count - 1)
+                {
+                    cur_index = block.Count - 1;
+                } 
+                else if ( value < -1)
+                {
+                    cur_index = -1;
+                }
+                else
+                {
+                    cur_index = value;
+                }               
+            } 
+        }
 
         public List<object> dict;
 
@@ -682,6 +701,7 @@ namespace SceneSaveState
                             "a2",
                             false}};
                 }
+                game.set_text(camera_data.addata.whosay, camera_data.addata.whatsay);
             }
             else
             {
@@ -1782,6 +1802,11 @@ namespace SceneSaveState
             this.prev_index = this.cur_index;
         }
 
+        public void goto_next(VNController game, int i)
+        {
+            goto_next();
+        }
+
         public void goto_next()
         {
             if (this.block.Count > 0)
@@ -1960,8 +1985,10 @@ namespace SceneSaveState
             var rpySkin = new SkinRenPyMini();
             int calcPos;
             rpySkin.isEndButton = true;
-            rpySkin.endButtonTxt = "End script";
+            rpySkin.endButtonTxt = "X";
             rpySkin.endButtonCall = this.endVNSSbtn;
+            game.set_text_s("...");
+            game.set_buttons(new List<Button_s>() { new Button_s(">>", this.goto_next, 1) });
             this.game.skin_set(rpySkin);
             if (starfrom == "cam")
             {
@@ -1976,12 +2003,14 @@ namespace SceneSaveState
             {
                 calcPos = 0;
             }
+            this.cur_index = calcPos;
             Console.WriteLine(String.Format("Run VNSS from state {0}", calcPos.ToString()));
             this.game.vnscenescript_run_current(this.onEndVNSS, calcPos.ToString());
         }
 
         public void endVNSSbtn(VNNeoController game)
         {
+            this.game.visible = false;
             //VNSceneScript.run_state(this.game, this.game.scenedata.scMaxState + 1, true); TODO
         }
 

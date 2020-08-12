@@ -28,8 +28,7 @@ namespace VNEngine
         abstract public void render_main(
             string text_author,
             string text,
-            List<string> btnsTexts,
-            List<ButtonFunc_s> btnsActions,
+            List<Button_s> btns,
             string btnStyle);
 
         public VNController controller;

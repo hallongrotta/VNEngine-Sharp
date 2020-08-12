@@ -24,7 +24,7 @@ namespace VNEngine.Shared
 
         public double contentWidthProp;
 
-        public ButtonFunc_s endButtonCall;
+        public Button_s endButtonCall;
 
         public string endButtonTxt;
 
@@ -71,7 +71,7 @@ namespace VNEngine.Shared
             controller.windowRect = new Rect(Screen.width / 2 - controller.wwidth / 2, Screen.height - controller.wheight, controller.wwidth, controller.wheight);
             //GUI.skin.panel.onActive.textColor
             var style = new GUIStyle("label");
-            this.controller.windowStyle = style;
+            this.controller.windowStyle = style;          
             //style.
             //GUI.skin.window = style
             //GUI.backgroundColor.a = 0.7
@@ -117,8 +117,7 @@ namespace VNEngine.Shared
         override public void render_main(
             string text_author,
             string text,
-            List<string> btnsTexts,
-            List<ButtonFunc_s> btnsActions,
+            List<Button_s> btnsActions,
             string btnStyle)
         {
             RegisteredChar_s charinfo;
@@ -206,10 +205,10 @@ namespace VNEngine.Shared
                 {
                     GUILayout.BeginHorizontal();
                 }
-                foreach (var i in Enumerable.Range(0, btnsTexts.Count))
+                foreach (var i in Enumerable.Range(0, btnsActions.Count))
                 {
                     // preparing button texts
-                    var restext = btnsTexts[i];
+                    var restext = btnsActions[i].label;
                     /*
                     if (this.controller.engineOptions["usetranslator"] == "1" && this.controller.engineOptions["translatebuttons"] == "1")
                     {
@@ -227,7 +226,7 @@ namespace VNEngine.Shared
                     // render button
                     if (btnStyle == "normal")
                     {
-                        if (btnsTexts.Count > 1)
+                        if (btnsActions.Count > 1)
                         {
                             if (GUILayout.Button(fintext, customButton, GUILayout.Width(fullw), GUILayout.Height(this.buttonHeight)))
                             {

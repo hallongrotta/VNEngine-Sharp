@@ -16,9 +16,9 @@ namespace VNEngine
     public abstract class VNController
        : BaseController
     {
-        public List<Utils.ButtonFunc_s> _arBtnsActsFull;
 
-        public List<string> _arBtnsTextFull;
+        public List<Button_s> btnsFull;
+
         public int wwidth;
         public int _btnSepCounter;
 
@@ -32,13 +32,7 @@ namespace VNEngine
 
         protected Dictionary<string, HSNeoOCIProp> _scenef_props;
 
-        public List<string> _vnButtons;
-
-        public List<Utils.ButtonFunc_s> _vnButtonsActions;
-
-        public List<string> _vnStButtons;
-
-        public List<GameFunc> _vnStButtonsActions;
+        public List<Button_s> _vnButtons;
 
         public string _vnStText;
 
@@ -115,6 +109,7 @@ namespace VNEngine
         public double readingSpeed;
 
         public Timer[] timers;
+        private List<Button_s> _vnStButtons;
 
         public delegate void TimerUpdateFunc(VNController controller, float deltaTime, float timeLapsed, float timeLeft);
 
@@ -234,12 +229,10 @@ namespace VNEngine
 
             */
             this._vnStButtons = this._vnButtons;
-            this._vnStButtonsActions = null; //this._vnButtonsActions; TODO
             this._vnStText = this._vnText;
             this.maxBtnsBeforeSeparator = 5;
             this._btnSepCounter = 0;
-            this._arBtnsTextFull = new List<string>();
-            this._arBtnsActsFull = new List<Utils.ButtonFunc_s>();
+            this.btnsFull = new List<Button_s>();
             //this.gdata = new GData();
             //this.scenedata = new GData();
             this.gpersdata = new Dictionary<string, object>();
@@ -308,7 +301,7 @@ namespace VNEngine
                 {
                     try
                     {
-                        this.skin.render_main(this.curCharFull, this.vnText, this.vnButtons, this._vnButtonsActions, this.vnButtonsStyle);
+                        this.skin.render_main(this.curCharFull, this.vnText, this.vnButtons, this.vnButtonsStyle);
                     }
                     catch (Exception e)
                     {
@@ -421,7 +414,7 @@ namespace VNEngine
                         if (Input.GetKeyDown(this.arKeyKodes[i]))
                         {
                             //self._vnButtonsActions[i](self)
-                            this.call_game_func(this._vnButtonsActions[i]);
+                            this.call_game_func(this._vnButtons[i]);
                         }
                     }
                 }
@@ -585,7 +578,7 @@ namespace VNEngine
 
         //self.OnGUI(self)
         // ---- external game functions ---------
-        public List<string> vnButtons
+        public List<Button_s> vnButtons
         {
             get
             {
@@ -597,7 +590,7 @@ namespace VNEngine
             }
         }
 
-        public void set_buttons(List<string> arButTexts, List<Utils.ButtonFunc_s> arButActions, string style = "normal")
+        public void set_buttons(List<Button_s> buttons, string style = "normal")
         {
             this.vnButtonsStyle = style;
             if (style == "normal")
@@ -608,18 +601,16 @@ namespace VNEngine
             {
                 this.maxBtnsBeforeSeparator = this.skin.maxButtonsCompact;
             }
-            if (arButTexts.Count <= this.maxBtnsBeforeSeparator)
+            if (buttons.Count <= this.maxBtnsBeforeSeparator)
             {
                 // normal case, not so much btns
                 this._btnSepCounter = 0;
-                this.vnButtons = arButTexts;
-                this._vnButtonsActions = arButActions;
+                this.vnButtons = buttons;
             }
             else
             {
                 this._btnSepCounter = 0;
-                this._arBtnsTextFull = arButTexts;
-                this._arBtnsActsFull = arButActions;
+                this.btnsFull = buttons;
                 this._btnCallSepCounter(this, 0);
                 //self.OnGUI(self)
             }
@@ -627,69 +618,51 @@ namespace VNEngine
 
         public void _btnCallFull(VNController game, int param)
         {
-            this.call_game_func(this._arBtnsActsFull[param]);
+            this.call_game_func(this.btnsFull[param]);
         }
 
         public void _btnCallSepCounter(VNController game, int param)
         {
             // wrapping over list
-            if (param > this._arBtnsTextFull.Count - 1)
+            if (param > this.btnsFull.Count - 1)
             {
                 param = 0;
             }
             // get sublist
             var endindex = param + this.maxBtnsBeforeSeparator - 1;
-            if (endindex > this._arBtnsTextFull.Count)
+            if (endindex > this.btnsFull.Count)
             {
-                endindex = this._arBtnsTextFull.Count;
+                endindex = this.btnsFull.Count;
             }
-            var ar1 = this._arBtnsTextFull.GetRange(param, this.maxBtnsBeforeSeparator - 1);
+            var ar1 = this.btnsFull.GetRange(param, this.maxBtnsBeforeSeparator - 1);
             //print param
             //print endindex
             //print ar1
-            var ar2 = new List<ButtonFunc_s>();
+            var ar2 = new List<Button_s>();
             foreach (var i in Enumerable.Range(0, ar1.Count))
             {
-                ar2.Add(new ButtonFunc_s(this._btnCallFull, param + i));
+                ar2.Add(new Button_s("Button", this._btnCallFull, param + i));
             }
             // add button to move forward
-            ar1.Add(">>");
-            ar2.Add(new ButtonFunc_s(this._btnCallSepCounter, param + this.maxBtnsBeforeSeparator - 1));
+            ar2.Add(new Button_s(">>", this._btnCallSepCounter, param + this.maxBtnsBeforeSeparator - 1));
             // setting buttons
-            //this.set_buttons(ar1, ar2, this.vnButtonsStyle); TODO
+            this.set_buttons(ar2, this.vnButtonsStyle);
         }
 
-        /* TODO
-        public void set_buttons_alt(List<string> arButTextsActions, string style = "normal")
+        
+        public void set_buttons_alt(List<Button_s> arButTextsActions, string style = "normal")
         {
-            var ar1 = new List<string>();
-            var ar2 = new List<(Action<object>, object)>();
-            foreach (var i in Enumerable.Range(0, arButTextsActions.Count))
-            {
-                if (i % 2 == 0)
-                {
-                    ar1.Add(arButTextsActions[i]);
-                }
-                else
-                {
-                    ar2.Add(arButTextsActions[i]);
-                }
-            }
-            this.set_buttons(ar1, ar2, style);
+            this.set_buttons(arButTextsActions, style);
         }
-        */
-        /* TODO
+        
+        
         public void set_buttons_end_game()
         {
-            this.set_buttons(new List<string> {
-                "End Game & Return >>"
-            }, new List<(Action<VNController, object>, object)> {
-                (this._onEndGame, -1)
-            });
-        }
-        */
+            var buttons = new List<Button_s>() { new Button_s("End Game & Return >>", this._onEndGame, -1) };
+            this.set_buttons(buttons);
+        }       
 
-        public void _onEndGame(VNController game)
+        public void _onEndGame(VNController game, int i)
         {
             this.return_to_start_screen_clear();
         }
@@ -822,11 +795,11 @@ namespace VNEngine
             return;
         }
 
-        public void call_game_func(Utils.ButtonFunc_s param)
+        public void call_game_func(Utils.Button_s param)
         {
             try
             {
-                param.func(param.param);
+                param.btnCallFull(this, param.v);
             }
             catch (Exception e)
             {
@@ -1655,6 +1628,7 @@ namespace VNEngine
         {
             this.skin = skin;
             this.skin.setup(this);
+            this.visible = true;
         }
 
         public void skin_set_byname(string skinname)

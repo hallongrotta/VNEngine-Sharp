@@ -697,7 +697,7 @@ namespace SceneSaveState
                 {
                     try
                     {
-                        skin_def.render_main(game.curCharFull, game.vnText, game.vnButtons, game._vnButtonsActions, game.vnButtonsStyle);
+                        skin_def.render_main(game.curCharFull, game.vnText, game.vnButtons, game.vnButtonsStyle);
                     }
                     catch (Exception e)
                     {

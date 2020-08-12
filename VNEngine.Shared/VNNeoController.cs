@@ -5,7 +5,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 using VNActor;
+using static VNEngine.Utils;
 using static VNEngine.VNCamera;
 
 namespace VNEngine
@@ -502,7 +504,7 @@ namespace VNEngine
             this.runScAct = onEnd;
             this.load_scene(file);
             this.set_text_s("...");
-            //this.set_buttons_alt(new List<string>()); TODO
+            this.set_buttons_alt(new List<Button_s>());
             this.set_timer(0.5f, this._vnscenescript_run_filescene);
         }
 

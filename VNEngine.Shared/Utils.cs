@@ -56,18 +56,6 @@ namespace VNEngine
             return "";
         }
 
-
-        public static bool inited = false;
-
-        public static void vngame_window_autogames_uni_1init()
-        {
-            if (!inited)
-            {
-                inited = true;
-                vngame_window_autogames_uni();
-            }
-        }
-
         //import GameCursor, CameraControl
 
         /*
