@@ -28,8 +28,35 @@ namespace SceneSaveState
             this.lights = lights;
         }
 
-        public Scene() : this(new Dictionary<string, ActorData>(), new Dictionary<string, ItemData>(), new Dictionary<string, LightData>(), new List<CamData>())
+        private Scene() : this(new Dictionary<string, ActorData>(), new Dictionary<string, ItemData>(), new Dictionary<string, LightData>(), new List<CamData>())
         {
+        }
+
+        public Scene(VNNeoController game, bool importSys) : this()
+        {
+            game.LoadTrackedActorsAndProps();
+            Dictionary<string, Actor> actors = game.scenef_get_all_actors();
+            Dictionary<string, HSNeoOCIProp> props = game.scenef_get_all_props();
+            foreach (string actid in actors.Keys)
+            {
+                this.actors[actid] = (ActorData)actors[actid].export_full_status();
+            }
+            foreach (string propid in props.Keys)
+            {
+                var prop = props[propid];
+                if (prop is Item p)
+                {
+                    this.props[propid] = (ItemData)p.export_full_status();
+                }
+                else if (prop is Light l)
+                {
+                    this.lights[propid] = (LightData)l.export_full_status();
+                }
+            }
+            if (importSys)
+            {
+                this.sys = (VNEngine.System.SystemData)VNEngine.System.export_sys_status(game);
+            }
         }
 
         public Scene copy()
@@ -62,35 +89,6 @@ namespace SceneSaveState
             return true;
             */
             return false;
-        }
-
-        public void importCurScene(VNNeoController game, bool importSys)
-        {
-            game.LoadTrackedActorsAndProps();
-            this.actors = new Dictionary<string, ActorData>();
-            this.props = new Dictionary<string, ItemData>();
-            Dictionary<string, Actor> actors = game.scenef_get_all_actors();
-            Dictionary<string, HSNeoOCIProp> props = game.scenef_get_all_props();
-            foreach (string actid in actors.Keys)
-            {
-                this.actors[actid] = (ActorData)actors[actid].export_full_status();
-            }
-            foreach (string propid in props.Keys)
-            {
-                var prop = props[propid];
-                if (prop is Item p)
-                {
-                    this.props[propid] = (ItemData)p.export_full_status();
-                }
-                else if (prop is Light l)
-                {
-                    this.lights[propid] = (LightData)l.export_full_status();
-                }
-            }
-            if (importSys)
-            {
-                this.sys = (VNEngine.System.SystemData)VNEngine.System.export_sys_status(game);
-            }
         }
 
 
@@ -175,7 +173,10 @@ namespace SceneSaveState
 
         public void updateCam(int index, CamData cam_data)
         {
-            this.cams[index] = cam_data;
+            if (cams.Count > 0)
+            {
+                this.cams[index] = cam_data;
+            }
         }
 
         public int deleteCam(int index)
@@ -191,7 +192,7 @@ namespace SceneSaveState
             }
             else
             {
-                throw new Exception("No camera to delete!");
+                return -1;
             }
         }
     }

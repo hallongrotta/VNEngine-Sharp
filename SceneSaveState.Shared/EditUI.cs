@@ -23,7 +23,7 @@ namespace SceneSaveState
             {
                 for (int i = 0; i < Instance.block.Count; i++)
                 {
-                    if (i == Instance.currentSceneIndex)
+                    if (i == Instance.block.currentSceneIndex)
                     {
                         col = Instance.sel_font_col;
                     }
@@ -31,7 +31,7 @@ namespace SceneSaveState
                     {
                         col = Instance.nor_font_col;
                     }
-                    string scn_name = Instance.scene_str_array[i];
+                    string scn_name = Instance.block.SceneStrings[i];
                     if (Instance.block[i].cams.Count > 0 && Instance.block[i].cams[0].hasVNData && Instance.block[i].cams[0].addata.addparam)
                     {
                         addprops = Instance.block[i].cams[0].addata.addprops;
@@ -46,7 +46,7 @@ namespace SceneSaveState
                     }
                     if (GUILayout.Button(String.Format("<color={0}>{1}</color>", col, scn_name)))
                     {
-                        Instance.currentSceneIndex = i;
+                        Instance.block.SetCurrent(i);
                         if (Instance.autoLoad == true)
                         {
                             Instance.loadCurrentScene();
@@ -59,22 +59,22 @@ namespace SceneSaveState
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Move up"))
             {
-                Instance.move_scene_up();
+                Instance.block.move_scene_up();
             }
             if (GUILayout.Button("Move down"))
             {
-                Instance.move_scene_down();
+                Instance.block.move_scene_down();
             }
             GUILayout.EndHorizontal();
             GUILayout.EndVertical();
             GUILayout.BeginVertical();
             // Camera and character selection tabs
             GUILayout.BeginHorizontal();
-            if (Instance.currentSceneIndex > -1 && Instance.block.Count > 0)
+            if (Instance.block.Count > 0)
             {
                 GUILayout.BeginVertical();
                 cam_scroll = GUILayout.BeginScrollView(cam_scroll, GUILayout.Height(185), GUILayout.Width(camviewwidth));
-                for ( int i = 0; i < Instance.block[Instance.currentSceneIndex].cams.Count - 0; i++)
+                for ( int i = 0; i < Instance.block.CurrentScene.cams.Count - 0; i++)
                 {
                     if (i == Instance.cur_cam)
                     {
@@ -84,7 +84,7 @@ namespace SceneSaveState
                     {
                         col = "#f9f9f9";
                     }
-                    var cam = Instance.block[Instance.currentSceneIndex].cams[i];
+                    var cam = Instance.block.CurrentScene.cams[i];
                     VNCamera.VNData addparams = cam.addata;
                     GUILayout.BeginHorizontal();
                     // show name if available
@@ -122,22 +122,28 @@ namespace SceneSaveState
                 {
                     Instance.changeSceneCam(CamTask.ADD);
                 }
-                if (GUILayout.Button("Del", GUILayout.Width(camviewwidth * 0.3f)))
+                if (Instance.block.CurrentScene.cams.Count > 0)
                 {
-                    if (Instance.promptOnDelete)
+                    if (GUILayout.Button("Del", GUILayout.Width(camviewwidth * 0.3f)))
                     {
-                        warning_action = Instance.deleteSceneCam;
-                        warning_param = new WarningParam_s("Delete selected cam?", CamTask.DELETE, false);
-                    }
-                    else
-                    {
-                        Instance.changeSceneCam(CamTask.DELETE);
+                        if (Instance.promptOnDelete)
+                        {
+                            warning_action = Instance.deleteSceneCam;
+                            warning_param = new WarningParam_s("Delete selected cam?", CamTask.DELETE, false);
+                        }
+                        else
+                        {
+                            Instance.changeSceneCam(CamTask.DELETE);
+                        }
                     }
                 }
                 GUILayout.EndHorizontal();
-                if (GUILayout.Button("Update", GUILayout.Width(camviewwidth + 5)))
+                if (Instance.block.CurrentScene.cams.Count > 0)
                 {
-                    Instance.changeSceneCam(CamTask.UPDATE);
+                    if (GUILayout.Button("Update", GUILayout.Width(camviewwidth + 5)))
+                    {
+                        Instance.changeSceneCam(CamTask.UPDATE);
+                    }
                 }
                 GUILayout.Label("Move cam:");
                 GUILayout.BeginHorizontal();
@@ -183,7 +189,7 @@ namespace SceneSaveState
                 //         sc.warning_param = (sc.changeSceneChars, "Delete selected female character?", (1, "del"), False)
                 //     else:
                 //         sc.changeSceneChars(1, "del")
-                if (Instance.currentSceneIndex > -1 && Instance.cur_cam > -1)
+                if (Instance.block.HasScenes && Instance.cur_cam > -1)
                 {
                     GUILayout.Space(25);
                     if (GUILayout.Button("Copy cam set"))
@@ -222,7 +228,7 @@ namespace SceneSaveState
                 //         sc.warning_param = (sc.changeSceneChars, "Delete selected male character?", (0, "del"), False)
                 //     else:
                 //         sc.changeSceneChars(0, "del")
-                if (Instance.currentSceneIndex > -1 && !Instance.camset.IsNullOrEmpty())
+                if (Instance.block.HasScenes && !Instance.camset.IsNullOrEmpty())
                 {
                     GUILayout.Space(25);
                     if (GUILayout.Button("Paste cam set"))
@@ -252,7 +258,7 @@ namespace SceneSaveState
             }
             if (GUILayout.Button("Update scene", GUILayout.Height(55)))
             {
-                Instance.addAuto(addsc: false);
+                Instance.UpdateScene();
             }
             GUILayout.EndHorizontal();
             // if GUILayout.Button("Update props",GUILayout.Height(40)):

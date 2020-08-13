@@ -130,7 +130,6 @@ namespace SceneSaveState
 
         public static void sceneConsoleWindowFunc(int id)
         {
-            Instance.scene_str_array = Instance.scene_strings.ToArray();
             Instance.fset = new List<string>(Instance.nameset[0]);
             Instance.mset = new List<string>(Instance.nameset[1]);
             // prev_cam_index = sc.cur_cam
