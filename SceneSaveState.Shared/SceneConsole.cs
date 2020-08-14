@@ -18,12 +18,15 @@ using ExtensibleSaveFormat;
 using NodeCanvas.Tasks.Conditions;
 using static VNActor.Light;
 using static VNEngine.Utils;
+using static VNEngine.VNCamera.VNData;
 
 namespace SceneSaveState
 {
 
     internal class SceneConsole : SceneCustomFunctionController
     {
+
+        public const string defaultSpeakerAlias = "s";
 
         public bool isSysTracking = true;
 
@@ -57,15 +60,7 @@ namespace SceneSaveState
 
         public SceneManager block;
 
-        public bool cam_addparam;
-
-        public VNData.addprops_struct cam_addprops;
-
-        public string cam_addvncmds;
-
-        public string cam_whatsay;
-
-        public string cam_whosay;
+        public VNData currentVNData;
 
         public List<CamData> camset;
 
@@ -223,19 +218,26 @@ namespace SceneSaveState
 
             fset_index = 0;
             mset_index = 0;
-            
+
             // self.char_name = ""
-            cam_whosay = "";
-            cam_whatsay = "";
-            cam_addvncmds = "";
-            cam_addparam = false;
-            cam_addprops.addprops = new Dictionary<string, bool> {
-                {
-                    "a1",
-                    false},
-                {
-                    "a2",
-                    false}};
+
+            currentVNData = new VNData()
+            {
+                addparam = false,
+                whosay = "",
+                whatsay = "",
+                addvncmds = "",
+                addprops = new addprops_struct()
+            };
+
+            currentVNData.addprops.addprops = new Dictionary<string, bool> {
+                    {
+                        "a1",
+                        false},
+                    {
+                        "a2",
+                        false}};
+
             newid = "";
             mininewid = "";
             autoshownewid = "";
@@ -468,7 +470,7 @@ namespace SceneSaveState
         public void changeSceneCam(CamTask task)
         {
             var cdata = VNNeoController.cameraData;
-            var addata = new VNData(cam_addparam, cam_whosay, cam_whatsay, cam_addvncmds, cam_addprops);
+            var addata = currentVNData;
             var cam_data = new CamData(cdata.pos, cdata.rotate, cdata.distance, cdata.parse, addata);
             if (task == CamTask.ADD)
             {
@@ -529,26 +531,26 @@ namespace SceneSaveState
                 game.move_camera(camera_data);
                 //this.game.move_camera(pos: camera_data.position, distance: camera_data.distance, rotate: camera_data.rotation, fov: camera_data.fov);
             }
-            if (camera_data.addata is VNCamera.VNData addata)
+            if (camera_data.addata is VNData addata)
             {
-                cam_addparam = addata.addparam;
-                cam_whosay = addata.whosay;
-                cam_whatsay = addata.whatsay;
+                currentVNData.addparam = addata.addparam;
+                currentVNData.whosay = addata.whosay;
+                currentVNData.whatsay = addata.whatsay;
                 if (addata.addvncmds != null)
                 {
-                    cam_addvncmds = addata.addvncmds;
+                    currentVNData.addvncmds = addata.addvncmds;
                 }
                 else
                 {
-                    cam_addvncmds = "";
+                    currentVNData.addvncmds = "";
                 }
                 if (addata.addprops.addprops != null)
                 {
-                    cam_addprops = addata.addprops;
+                    currentVNData.addprops = addata.addprops;
                 }
                 else
                 {
-                    cam_addprops.addprops = new Dictionary<string, bool> {
+                    currentVNData.addprops.addprops = new Dictionary<string, bool> {
                         {
                             "a1",
                             false},
@@ -560,11 +562,11 @@ namespace SceneSaveState
             }
             else
             {
-                cam_addparam = false;
-                cam_whosay = "";
-                cam_whatsay = "";
-                cam_addvncmds = "";
-                cam_addprops.addprops = new Dictionary<string, bool> {
+                currentVNData.addparam = false;
+                currentVNData.whosay = "";
+                currentVNData.whatsay = "";
+                currentVNData.addvncmds = "";
+                currentVNData.addprops.addprops = new Dictionary<string, bool> {
                     {
                         "a1",
                         false},
@@ -1761,12 +1763,12 @@ namespace SceneSaveState
             // next from unknown speaker
             var all_actors = game.scenef_get_all_actors();
             var keylist = all_actors.Keys.ToList();
-            if (curSpeakAlias != "s" && !all_actors.ContainsKey(curSpeakAlias))
+            if (curSpeakAlias != defaultSpeakerAlias && !all_actors.ContainsKey(curSpeakAlias))
             {
-                return "s";
+                return defaultSpeakerAlias;
             }
             // next from s or actor
-            if (curSpeakAlias == "s")
+            if (curSpeakAlias == defaultSpeakerAlias)
             {
                 if (all_actors.Count > 0)
                 {
@@ -1781,7 +1783,7 @@ namespace SceneSaveState
                 }
                 else
                 {
-                    return "s";
+                    return defaultSpeakerAlias;
                 }
             }
             else
@@ -1801,7 +1803,7 @@ namespace SceneSaveState
                 }
                 else
                 {
-                    return "s";
+                    return defaultSpeakerAlias;
                 }
             }
         }

@@ -314,11 +314,11 @@ namespace SceneSaveState
             // char texts
             GUILayout.Space(25);
             GUILayout.BeginHorizontal();
-            Instance.cam_addparam = GUILayout.Toggle(Instance.cam_addparam, "  Use cam in Visual Novel");
+            Instance.currentVNData.addparam = GUILayout.Toggle(Instance.currentVNData.addparam, "  Use cam in Visual Novel");
             GUILayout.FlexibleSpace();
-            if (Instance.cam_addparam)
+            if (Instance.currentVNData.addparam)
             {
-                var txt = Utils.btntext_get_if_selected2("More", Instance.cam_addprops.addprops["a1"] || Instance.cam_addprops.addprops["a2"]);
+                var txt = Utils.btntext_get_if_selected2("More", Instance.currentVNData.addprops.addprops["a1"] || Instance.currentVNData.addprops.addprops["a2"]);
                 if (GUILayout.Button(txt, GUILayout.Height(20)))
                 {
                     subwinindex = 100;
@@ -330,39 +330,39 @@ namespace SceneSaveState
             //     sc.addAuto(allbase=False)
             // if GUILayout.Button("Delete duplicate characters"):
             //     sc.removeDuplicates()
-            if (Instance.cam_addparam)
+            if (Instance.currentVNData.addparam)
             {
                 GUILayout.BeginHorizontal();
                 GUILayout.Label("  Who say:", GUILayout.Width(90));
-                Instance.cam_whosay = GUILayout.TextField(Instance.cam_whosay, GUILayout.Width(210));
+                Instance.currentVNData.whosay = GUILayout.TextField(Instance.currentVNData.whosay, GUILayout.Width(210));
                 if (GUILayout.Button("<", GUILayout.Width(20)))
                 {
-                    Instance.cam_whosay = Instance.get_next_speaker(Instance.cam_whosay, false);
+                    Instance.currentVNData.whosay = Instance.get_next_speaker(Instance.currentVNData.whosay, false);
                 }
                 if (GUILayout.Button(">", GUILayout.Width(20)))
                 {
-                    Instance.cam_whosay = Instance.get_next_speaker(Instance.cam_whosay, true);
+                    Instance.currentVNData.whosay = Instance.get_next_speaker(Instance.currentVNData.whosay, true);
                 }
                 GUILayout.EndHorizontal();
                 GUILayout.BeginHorizontal();
                 GUILayout.Label("  What say:", GUILayout.Width(90));
-                Instance.cam_whatsay = GUILayout.TextField(Instance.cam_whatsay, GUILayout.Width(210));
+                Instance.currentVNData.whatsay = GUILayout.TextField(Instance.currentVNData.whatsay, GUILayout.Width(210));
                 if (GUILayout.Button("X", GUILayout.Width(20)))
                 {
-                    Instance.cam_whatsay = "";
+                    Instance.currentVNData.whatsay = "";
                 }
                 if (GUILayout.Button("...", GUILayout.Width(20)))
                 {
-                    Instance.cam_whatsay = "...";
+                    Instance.currentVNData.whatsay = "...";
                 }
                 GUILayout.EndHorizontal();
                 GUILayout.Space(5);
                 GUILayout.BeginHorizontal();
                 GUILayout.Label("  Adv VN cmds", GUILayout.Width(90));
-                Instance.cam_addvncmds = GUILayout.TextArea(Instance.cam_addvncmds, GUILayout.Width(235), GUILayout.Height(55));
+                Instance.currentVNData.addvncmds = GUILayout.TextArea(Instance.currentVNData.addvncmds, GUILayout.Width(235), GUILayout.Height(55));
                 if (GUILayout.Button("X", GUILayout.Width(20)))
                 {
-                    Instance.cam_addvncmds = "";
+                    Instance.currentVNData.addvncmds = "";
                 }
                 // if GUILayout.Button("X", GUILayout.Width(20)):
                 //     sc.cam_whatsay = ""
