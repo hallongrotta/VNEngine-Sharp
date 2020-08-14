@@ -32,10 +32,10 @@ namespace SceneSaveState
                         col = Instance.nor_font_col;
                     }
                     string scn_name = Instance.block.SceneStrings[i];
-                    if (Instance.block[i].cams.Count > 0 && Instance.block[i].cams[0].hasVNData && Instance.block[i].cams[0].addata.addparam)
+                    if (Instance.block[i].cams.Count > 0 && Instance.block[i].cams[0].hasVNData && Instance.block[i].cams[0].addata.enabled)
                     {
                         addprops = Instance.block[i].cams[0].addata.addprops;
-                        if (addprops.addprops["a1"])
+                        if (addprops.a1)
                         {
                             string sname = addprops.a1o.name;
                             if (sname != null && sname.Trim().Length > 0)
@@ -89,10 +89,10 @@ namespace SceneSaveState
                     GUILayout.BeginHorizontal();
                     // show name if available
                     var camtxt = Instance.block.CamStrings[i];
-                    if (addparams.addparam)
+                    if (addparams.enabled)
                     {
                         addprops = addparams.addprops;
-                        if (addprops.addprops["a1"])
+                        if (addprops.a1)
                         {
                             if (addprops.a1o.name != "")
                             {
@@ -314,11 +314,11 @@ namespace SceneSaveState
             // char texts
             GUILayout.Space(25);
             GUILayout.BeginHorizontal();
-            Instance.currentVNData.addparam = GUILayout.Toggle(Instance.currentVNData.addparam, "  Use cam in Visual Novel");
+            Instance.currentVNData.enabled = GUILayout.Toggle(Instance.currentVNData.enabled, "  Use cam in Visual Novel");
             GUILayout.FlexibleSpace();
-            if (Instance.currentVNData.addparam)
+            if (Instance.currentVNData.enabled)
             {
-                var txt = Utils.btntext_get_if_selected2("More", Instance.currentVNData.addprops.addprops["a1"] || Instance.currentVNData.addprops.addprops["a2"]);
+                var txt = Utils.btntext_get_if_selected2("More", Instance.currentVNData.addprops.a1 || Instance.currentVNData.addprops.a2);
                 if (GUILayout.Button(txt, GUILayout.Height(20)))
                 {
                     subwinindex = 100;
@@ -330,7 +330,7 @@ namespace SceneSaveState
             //     sc.addAuto(allbase=False)
             // if GUILayout.Button("Delete duplicate characters"):
             //     sc.removeDuplicates()
-            if (Instance.currentVNData.addparam)
+            if (Instance.currentVNData.enabled)
             {
                 GUILayout.BeginHorizontal();
                 GUILayout.Label("  Who say:", GUILayout.Width(90));

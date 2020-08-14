@@ -6,7 +6,7 @@ using static VNActor.Actor;
 using static VNActor.Item;
 using static VNActor.Light;
 using static VNEngine.System;
-using CamData = VNEngine.VNCamera.CamData;
+using static VNEngine.VNCamera;
 
 namespace SceneSaveState
 {

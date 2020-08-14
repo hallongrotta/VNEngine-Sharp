@@ -223,20 +223,15 @@ namespace SceneSaveState
 
             currentVNData = new VNData()
             {
-                addparam = false,
+                enabled = false,
                 whosay = "",
                 whatsay = "",
                 addvncmds = "",
                 addprops = new addprops_struct()
             };
 
-            currentVNData.addprops.addprops = new Dictionary<string, bool> {
-                    {
-                        "a1",
-                        false},
-                    {
-                        "a2",
-                        false}};
+            currentVNData.addprops.a1 = false;
+            currentVNData.addprops.a2 = false;
 
             newid = "";
             mininewid = "";
@@ -533,7 +528,7 @@ namespace SceneSaveState
             }
             if (camera_data.addata is VNData addata)
             {
-                currentVNData.addparam = addata.addparam;
+                currentVNData.enabled = addata.enabled;
                 currentVNData.whosay = addata.whosay;
                 currentVNData.whatsay = addata.whatsay;
                 if (addata.addvncmds != null)
@@ -544,35 +539,19 @@ namespace SceneSaveState
                 {
                     currentVNData.addvncmds = "";
                 }
-                if (addata.addprops.addprops != null)
-                {
-                    currentVNData.addprops = addata.addprops;
-                }
-                else
-                {
-                    currentVNData.addprops.addprops = new Dictionary<string, bool> {
-                        {
-                            "a1",
-                            false},
-                        {
-                            "a2",
-                            false}};
-                }
+
+                currentVNData.addprops = addata.addprops;               
+
                 game.set_text(camera_data.addata.whosay, camera_data.addata.whatsay);
             }
             else
             {
-                currentVNData.addparam = false;
+                currentVNData.enabled = false;
                 currentVNData.whosay = "";
                 currentVNData.whatsay = "";
                 currentVNData.addvncmds = "";
-                currentVNData.addprops.addprops = new Dictionary<string, bool> {
-                    {
-                        "a1",
-                        false},
-                    {
-                        "a2",
-                        false}};
+                currentVNData.addprops.a1 = false;
+                currentVNData.addprops.a2 = false;
             }
         }
 

@@ -11,7 +11,7 @@ namespace VNEngine
 
         public struct VNData
         {
-            public bool addparam;
+            public bool enabled; // formerly addparam
             public string whosay;
             public string whatsay;
             public string addvncmds;
@@ -20,15 +20,15 @@ namespace VNEngine
 
             public struct addprops_struct
             {
-
-                public Dictionary<string, bool> addprops;
                 public adv_properties a1o;
                 public Dictionary<string, bool> a2o;
+                public bool a1;
+                public bool a2;
             }
 
             public VNData(bool addparam, string whosay, string whatsay, string addvncmds, addprops_struct addprops)
             {
-                this.addparam = addparam;
+                this.enabled = addparam;
                 this.whosay = whosay;
                 this.whatsay = whatsay;
                 this.addvncmds = addvncmds;
