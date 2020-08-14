@@ -150,7 +150,7 @@ namespace SceneSaveState
             GUILayout.Label("<b>Shortcut settings</b>");
             GUILayout.Space(10);
             GUILayout.BeginHorizontal();
-            var cnt = 0;
+            //var cnt = 0;
             /* TODO
             foreach (var command in SceneConsole.Instance.shortcuts.Keys.OrderBy(_p_1 => _p_1).ToList())
             {

@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using static VNEngine.VNCamera;
 
 namespace SceneSaveState
 {
@@ -10,7 +9,6 @@ namespace SceneSaveState
 
         private List<Scene> scenes;
 
-        private int sceneIndex;
         public string[] SceneStrings 
         { 
             get 
@@ -30,11 +28,52 @@ namespace SceneSaveState
                 }
             } 
         }
+
+        public string[] CamStrings
+        {
+            get
+            {
+                if ((scene_cam_str == null) || scene_cam_str.Length != currentCamCount)
+                {
+                    scene_cam_str = new string[currentCamCount];
+                    for (int id = 0; id < currentCamCount; id++)
+                    {
+                        scene_cam_str[id] = $"Cam {id}";
+                    }
+                    return scene_cam_str;
+                }
+                else
+                {
+                    return scene_cam_str;
+                }
+            }
+        }
+
+        public string[] scene_cam_str;
         private string[] scene_str_array;
 
-        public int currentSceneIndex { get { return sceneIndex; } private set { sceneIndex = value; } }
+        public int currentSceneIndex { get; private set; }
+
+        public int currentCamIndex { get; private set; }
 
         public Scene CurrentScene { get { return scenes[currentSceneIndex]; } private set { scenes[currentSceneIndex] = value; } }
+
+        public CamData CurrentCam { get { return CurrentScene.cams[currentCamIndex]; } }
+
+        public int currentCamCount 
+        {
+            get
+            {
+                if (CurrentScene.cams != null)
+                {
+                    return CurrentScene.cams.Count;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+        }
 
         public int Count { get { return scenes.Count; } }
 
@@ -42,12 +81,14 @@ namespace SceneSaveState
         {
             scenes = new List<Scene>();
             currentSceneIndex = -1;
+            currentCamIndex = -1;
         }
 
         public SceneManager(Scene[] scenes)
         {
             this.scenes = scenes.ToList();
             currentSceneIndex = 0;
+            currentCamIndex = 0;
         }
 
         public bool HasScenes { get { return currentSceneIndex > -1; } }
@@ -142,11 +183,50 @@ namespace SceneSaveState
             }
         }
 
+        // Move cam (up/down)
+        public void move_cam_up()
+        {
+            if (HasScenes && currentCamIndex > 0)
+            {
+                var curcam = CurrentScene.cams[currentCamIndex];
+                CurrentScene.cams[currentCamIndex] = CurrentScene.cams[currentCamIndex - 1];
+                currentCamIndex -= 1;
+                CurrentScene.cams[currentCamIndex] = curcam;
+            }
+        }
+
+        public void move_cam_down()
+        {
+            if (HasScenes && currentCamIndex < currentCamCount - 1)
+            {
+                var curcam = CurrentScene.cams[currentCamIndex];
+                CurrentScene.cams[currentCamIndex] = CurrentScene.cams[currentCamIndex + 1];
+                currentCamIndex += 1;
+                CurrentScene.cams[currentCamIndex] = curcam;
+            }
+        }
+
         public bool HasNext
         {
             get
             {
                 return currentSceneIndex < scenes.Count - 1;
+            }
+        }
+
+        public bool HasNextCam
+        {
+            get
+            {
+                return currentCamIndex < currentCamCount - 1;
+            }
+        }
+
+        public bool HasPrevCam
+        {
+            get
+            {
+                return currentCamCount > 1;
             }
         }
 
@@ -220,6 +300,71 @@ namespace SceneSaveState
         public Scene[] ExportScenes()
         {
             return scenes.ToArray();
+        }
+
+
+        public int AddCam(CamData camData)
+        {
+            currentCamIndex = CurrentScene.addCam(camData);
+            return currentCamIndex;
+        }
+
+        public void UpdateCam(CamData camData)
+        {
+            CurrentScene.updateCam(currentCamIndex, camData);
+        }
+
+        public int DeleteCam()
+        {
+            if (currentCamCount > 1)
+            {
+                currentCamIndex = CurrentScene.deleteCam(currentCamIndex);
+            }
+            return currentCamIndex;
+        }
+
+        public int NextCam()
+        {
+            if (HasNextCam)
+            {
+                currentCamIndex++;
+                return currentCamIndex;
+            }
+            else
+            {
+                return currentCamIndex;
+            }
+        }
+        public int PrevCam()
+        {
+            if (HasPrevCam)
+            {
+                currentCamIndex--;
+                return currentCamIndex;
+            }
+            else
+            {
+                return currentCamIndex;
+            }
+
+        }
+
+        public void FirstCam()
+        {
+            currentCamIndex = 0;
+        }
+
+        public void LastCam()
+        {
+            currentCamIndex = currentCamCount - 1;
+        }
+
+        public void SetCurrentCam(int index)
+        {
+            if (index < currentCamCount)
+            {
+                currentCamIndex = index;
+            }
         }
     }
 }

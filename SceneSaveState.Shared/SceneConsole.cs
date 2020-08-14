@@ -27,10 +27,6 @@ namespace SceneSaveState
 
         public bool isSysTracking = true;
 
-        public int _normalheight;
-
-        public int _normalwidth;
-
         public Dictionary<string, object> accstate;
 
         public Vector2 adv_scroll;
@@ -81,7 +77,7 @@ namespace SceneSaveState
 
         public string[] consolenames;
 
-        public int cur_cam;
+        //public int cur_cam;
 
         public List<object> dict;
 
@@ -131,17 +127,11 @@ namespace SceneSaveState
 
         public float paramAnimCamZoomOut;
 
-        public int prev_cam;
-
-        public int prev_index;
-
         public bool promptOnDelete;
 
         public List<object> propfldtag;
 
         public List<object> proptag;
-
-        public string[] scene_cam_str;
 
         public string scenefile;
 
@@ -149,7 +139,7 @@ namespace SceneSaveState
 
         public string sel_font_col;
 
-        public Dictionary<string, KeyValuePair<string, string>> shortcuts;
+        //public Dictionary<string, KeyValuePair<string, string>> shortcuts;
 
         public SkinDefault skinDefault;
 
@@ -170,11 +160,13 @@ namespace SceneSaveState
         internal float consoleHeight;
         internal List<string> fset;
         internal List<string> mset;
+        /*
         internal int wiz_step;
         internal Dictionary<string, string> wiz_data;
         internal string wiz_error;
         internal string wiz_view_mode;
         internal Vector2 vnss_wizard_ui_scroll;
+        */
 
 
         public VNNeoController game
@@ -272,10 +264,6 @@ namespace SceneSaveState
                 new List<string>(),
                 new List<string>()
             };
-            scene_cam_str = new string[] {"<Empty>" };
-            prev_index = -1;
-            cur_cam = -1;
-            prev_cam = -1;
             camset = new List<CamData>();
             isSaveCompact = true;
             isSaveVerify = true;
@@ -457,12 +445,7 @@ namespace SceneSaveState
 
         public void getSceneCamString()
         {
-            var cam_str = new List<string>();
-            foreach (var i in Enumerable.Range(0, block.CurrentScene.cams.Count - 0))
-            {
-                cam_str.Add("Cam " + i.ToString());
-            }
-            scene_cam_str = cam_str.ToArray();
+
         }
 
         public void deleteSceneCam(object param)
@@ -489,15 +472,15 @@ namespace SceneSaveState
             var cam_data = new CamData(cdata.pos, cdata.rotate, cdata.distance, cdata.parse, addata);
             if (task == CamTask.ADD)
             {
-                cur_cam = block.CurrentScene.addCam(cam_data);
+                block.AddCam(cam_data);
             }
             else if (task == CamTask.UPDATE)
             {
-                block.CurrentScene.updateCam(cur_cam, cam_data);
+                block.UpdateCam(cam_data);
             }
             else if (task == CamTask.DELETE)
             {
-                cur_cam = block.CurrentScene.deleteCam(cur_cam);
+                var cur_cam = block.DeleteCam();
                 if (cur_cam > -1)
                 {
                     setCamera();
@@ -516,7 +499,7 @@ namespace SceneSaveState
 
         public void setCamera(bool isAnimated)
         {
-            VNCamera.CamData camera_data = block.CurrentScene.cams[cur_cam];
+            VNCamera.CamData camera_data = block.CurrentCam;
             // check and run adv command
             var keepCamera = false;
             if (camera_data.hasVNData)
@@ -645,9 +628,9 @@ namespace SceneSaveState
         public void loadCurrentScene()
         {
             setSceneState(block.CurrentScene);
-            if (block.Count > 0 && block.CurrentScene.cams.Count > 0)
+            if (block.Count > 0 && block.currentCamCount > 0)
             {
-                cur_cam = 0;
+                block.FirstCam();
                 setCamera();
             }
         }
@@ -1100,7 +1083,7 @@ namespace SceneSaveState
             }
         }
 
-        public HSNeoOCIFolder createFld(string txt, HSNeoOCI parent = null, bool ret = true)
+        public static HSNeoOCIFolder createFld(string txt, HSNeoOCI parent = null, bool ret = true)
         {
             var fld = HSNeoOCIFolder.add(txt);
             if (parent is HSNeoOCIFolder)
@@ -1117,7 +1100,7 @@ namespace SceneSaveState
             }
         }
 
-        public HSNeoOCIFolder createFldIfNo(string txt, HSNeoOCIFolder parent, int childNum)
+        public static HSNeoOCIFolder createFldIfNo(string txt, HSNeoOCIFolder parent, int childNum)
         {
             HSNeoOCIFolder fld;
 
@@ -1499,7 +1482,7 @@ namespace SceneSaveState
                 if (block.HasScenes)
                 {
                     block.First();
-                    cur_cam = 0;
+                    block.FirstCam();
                 }
             }
         }
@@ -1549,28 +1532,7 @@ namespace SceneSaveState
             }
         }
 
-        // Move cam (up/down)
-        public void move_cam_up()
-        {
-            if (block.HasScenes && cur_cam > 0)
-            {
-                var curcam = block.CurrentScene.cams[cur_cam];
-                block.CurrentScene.cams[cur_cam] = block.CurrentScene.cams[cur_cam - 1];
-                cur_cam -= 1;
-                block.CurrentScene.cams[cur_cam] = curcam;
-            }
-        }
 
-        public void move_cam_down()
-        {
-            if (block.HasScenes && cur_cam < block.CurrentScene.cams.Count - 1)
-            {
-                var curcam = block.CurrentScene.cams[cur_cam];
-                block.CurrentScene.cams[cur_cam] = block.CurrentScene.cams[cur_cam + 1];
-                cur_cam += 1;
-                block.CurrentScene.cams[cur_cam] = curcam;
-            }
-        }
 
         // Goto next/prev
         public void goto_first()
@@ -1588,9 +1550,9 @@ namespace SceneSaveState
         {
             if (block.Count > 0)
             {
-                if (block.CurrentScene.cams.Count > 0 && cur_cam < block.CurrentScene.cams.Count - 1)
+                if (block.currentCamCount > 0 && block.HasNextCam)
                 {
-                    cur_cam += 1;
+                    block.NextCam();
                     setCamera();
                 }
                 else
@@ -1606,10 +1568,9 @@ namespace SceneSaveState
         {
             if (block.HasPrev)
             {
-                prev_cam = cur_cam;
-                if (cur_cam > 0)
+                if (block.currentCamIndex > 0)
                 {
-                    cur_cam -= 1;
+                    block.PrevCam();
                     setCamera();
                 }
                 else
@@ -1641,9 +1602,9 @@ namespace SceneSaveState
             {
                 block.Back();
                 loadCurrentScene();
-                if (lastcam == true && block.CurrentScene.cams.Count > 0)
+                if (lastcam == true && block.currentCamCount > 0)
                 {
-                    cur_cam = block.CurrentScene.cams.Count - 1;
+                    block.LastCam();
                     setCamera();
                 }
             }
@@ -1768,7 +1729,7 @@ namespace SceneSaveState
             if (starfrom == "cam")
             {
                 //print self.cur_index, self.cur_cam
-                calcPos = (block.currentSceneIndex + 1) * 100 + cur_cam;
+                calcPos = (block.currentSceneIndex + 1) * 100 + block.currentCamIndex;
             }
             else if (starfrom == "scene")
             {

@@ -210,12 +210,6 @@ namespace SceneSaveState
         {
             var cfpath = "scenesavestate.ini";
             var content = "[Shortcuts]\n";
-            foreach (var _tup_1 in SceneConsole.Instance.shortcuts.Values)
-            {
-                var command = _tup_1.Value;
-                var key = _tup_1.Key;
-                content += command + " = " + key + "\n";
-            }
             File.WriteAllText(cfpath, content);
             // reinit config
             SceneConsole.Instance.game.event_unreg_listener("update", hook_update);

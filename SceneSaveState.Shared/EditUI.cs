@@ -76,7 +76,7 @@ namespace SceneSaveState
                 cam_scroll = GUILayout.BeginScrollView(cam_scroll, GUILayout.Height(185), GUILayout.Width(camviewwidth));
                 for ( int i = 0; i < Instance.block.CurrentScene.cams.Count - 0; i++)
                 {
-                    if (i == Instance.cur_cam)
+                    if (i == Instance.block.currentCamIndex)
                     {
                         col = Instance.sel_font_col;
                     }
@@ -88,7 +88,7 @@ namespace SceneSaveState
                     VNCamera.VNData addparams = cam.addata;
                     GUILayout.BeginHorizontal();
                     // show name if available
-                    var camtxt = String.Format("Cam {0}", i.ToString());
+                    var camtxt = Instance.block.CamStrings[i];
                     if (addparams.addparam)
                     {
                         addprops = addparams.addprops;
@@ -102,13 +102,13 @@ namespace SceneSaveState
                     }
                     if (GUILayout.Button(String.Format("<color={0}>{1}</color>", col, camtxt)))
                     {
-                        Instance.cur_cam = i;
-                        Instance.setCamera(false);
+                        Instance.block.SetCurrentCam(i);
+                        Instance.setCamera(isAnimated: false);
                     }
                     if (GUILayout.Button(String.Format("<color={0}>a</color>", col), GUILayout.Width(22)))
                     {
-                        Instance.cur_cam = i;
-                        Instance.setCamera(true);
+                        Instance.block.SetCurrentCam(i);
+                        Instance.setCamera(isAnimated: true);
                     }
                     GUILayout.EndHorizontal();
                 }
@@ -151,11 +151,11 @@ namespace SceneSaveState
                 var down = "\u2193";
                 if (GUILayout.Button(up, GUILayout.Width(camviewwidth / 2)))
                 {
-                    Instance.move_cam_up();
+                    Instance.block.move_cam_up();
                 }
                 if (GUILayout.Button(down, GUILayout.Width(camviewwidth / 2)))
                 {
-                    Instance.move_cam_down();
+                    Instance.block.move_cam_down();
                 }
                 GUILayout.EndHorizontal();
                 GUILayout.EndVertical();
@@ -189,7 +189,7 @@ namespace SceneSaveState
                 //         sc.warning_param = (sc.changeSceneChars, "Delete selected female character?", (1, "del"), False)
                 //     else:
                 //         sc.changeSceneChars(1, "del")
-                if (Instance.block.HasScenes && Instance.cur_cam > -1)
+                if (Instance.block.HasScenes && Instance.block.currentCamCount > 0)
                 {
                     GUILayout.Space(25);
                     if (GUILayout.Button("Copy cam set"))

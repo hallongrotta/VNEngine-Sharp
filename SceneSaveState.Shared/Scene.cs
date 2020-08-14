@@ -18,7 +18,7 @@ namespace SceneSaveState
         public Dictionary<string, ActorData> actors;
         public Dictionary<string, ItemData> props;
         public Dictionary<string, LightData> lights;
-        public VNEngine.System.SystemData sys;
+        public SystemData sys;
 
         public Scene(Dictionary<string, ActorData> actors, Dictionary<string, ItemData> props, Dictionary<string, LightData> lights, List<CamData> cams)
         {
@@ -181,7 +181,7 @@ namespace SceneSaveState
 
         public int deleteCam(int index)
         {
-            if (this.cams.Count > 0)
+            if (this.cams.Count > 1)
             {
                 this.cams.RemoveAt(index);
                 if (index == 0 && this.cams.Count > 0)
@@ -192,7 +192,7 @@ namespace SceneSaveState
             }
             else
             {
-                return -1;
+                return 0;
             }
         }
     }
