@@ -19,7 +19,6 @@ using NodeCanvas.Tasks.Conditions;
 using static VNActor.Light;
 using static VNEngine.Utils;
 using static VNEngine.VNCamera.VNData;
-using BepInEx.Logging;
 
 namespace SceneSaveState
 {
@@ -1800,18 +1799,11 @@ namespace SceneSaveState
             var pluginData = new PluginData();
             if (block.Count > 0)
             {
+                byte[] sceneData = MessagePackSerializer.Serialize(block.ExportScenes(), MessagePack.Resolvers.ContractlessStandardResolver.Instance);
+                pluginData.data["scenes"] = sceneData;
+                SetExtendedData(pluginData);
                 var logger = game.GetLogger;
-                try
-                {
-                    byte[] sceneData = MessagePackSerializer.Serialize(block.ExportScenes(), MessagePack.Resolvers.ContractlessStandardResolver.Instance);
-                    pluginData.data["scenes"] = sceneData;
-                    SetExtendedData(pluginData);
-                    logger.Log(LogLevel.Message, $"Saved {((double)sceneData.Length / 1000):N} Kb of scene state data.");
-                } catch (Exception e)
-                {
-                    logger.LogError("Error occurred while saving scene data: " + e.ToString());
-                    logger.LogMessage("Failed to save scene data, check debug log for more info.");
-                }
+                logger.LogDebug($"Saved {((double)sceneData.Length / 1000):N} Kbytes of scene data.");
             }
         }
 
@@ -1832,12 +1824,11 @@ namespace SceneSaveState
                     {
                         var scenes = MessagePackSerializer.Deserialize<Scene[]>(sceneData, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
                         block = new SceneManager(scenes);
-                        logger.Log(LogLevel.Message, $"Loaded {((double)sceneData.Length / 1000):N} Kb of scene state data.");
+                        logger.LogDebug($"Loaded {((double)sceneData.Length / 1000):N} Kbytes of scene data.");
                     }
                     catch (Exception e)
                     {
                         logger.LogError("Error occurred while loading scene data: " + e.ToString());
-                        logger.LogMessage("Failed to load scene data, check debug log for more info.");
                     }
                 }
             }
