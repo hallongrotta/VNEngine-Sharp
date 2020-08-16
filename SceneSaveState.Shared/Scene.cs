@@ -28,7 +28,7 @@ namespace SceneSaveState
             this.lights = lights;
         }
 
-        private Scene() : this(new Dictionary<string, ActorData>(), new Dictionary<string, ItemData>(), new Dictionary<string, LightData>(), new List<CamData>())
+        public Scene() : this(new Dictionary<string, ActorData>(), new Dictionary<string, ItemData>(), new Dictionary<string, LightData>(), new List<CamData>())
         {
         }
 
@@ -124,6 +124,7 @@ namespace SceneSaveState
                 catch (Exception e)
                 {
                     SceneConsole.Instance.game.GetLogger.LogError($"Error occurred when importing Actor with id {actid}" + e.ToString());
+                    SceneConsole.Instance.game.GetLogger.LogMessage($"Missing actor with id {actid}");
                     game.LoadTrackedActorsAndProps();
                 }
             }
@@ -142,6 +143,7 @@ namespace SceneSaveState
                 {
                     game.GetLogger.LogError($"Error occurred when importing Item with id {propid}" + e.ToString());
                     game.LoadTrackedActorsAndProps();
+                    SceneConsole.Instance.game.GetLogger.LogMessage($"Missing item with id {propid}");
                 }
             }
             foreach (var lightid in this.lights.Keys)
@@ -158,6 +160,7 @@ namespace SceneSaveState
                 catch (Exception e)
                 {
                     SceneConsole.Instance.game.GetLogger.LogError($"Error occurred when importing Item with id {lightid}" + e.ToString());
+                    SceneConsole.Instance.game.GetLogger.LogMessage($"Missing light with id {lightid}");
                     game.LoadTrackedActorsAndProps();
                 }
             }
