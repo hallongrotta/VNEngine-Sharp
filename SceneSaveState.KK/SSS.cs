@@ -40,7 +40,7 @@ namespace SceneSaveState
             UI.setWindowName(UI.windowindex);
 
             this.windowStyle = new GUIStyle("window");
-            this.windowCallback = new GUI.WindowFunction(UI.sceneConsoleWindowFunc);
+            this.windowCallback = UI.sceneConsoleWindowFunc;
             sceneConsoleSkinSetup();
         }
 
@@ -65,7 +65,7 @@ namespace SceneSaveState
         {
             if (SceneConsole.Instance.guiOnShow)
             {
-                GUILayout.Window(34652, this.windowRect, this.windowCallback, "sceneconsole");
+                windowRect = GUILayout.Window(34652, this.windowRect, this.windowCallback, "sceneconsole");
             }
         }
 
