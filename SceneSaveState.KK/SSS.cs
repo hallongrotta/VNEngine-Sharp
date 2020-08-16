@@ -53,7 +53,7 @@ namespace SceneSaveState
             var x = Screen.width - game.wwidth * 1.1f;
             var y = Screen.height - game.wheight - 600;
             var w = game.wwidth + 50;
-            var h = game.wheight + 400;
+            var h = game.wheight + 450;
             // game.windowRect = Rect(Screen.width / 2 - game.wwidth * 1.5, Screen.height - game.wheight - 500,
             //                        game.wwidth + 50, game.wheight + 400)
             this.windowRect = new Rect(x, y, w, h);
