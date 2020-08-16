@@ -1,5 +1,4 @@
-﻿using MessagePack;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,6 +10,21 @@ namespace VNEngine
 {
     public static partial class Utils
     {
+
+        public struct adv_properties
+        {
+            public string name;
+            public bool isTime;
+            public string time;
+            public bool isTAnimCam;
+            public bool isTHideUI;
+            public bool isTTimerNext;
+            public string tacStyle;
+            public string tacZOut;
+            public string tacRotX;
+            public string tacRotZ;
+            public bool keepcam;
+        }
 
         public static int vnge_version;
 
