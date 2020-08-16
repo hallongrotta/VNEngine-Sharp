@@ -209,25 +209,7 @@ namespace VNEngine
             this.updFunc = null;
             this.updFuncParam = "";
             this.timers = new Timer[8];
-
-            /* TODO
-
-            // preprocessing start options
-            if (this._vnButtons[0] == "autogames")
-            {
-                //self._vnButtons = []
-                //self._vnButtonsActions = []
-                //self.prepare_auto_games()
-                //self._vnButtons = ["All games list >>", "(hide this window)"]
-                this._vnButtons = new List<string> {
-                    "All games list >>",
-                    "Simple novels list >>",
-                    "(hide this window)"
-                };
-                this._vnButtonsActions = null;//new List<Action> { this.prepare_auto_games, this.game_start_fromfile, this._sup_hide_window }; TODO
-            }
-
-            */
+            
             this._vnStButtons = this._vnButtons;
             this._vnStText = this._vnText;
             this.maxBtnsBeforeSeparator = 5;
@@ -338,11 +320,14 @@ namespace VNEngine
             //if self.windowStyle:
             //    GUI.skin.window = self.windowStyle
             //BaseController.OnGUI(self)
-            if (!this.visible)
+            if (visible)
+            {
+                windowRect = GUI.Window(0, this.windowRect, this.windowCallback, this.windowName, this.windowStyle);
+            }
+            else
             {
                 return;
             }
-            this.windowRect = GUI.Window(0, this.windowRect, this.windowCallback, this.windowName, this.windowStyle);
         }
 
 
@@ -1208,9 +1193,9 @@ namespace VNEngine
         }
 
         // ---- automaking list of games -----
-        public void prepare_auto_games()
+        public void prepare_auto_games(VNController game, int i)
         {
-            this.prepare_auto_games_prefix(this, "");
+            this.prepare_auto_games_prefix(game, "");
         }
 
         public void prepare_auto_games_prefix(VNController game, string prefix)
@@ -1628,7 +1613,6 @@ namespace VNEngine
         {
             this.skin = skin;
             this.skin.setup(this);
-            this.visible = true;
         }
 
         public void skin_set_byname(string skinname)
