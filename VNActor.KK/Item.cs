@@ -14,46 +14,46 @@ namespace VNActor
         public struct Panel
         {
             [Key(0)]
-            internal string filepath;
+            public string filepath;
             [Key(1)]
-            internal bool clamp;
+            public bool clamp;
         }
 
         [MessagePackObject]
         public struct PanelDetail_s
         {
             [Key(0)]
-            internal Color color;
+            public Color color;
             [Key(1)]
-            internal float ut;
+            public float ut;
             [Key(2)]
-            internal float vt;
+            public float vt;
             [Key(3)]
-            internal float us;
+            public float us;
             [Key(4)]
-            internal float vs;
+            public float vs;
             [Key(5)]
-            internal float rot;
+            public float rot;
         }
 
         [MessagePackObject]
         public struct Emission_s
         {
             [Key(0)]
-            internal Color color;
+            public Color color;
             [Key(1)]
-            internal float power;
+            public float power;
         }
 
         [MessagePackObject]
         public struct Pattern
         {
             [Key(0)]
-            internal int key;
+            public int key;
             [Key(1)]
-            internal string filepath;
+            public string filepath;
             [Key(2)]
-            internal bool clamp;
+            public bool clamp;
         }
 
 
@@ -61,26 +61,26 @@ namespace VNActor
         public struct PatternDetail_s
         {
             [Key(0)]
-            internal Color color;
+            public Color color;
             [Key(1)]
-            internal float ut;
+            public float ut;
             [Key(2)]
-            internal float vt;
+            public float vt;
             [Key(3)]
-            internal float us;
+            public float us;
             [Key(4)]
-            internal float vs;
+            public float vs;
             [Key(5)]
-            internal float rot;
+            public float rot;
         }
 
         [MessagePackObject]
         public struct Line_s
         {
             [Key(0)]
-            internal Color color;
+            public Color color;
             [Key(1)]
-            internal float lineWidth;
+            public float lineWidth;
         }
 
         [MessagePackObject(keyAsPropertyName: true)]
@@ -88,9 +88,9 @@ namespace VNActor
         {
             // Item
             public bool visible;
-            public Vector3 Position { get; }
-            public Vector3 Rotation { get; }
-            public Vector3 Scale { get; }
+            public Vector3 position;
+            public Vector3 rotation;
+            public Vector3 scale;
             public Dictionary<int, Color> color;
             public float? alpha;
             public Panel? pnl_set;
@@ -119,9 +119,9 @@ namespace VNActor
             {
                 // export full status of prop
                 visible = p.visible;
-                Position = p.pos;
-                Rotation = p.rot;
-                Scale = p.scale;
+                position = p.pos;
+                rotation = p.rot;
+                scale = p.scale;
                 if (p.isAnime)
                 {
                     anim_spd = p.anime_speed;
@@ -706,9 +706,9 @@ namespace VNActor
         {
             // export full status of prop
             visible = p.visible;
-            pos = p.Position;
-            rot = p.Rotation;
-            scale = p.Scale;
+            pos = p.position;
+            rot = p.rotation;
+            scale = p.scale;
             if (p.anim_spd is float f)
             {
                 anime_speed = f;

@@ -17,7 +17,7 @@ namespace VNActor
 
         public static void prop_move(Item prop, ItemData param)
         {
-            prop_move(prop, param.Position);
+            prop_move(prop, param.position);
         }
 
         public static void prop_move(Item prop, Vector3 param)
@@ -30,7 +30,7 @@ namespace VNActor
 
         public static void prop_move_to(Item prop, ItemData param)
         {
-            prop_move_to(prop, param.Position);
+            prop_move_to(prop, param.position);
         }
 
         public static void prop_move_to(Item prop, Vector3 param)
@@ -40,7 +40,7 @@ namespace VNActor
 
         public static void prop_rotate(Item prop, ItemData param)
         {
-            prop_rotate(prop, param.Rotation);
+            prop_rotate(prop, param.rotation);
         }
 
         public static void prop_rotate(Item prop, Vector3 param)
@@ -53,7 +53,7 @@ namespace VNActor
 
         public static void prop_rotate_to(Item prop, ItemData param)
         {
-            prop_rotate_to(prop, param.Rotation);
+            prop_rotate_to(prop, param.rotation);
         }
 
         public static void prop_rotate_to(Item prop, Vector3 param)
@@ -63,7 +63,7 @@ namespace VNActor
 
         public static void prop_scale_to(Item prop, ItemData param)
         {
-            prop_scale_to(prop, param.Scale);
+            prop_scale_to(prop, param.scale);
         }
 
         public static void prop_scale_to(Item prop, Vector3 param)

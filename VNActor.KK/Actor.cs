@@ -1,9 +1,11 @@
 ﻿using MessagePack;
+using Sirenix.OdinInspector.Demos;
 using Studio;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 
 namespace VNActor
@@ -15,8 +17,8 @@ namespace VNActor
 
         public struct IK_node_s
         {
-            internal Vector3 pos;
-            internal Vector3? rot;
+            public Vector3 pos;
+            public Vector3? rot;
         }
 
         [Serializable]
@@ -150,6 +152,17 @@ namespace VNActor
             {
 
             }
+            public ActorData(Actor a, ActorData prevStatus) : this(a)
+            {
+                if (Utils.FKDictionariesEqual(fk, prevStatus.fk))
+                {
+                    fk = null;
+                }
+                if (Utils.IKDictionariesEqual(ik, prevStatus.ik))
+                {
+                    ik = null;
+                }
+            }     
 
             public ActorData(Actor a)
             {
@@ -328,7 +341,6 @@ namespace VNActor
                     ChaFileDefine.CoordinateType coordinateType = this.coordinate_type_int_to_enum(value);
                     this.objctrl.charInfo.ChangeCoordinateTypeAndReload(coordinateType);
                 }
-
             }
             get
             {
@@ -506,7 +518,7 @@ namespace VNActor
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine(String.Format("Error set kinematic to 3(IK&FK), when ActiveFK[%d: {0}]. Error message = {1}", i, FKCtrl.parts[i].ToString(), e.ToString()));
+                        Console.WriteLine(String.Format($"Error set kinematic to 3(IK&FK), when ActiveFK[{i}: {FKCtrl.parts[i]}]. Error message = {e}"));
                     }
                 }
                 // call ActiveKinematicMode to set pvCopy?
@@ -520,9 +532,9 @@ namespace VNActor
                     {
                         this.objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.IK, false, force);
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
-                        Console.WriteLine("Error set kinematic to 2(FK), when clear IK");
+                        Console.WriteLine($"Error set kinematic to 2(FK), when clear IK. Error message = {e}");
                     }
                 }
                 if (!this.objctrl.oiCharInfo.enableFK)
@@ -531,9 +543,9 @@ namespace VNActor
                     {
                         this.objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.FK, true, force);
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
-                        Console.WriteLine("Error set kinematic to 2(FK), when set FK");
+                        Console.WriteLine($"Error set kinematic to 2(FK), when set FK. Error message = {e}");
                     }
                 }
             }
@@ -545,9 +557,9 @@ namespace VNActor
                     {
                         this.objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.FK, false, force);
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
-                        Console.WriteLine("Error set kinematic to 1(IK), when clear FK");
+                        Console.WriteLine($"Error set kinematic to 1(IK), when clear FK. Error message = {e}");
                     }
                 }
                 if (!this.objctrl.oiCharInfo.enableIK)
@@ -556,9 +568,9 @@ namespace VNActor
                     {
                         this.objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.IK, true, force);
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
-                        Console.WriteLine("Error set kinematic to 1(IK), when set IK");
+                        Console.WriteLine($"Error set kinematic to 1(IK), when set IK. Error message = {e}");
                     }
                 }
             }
@@ -570,9 +582,9 @@ namespace VNActor
                     {
                         this.objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.IK, false, force);
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
-                        Console.WriteLine("Error set kinematic to 0(None), when clear IK");
+                        Console.WriteLine($"Error set kinematic to 0(None), when clear IK. Error message = {e}");
                     }
                 }
                 if (this.objctrl.oiCharInfo.enableFK)
@@ -581,9 +593,9 @@ namespace VNActor
                     {
                         this.objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.FK, false, force);
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
-                        Console.WriteLine("Error set kinematic to 0(None), when clear FK");
+                        Console.WriteLine($"Error set kinematic to 0(None), when clear FK. Error message = {e}");
                     }
                 }
             }
@@ -823,6 +835,20 @@ namespace VNActor
         public IDataClass export_full_status()
         {
             return new ActorData(this);
+        }
+
+        public void import_status(ActorData a, ActorData prevStatus)
+        {
+            if (a.fk is null)
+            {
+                a.fk = prevStatus.fk;
+            }
+            if (a.ik is null)
+            {
+                a.ik = prevStatus.ik;
+            }
+
+            import_status(a);
         }
 
         public void import_status(ActorData a)
