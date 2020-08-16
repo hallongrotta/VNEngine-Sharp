@@ -144,7 +144,7 @@ namespace VNActor
             [Key("nippleHardness")]
             public float nippleHardness;
             [Key("neck")]
-            public string neck;
+            public byte[] neck;
             [Key("shoesType")]
             public int shoesType;
 
@@ -686,7 +686,7 @@ namespace VNActor
             }
         }
 
-        public string get_look_neck_full2()
+        public byte[] get_look_neck_full2()
         {
             // needed only to save Fixed state
             if (this.look_neck == 4)
@@ -696,15 +696,15 @@ namespace VNActor
                 this.objctrl.neckLookCtrl.SaveNeckLookCtrl(binaryWriter);
                 binaryWriter.Close();
                 memoryStream.Close();
-                return Utils.bytearray_to_str64(memoryStream.ToArray());
+                return memoryStream.ToArray();
             }
             else
             {
-                return "";
+                return null;
             }
         }
 
-        public void set_look_neck_full2(string str64)
+        public void set_look_neck_full2(byte[] str64)
         {
             // needed only to set Fixed state
             if (str64.Length > 0)
@@ -715,9 +715,8 @@ namespace VNActor
             if (this.look_neck == 4)
             {
                 // print lst
-                var arrstate = Utils.str64_to_bytearray(str64);
                 // print arrstate
-                var binaryReader = new BinaryReader(new MemoryStream(arrstate));
+                var binaryReader = new BinaryReader(new MemoryStream(str64));
                 this.objctrl.neckLookCtrl.LoadNeckLookCtrl(binaryReader);
             }
         }
