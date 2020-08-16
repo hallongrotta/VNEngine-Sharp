@@ -66,13 +66,24 @@ namespace SceneSaveState
             var strprops = Utils.SerializeData(this.props);
             var strcams = Utils.SerializeData(this.cams);
             var strlights = Utils.SerializeData(this.lights);
+            byte[] strsys = null;
+            if (this.sys != null)
+            {
+                strsys = Utils.SerializeData(this.sys);
+            }
+
 
             Dictionary<string, ActorData> copied_actors = Utils.DeserializeData<Dictionary<string, ActorData>>(stractors);
             Dictionary<string, ItemData> copied_props = Utils.DeserializeData<Dictionary<string, ItemData>>(strprops);
             Dictionary<string, LightData> copied_lights = Utils.DeserializeData<Dictionary<string, LightData>>(strlights);
             List<CamData> copied_cams = Utils.DeserializeData<List<CamData>>(strcams);
-
-            return new Scene(copied_actors, copied_props, copied_lights, copied_cams);
+            var copied_scene = new Scene(copied_actors, copied_props, copied_lights, copied_cams);
+            if (this.sys != null && strsys != null)
+            {
+                SystemData copied_sys = Utils.DeserializeData<SystemData>(strsys);
+                copied_scene.sys = copied_sys;
+            }
+            return copied_scene;
         }
 
 
