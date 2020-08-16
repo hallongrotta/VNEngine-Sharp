@@ -1022,19 +1022,18 @@ namespace SceneSaveState
                 // found
                 //if fld != None:
                 //    fld.delete()
-                var fldoldname = fld.name;
-                var lastelems = fldoldname[(VNNeoController.actor_folder_prefix + actid).Length];
+                string fldoldname = fld.name;
+                string lastelems = fldoldname.Substring((VNNeoController.actor_folder_prefix + actid).Length);
                 //print lastelems
                 fld.name = VNNeoController.actor_folder_prefix + toid + lastelems;
                 //
-                foreach (var i in Enumerable.Range(0, block.Count))
+                for (int i = 0; i < block.Count; i++)
                 {
                     var scene = block[i];
                     scene.actors[toid] = scene.actors[actid];
                     scene.actors.Remove(actid);
-                    foreach (var camid in Enumerable.Range(0, scene.cams.Count))
+                    foreach (var cam in scene.cams)
                     {
-                        var cam = scene.cams[camid];
                         var info = cam.addata;
                         if (info.whosay == actid)
                         {
