@@ -113,6 +113,7 @@ namespace SceneSaveState
                 ActorData char_status = this.actors[actid];
                 try
                 {
+                    /* TODO
                     if (SceneConsole.Instance != null)
                     {
                         if (SceneConsole.Instance.skipClothesChanges)
@@ -122,6 +123,7 @@ namespace SceneSaveState
                             char_status.Remove("cloth_type");
                         }
                     }
+                    */
                 }
                 catch (Exception)
                 {

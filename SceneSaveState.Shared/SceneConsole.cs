@@ -10,12 +10,10 @@ using System.IO;
 using Studio;
 using static VNActor.Actor;
 using static VNActor.Item;
-using RootMotion;
 using System.Text;
 using KKAPI.Studio.SaveLoad;
 using KKAPI.Utilities;
 using ExtensibleSaveFormat;
-using NodeCanvas.Tasks.Conditions;
 using static VNActor.Light;
 using static VNEngine.Utils;
 using static VNEngine.VNCamera.VNData;
@@ -639,10 +637,12 @@ namespace SceneSaveState
                     Actor actor = (Actor)actors[key];
                     if (actor.text_name == chara.text_name)
                     {
+                        /* TODO
                         foreach (var keyEx in exclude)
                         {
                             tmp_status.Remove(keyEx);
                         }
+                        */
                         actor.import_status(tmp_status);
                         return;
                     }
@@ -1805,7 +1805,7 @@ namespace SceneSaveState
                     byte[] sceneData = MessagePackSerializer.Serialize(block.ExportScenes(), MessagePack.Resolvers.ContractlessStandardResolver.Instance);
                     pluginData.data["scenes"] = sceneData;
                     SetExtendedData(pluginData);
-                    logger.Log(LogLevel.Message, $"Saved {((double)sceneData.Length / 1000):N} Kb of scene state data.");
+                    logger.LogMessage($"Saved {((double)sceneData.Length / 1000):N} Kb of scene state data.");
                 } catch (Exception e)
                 {
                     logger.LogError("Error occurred while saving scene data: " + e.ToString());
@@ -1831,7 +1831,7 @@ namespace SceneSaveState
                     {
                         var scenes = MessagePackSerializer.Deserialize<Scene[]>(sceneData, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
                         block = new SceneManager(scenes);
-                        logger.Log(LogLevel.Message, $"Loaded {((double)sceneData.Length / 1000):N} Kb of scene state data.");
+                        logger.LogMessage($"Loaded {((double)sceneData.Length / 1000):N} Kb of scene state data.");
                     }
                     catch (Exception e)
                     {
