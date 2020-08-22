@@ -707,7 +707,7 @@ namespace VNActor
         public void set_look_neck_full2(byte[] str64)
         {
             // needed only to set Fixed state
-            if (str64.Length > 0)
+            if (!str64.IsNullOrEmpty())
             {
                 // if non-fixed-state - move to it!
                 this.look_neck = 4;
@@ -864,7 +864,15 @@ namespace VNActor
             facered = a.faceRedness;
             son = a.son;
 
-            setAnimate(a.anim.group, a.anim.category, a.anim.no);
+            if (a.anim.normalizedTime is float time)
+            {
+                setAnimate(a.anim.group, a.anim.category, a.anim.no, time);
+            }
+            else
+            {
+                setAnimate(a.anim.group, a.anim.category, a.anim.no);
+            }
+
 
             //(height, breast) = a.animeOption;
 
