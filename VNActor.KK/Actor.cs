@@ -13,16 +13,18 @@ namespace VNActor
 {
     // Koikatsu Actor
     public partial class Actor
-        : IVNObject
+        : HSNeoOCI, IVNObject
     {
 
         [MessagePackObject(keyAsPropertyName: true)]
         public class ActorData : NEOActorData, IDataClass
         {        
-            [Key("shoesType")]
+
+            [Key("ShoesType")]
             public int shoesType;
-            [Key("coordinateType")]
+            [Key("CoordinateType")]
             public int coordinateType;
+            [Key("TearLevel")]
             public int tearLevel;
 
             public ActorData() : base()
@@ -30,6 +32,13 @@ namespace VNActor
 
             }
 
+            override public void Apply(Actor a)
+            {
+                base.Apply(a);
+                a.tearLevel = tearLevel;
+                a.coordinate_type = coordinateType;
+                a.shoes_type = shoesType;
+            }
 
             public ActorData(Actor a, ActorData prevStatus) : this(a)
             {
@@ -203,23 +212,6 @@ namespace VNActor
             this.objctrl.ShowAccessory(accIndex, accShow);
         }
 
-        public void SetAccessory(bool accShow)
-        {
-            // param format 1: set one accessory
-            // accIndex: 0~19
-            // accShow: 0(hide)/1(visible)
-            // param format 2: set all accessory, like the return value of get_accessory()
-            // accIndex: 0/1 for each acessories in tuple(20)
-            // accShow: must be None
-            // param format 3: hide/show all accessory
-            // accIndex: 0/1 for all
-            // accShow: must be None
-            for (int i = 0; i < 20; i++)
-            {
-                this.objctrl.ShowAccessory(i, accShow);
-            }
-        }
-
         public void SetAccessory(bool[] accIndex)
         {
             for (int i = 0; i < accIndex.Length; i++)
@@ -234,6 +226,13 @@ namespace VNActor
             {
                 // return accessory state on/off in tuple(20)
                 return this.objctrl.charFileStatus.showAccessory;
+            }
+            set
+            {
+                for (int i = 0; i < 20; i++)
+                {
+                    this.objctrl.ShowAccessory(i, value[i]);
+                }
             }
         }
 
@@ -693,75 +692,7 @@ namespace VNActor
 
         public void import_status(ActorData a)
         {
-            visible = a.visible;
-            pos = a.position;
-            rot = a.rotation;
-            scale = a.scale;
-            animeSpeed = a.animeSpeed;
-            animePattern = a.animePattern;
-            tearLevel = a.tearLevel;
-            anime_forceloop = a.forceLoop;
-            SetAccessory(a.accessoryStatus);
-            facered = a.faceRedness;
-            son = a.son;
-
-            if (a.anim.normalizedTime is float time)
-            {
-                setAnimate(a.anim.group, a.anim.category, a.anim.no, time);
-            }
-            else
-            {
-                setAnimate(a.anim.group, a.anim.category, a.anim.no);
-            }
-
-
-            //(height, breast) = a.animeOption;
-
-            coordinate_type = a.coordinateType;
-            setCloth(a.cloth);
-
-            juice = a.juice;
-            nipple_stand = a.nippleHardness;
-
-            simple = a.simple;
-            simple_color = a.simpleColor;
-
-            look_eye_ptn = a.eyeLookPattern;
-            look_eye_pos = a.eyeLookPos;
-            look_neck = a.neckPattern;
-
-            look_neck_full2 = a.neck;
-            eyebrow_ptn = a.eyebrowPattern;
-            eyes_ptn = a.eyePattern;
-            eyes_open = a.eyesOpen;
-            eyes_blink = a.blinking;
-            mouth_ptn = a.mouthPattern;
-            mouth_open = a.mouthOpen;
-            lip_sync = a.lipSync;
-            hand_ptn = a.handMotions;
-            set_kinematic(a.kinematicType);
-
-            if (a.kinematicType == KinematicMode.IK)
-            {
-                set_IK_active(a.ikActive);
-                import_ik_target_info(a.ik);
-            }
-            else if (a.kinematicType == KinematicMode.FK)
-            {
-                set_FK_active(a.fkActive);
-                import_fk_bone_info(a.fk);
-            }
-            else if (a.kinematicType == KinematicMode.IKFK)
-            {
-                set_IK_active(a.ikActive);
-                import_ik_target_info(a.ik);
-                set_FK_active(a.fkActive);
-                import_fk_bone_info(a.fk);
-            }
-
-            //voice_lst = a.voiceList;
-            voice_repeat = a.voiceRepeat;
-            shoes_type = a.shoesType;
+            a.Apply(this);
         }
 
         public int h_partner(int hType = 0, int hPosition = 0)

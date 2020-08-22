@@ -14,156 +14,21 @@ namespace VNActor
     public partial class Actor : IVNObject
     {
 
-        public class ActorData : IDataClass
+        public class ActorData : NEOActorData, IDataClass
         {
-            internal float tearLevel;
-            internal float tuya;
-            internal float wetness;
+            public float tearLevel;
+            public float tuya;
+            public float wetness;
 
-            [Key("visible")]
-            public bool visible;
-            [Key("position")]
-            public Vector3 position;
-            [Key("scale")]
-            public Vector3 scale;
-            [Key("rotation")]
-            public Vector3 rotation;
-            [Key("voiceRepeat")]
-            public int voiceRepeat;
-            //public Itembool shoesOn;
-            [Key("voiceList")]
-            public List<int[]> voiceList;
-            [Key("fk")]
-            public Dictionary<int, Vector3> fk;
-            [Key("fkActive")]
-            public bool[] fkActive;
-            [Key("kinematicType")]
-            public KinematicMode kinematicType;
-            [Key("handMotions")]
-            public Hands_s handMotions;
-            [Key("ik")]
-            public Dictionary<string, IK_node_s> ik;
-            [Key("ikActive")]
-            public bool[] ikActive;
-            [Key("lipSync")]
-            public bool lipSync;
-            [Key("mouthOpen")]
-            public float mouthOpen;
-            [Key("mouthPattern")]
-            public int mouthPattern;
-            [Key("blinking")]
-            public bool blinking;
-            [Key("eyesOpen")]
-            public float eyesOpen;
-            [Key("eyePattern")]
-            public int eyePattern;
-            [Key("eyebrowPattern")]
-            public int eyebrowPattern;
-            [Key("neckPattern")]
-            public int neckPattern;
-            [Key("eyeLookPos")]
-            public Vector3 eyeLookPos;
-            [Key("eyeLookPattern")]
-            public int eyeLookPattern;
-            [Key("son")]
-            public Son_s son;
-            [Key("anim")]
-            public Animation_s anim;
-            [Key("simple")]
-            public bool simple;
-            [Key("simpleColor")]
-            public Color simpleColor;
-            [Key("juice")]
-            public byte[] juice;
-            //public bool showAllAccessories;
-            [Key("accessoryStatus")]
-            public bool[] accessoryStatus;
-            [Key("cloth")]
-            public byte[] cloth;
-            [Key("animeSpeed")]
-            public float animeSpeed;
-            [Key("forceLoop")]
-            public bool forceLoop;
-            [Key("animePattern")]
-            public float animePattern;
-            [Key("animeOption")]
-            public AnimeOption_s animeOption;
-            [Key("faceRedness")]
-            public float faceRedness;
-            [Key("nippleHardness")]
-            public float nippleHardness;
-            [Key("neck")]
-            public byte[] neck;
 
-            public ActorData(Actor a)
+            public ActorData() : base() { }
+
+            public ActorData(Actor a) : base(a)
             {
-
-                visible = a.visible;
-                position = a.pos;
-                rotation = a.rot;
-                scale = a.scale;
-                animeSpeed = a.animeSpeed;
-                animePattern = a.animePattern;
-                tearLevel = a.tearLevel;
-                forceLoop = a.anime_forceloop;
-
-                accessoryStatus = new bool[a.accessory.Length];
-                Array.Copy(a.accessory, accessoryStatus, accessoryStatus.Length);
-
-                faceRedness = a.facered;
-                son = a.son;
-
-                anim = a.animate;
-
-                animeOption = new AnimeOption_s { height = a.height, breast = a.breast };
-
-                cloth = a.get_cloth();
-
-                juice = a.juice;
-                nippleHardness = a.nipple_stand;
-
-                simple = a.simple;
-                simpleColor = a.simple_color;
-
-                eyeLookPattern = a.look_eye_ptn;
-                eyeLookPos = a.look_eye_pos;
-                neckPattern = a.look_neck;
-
-                neck = a.look_neck_full2;
-                eyebrowPattern = a.eyebrow_ptn;
-                eyePattern = a.eyes_ptn;
-                eyesOpen = a.eyes_open;
-                blinking = a.eyes_blink;
-                mouthPattern = a.mouth_ptn;
-                mouthOpen = a.mouth_open;
-                lipSync = a.lip_sync;
-                handMotions = a.hand_ptn;
-                kinematicType = a.kinematic;
-
-                fkActive = null;
-                fk = null;
-                ikActive = null;
-                ik = null;
-
-                if (kinematicType == KinematicMode.FK || kinematicType == KinematicMode.IKFK)
-                {
-                    fkActive = new bool[a.get_FK_active().Length];
-                    Array.Copy(a.get_FK_active(), fkActive, fkActive.Length);
-                    fk = a.export_fk_bone_info();
-                }
-                if (kinematicType == KinematicMode.IK || kinematicType == KinematicMode.IKFK)
-                {
-                    ikActive = new bool[a.get_IK_active().Length];
-                    Array.Copy(a.get_IK_active(), ikActive, ikActive.Length);
-                    ik = a.export_ik_target_info();
-                }
-
-                voiceList = a.voice_lst;
-                voiceRepeat = a.voice_repeat;
-
 
                 tuya = a.tuya;
                 wetness = a.wet;
+                tearLevel = a.tearLevel;
 
                 /*
                 // ext data, enable by ini setting
@@ -198,6 +63,14 @@ namespace VNActor
                 return fs;
                 */
             }
+
+            override public void Apply(Actor a)
+            {
+                base.Apply(a);
+                a.tuya = tuya;
+                a.wet = wetness;
+                a.tearLevel = tearLevel;
+            }
         }
 
         public float height
@@ -218,10 +91,13 @@ namespace VNActor
             }
         }
 
-        public byte[] get_cloth()
+        public byte[] cloth
         {
-            // return state index of (top, bottom, bra, shorts, grove, panst, sock, shoes) in tuple
-            return this.objctrl.charFileStatus.clothesState;
+            get
+            {
+                // return state index of (top, bottom, bra, shorts, grove, panst, sock, shoes) in tuple
+                return this.objctrl.charFileStatus.clothesState;
+            }
         }
 
         public void set_accessory(int accIndex, bool accShow)
@@ -932,9 +808,17 @@ namespace VNActor
             chara.tearLevel = param.tearLevel;
         }
 
+        public void import_status(ActorData a)
+        {
+            a.Apply(this);
+        }
+
         public void import_status(IDataClass status)
         {
-            throw new NotImplementedException();
+            if (status is ActorData a)
+            {
+                import_status(a);
+            }
         }
 
         /* TODO

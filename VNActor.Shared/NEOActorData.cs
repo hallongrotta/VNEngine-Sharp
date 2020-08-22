@@ -151,5 +151,75 @@ namespace VNActor
             voiceList = a.voice_lst;
             voiceRepeat = a.voice_repeat;            
         }
+
+        virtual public void Apply(Actor a)
+        {
+            a.visible = visible;
+            a.pos = position;
+            a.rot = rotation;
+            a.scale = scale;
+            a.animeSpeed = animeSpeed;
+            a.animePattern = animePattern;
+            a.anime_forceloop = forceLoop;
+            a.accessory = accessoryStatus;
+            a.facered = faceRedness;
+            son = a.son;
+
+            if (anim.normalizedTime is float time)
+            {
+                a.setAnimate(anim.group, anim.category, anim.no, time);
+            }
+            else
+            {
+                a.setAnimate(anim.group, anim.category, anim.no);
+            }
+
+
+            //(height, breast) = a.animeOption;
+
+            a.setCloth(a.cloth);
+
+            a.juice = juice;
+            a.nipple_stand = nippleHardness;
+
+            a.simple = simple;
+            a.simple_color = simpleColor;
+
+            a.look_eye_ptn = eyeLookPattern;
+            a.look_eye_pos = eyeLookPos;
+            a.look_neck = neckPattern;
+
+            a.look_neck_full2 = neck;
+            a.eyebrow_ptn = eyebrowPattern;
+            a.eyes_ptn = eyePattern;
+            a.eyes_open = eyesOpen;
+            a.eyes_blink = blinking;
+            a.mouth_ptn = mouthPattern;
+            a.mouth_open = mouthOpen;
+            a.lip_sync = lipSync;
+            a.hand_ptn = handMotions;
+            a.set_kinematic(kinematicType);
+
+            if (kinematicType == KinematicMode.IK)
+            {
+                a.set_IK_active(ikActive);
+                a.import_ik_target_info(ik);
+            }
+            else if (kinematicType == KinematicMode.FK)
+            {
+                a.set_FK_active(fkActive);
+                a.import_fk_bone_info(fk);
+            }
+            else if (kinematicType == KinematicMode.IKFK)
+            {
+                a.set_IK_active(ikActive);
+                a.import_ik_target_info(ik);
+                a.set_FK_active(fkActive);
+                a.import_fk_bone_info(fk);
+            }
+
+            //voice_lst = voiceList;
+            a.voice_repeat = voiceRepeat;
+        } 
     }
 }
