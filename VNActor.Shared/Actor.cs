@@ -1283,13 +1283,7 @@ get
             this.objctrl.SetClothesState(clothIndex, clothState);
         }
 
-        public void setCloth(byte[] clothIndex)
-        {
-            for (int i = 0; i < clothIndex.Length; i++)
-            {
-                this.objctrl.SetClothesState(i, clothIndex[i]);
-            }
-        }
+
 
         // face sliders
     }

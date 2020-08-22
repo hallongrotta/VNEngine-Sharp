@@ -177,7 +177,7 @@ namespace VNActor
 
             //(height, breast) = a.animeOption;
 
-            a.setCloth(a.cloth);
+            a.cloth = cloth;
 
             a.juice = juice;
             a.nipple_stand = nippleHardness;

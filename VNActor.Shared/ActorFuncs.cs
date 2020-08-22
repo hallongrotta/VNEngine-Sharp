@@ -89,18 +89,20 @@ namespace VNActor
             //chara.load_clothes_file(param.clothLoad);
         }
 
+        /* TODO
         public static void char_cloth(Actor chara, ActorData param)
         {
             // param = (clothIndex, clothState)
             chara.setCloth(param.cloth);
         }
+        */
 
         public static void char_all_clothes(Actor chara, ActorData param)
         {
             // param = 0(all), 1(half), 2(nude)
             // or
             // param = (top, bottom, bra, shorts, grove, panst, sock, shoe)
-            chara.setCloth(param.cloth);
+            chara.cloth = param.cloth;
         }
 
         public static void char_juice(Actor chara, ActorData param)
