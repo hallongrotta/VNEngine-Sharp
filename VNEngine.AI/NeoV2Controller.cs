@@ -1,15 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using BepInEx;
 using Studio;
 using UnityEngine;
 using static VNEngine.Utils;
 
 namespace VNEngine
 {
+    [BepInProcess(Constants.StudioProcessName)]
+    //[BepInDependency(GUID)]
+    [BepInPlugin(GUID, PluginName, Version)]
     public class NeoV2Controller
         : VNNeoController
     {
+
+        new public static NeoV2Controller Instance { get; private set; }
 
         public NeoV2Controller(List<Button_s> vnButtonsStart) : base()
         {

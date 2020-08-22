@@ -1,6 +1,7 @@
 ﻿using Studio;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using VNActor;
 using VNEngine;
@@ -16,7 +17,7 @@ namespace VNEngine
             // set map option visible: param = 1/0
             if (game.isNEOV2)
             {
-                map = Map.Instance;
+                map = Map.Instance;         
                 map.VisibleOption = param;
             }
             else
@@ -25,6 +26,36 @@ namespace VNEngine
             }
         }
 
+        public static void sys_fm_png(NeoV2Controller game, string param = "")
+        {
+            // set frame png, param = png file name, CharaStudio only
+
+                var pngName = param.Trim();
+                if (pngName != "")
+                {
+                    if (!pngName.ToLower().EndsWith(".png"))
+                    {
+                        pngName += ".png";
+                    }
+                    // load png in game scene folder if existed
+                    var pngInScene = Utils.combine_path(game.get_scene_dir(), game.sceneDir, pngName);
+                    if (File.Exists(pngInScene))
+                    {
+                        var pngRevPath = Utils.combine_path("..", "studio", "scene", game.sceneDir, pngName);
+                        game.scene_set_framefile(pngRevPath);
+                        return;
+                    }
+                    // load png in game default background folder if existed
+                    var pngInDefault = Path.GetFullPath(Utils.combine_path(Application.dataPath, "..", "UserData", "frame", pngName));
+                    if (File.Exists(pngInDefault))
+                    {
+                        game.scene_set_framefile(pngName);
+                        return;
+                    }
+                }
+                // remove if param == "" or file not existed
+                game.scene_set_framefile("");
+        }
 
         public static void sys_map_rot(VNNeoController game, Vector3 param)
         {
@@ -45,7 +76,31 @@ namespace VNEngine
             }
         }
 
-        public struct SystemData : IDataClass
+        public static void sys_map_light(NeoV2Controller game, bool param)
+        {
+            game.studio_scene.mapInfo.light = param;
+        }
+
+        static public IDataClass export_sys_status(VNNeoController game)
+        {
+            return new SystemData((NeoV2Controller)game);
+        }
+
+        public static void import_status(SystemData s)
+        {
+            var game = NeoV2Controller.Instance;
+            sys_bgm(game, s);
+            sys_wav(game, s);
+            sys_map(game, s);
+            sys_map_pos(game, s);
+            sys_map_rot(game, s);
+            sys_map_option(game, s.map_opt);
+            sys_bg_png(game, s);
+            sys_fm_png(game, s.fm_png);
+            sys_char_light(game, s);
+        }
+
+        public class SystemData : IDataClass
         {
 
             public BGM_s bgm;

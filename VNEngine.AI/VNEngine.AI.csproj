@@ -38,6 +38,14 @@
       <HintPath>..\packages\IllusionLibs.BepInEx.Harmony.2.0.3.1\lib\net35\0Harmony.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="AIAPI, Version=1.13.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\IllusionModdingAPI.AIAPI.1.13.1\lib\net46\AIAPI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AI_ExtensibleSaveFormat, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ExtensibleSaveFormat.AIGirl.15.4.0\lib\net46\AI_ExtensibleSaveFormat.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\IllusionLibs.AIGirl.Assembly-CSharp.2020.5.29\lib\net46\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
@@ -82,8 +90,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Constants.cs" />
     <Compile Include="NeoV2Controller.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SSS.cs" />
     <Compile Include="System.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -106,5 +116,6 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="..\VNEngine.Shared\VNEngine.Shared.projitems" Label="Shared" />
+  <Import Project="..\SceneSaveState.Shared\SceneSaveState.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
