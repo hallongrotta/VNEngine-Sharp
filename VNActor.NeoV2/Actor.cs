@@ -96,7 +96,14 @@ namespace VNActor
             get
             {
                 // return state index of (top, bottom, bra, shorts, grove, panst, sock, shoes) in tuple
-                return this.objctrl.charFileStatus.clothesState;
+                byte[] cloth = new byte[8];
+
+                for (int i = 0; i < 8; i++)
+                {
+                    cloth[i] = this.objctrl.charFileStatus.clothesState[i];
+                }
+
+                return cloth;
             }
         }
 

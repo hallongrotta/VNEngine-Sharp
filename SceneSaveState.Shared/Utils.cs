@@ -384,21 +384,21 @@ namespace SceneSaveState
             return null;
         }
 
-        public static List<List<Actor>> getSelectedChars(VNNeoController game)
+        public static List<List<VNActor.Actor>> getSelectedChars(VNNeoController game)
         {
             var mtreeman = game.studio.treeNodeCtrl;
-            var ar = new List<Actor>();
+            var ar = new List<VNActor.Actor>();
             foreach (var node in mtreeman.selectNodes)
             {
                 var ochar = HSNeoOCI.create_from_treenode(node);
                 if (ochar.objctrl is OCIChar)
                 {
-                    Actor chara = (Actor)ochar;
+                    VNActor.Actor chara = (VNActor.Actor)ochar;
                     ar.Add(chara);
                 }
             }
-            var am = new List<Actor>();
-            var af = new List<Actor>();
+            var am = new List<VNActor.Actor>();
+            var af = new List<VNActor.Actor>();
             foreach (var chara in ar)
             {
                 if (chara.sex == 0)
@@ -410,22 +410,22 @@ namespace SceneSaveState
                     af.Add(chara);
                 }
             }
-            return new List<List<Actor>> {
+            return new List<List<VNActor.Actor>> {
                 af,
                 am
             };
         }
 
-        public static Actor getSelectedChar(VNNeoController game)
+        public static VNActor.Actor getSelectedChar(VNNeoController game)
         {
             var mtreeman = game.studio.treeNodeCtrl;
-            var ar = new List<Actor>();
+            var ar = new List<VNActor.Actor>();
             foreach (var node in mtreeman.selectNodes)
             {
                 var ochar = HSNeoOCI.create_from_treenode(node);
                 if (ochar.objctrl is OCIChar)
                 {
-                    Actor chara = (Actor)ochar;
+                    VNActor.Actor chara = (VNActor.Actor)ochar;
                     ar.Add(chara);
                 }
             }
@@ -493,7 +493,7 @@ namespace SceneSaveState
         //     # else:
         //     # raise Exception("No folders selected")
         // chara functions
-        public static void char_import_status_diff_optimized(Actor chara, Actor.ActorData status)
+        public static void char_import_status_diff_optimized(VNActor.Actor chara, VNActor.Actor.ActorData status)
         {
             /* TODO
             var ofs = chara.export_full_status();

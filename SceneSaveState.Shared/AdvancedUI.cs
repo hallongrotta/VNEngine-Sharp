@@ -120,7 +120,7 @@ namespace SceneSaveState
                 var chara = Utils.getSelectedChar(Instance.game);
                 if (!(chara == null))
                 {
-                    VNActor.Actor.ActorData state = (Actor.ActorData)chara.export_full_status();
+                    VNActor.Actor.ActorData state = (VNActor.Actor.ActorData)chara.export_full_status();
                     var fk_dic = state.fk;
                     Console.WriteLine("fk_set = {");
                     foreach (KeyValuePair<int, Vector3> entry in fk_dic)

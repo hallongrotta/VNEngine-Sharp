@@ -32,6 +32,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SceneSaveState.KK", "SceneS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SceneSaveState.AI", "SceneSaveState.AI\SceneSaveState.AI.csproj", "{6BB3E3C0-F48F-41B1-94B0-290D866F2E92}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SceneSaveState.HS2", "SceneSaveState.HS2\SceneSaveState.HS2.csproj", "{E31D9B1E-BB35-473D-8F8C-12FB2740D2E9}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		VNEngine.Shared\VNEngine.Shared.projitems*{062d595d-8e9b-4149-a5a0-16e45773f9d6}*SharedItemsImports = 13
@@ -41,6 +43,7 @@ Global
 		VNActor.Shared\VNActor.Shared.projitems*{6621fc6c-9992-400a-862a-18dc2f855eda}*SharedItemsImports = 4
 		SceneSaveState.Shared\SceneSaveState.Shared.projitems*{6bb3e3c0-f48f-41b1-94b0-290d866f2e92}*SharedItemsImports = 4
 		VNEngine.Shared\VNEngine.Shared.projitems*{e1c9e23e-b127-4fcd-8200-e5c75648a27f}*SharedItemsImports = 4
+		SceneSaveState.Shared\SceneSaveState.Shared.projitems*{e31d9b1e-bb35-473d-8f8c-12fb2740d2e9}*SharedItemsImports = 4
 		VNActor.Shared\VNActor.Shared.projitems*{e687512c-010e-4f55-ac98-3e02bc89d60c}*SharedItemsImports = 4
 		SceneSaveState.Shared\SceneSaveState.Shared.projitems*{f04a21fc-c895-4f4d-a83d-9aec3b921d25}*SharedItemsImports = 4
 	EndGlobalSection
@@ -85,6 +88,10 @@ Global
 		{6BB3E3C0-F48F-41B1-94B0-290D866F2E92}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6BB3E3C0-F48F-41B1-94B0-290D866F2E92}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6BB3E3C0-F48F-41B1-94B0-290D866F2E92}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E31D9B1E-BB35-473D-8F8C-12FB2740D2E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E31D9B1E-BB35-473D-8F8C-12FB2740D2E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E31D9B1E-BB35-473D-8F8C-12FB2740D2E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E31D9B1E-BB35-473D-8F8C-12FB2740D2E9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

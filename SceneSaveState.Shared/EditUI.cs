@@ -228,7 +228,7 @@ namespace SceneSaveState
                 //         sc.warning_param = (sc.changeSceneChars, "Delete selected male character?", (0, "del"), False)
                 //     else:
                 //         sc.changeSceneChars(0, "del")
-                if (Instance.block.HasScenes && !Instance.camset.IsNullOrEmpty())
+                if (Instance.block.HasScenes && Instance.camset != null)
                 {
                     GUILayout.Space(25);
                     if (GUILayout.Button("Paste cam set"))

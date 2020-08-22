@@ -87,7 +87,7 @@ namespace SceneSaveState
                 //GUILayout.Label("  "+actorid+": "+actors[actorid].text_name)
                 //txt += "  "+actorid+": "+actors[actorid].text_name+"\n"
                 //GUILayout.Label(txt)
-                Actor actor = actors[actorid];
+                VNActor.Actor actor = actors[actorid];
                 render_ui_for_tracking(actorid, actor);
             }
             GUILayout.Label("Props:");

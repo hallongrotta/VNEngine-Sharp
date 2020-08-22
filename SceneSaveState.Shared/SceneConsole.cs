@@ -315,7 +315,7 @@ namespace SceneSaveState
             {
                 //print actprop
                 //if hasattr(actprop, 'as_prop'):
-                if (actprop is Actor chara)
+                if (actprop is VNActor.Actor chara)
                 {
                     //id = self.find_item_in_objlist(actprop.objctrl)
                 }
@@ -380,7 +380,7 @@ namespace SceneSaveState
             var objSave = new Dictionary<string, IDataClass>
             {
             };
-            foreach (Actor actprop in arSel)
+            foreach (VNActor.Actor actprop in arSel)
             {
                 //if isinstance(actprop, Actor):
                 var id = find_item_in_objlist(actprop.objctrl);
@@ -423,7 +423,7 @@ namespace SceneSaveState
             foreach (var node in mtreeman.selectNodes)
             {
                 var ochar = HSNeoOCI.create_from_treenode(node);
-                if (ochar is Actor chara)
+                if (ochar is VNActor.Actor chara)
                 {
                     ar.Add(chara);
                 }
@@ -628,13 +628,13 @@ namespace SceneSaveState
         public void copySelectedStatusToTracking(List<string> exclude)
         {
             var elem = HSNeoOCI.create_from_selected();
-            if (elem is Actor chara)
+            if (elem is VNActor.Actor chara)
             {
                 var tmp_status = chara.export_full_status();
                 var actors = game.scenef_get_all_actors();
                 foreach (var key in actors.Keys)
                 {
-                    Actor actor = (Actor)actors[key];
+                    VNActor.Actor actor = (VNActor.Actor)actors[key];
                     if (actor.text_name == chara.text_name)
                     {
                         /* TODO
@@ -658,9 +658,9 @@ namespace SceneSaveState
         public void copySelectedStatus()
         {
             var elem = HSNeoOCI.create_from_selected();
-            if (elem is Actor chara)
+            if (elem is VNActor.Actor chara)
             {
-                clipboard_status = ((Actor)chara).export_full_status();
+                clipboard_status = ((VNActor.Actor)chara).export_full_status();
             }
             else if (elem is HSNeoOCIProp prop)
             {
@@ -675,7 +675,7 @@ namespace SceneSaveState
         public void pasteSelectedStatus()
         {
             var elem = HSNeoOCI.create_from_selected();
-            if (elem is Actor chara)
+            if (elem is VNActor.Actor chara)
             {
                 chara.import_status(clipboard_status);
             }
@@ -692,7 +692,7 @@ namespace SceneSaveState
         public void copySelectedStatus2()
         {
             var elem = HSNeoOCI.create_from_selected();
-            if (elem is Actor chara)
+            if (elem is VNActor.Actor chara)
             {
                 clipboard_status2 = chara.export_full_status();
             }
@@ -709,7 +709,7 @@ namespace SceneSaveState
         public void pasteSelectedStatus2()
         {
             var elem = HSNeoOCI.create_from_selected();
-            if (elem is Actor chara)
+            if (elem is VNActor.Actor chara)
             {
                 chara.import_status((ActorData)clipboard_status2);
             }
@@ -821,11 +821,11 @@ namespace SceneSaveState
             }
         }
 
-        public void addSelectedToTrack(Actor chara)
+        public void addSelectedToTrack(VNActor.Actor chara)
         {
             var actors = game.scenef_get_all_actors();
 
-            foreach (Actor actor in actors.Values)
+            foreach (VNActor.Actor actor in actors.Values)
             {
                 if (actor.objctrl == chara.objctrl)
                 {
@@ -909,7 +909,7 @@ namespace SceneSaveState
                 show_blocking_message_time_sc("Nothing selected");
                 return;
             }
-            if (elem is Actor chara)
+            if (elem is VNActor.Actor chara)
             {
                 var actors = game.scenef_get_all_actors();
                 string id = "";
@@ -949,7 +949,7 @@ namespace SceneSaveState
                 show_blocking_message_time_sc("Nothing selected");
                 return;
             }
-            if (elem is Actor chara)
+            if (elem is VNActor.Actor chara)
             {
                 var actors = game.scenef_get_all_actors();
                 var id = "";
@@ -1824,7 +1824,7 @@ namespace SceneSaveState
             else
             {
                 byte[] sceneData = pluginData.data["scenes"] as byte[];
-                if (!sceneData.IsNullOrEmpty())
+                if (sceneData != null && sceneData.Length > 0)
                 {
                     var logger = game.GetLogger;
                     try

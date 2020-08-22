@@ -35,7 +35,7 @@ namespace SceneSaveState
         public Scene(VNNeoController game, bool importSys) : this()
         {
             game.LoadTrackedActorsAndProps();
-            Dictionary<string, Actor> actors = game.scenef_get_all_actors();
+            Dictionary<string, VNActor.Actor> actors = game.scenef_get_all_actors();
             Dictionary<string, HSNeoOCIProp> props = game.scenef_get_all_props();
             foreach (string actid in actors.Keys)
             {
