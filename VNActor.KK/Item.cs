@@ -10,78 +10,7 @@ namespace VNActor
     public partial class Item : IVNObject
     {
 
-        [MessagePackObject]
-        public struct Panel
-        {
-            [Key(0)]
-            public string filepath;
-            [Key(1)]
-            public bool clamp;
-        }
-
-        [MessagePackObject]
-        public struct PanelDetail_s
-        {
-            [Key(0)]
-            public Color color;
-            [Key(1)]
-            public float ut;
-            [Key(2)]
-            public float vt;
-            [Key(3)]
-            public float us;
-            [Key(4)]
-            public float vs;
-            [Key(5)]
-            public float rot;
-        }
-
-        [MessagePackObject]
-        public struct Emission_s
-        {
-            [Key(0)]
-            public Color color;
-            [Key(1)]
-            public float power;
-        }
-
-        [MessagePackObject]
-        public struct Pattern
-        {
-            [Key(0)]
-            public int key;
-            [Key(1)]
-            public string filepath;
-            [Key(2)]
-            public bool clamp;
-        }
-
-
-        [MessagePackObject]
-        public struct PatternDetail_s
-        {
-            [Key(0)]
-            public Color color;
-            [Key(1)]
-            public float ut;
-            [Key(2)]
-            public float vt;
-            [Key(3)]
-            public float us;
-            [Key(4)]
-            public float vs;
-            [Key(5)]
-            public float rot;
-        }
-
-        [MessagePackObject]
-        public struct Line_s
-        {
-            [Key(0)]
-            public Color color;
-            [Key(1)]
-            public float lineWidth;
-        }
+       
 
         [MessagePackObject(keyAsPropertyName: true)]
         public class ItemData : IDataClass

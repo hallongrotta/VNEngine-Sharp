@@ -8,61 +8,13 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
+
 namespace VNActor
 {
     // Koikatsu Actor
     public partial class Actor
         : IVNObject
     {
-
-        public struct IK_node_s
-        {
-            public Vector3 pos;
-            public Vector3? rot;
-        }
-
-        [Serializable]
-        [MessagePackObject]
-        public struct Hands_s
-        {
-            [Key(0)]
-            public int leftMotion;
-            [Key(1)]
-            public int rightMotion;
-        }
-
-        [Serializable]
-        [MessagePackObject]
-        public struct Son_s
-        {
-            [Key(0)]
-            public bool visible;
-            [Key(1)]
-            public float length;
-        }
-
-        [Serializable]
-        [MessagePackObject]
-        public struct Animation_s
-        {
-            [Key(0)]
-            public int group;
-            [Key(1)]
-            public int category;
-            [Key(2)]
-            public int no;
-            [Key(3)]
-            public float? normalizedTime;
-        }
-
-        public enum KinematicMode
-        {
-            None,
-            FK,
-            IK,
-            IKFK
-        }
-
 
         [MessagePackObject(keyAsPropertyName: true)]
         public class ActorData : IDataClass
@@ -162,7 +114,7 @@ namespace VNActor
                 {
                     ik = null;
                 }
-            }     
+            }
 
             public ActorData(Actor a)
             {
@@ -199,7 +151,7 @@ namespace VNActor
                 eyeLookPos = a.look_eye_pos;
                 neckPattern = a.look_neck;
 
-                neck = a.get_look_neck_full2();
+                neck = a.look_neck_full2;
                 eyebrowPattern = a.eyebrow_ptn;
                 eyePattern = a.eyes_ptn;
                 eyesOpen = a.eyes_open;
@@ -686,38 +638,40 @@ namespace VNActor
             }
         }
 
-        public byte[] get_look_neck_full2()
+        public byte[] look_neck_full2
         {
-            // needed only to save Fixed state
-            if (this.look_neck == 4)
+            set
             {
-                var memoryStream = new MemoryStream();
-                var binaryWriter = new BinaryWriter(memoryStream);
-                this.objctrl.neckLookCtrl.SaveNeckLookCtrl(binaryWriter);
-                binaryWriter.Close();
-                memoryStream.Close();
-                return memoryStream.ToArray();
+                // needed only to set Fixed state
+                if (!value.IsNullOrEmpty())
+                {
+                    // if non-fixed-state - move to it!
+                    this.look_neck = 4;
+                }
+                if (this.look_neck == 4)
+                {
+                    // print lst
+                    // print arrstate
+                    var binaryReader = new BinaryReader(new MemoryStream(str64));
+                    this.objctrl.neckLookCtrl.LoadNeckLookCtrl(binaryReader);
+                }
             }
-            else
+            get
             {
-                return null;
-            }
-        }
-
-        public void set_look_neck_full2(byte[] str64)
-        {
-            // needed only to set Fixed state
-            if (!str64.IsNullOrEmpty())
-            {
-                // if non-fixed-state - move to it!
-                this.look_neck = 4;
-            }
-            if (this.look_neck == 4)
-            {
-                // print lst
-                // print arrstate
-                var binaryReader = new BinaryReader(new MemoryStream(str64));
-                this.objctrl.neckLookCtrl.LoadNeckLookCtrl(binaryReader);
+                // needed only to save Fixed state
+                if (this.look_neck == 4)
+                {
+                    var memoryStream = new MemoryStream();
+                    var binaryWriter = new BinaryWriter(memoryStream);
+                    this.objctrl.neckLookCtrl.SaveNeckLookCtrl(binaryWriter);
+                    binaryWriter.Close();
+                    memoryStream.Close();
+                    return memoryStream.ToArray();
+                }
+                else
+                {
+                    return null;
+                }
             }
         }
 
@@ -831,6 +785,27 @@ namespace VNActor
             }
         }
 
+        public float[] face_shapes_all
+        {
+            get
+            {
+                var ct = this.face_shapes_count;
+                var res = new float[ct];
+                for (int i = 0; i < ct; i++)
+                {
+                    res[i] = this.face_shape[i];
+                }
+                return res;
+            }
+            set
+            {
+                for (int i = 0; i < value.Length; i++)
+                {
+                    this.set_face_shape(i, value[i]);
+                }
+            }
+        }
+
         public IDataClass export_full_status()
         {
             return new ActorData(this);
@@ -889,7 +864,7 @@ namespace VNActor
             look_eye_pos = a.eyeLookPos;
             look_neck = a.neckPattern;
 
-            set_look_neck_full2(a.neck);
+            look_neck_full2 = a.neck;
             eyebrow_ptn = a.eyebrowPattern;
             eyes_ptn = a.eyePattern;
             eyes_open = a.eyesOpen;

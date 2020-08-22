@@ -1,4 +1,5 @@
-﻿using Studio;
+﻿using MessagePack;
+using Studio;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,115 @@ namespace VNActor
 
     public partial class Item : HSNeoOCIProp, IVNObject
     {
+
+        [MessagePackObject]
+        public struct Panel
+        {
+            [Key(0)]
+            public string filepath;
+            [Key(1)]
+            public bool clamp;
+        }
+
+        [MessagePackObject]
+        public struct PanelDetail_s
+        {
+            [Key(0)]
+            public Color color;
+            [Key(1)]
+            public float ut;
+            [Key(2)]
+            public float vt;
+            [Key(3)]
+            public float us;
+            [Key(4)]
+            public float vs;
+            [Key(5)]
+            public float rot;
+            private Color mainColor;
+
+            public PanelDetail_s(Color mainColor, float ut, float vt, float us, float vs, float rot) : this()
+            {
+                this.mainColor = mainColor;
+                this.ut = ut;
+                this.vt = vt;
+                this.us = us;
+                this.vs = vs;
+                this.rot = rot;
+            }
+        }
+
+        [MessagePackObject]
+        public struct Emission_s
+        {
+            [Key(0)]
+            public Color color;
+            [Key(1)]
+            public float power;
+            private Color eColor;
+            private float ePower;
+
+            public Emission_s(Color eColor, float ePower) : this()
+            {
+                this.eColor = eColor;
+                this.ePower = ePower;
+            }
+        }
+
+        [MessagePackObject]
+        public struct Pattern
+        {
+            [Key(0)]
+            public int key;
+            [Key(1)]
+            public string filepath;
+            [Key(2)]
+            public bool clamp;
+
+            public Pattern(int key, string filepath, bool clamp)
+            {
+                this.key = key;
+                this.filepath = filepath;
+                this.clamp = clamp;
+            }
+        }
+
+
+        [MessagePackObject]
+        public struct PatternDetail_s
+        {
+            [Key(0)]
+            public Color color;
+            [Key(1)]
+            public float ut;
+            [Key(2)]
+            public float vt;
+            [Key(3)]
+            public float us;
+            [Key(4)]
+            public float vs;
+            [Key(5)]
+            public float rot;
+
+            public PatternDetail_s(Color color, float ut, float vt, float us, float vs, float rot)
+            {
+                this.color = color;
+                this.ut = ut;
+                this.vt = vt;
+                this.us = us;
+                this.vs = vs;
+                this.rot = rot;
+            }
+        }
+
+        [MessagePackObject]
+        public struct Line_s
+        {
+            [Key(0)]
+            public Color color;
+            [Key(1)]
+            public float lineWidth;
+        }
 
         new public OCIItem objctrl;
 

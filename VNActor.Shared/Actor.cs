@@ -1,4 +1,9 @@
-﻿using Studio;
+﻿#if AI
+using AIChara;
+#endif
+
+using MessagePack;
+using Studio;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +15,54 @@ namespace VNActor
     // Shared Actor code
     public partial class Actor : HSNeoOCI, IVNObject
     {
+
+        [Serializable]
+        [MessagePackObject]
+        public struct Hands_s
+        {
+            [Key(0)]
+            public int leftMotion;
+            [Key(1)]
+            public int rightMotion;
+        }
+
+        [Serializable]
+        [MessagePackObject]
+        public struct Son_s
+        {
+            [Key(0)]
+            public bool visible;
+            [Key(1)]
+            public float length;
+        }
+
+        [Serializable]
+        [MessagePackObject]
+        public struct Animation_s
+        {
+            [Key(0)]
+            public int group;
+            [Key(1)]
+            public int category;
+            [Key(2)]
+            public int no;
+            [Key(3)]
+            public float? normalizedTime;
+        }
+
+        public struct IK_node_s
+        {
+            public Vector3 pos;
+            public Vector3? rot;
+        }
+
+        public enum KinematicMode
+        {
+            None,
+            FK,
+            IK,
+            IKFK
+        }
 
         new public OCIChar objctrl;
 
@@ -1238,27 +1291,18 @@ get
             }
         }
 
+        public void import_status(IDataClass status)
+        {
+            throw new NotImplementedException();
+        }
+
+        IDataClass IVNObject.export_full_status()
+        {
+            throw new NotImplementedException();
+        }
+
         // face sliders
 
-        public float[] face_shapes_all
-        {
-            get
-            {
-                var ct = this.face_shapes_count;
-                var res = new float[ct];
-                for (int i = 0; i < ct; i++)
-                {
-                    res[i] = this.face_shape[i];
-                }
-                return res;
-            }
-            set
-            {
-                for (int i = 0; i < value.Length; i++)
-                {
-                    this.set_face_shape(i, value[i]);
-                }
-            }
-        }
+
     }
 }

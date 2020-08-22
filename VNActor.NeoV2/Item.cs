@@ -1,13 +1,147 @@
-﻿using System;
+﻿using MessagePack;
+using Studio;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace VNActor
 {
-    public partial class Item : IProp
+    public partial class Item
     {
 
-        OCIItem objctrl;
+        public class ItemData : IDataClass
+        {
+
+            public bool visible;
+            public Vector3 position;
+            public Vector3 rotation;
+            public Vector3 scale;
+            public Dictionary<int, Color> color;
+            public float? alpha;
+            public Panel? pnl_set;
+            public PanelDetail_s? pnl_dtl;
+            public Emission_s? emission;
+            public List<Vector3> fk_set;
+            public float? anim_spd;
+            public Dictionary<int, Pattern> ptn_set;
+            public Dictionary<int, PatternDetail_s> ptn_dtl;
+            public float? light_cancel;
+            public Line_s? line;
+            public Color? shadow_color;
+            public bool? db_active;
+
+            // Distinct
+            private bool option;
+            private bool fk_active;
+            private Metallic_s[] metallic;
+            private int anim_ptn;
+
+            public ItemData(Item i)
+            {
+                // export full status of prop
+                visible = i.visible;
+                position = i.pos;
+                rotation = i.rot;
+                if (i.isItem)
+                {
+                    scale = i.scale;
+                    if (i.isColorable)
+                    {
+                        color = i.get_color();
+                    }
+                    if (i.hasPattern)
+                    {
+                        ptn_set = i.pattern;
+                        ptn_dtl = i.pattern_detail;
+                    }
+                    if (i.hasPanel)
+                    {
+                        pnl_set = i.panel;
+                        pnl_dtl = i.panel_detail;
+                    }
+                    if (i.hasMetallic)
+                    {
+                        metallic = i.metallic;
+                    }
+                    if (i.hasEmission)
+                    {
+                        emission = i.emission;
+                    }
+                    if (i.hasAlpha)
+                    {
+                        alpha = i.alpha;
+                    }
+                    if (i.hasOption)
+                    {
+                        option = i.option;
+                    }
+                    if (i.isFK)
+                    {
+                        fk_active = i.fk_enable;
+                        if (fk_active)
+                        {
+                            fk_set = i.export_fk_bone_info();
+                        }
+                        else
+                        {
+                            fk_set = null;
+                        }
+                    }
+                    if (i.isDynamicBone)
+                    {
+                        db_active = i.dynamicbone_enable;
+                    }
+                    if (i.isAnime)
+                    {
+                        anim_spd = i.anime_speed;
+                    }
+                    if (i.hasAnimePattern)
+                    {
+                        anim_ptn = i.anime_pattern;
+                    }
+                }
+                /*
+                if (i.isLight)
+                {
+                    color = i.color();
+                    enable = i.enable;
+                    intensity = i.intensity;
+                    shadow = i.shadow;
+                    if (i.hasRange)
+                    {
+                        range = i.range();
+                    }
+                    if (i.hasAngle)
+                    {
+                        angle = i.angle();
+                    }
+                }
+                if (i.isRoute)
+                {
+                    if (Utils.is_ini_value_true("ExportProp_RouteFull"))
+                    {
+                        route_f = i.route_full();
+                    }
+                    else
+                    {
+                        route_p = i.route_play();
+                    }
+                }
+                */
+            }
+        }
+
+
+        [MessagePackObject]
+        public struct Metallic_s
+        {
+            [Key(0)]
+            public float metallic;
+            [Key(1)]
+            public float glossiness;
+        }
+
         private object enable;
 
         public void set_color(Color[] color)
@@ -21,33 +155,33 @@ namespace VNActor
                 var i = 0;
                 if (item.useColor[0] && i < color.Length && color[i] != null)
                 {
-                    item.itemInfo.colors[0].mainColor = Utils.tuple4_2_color(color[i]);
+                    item.itemInfo.colors[0].mainColor = color[i];
                 }
                 i = 1;
                 if (item.useColor[1] && i < color.Length && color[i] != null)
                 {
-                    item.itemInfo.colors[1].mainColor = Utils.tuple4_2_color(color[i]);
+                    item.itemInfo.colors[1].mainColor = color[i];
                 }
                 i = 2;
                 if (item.useColor[2] && i < color.Length && color[i] != null)
                 {
-                    item.itemInfo.colors[2].mainColor = Utils.tuple4_2_color(color[i]);
+                    item.itemInfo.colors[2].mainColor = color[i];
                 }
                 i = 3;
                 if (item.useColor4 && i < color.Length && color[i] != null)
                 {
-                    item.itemInfo.colors[3].mainColor = Utils.tuple4_2_color(color[i]);
+                    item.itemInfo.colors[3].mainColor = color[i];
                 }
                 item.UpdateColor();
             }
         }
 
-        new public Color[] get_color()
+        public Dictionary<int, Color> get_color()
         {
             // return a tuple of used color
             if (this.isColorable)
             {
-                var cl = new Color[4];
+                var cl = new Dictionary<int, Color>();
                 if (this.objctrl.useColor[0])
                 {
                     cl[0] = this.objctrl.itemInfo.colors[0].mainColor;
@@ -92,120 +226,90 @@ namespace VNActor
             }
         }
 
-        public void set_pattern(Pattern[] param)
+        public Dictionary<int, Pattern> pattern
         {
-            // param: a set of ((key, filepath, clamp), (key, filepath, clamp), (key, filepath, clamp))
-            if (this.hasPattern)
+            set
             {
-                foreach (var i in Enumerable.Range(0, this.objctrl.usePattern.Length))
+                // param: a set of ((key, filepath, clamp), (key, filepath, clamp), (key, filepath, clamp))
+                if (this.hasPattern)
                 {
-                    if (this.objctrl.usePattern[i])
+                    foreach (var i in Enumerable.Range(0, this.objctrl.usePattern.Length))
                     {
-                        this.objctrl.itemInfo.colors[i].pattern.key = param[i].key;
-                        this.objctrl.itemInfo.colors[i].pattern.filePath = param[i].filepath;
-                        this.objctrl.itemInfo.colors[i].pattern.clamp = param[i].clamp;
+                        if (this.objctrl.usePattern[i])
+                        {
+                            this.objctrl.itemInfo.colors[i].pattern.key = value[i].key;
+                            this.objctrl.itemInfo.colors[i].pattern.filePath = value[i].filepath;
+                            this.objctrl.itemInfo.colors[i].pattern.clamp = value[i].clamp;
+                        }
                     }
+                    this.objctrl.SetupPatternTex();
+                    this.objctrl.UpdateColor();
                 }
-                this.objctrl.SetupPatternTex();
-                this.objctrl.UpdateColor();
             }
-        }
-
-        public Pattern[] get_pattern()
-        {
-            if (this.hasPattern)
+            get
             {
-                var pt = new Pattern[this.objctrl.usePattern.Length];
-                foreach (var i in Enumerable.Range(0, this.objctrl.usePattern.Length))
+                if (this.hasPattern)
                 {
-                    if (this.objctrl.usePattern[i])
+                    var pt = new Dictionary<int, Pattern>();
+                    foreach (var i in Enumerable.Range(0, this.objctrl.usePattern.Length))
                     {
-                        var pi = this.objctrl.itemInfo.colors[i].pattern;
-                        pt[i] = (new Pattern(pi.key, pi.filePath, pi.clamp));
+                        if (this.objctrl.usePattern[i])
+                        {
+                            var pi = this.objctrl.itemInfo.colors[i].pattern;
+                            pt[i] = (new Pattern(pi.key, pi.filePath, pi.clamp));
+                        }
                     }
+                    return pt;
                 }
-                return pt;
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        public void set_pattern_detail(PatternDetail[] param)
-        {
-            // param: a set of ((color, ut, vt, us, vs, rot), (color, ut, vt, us, vs, rot), (color, ut, vt, us, vs, rot))
-            if (this.hasPattern)
-            {
-                foreach (var i in Enumerable.Range(0, this.objctrl.usePattern.Length))
+                else
                 {
-                    if (this.objctrl.usePattern[i])
-                    {
-                        this.objctrl.itemInfo.colors[i].pattern.color = param[i].color;
-                        this.objctrl.itemInfo.colors[i].pattern.ut = param[i].ut;
-                        this.objctrl.itemInfo.colors[i].pattern.vt = param[i].vt;
-                        this.objctrl.itemInfo.colors[i].pattern.us = param[i].us;
-                        this.objctrl.itemInfo.colors[i].pattern.vs = param[i].vs;
-                        this.objctrl.itemInfo.colors[i].pattern.rot = param[i].rot;
-                    }
+                    return null;
                 }
-                this.objctrl.UpdateColor();
             }
         }
 
-        public struct Pattern
+        public Dictionary<int, PatternDetail_s> pattern_detail
         {
-            public int key;
-            public string filepath;
-            public bool clamp;
-
-            public Pattern(int key, string filepath, bool clamp)
+            set
             {
-                this.key = key;
-                this.filepath = filepath;
-                this.clamp = clamp;
-            }
-        }
-
-        public struct PatternDetail
-        {
-            public Color color;
-            public float ut;
-            public float vt;
-            public float us;
-            public float vs;
-            public float rot;
-
-            public PatternDetail(Color color, float ut, float vt, float us, float vs, float rot)
-            {
-                this.color = color;
-                this.ut = ut;
-                this.vt = vt;
-                this.us = us;
-                this.vs = vs;
-                this.rot = rot;
-            }
-        }
-
-        public PatternDetail[] get_pattern_detail()
-        {
-            if (this.hasPattern)
-            {
-                var pt = new PatternDetail[this.objctrl.usePattern.Length];
-
-                foreach (var i in Enumerable.Range(0, this.objctrl.usePattern.Length))
+                // param: a set of ((color, ut, vt, us, vs, rot), (color, ut, vt, us, vs, rot), (color, ut, vt, us, vs, rot))
+                if (this.hasPattern)
                 {
-                    if (this.objctrl.usePattern[i])
+                    foreach (var i in Enumerable.Range(0, this.objctrl.usePattern.Length))
                     {
-                        var pi = this.objctrl.itemInfo.colors[i].pattern;
-                        pt[i] = new PatternDetail(pi.color, pi.ut, pi.vt, pi.us, pi.vs, pi.rot);
+                        if (this.objctrl.usePattern[i])
+                        {
+                            this.objctrl.itemInfo.colors[i].pattern.color = value[i].color;
+                            this.objctrl.itemInfo.colors[i].pattern.ut = value[i].ut;
+                            this.objctrl.itemInfo.colors[i].pattern.vt = value[i].vt;
+                            this.objctrl.itemInfo.colors[i].pattern.us = value[i].us;
+                            this.objctrl.itemInfo.colors[i].pattern.vs = value[i].vs;
+                            this.objctrl.itemInfo.colors[i].pattern.rot = value[i].rot;
+                        }
                     }
+                    this.objctrl.UpdateColor();
                 }
-                return pt;
             }
-            else
+            get
             {
-                return null;
+                if (this.hasPattern)
+                {
+                    var pt = new Dictionary<int, PatternDetail_s>();
+
+                    foreach (var i in Enumerable.Range(0, this.objctrl.usePattern.Length))
+                    {
+                        if (this.objctrl.usePattern[i])
+                        {
+                            var pi = this.objctrl.itemInfo.colors[i].pattern;
+                            pt[i] = new PatternDetail_s(pi.color, pi.ut, pi.vt, pi.us, pi.vs, pi.rot);
+                        }
+                    }
+                    return pt;
+                }
+                else
+                {
+                    return null;
+                }
             }
         }
 
@@ -217,56 +321,60 @@ namespace VNActor
             }
         }
 
-        public void set_panel((string, bool) param)
+        public Panel panel
         {
-            // param: a set of (filepath, clamp)
-            if (this.hasPanel)
+            set
             {
-                this.objctrl.SetMainTex(param.Item1);
-                this.objctrl.SetPatternClamp(0, param.Item2);
+                // param: a set of (filepath, clamp)
+                if (this.hasPanel)
+                {
+                    this.objctrl.SetMainTex(value.filepath);
+                    this.objctrl.SetPatternClamp(0, value.clamp);
+                }
+            }
+            get
+            {
+                if (this.hasPanel)
+                {
+                    var pi = this.objctrl.itemInfo.panel;
+                    PatternInfo p0 = this.objctrl.itemInfo.colors[0].pattern;
+                    return new Panel { filepath = pi.filePath, clamp = p0.clamp };
+                }
+                else
+                {
+                    throw new Exception("Item does not have panel.");
+                }
             }
         }
 
-        public (string, bool) get_panel()
+        public PanelDetail_s panel_detail
         {
-            if (this.hasPanel)
+            set
             {
-                PatternInfo pi = this.objctrl.itemInfo.panel;
-                PatternInfo p0 = this.objctrl.itemInfo.colors[0].pattern;
-                return (pi.filePath, p0.clamp);
+                // param: a set of (color, ut, vt, us, vs, rot)
+                if (this.hasPanel)
+                {
+                    var p0 = this.objctrl.itemInfo.colors[0].pattern;
+                    this.objctrl.itemInfo.colors[0].mainColor = value.color;
+                    p0.ut = value.ut;
+                    p0.vt = value.vt;
+                    p0.us = value.us;
+                    p0.vs = value.vs;
+                    p0.rot = value.rot;
+                    this.objctrl.UpdateColor();
+                }
             }
-            else
+            get
             {
-                throw new Exception("no panel to get");
-            }
-        }
-
-        public void set_panel_detail(PatternDetail param)
-        {
-            // param: a set of (color, ut, vt, us, vs, rot)
-            if (this.hasPanel)
-            {
-                var p0 = this.objctrl.itemInfo.colors[0].pattern;
-                this.objctrl.itemInfo.colors[0].mainColor = param.color;
-                p0.ut = param.ut;
-                p0.vt = param.vt;
-                p0.us = param.us;
-                p0.vs = param.vs;
-                p0.rot = param.rot;
-                this.objctrl.UpdateColor();
-            }
-        }
-
-        public PatternDetail get_panel_detail()
-        {
-            if (this.hasPanel)
-            {
-                var p0 = this.objctrl.itemInfo.colors[0].pattern;
-                return new PatternDetail(this.objctrl.itemInfo.colors[0].mainColor, p0.ut, p0.vt, p0.us, p0.vs, p0.rot);
-            }
-            else
-            {
-                throw new Exception("no panel to get");
+                if (this.hasPanel)
+                {
+                    var p0 = this.objctrl.itemInfo.colors[0].pattern;
+                    return new PanelDetail_s(this.objctrl.itemInfo.colors[0].mainColor, p0.ut, p0.vt, p0.us, p0.vs, p0.rot);
+                }
+                else
+                {
+                    throw new Exception("no panel to get");
+                }
             }
         }
 
@@ -289,44 +397,43 @@ namespace VNActor
             }
         }
 
-        public void set_metallic(List<(float, float)> param)
+        public Metallic_s[] metallic
         {
-            // param: a set of ((metallic, glossiness), (metallic, glossiness), ...)
-            if (this.hasMetallic)
+            get
             {
-                foreach (var i in Enumerable.Range(0, this.objctrl.useMetallic.Length))
+                if (this.hasMetallic)
                 {
-                    if (this.objctrl.useMetallic[i])
+                    var length = this.objctrl.useMetallic.Length;
+                    var mv = new Metallic_s[length];
+                    for (int i = 0; i < length; i++)
                     {
-                        this.objctrl.itemInfo.colors[i].metallic = param[i].Item1;
-                        this.objctrl.itemInfo.colors[i].glossiness = param[i].Item2;
+                        if (this.objctrl.useMetallic[i])
+                        {
+                            mv[i] = new Metallic_s { metallic = this.objctrl.itemInfo.colors[i].metallic, glossiness = this.objctrl.itemInfo.colors[i].glossiness };
+                        }
                     }
+                    return mv;
                 }
-                this.objctrl.UpdateColor();
-            }
-        }
-
-        public List<(float, float)> get_metallic()
-        {
-            if (this.hasMetallic)
-            {
-                var mv = new List<(float, float)>();
-                foreach (var i in Enumerable.Range(0, this.objctrl.useMetallic.Length))
+                else
                 {
-                    if (this.objctrl.useMetallic[i])
-                    {
-                        mv.Add((this.objctrl.itemInfo.colors[i].metallic, this.objctrl.itemInfo.colors[i].glossiness));
-                    }
-                    else
-                    {
-                        //mv.Add(null);
-                    }
+                    return null;
                 }
-                return mv;
             }
-            else
+            set
             {
-                return null;
+                // param: a set of ((metallic, glossiness), (metallic, glossiness), ...)
+                if (this.hasMetallic)
+                {
+                    for (int i = 0; i < objctrl.useMetallic.Length; i++)
+                    {
+                        if (this.objctrl.useMetallic[i])
+                        {
+                            this.objctrl.itemInfo.colors[i].metallic = value[i].metallic;
+                            this.objctrl.itemInfo.colors[i].glossiness = value[i].glossiness;
+                        }
+                    }
+                    this.objctrl.UpdateColor();
+                }
             }
         }
 
@@ -345,32 +452,34 @@ namespace VNActor
             }
         }
 
-        public void set_emission((Color, float) param)
+        public Emission_s emission
         {
-            // param: (color, power)
-            if (this.hasEmission)
+            set
             {
-                var eColor = Utils.tuple4_2_color(param.Item1);
-                var ePower = param.Item2;
-                //self.objctrl.SetEmissionColor(eColor)
-                //self.objctrl.SetEmissionPower(ePower)
-                this.objctrl.itemInfo.emissionColor = eColor;
-                this.objctrl.itemInfo.emissionPower = ePower;
-                this.objctrl.UpdateColor();
+                // param: (color, power)
+                if (this.hasEmission)
+                {
+                    var eColor = value.color;
+                    var ePower = value.power;
+                    //self.objctrl.SetEmissionColor(eColor)
+                    //self.objctrl.SetEmissionPower(ePower)
+                    this.objctrl.itemInfo.emissionColor = eColor;
+                    this.objctrl.itemInfo.emissionPower = ePower;
+                    this.objctrl.UpdateColor();
+                }
             }
-        }
-
-        public (Color, float) get_emission()
-        {
-            if (this.hasEmission)
+            get
             {
-                var eColor = this.objctrl.itemInfo.emissionColor;
-                var ePower = this.objctrl.itemInfo.emissionPower;
-                return (eColor, ePower);
-            }
-            else
-            {
-                throw new Exception("This item has no emission");
+                if (this.hasEmission)
+                {
+                    var eColor = this.objctrl.itemInfo.emissionColor;
+                    var ePower = this.objctrl.itemInfo.emissionPower;
+                    return new Emission_s(eColor, ePower);
+                }
+                else
+                {
+                    throw new Exception("This item has no emission");
+                }
             }
         }
 
@@ -382,21 +491,44 @@ namespace VNActor
             }
         }
 
-        public void set_alpha(float param)
+        public float alpha
         {
-            // param: 0~1 for alpha
-            this.objctrl.SetAlpha(param);
+            get
+            {
+                if (this.hasAlpha)
+                {
+                    return this.objctrl.itemInfo.alpha;
+                }
+                else
+                {
+                    throw new Exception("No alpha");
+                }
+            }
+            set
+            {                            
+                // param: 0~1 for alpha
+                this.objctrl.SetAlpha(value);
+
+            }
         }
 
-        public float get_alpha()
+        public bool option
         {
-            if (this.hasAlpha)
+            set
             {
-                return this.objctrl.itemInfo.alpha;
+                // param: True/False for item option setting
+                this.objctrl.SetOptionVisible(value);
             }
-            else
+            get
             {
-                throw new Exception("No alpha");
+                if (this.hasOption && this.objctrl.itemInfo.option != null && this.objctrl.itemInfo.option.Count > 0)
+                {
+                    return this.objctrl.itemInfo.option[0];
+                }
+                else
+                {
+                    throw new Exception("no option");
+                }
             }
         }
 
@@ -408,45 +540,29 @@ namespace VNActor
             }
         }
 
-        public void set_option(bool param)
-        {
-            // param: True/False for item option setting
-            this.objctrl.SetOptionVisible(param);
-        }
-
-        public bool get_option()
-        {
-            if (this.hasOption && this.objctrl.itemInfo.option != null && this.objctrl.itemInfo.option.Count > 0)
-            {
-                return this.objctrl.itemInfo.option[0];
-            }
-            else
-            {
-                throw new Exception("no option");
-            }
-        }
-
         // fk enable
-        public void set_fk_enable(bool param)
-        {
-            // param: fk enable/disable
-            if (this.isFK)
-            {
-                this.objctrl.ActiveFK(param);
-            }
-        }
 
-        public bool get_fk_enable()
+        public bool fk_enable
         {
-            if (this.isFK)
+            set
             {
-                return this.objctrl.itemInfo.enableFK;
+                // param: fk enable/disable
+                if (this.isFK)
+                {
+                    this.objctrl.ActiveFK(value);
+                }
             }
-            else
+            get
             {
-                return false;
+                if (this.isFK)
+                {
+                    return this.objctrl.itemInfo.enableFK;
+                }
+                else
+                {
+                    return false;
+                }
             }
-
         }
 
         public bool isDynamicBone
@@ -464,26 +580,29 @@ namespace VNActor
             }
         }
 
-        public void set_dynamicbone_enable(bool param)
+        public bool dynamicbone_enable
         {
-            // param: dynamic bone (yure) enable/disable
-            if (this.isDynamicBone)
+            set
             {
-                this.objctrl.ActiveDynamicBone(param);
+                // param: dynamic bone (yure) enable/disable
+                if (this.isDynamicBone)
+                {
+                    this.objctrl.ActiveDynamicBone(value);
+                }
+            }
+            get
+            {
+                if (this.isDynamicBone)
+                {
+                    return this.objctrl.itemInfo.enableDynamicBone;
+                }
+                else
+                {
+                    throw new Exception();
+                }
             }
         }
 
-        public bool get_dynamicbone_enable()
-        {
-            if (this.isDynamicBone)
-            {
-                return this.objctrl.itemInfo.enableDynamicBone;
-            }
-            else
-            {
-                return false;
-            }
-        }
 
         public bool hasAnimePattern
         {
@@ -493,24 +612,26 @@ namespace VNActor
             }
         }
 
-        public void set_anime_pattern(int param)
+        public int anime_pattern
         {
-            // param: anime pattern no
-            if (this.hasAnimePattern)
+            get
             {
-                this.objctrl.SetAnimePattern(param);
+                if (this.hasAnimePattern)
+                {
+                    return this.objctrl.itemInfo.animePattern;
+                }
+                else
+                {
+                    throw new Exception("No pattern");
+                }
             }
-        }
-
-        public int get_anime_pattern()
-        {
-            if (this.hasAnimePattern)
+            set
             {
-                return this.objctrl.itemInfo.animePattern;
-            }
-            else
-            {
-                throw new Exception("No pattern");
+                // param: anime pattern no
+                if (this.hasAnimePattern)
+                {
+                    this.objctrl.SetAnimePattern(value);
+                }
             }
         }
 
@@ -716,152 +837,63 @@ namespace VNActor
             }
         }
 
-        public PropData export_full_status()
+        override public IDataClass export_full_status()
         {
-            // export full status of prop
-            var fs = new PropData();
-            fs.visible = this.visible;
-            fs.move_to = this.pos;
-            fs.rotate_to = this.rot;
-            if (this.isItem)
-            {
-                fs.scale_to = this.scale;
-                if (this.isColorable)
-                {
-                    fs.color = this.get_color();
-                }
-                if (this.hasPattern)
-                {
-                    fs.ptn_set = this.get_pattern();
-                    fs.ptn_dtl = this.get_pattern_detail();
-                }
-                if (this.hasPanel)
-                {
-                    fs.pnl_set = this.get_panel();
-                    fs.pnl_dtl = this.get_panel_detail();
-                }
-                if (this.hasMetallic)
-                {
-                    fs.metallic = this.get_metallic();
-                }
-                if (this.hasEmission)
-                {
-                    fs.emission = this.get_emission();
-                }
-                if (this.hasAlpha)
-                {
-                    fs.alpha = this.get_alpha();
-                }
-                if (this.hasOption)
-                {
-                    fs.option = this.get_option();
-                }
-                if (this.isFK)
-                {
-                    fs.fk_active = this.get_fk_enable();
-                    if (fs.fk_active)
-                    {
-                        fs.fk_set = this.export_fk_bone_info();
-                    }
-                    else
-                    {
-                        fs.fk_set = null;
-                    }
-                }
-                if (this.isDynamicBone)
-                {
-                    fs.db_active = this.get_dynamicbone_enable();
-                }
-                if (this.isAnime)
-                {
-                    fs.anim_spd = this.get_anime_speed();
-                }
-                if (this.hasAnimePattern)
-                {
-                    fs.anim_ptn = this.get_anime_pattern();
-                }
-            }
-            if (this.isLight)
-            {
-                fs.color = this.get_color();
-                fs.enable = this.enable;
-                fs.intensity = this.get_intensity;
-                fs.shadow = this.get_shadow;
-                if (this.hasRange)
-                {
-                    fs.range = this.get_range();
-                }
-                if (this.hasAngle)
-                {
-                    fs.angle = this.get_angle();
-                }
-            }
-            if (this.isRoute)
-            {
-                if (Utils.is_ini_value_true("ExportProp_RouteFull"))
-                {
-                    fs.route_f = this.get_route_full();
-                }
-                else
-                {
-                    fs.route_p = this.get_route_play();
-                }
-            }
-            return fs;
+            return new ItemData(this);
         }
 
-        public static void prop_pattern(Item prop, Item.Pattern[] param)
+        public static void prop_pattern(Item prop, Dictionary<int, Pattern> param)
         {
             // param: a set of ((key, filepath, clamp), (key, filepath, clamp), (key, filepath, clamp))
-            prop.set_pattern(param);
+            prop.pattern = param;
         }
 
-        public static void prop_pattern_detail(Item prop, Item.PatternDetail[] param)
+        public static void prop_pattern_detail(Item prop, Dictionary<int, PatternDetail_s> param)
         {
             // param: a set of ((color, ut, vt, us, vs, rot), (color, ut, vt, us, vs, rot), (color, ut, vt, us, vs, rot))
-            prop.set_pattern_detail(param);
+            prop.pattern_detail = param;
         }
 
-        public static void prop_panel(Item prop, (string, bool) param)
+        public static void prop_panel(Item prop, Panel param)
         {
             // param: a set of (filepath, clamp)
-            prop.set_panel(param);
+            prop.panel = param;
         }
 
-        public static void prop_panel_detail(Item prop, PatternDetail param)
+        public static void prop_panel_detail(Item prop, PanelDetail_s param)
         {
             // param: a set of (color, ut, vt, us, vs, rot)
-            prop.set_panel_detail(param);
+            prop.panel_detail = param;
         }
 
-        public static void prop_metallic(Item prop, List<(float metallic, float glossiness)> param)
+        public static void prop_metallic(Item prop, Metallic_s[] param)
         {
             // param: a list of ((metallic, glossiness), (metallic, glossiness), ...)
-            prop.set_metallic(param);
+            prop.metallic = param;
         }
 
-        public static void prop_emission(Item prop, (Color, float) param)
+        public static void prop_emission(Item prop, Emission_s param)
         {
             // param: (color, power)
-            prop.set_emission(param);
+            prop.emission = param;
         }
 
         public static void prop_alpha(Item prop, float param)
         {
             // param = 0~1
-            prop.set_alpha(param);
+            prop.alpha = param;
         }
 
         public static void prop_option(Item prop, object param)
         {
             // param = 0(hide)/1(show)
-            prop.set_option((bool)param);
+            prop.option = (bool)param;
         }
 
         public static void prop_fk_enable(Item prop, object param)
         {
             // param = 0/1
-            prop.set_fk_enable((bool)param);
+            prop.fk_enable = (bool)param;
         }
 
         public static void prop_anime_pattern(Item prop, int param)
@@ -870,6 +902,12 @@ namespace VNActor
             prop.anime_pattern = param;
         }
 
+        public override void import_status(IDataClass status)
+        {
+            throw new NotImplementedException();
+        }
+
+        /*
         public delegate void PropActFunction(Item p, PropData data);
 
         protected static Dictionary<string, (PropActFunction, bool)> prop_act_funcs = new Dictionary<string, (PropActFunction, bool)> {
@@ -969,6 +1007,6 @@ namespace VNActor
         {
             "route_f",
             (prop_route, false)}};
-
+        */
     }
 }

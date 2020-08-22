@@ -9,7 +9,7 @@ namespace VNActor
 
     public interface IDataClass
     {
-        void Remove(string key);
+
 
     }
 

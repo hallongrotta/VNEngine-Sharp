@@ -1,13 +1,204 @@
-﻿using System;
+﻿using AIChara;
+using MessagePack;
+using Studio;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using UnityEngine;
 
 namespace VNActor
 {
 
+    // AI Actor
     public partial class Actor
     {
+
+        public class ActorData
+        {
+            internal float tearLevel;
+            internal float tuya;
+            internal float wetness;
+
+            [Key("visible")]
+            public bool visible;
+            [Key("position")]
+            public Vector3 position;
+            [Key("scale")]
+            public Vector3 scale;
+            [Key("rotation")]
+            public Vector3 rotation;
+            [Key("voiceRepeat")]
+            public int voiceRepeat;
+            //public Itembool shoesOn;
+            [Key("voiceList")]
+            public List<int[]> voiceList;
+            [Key("fk")]
+            public Dictionary<int, Vector3> fk;
+            [Key("fkActive")]
+            public bool[] fkActive;
+            [Key("kinematicType")]
+            public KinematicMode kinematicType;
+            [Key("handMotions")]
+            public Hands_s handMotions;
+            [Key("ik")]
+            public Dictionary<string, IK_node_s> ik;
+            [Key("ikActive")]
+            public bool[] ikActive;
+            [Key("lipSync")]
+            public bool lipSync;
+            [Key("mouthOpen")]
+            public float mouthOpen;
+            [Key("mouthPattern")]
+            public int mouthPattern;
+            [Key("blinking")]
+            public bool blinking;
+            [Key("eyesOpen")]
+            public float eyesOpen;
+            [Key("eyePattern")]
+            public int eyePattern;
+            [Key("eyebrowPattern")]
+            public int eyebrowPattern;
+            [Key("neckPattern")]
+            public int neckPattern;
+            [Key("eyeLookPos")]
+            public Vector3 eyeLookPos;
+            [Key("eyeLookPattern")]
+            public int eyeLookPattern;
+            [Key("son")]
+            public Son_s son;
+            [Key("anim")]
+            public Animation_s anim;
+            [Key("simple")]
+            public bool simple;
+            [Key("simpleColor")]
+            public Color simpleColor;
+            [Key("juice")]
+            public byte[] juice;
+            //public bool showAllAccessories;
+            [Key("accessoryStatus")]
+            public bool[] accessoryStatus;
+            [Key("cloth")]
+            public byte[] cloth;
+            [Key("animeSpeed")]
+            public float animeSpeed;
+            [Key("forceLoop")]
+            public bool forceLoop;
+            [Key("animePattern")]
+            public float animePattern;
+            [Key("animeOption")]
+            public AnimeOption_s animeOption;
+            [Key("faceRedness")]
+            public float faceRedness;
+            [Key("nippleHardness")]
+            public float nippleHardness;
+            [Key("neck")]
+            public byte[] neck;
+
+            public ActorData(Actor a)
+            {
+
+                visible = a.visible;
+                position = a.pos;
+                rotation = a.rot;
+                scale = a.scale;
+                animeSpeed = a.animeSpeed;
+                animePattern = a.animePattern;
+                tearLevel = a.tearLevel;
+                forceLoop = a.anime_forceloop;
+
+                accessoryStatus = new bool[a.accessory.Length];
+                Array.Copy(a.accessory, accessoryStatus, accessoryStatus.Length);
+
+                faceRedness = a.facered;
+                son = a.son;
+
+                anim = a.animate;
+
+                animeOption = new AnimeOption_s { height = a.height, breast = a.breast };
+
+                cloth = a.get_cloth();
+
+                juice = a.juice;
+                nippleHardness = a.nipple_stand;
+
+                simple = a.simple;
+                simpleColor = a.simple_color;
+
+                eyeLookPattern = a.look_eye_ptn;
+                eyeLookPos = a.look_eye_pos;
+                neckPattern = a.look_neck;
+
+                neck = a.look_neck_full2;
+                eyebrowPattern = a.eyebrow_ptn;
+                eyePattern = a.eyes_ptn;
+                eyesOpen = a.eyes_open;
+                blinking = a.eyes_blink;
+                mouthPattern = a.mouth_ptn;
+                mouthOpen = a.mouth_open;
+                lipSync = a.lip_sync;
+                handMotions = a.hand_ptn;
+                kinematicType = a.kinematic;
+
+                fkActive = null;
+                fk = null;
+                ikActive = null;
+                ik = null;
+
+                if (kinematicType == KinematicMode.FK || kinematicType == KinematicMode.IKFK)
+                {
+                    fkActive = new bool[a.get_FK_active().Length];
+                    Array.Copy(a.get_FK_active(), fkActive, fkActive.Length);
+                    fk = a.export_fk_bone_info();
+                }
+                if (kinematicType == KinematicMode.IK || kinematicType == KinematicMode.IKFK)
+                {
+                    ikActive = new bool[a.get_IK_active().Length];
+                    Array.Copy(a.get_IK_active(), ikActive, ikActive.Length);
+                    ik = a.export_ik_target_info();
+                }
+
+                voiceList = a.voice_lst;
+                voiceRepeat = a.voice_repeat;
+
+
+                tuya = a.tuya;
+                wetness = a.wet;
+
+                /*
+                // ext data, enable by ini setting
+                if (Utils.is_ini_value_true("ExportChara_CurClothesCoord"))
+                {
+                    fs["ext_curclothcoord"] = a.curcloth_coordinate;
+                }
+                if (Utils.is_ini_value_true("ExportChara_BodyShapes"))
+                {
+                    fs["ext_bodyshapes"] = a.body_shapes_all;
+                }
+                if (Utils.is_ini_value_true("ExportChara_FaceShapes"))
+                {
+                    fs["ext_faceshapes"] = a.face_shapes_all;
+                }
+                if (Utils.is_ini_value_true("ExportChara_AnimeAuxParam"))
+                {
+                    fs["anim_optprm"] = a.anime_option_param;
+                }
+                // plugin data, enable by ini setting
+                if (Utils.is_ini_value_true("ExportChara_AIPE"))
+                {
+                    try
+                    {
+                        fs["pl_aipedata"] = a.aipedata;
+                    }
+                    catch (Exception)
+                    {
+                        Console.WriteLine("Error during get aipedata");
+                    }
+                }
+                return fs;
+                */
+            }
+        }
 
         public float height
         {
@@ -55,76 +246,89 @@ namespace VNActor
             }
         }
 
-        public void set_accessory(bool[] accIndex)
+        public bool[] accessory
         {
-            for (int i = 0; i < accIndex.Length; i++)
+            get
             {
-                this.objctrl.ShowAccessory(i, accIndex[i]);
+                // return accessory state on/off in tuple(20)
+                return this.objctrl.charFileStatus.showAccessory;
+            }
+            set
+            {
+                for (int i = 0; i < value.Length; i++)
+                {
+                    this.objctrl.ShowAccessory(i, value[i]);
+                }
             }
         }
 
-        public bool[] get_accessory()
+        public byte[] juice
         {
-            // return accessory state on/off in tuple(20)
-            return this.objctrl.charFileStatus.showAccessory;
+            set
+            {
+                // juices: level on (face, FrontUp, BackUp, FrontDown, BackDown) when 0-none, 1-few, 2-lots
+                this.objctrl.SetSiruFlags(ChaFileDefine.SiruParts.SiruKao, value[0]);
+                this.objctrl.SetSiruFlags(ChaFileDefine.SiruParts.SiruFrontTop, value[1]);
+                this.objctrl.SetSiruFlags(ChaFileDefine.SiruParts.SiruBackTop, value[2]);
+                this.objctrl.SetSiruFlags(ChaFileDefine.SiruParts.SiruFrontBot, value[3]);
+                this.objctrl.SetSiruFlags(ChaFileDefine.SiruParts.SiruBackBot, value[4]);
+            }
+            get
+            {
+                // return juice level of (face, FrontUp, BackUp, FrontDown, BackDown) in tuple
+                var jInfo = new byte[5]
+                {
+                this.objctrl.GetSiruFlags(ChaFileDefine.SiruParts.SiruKao),
+                this.objctrl.GetSiruFlags(ChaFileDefine.SiruParts.SiruFrontTop),
+                this.objctrl.GetSiruFlags(ChaFileDefine.SiruParts.SiruBackTop),
+                this.objctrl.GetSiruFlags(ChaFileDefine.SiruParts.SiruFrontBot),
+                this.objctrl.GetSiruFlags(ChaFileDefine.SiruParts.SiruBackBot)
+            };
+
+                return jInfo;
+            }
         }
 
-        public void set_juice(byte[] juices)
+        public float tearLevel
         {
-            // juices: level on (face, FrontUp, BackUp, FrontDown, BackDown) when 0-none, 1-few, 2-lots
-            this.objctrl.SetSiruFlags(ChaFileDefine.SiruParts.SiruKao, juices[0]);
-            this.objctrl.SetSiruFlags(ChaFileDefine.SiruParts.SiruFrontTop, juices[1]);
-            this.objctrl.SetSiruFlags(ChaFileDefine.SiruParts.SiruBackTop, juices[2]);
-            this.objctrl.SetSiruFlags(ChaFileDefine.SiruParts.SiruFrontBot, juices[3]);
-            this.objctrl.SetSiruFlags(ChaFileDefine.SiruParts.SiruBackBot, juices[4]);
+            get
+            {
+                // return tear level
+                return this.objctrl.GetTears();
+            }
+            set
+            {
+                // level: 0~1
+                this.objctrl.SetTears(value);
+            }
         }
 
-        public List<byte> get_juice()
+        public float tuya
         {
-            // return juice level of (face, FrontUp, BackUp, FrontDown, BackDown) in tuple
-            var jInfo = new List<byte>();
-            jInfo.Add(this.objctrl.GetSiruFlags(ChaFileDefine.SiruParts.SiruKao));
-            jInfo.Add(this.objctrl.GetSiruFlags(ChaFileDefine.SiruParts.SiruFrontTop));
-            jInfo.Add(this.objctrl.GetSiruFlags(ChaFileDefine.SiruParts.SiruBackTop));
-            jInfo.Add(this.objctrl.GetSiruFlags(ChaFileDefine.SiruParts.SiruFrontBot));
-            jInfo.Add(this.objctrl.GetSiruFlags(ChaFileDefine.SiruParts.SiruBackBot));
-            return jInfo;
+            set
+            {
+                // level: tuya 0~1
+                this.objctrl.SetTuyaRate(value);
+            }
+            get
+            {
+                // return tuya rate
+                return this.objctrl.oiCharInfo.SkinTuyaRate;
+            }
         }
 
-        public void set_tear(float level)
+        public float wet
         {
-            // level: 0~1
-            this.objctrl.SetTears(level);
-        }
-
-        public float get_tear()
-        {
-            // return tear level
-            return this.objctrl.GetTears();
-        }
-
-        public void set_tuya(float level)
-        {
-            // level: tuya 0~1
-            this.objctrl.SetTuyaRate(level);
-        }
-
-        public float get_tuya()
-        {
-            // return tuya rate
-            return this.objctrl.oiCharInfo.SkinTuyaRate;
-        }
-
-        public void set_wet(float level)
-        {
-            // level: wet 0~1
-            this.objctrl.SetWetRate(level);
-        }
-
-        public float get_wet()
-        {
-            // return wet rate
-            return this.objctrl.oiCharInfo.WetRate;
+            get
+            {
+                // return wet rate
+                return this.objctrl.oiCharInfo.WetRate;
+            }
+            set
+            {
+                // level: wet 0~1
+                this.objctrl.SetWetRate(value);
+            }
         }
 
         /*
@@ -144,66 +348,23 @@ namespace VNActor
         }
         */
 
-        public void set_simple(bool simpleState)
+        public int eyebrow_ptn
         {
-            // simple = one color, 1(true)/0(false)
-            this.objctrl.SetVisibleSimple(simpleState);
+            get
+            {
+                // return eyebrow pattern
+                return this.objctrl.charInfo.GetEyebrowPtn();
+            }
+            set
+            {
+                this.objctrl.charInfo.ChangeEyebrowPtn(value);
+            }
         }
 
-        public void set_simple_color(Color simpleColor)
-        {
-            // simple color
-            this.objctrl.SetSimpleColor(simpleColor);
-        }
-
-        public Color get_simple_color()
-        {
-            // return simple color
-            return this.objctrl.oiCharInfo.simpleColor;
-        }
-
-        public int get_look_eye_ptn()
-        {
-            // return eye look at pattern: 0: front, 1: camera, 2: hide from camera, 3: fix, 4: operate
-            return this.objctrl.charInfo.GetLookEyesPtn();
-        }
-
-        public void set_look_neck(int ptn)
-        {
-            // ptn for CharaStudio: 0: front, 1: camera, 2: hide from camera, 3: by anime, string = 4: fix
-            //if isinstance(ptn, str):
-            //    self.set_look_neck_full2(ptn)
-            //else:
-            this.objctrl.ChangeLookNeckPtn(ptn);
-        }
-
-        public int get_look_neck()
-        {
-            // return neck look pattern: 0: front, 1: camera, 2: hide from camera, 3: by anime, 4: fix neck full as a string
-            var ptn = this.objctrl.charInfo.GetLookNeckPtn();
-            //if ptn == 4:
-            //    return self.get_look_neck_full2()
-            //else:
-            //    return ptn
-            return ptn;
-        }
-
-        public void set_eyebrow_ptn(int ptn)
-        {
-            // ptn: 0 to 16
-            this.objctrl.charInfo.ChangeEyebrowPtn(ptn);
-        }
-
-        public int get_eyebrow_ptn()
-        {
-            // return eyebrow pattern
-            return this.objctrl.charInfo.GetEyebrowPtn();
-        }
-
-        public void set_kinematic(int mode, bool force = false)
+        public void set_kinematic(KinematicMode mode, bool force = false)
         {
             // mode: 0-none, 1-IK, 2-FK, 3-IK&FK
-            if (mode == 3)
+            if (mode == KinematicMode.IKFK)
             {
                 // enable IK
                 this.objctrl.finalIK.enabled = true;
@@ -225,13 +386,13 @@ namespace VNActor
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine(String.Format("Error set kinematic to 3(IK&FK), when ActiveFK[%d: %s]. Error message = {0}, Exception type = {0}", i, FKCtrl.parts[i].ToString(), e.ToString(), e.ToString()));
+                        Console.WriteLine(String.Format($"Error set kinematic to 3(IK&FK), when ActiveFK[{i}: {FKCtrl.parts[i]}]. Error message = {e}"));
                     }
                 }
                 // call ActiveKinematicMode to set pvCopy?
                 this.objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.IK, true, false);
             }
-            else if (mode == 2)
+            else if (mode == KinematicMode.FK)
             {
                 if (this.objctrl.oiCharInfo.enableIK)
                 {
@@ -239,9 +400,9 @@ namespace VNActor
                     {
                         this.objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.IK, false, force);
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
-                        Console.WriteLine("Error set kinematic to 2(FK), when clear IK");
+                        Console.WriteLine($"Error set kinematic to 2(FK), when clear IK. Error message = {e}");
                     }
                 }
                 if (!this.objctrl.oiCharInfo.enableFK)
@@ -250,13 +411,13 @@ namespace VNActor
                     {
                         this.objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.FK, true, force);
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
-                        Console.WriteLine("Error set kinematic to 2(FK), when set FK");
+                        Console.WriteLine($"Error set kinematic to 2(FK), when set FK. Error message = {e}");
                     }
                 }
             }
-            else if (mode == 1)
+            else if (mode == KinematicMode.IK)
             {
                 if (this.objctrl.oiCharInfo.enableFK)
                 {
@@ -264,9 +425,9 @@ namespace VNActor
                     {
                         this.objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.FK, false, force);
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
-                        Console.WriteLine("Error set kinematic to 1(IK), when clear FK");
+                        Console.WriteLine($"Error set kinematic to 1(IK), when clear FK. Error message = {e}");
                     }
                 }
                 if (!this.objctrl.oiCharInfo.enableIK)
@@ -275,9 +436,9 @@ namespace VNActor
                     {
                         this.objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.IK, true, force);
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
-                        Console.WriteLine("Error set kinematic to 1(IK), when set IK");
+                        Console.WriteLine($"Error set kinematic to 1(IK), when set IK. Error message = {e}");
                     }
                 }
             }
@@ -289,9 +450,9 @@ namespace VNActor
                     {
                         this.objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.IK, false, force);
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
-                        Console.WriteLine("Error set kinematic to 0(None), when clear IK");
+                        Console.WriteLine($"Error set kinematic to 0(None), when clear IK. Error message = {e}");
                     }
                 }
                 if (this.objctrl.oiCharInfo.enableFK)
@@ -300,9 +461,9 @@ namespace VNActor
                     {
                         this.objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.FK, false, force);
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
-                        Console.WriteLine("Error set kinematic to 0(None), when clear FK");
+                        Console.WriteLine($"Error set kinematic to 0(None), when clear FK. Error message = {e}");
                     }
                 }
             }
@@ -339,113 +500,116 @@ namespace VNActor
             }
         }
 
-        public Dictionary<string, (Vector3, Vector3?)> export_ik_target_info(bool activedOnly = true)
+        public Dictionary<string, IK_node_s> export_ik_target_info(bool activedOnly = true)
         {
             // export a dic contents IK target info
-            var itDic = new Dictionary<string, (Vector3, Vector3?)>
+            var itDic = new Dictionary<string, IK_node_s>
             {
             };
             foreach (var itInfo in this.objctrl.listIKTarget)
             {
                 if (!activedOnly || itInfo.active)
                 {
-                    string tgtName = itInfo.boneObject.name;
-                    Vector3 pos = itInfo.targetInfo.changeAmount.pos;
-                    Vector3 posClone = new Vector3(pos.x, pos.y, pos.z);
-                    if (tgtName.Contains("_Hand_") || tgtName.Contains("_Foot01_"))
+                    var tgtName = itInfo.boneObject.name;
+                    var pos = itInfo.targetInfo.changeAmount.pos;
+                    var posClone = new Vector3(pos.x, pos.y, pos.z);
+                    if (tgtName.Contains("_hand_") || tgtName.Contains("_leg03_"))
                     {
-                        Vector3 rot = itInfo.targetInfo.changeAmount.rot;
-                        Vector3 rotClone = new Vector3(rot.x, rot.y, rot.z);
-                        // rotClone = Vector3(rot.x if rot.x <= 180 else rot.x - 360, rot.y if rot.y <= 180 else rot.y - 360, rot.z if rot.z <= 180 else rot.z - 360)
-                        itDic[tgtName] = (posClone, rotClone);
+                        var rot = itInfo.targetInfo.changeAmount.rot;
+                        var rotClone = new Vector3(rot.x, rot.y, rot.z);
+                        //rotClone = Vector3(rot.x if rot.x <= 180 else rot.x - 360, rot.y if rot.y <= 180 else rot.y - 360, rot.z if rot.z <= 180 else rot.z - 360)
+                        itDic[tgtName] = new IK_node_s { pos = posClone, rot = rotClone };
                     }
                     else
                     {
-                        itDic[tgtName] = (posClone, null);
+                        itDic[tgtName] = new IK_node_s { pos = posClone, rot = null };
                     }
                 }
             }
-            // print "exported", len(itDic), "IK Targets"
+            //print "exported", len(itDic), "IK Targets"
             return itDic;
         }
 
-        public void import_ik_target_info(Dictionary<string, (Vector3 pos, Vector3? rot)> itDic)
+        public void import_ik_target_info(Dictionary<string, IK_node_s> itDic)
         {
-            // import IK target info from dic
+            // import IK target info from dic 
             foreach (var ikTgt in this.objctrl.listIKTarget)
             {
                 var ikTgName = ikTgt.boneObject.name;
                 if (itDic.ContainsKey(ikTgName))
                 {
+
                     ikTgt.targetInfo.changeAmount.pos = itDic[ikTgName].pos;
 
-                    if ((ikTgName.Contains("_Hand_") || ikTgName.Contains("_Foot01_")))
+                    if (ikTgName.Contains("_hand_") || ikTgName.Contains("_leg03_"))
                     {
-                        if (itDic[ikTgName].rot is Vector3 vec)
+                        if (itDic[ikTgName].rot is Vector3 ik_rot)
                         {
-                            ikTgt.targetInfo.changeAmount.rot = vec;
+                            ikTgt.targetInfo.changeAmount.rot = ik_rot;
                         }
                     }
                 }
             }
         }
 
-        public string get_look_neck_full2()
+        public byte[] look_neck_full2
         {
-            // needed only to save Fixed state
-            if (this.get_look_neck() == 4)
+            get
             {
-                var memoryStream = new MemoryStream();
-                var binaryWriter = new BinaryWriter(memoryStream);
-                this.objctrl.neckLookCtrl.SaveNeckLookCtrl(binaryWriter);
-                binaryWriter.Close();
-                memoryStream.Close();
-                return Utils.bytearray_to_str64(memoryStream.ToArray());
+                // needed only to save Fixed state
+                if (this.look_neck == 4)
+                {
+                    var memoryStream = new MemoryStream();
+                    var binaryWriter = new BinaryWriter(memoryStream);
+                    this.objctrl.neckLookCtrl.SaveNeckLookCtrl(binaryWriter);
+                    binaryWriter.Close();
+                    memoryStream.Close();
+                    return memoryStream.ToArray();
+                }
+                else
+                {
+                    return null;
+                }
             }
-            else
+            set
             {
-                return "";
+                // needed only to set Fixed state
+                if (!value.IsNullOrEmpty())
+                {
+                    // if non-fixed-state - move to it!
+                    this.look_neck = 4;
+                }
+                if (this.look_neck == 4)
+                {
+                    // print lst
+                    // print arrstate
+                    var binaryReader = new BinaryReader(new MemoryStream(value));
+                    this.objctrl.neckLookCtrl.LoadNeckLookCtrl(binaryReader);
+                }
             }
         }
 
-        public void set_look_neck_full2(string str64)
+        public byte[] curcloth_coordinate
         {
-            // needed only to set Fixed state
-            if (str64.Length > 0)
+            get
             {
-                // if non-fixed-state - move to it!
-                this.set_look_neck(4);
+                return this.objctrl.charInfo.nowCoordinate.SaveBytes();
             }
-            if (this.get_look_neck() == 4)
+            set
             {
-                // print lst
-                var arrstate = Utils.str64_to_bytearray(str64);
-                // print arrstate
-                var binaryReader = new BinaryReader(new MemoryStream(arrstate));
-                this.objctrl.neckLookCtrl.LoadNeckLookCtrl(binaryReader);
+                try
+                {
+                    this.objctrl.charInfo.nowCoordinate.LoadBytes(value, ChaFileDefine.ChaFileCoordinateVersion);
+                    this.objctrl.charInfo.Reload();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(String.Format("Exception in set_curcloth_coordinate, {0}", e.ToString()));
+                }
             }
         }
 
-        public string get_curcloth_coordinate()
-        {
-            var bytes = this.objctrl.charInfo.nowCoordinate.SaveBytes();
-            return Utils.bytearray_to_str64(bytes);
-        }
-
-        public void set_curcloth_coordinate(string str64)
-        {
-            var bytes = Utils.str64_to_bytearray(str64);
-            try
-            {
-                this.objctrl.charInfo.nowCoordinate.LoadBytes(bytes, ChaFileDefine.ChaFileCoordinateVersion);
-                this.objctrl.charInfo.Reload();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(String.Format("Exception in set_curcloth_coordinate, {0}", e.ToString()));
-            }
-        }
-
+        /*
         public float get_body_shape(int p1)
         {
             return this.charInfo.GetShapeBodyValue(p1);
@@ -470,6 +634,7 @@ namespace VNActor
         {
             return this.get_body_shapes_all().Length;
         }
+                */
 
         public object get_face_shape(int p1)
         {
@@ -481,9 +646,16 @@ namespace VNActor
             this.charInfo.SetShapeFaceValue(p1, p2);
         }
 
-        public float[] get_face_shapes_all()
+        public float[] face_shapes_all
         {
-            return this.objctrl.oiCharInfo.charFile.custom.face.shapeValueFace;
+            get
+            {
+                return this.objctrl.oiCharInfo.charFile.custom.face.shapeValueFace;
+            }
+            set
+            {
+                this.objctrl.oiCharInfo.charFile.custom.face.shapeValueFace = value;
+            }
         }
 
         public object get_face_shape_names()
@@ -491,10 +663,16 @@ namespace VNActor
             return ChaFileDefine.cf_headshapename;
         }
 
-        public int get_face_shapes_count()
+        public int face_shapes_count
         {
-            return this.face_shapes_all.Length;
+            get
+            {
+                return this.face_shapes_all.Length;
+            }
         }
+        
+
+        /* TODO
 
         public string get_aipedata()
         {
@@ -510,101 +688,31 @@ namespace VNActor
 
             }
         }
+        */
 
         public static void char_tuya(Actor chara, ActorData param)
         {
             // param = skin tuya 0~1
-            chara.set_tuya(param.tuya);
+            chara.tuya = param.tuya;
         }
 
         public static void char_wet(Actor chara, ActorData param)
         {
             // param = skin wet 0~1
-            chara.set_wet(param.wetness);
+            chara.wet = param.wetness;
         }
 
         public ActorData export_full_status()
         {
             // export a dict contains all actor status
-            var fs = new Dictionary<string, object>
-            {
-            };
-            fs["visible"] = this.visible;
-            fs["move_to"] = this.pos;
-            fs["rotate_to"] = this.rot;
-            fs["scale_to"] = this.scale;
-            fs["anim"] = this.get_animate();
-            fs["anim_spd"] = this._anime_speed;
-            fs["anim_ptn"] = this.get_animePattern();
-            fs["anim_lp"] = this.get_anime_forceloop();
-            fs["cloth_all"] = this.get_cloth();
-            fs["acc_all"] = this.get_accessory();
-            if (this.sex == 1)
-            {
-                fs["juice"] = this.get_juice();
-                fs["nip_stand"] = this.get_nipple_stand();
-            }
-            fs["tear"] = this.get_tear();
-            fs["face_red"] = this.get_facered();
-            fs["skin_tuya"] = this.get_tuya();
-            fs["skin_wet"] = this.get_wet();
-            fs["simple"] = this.get_simple();
-            fs["simple_color"] = this.get_simple_color();
-            fs["son"] = this.get_son();
-            fs["look_at"] = this.get_look_eye();
-            fs["face_to"] = this.get_look_neck();
-            fs["eyebrow"] = this.get_eyebrow_ptn();
-            fs["eyes"] = this.get_eyes_ptn();
-            fs["eyes_open"] = this.get_eyes_open();
-            fs["eyes_blink"] = this.get_eyes_blink();
-            fs["mouth"] = this.get_mouth_ptn();
-            fs["mouth_open"] = this.get_mouth_open();
-            fs["lip_sync"] = this.get_lip_sync();
-            fs["hands"] = this.get_hand_ptn();
-            fs["kinematic"] = this.get_kinematic();
-            fs["fk_active"] = this.get_FK_active();
-            fs["fk_set"] = this.export_fk_bone_info();
-            fs["ik_active"] = this.get_IK_active();
-            fs["ik_set"] = this.export_ik_target_info();
-            fs["voice_lst"] = this.get_voice_lst();
-            fs["voice_rpt"] = this.get_voice_repeat();
-            // ext data, enable by ini setting
-            if (Utils.is_ini_value_true("ExportChara_CurClothesCoord"))
-            {
-                fs["ext_curclothcoord"] = this.get_curcloth_coordinate();
-            }
-            if (Utils.is_ini_value_true("ExportChara_BodyShapes"))
-            {
-                fs["ext_bodyshapes"] = this.get_body_shapes_all();
-            }
-            if (Utils.is_ini_value_true("ExportChara_FaceShapes"))
-            {
-                fs["ext_faceshapes"] = this.get_face_shapes_all();
-            }
-            if (Utils.is_ini_value_true("ExportChara_AnimeAuxParam"))
-            {
-                fs["anim_optprm"] = this.get_anime_option_param();
-            }
-            // plugin data, enable by ini setting
-            if (Utils.is_ini_value_true("ExportChara_AIPE"))
-            {
-                try
-                {
-                    fs["pl_aipedata"] = this.get_aipedata();
-                }
-                catch (Exception)
-                {
-                    Console.WriteLine("Error during get aipedata");
-                }
-            }
-            return fs;
+            return new ActorData(this);
         }
 
         public object h_partner(int hType = 0, int hPosition = 0)
         {
             // return tuple of valid partner for current actor
             // 0: male, 1: female, -1: both
-            return ValueTuple.Create(-1);
+            return -1;
         }
 
         public void h_with(
@@ -628,17 +736,17 @@ namespace VNActor
             {
                 partner.move(pos: this.pos, rot: this.rot, scale: this.scale);
             }
-            if (this._anime_speed != partner._anime_speed)
+            if (this.animeSpeed != partner.animeSpeed)
             {
-                partner.set_animeSpeed(this._anime_speed);
+                partner.animeSpeed = this.animeSpeed;
             }
-            if (this.get_animePattern() != partner.get_animePattern())
+            if (this.animePattern != partner.animePattern)
             {
-                partner.set_animePattern(this.get_animePattern());
+                partner.animePattern = this.animePattern;
             }
-            if (this.get_anime_forceloop() != partner.get_anime_forceloop())
+            if (this.anime_forceloop != partner.anime_forceloop)
             {
-                partner.set_anime_forceloop(this.get_anime_forceloop());
+                partner.anime_forceloop = this.anime_forceloop;
             }
             // decide sex role
             if (this.sex == 0)
@@ -652,10 +760,10 @@ namespace VNActor
                 factor = this;
             }
             // show son for male
-            var mss = mactor.get_son();
+            var mss = mactor.son;
             if (!mss.visible && mactor.sex == 0)
             {
-                mactor.set_son((true, mss.length));
+                mactor.son = new Son_s { visible = true, length = mss.length };
             }
             // load anime
             var info = Info.Instance;
@@ -678,8 +786,8 @@ namespace VNActor
                 }
                 Console.WriteLine(String.Format("%s anime(%d, %d, %d)", mactor.text_name, 2, validCategoryKey[hPosition], validNoKey[hStage]));
                 Console.WriteLine(String.Format("%s anime(%d, %d, %d)", factor.text_name, 1, validCategoryKey[hPosition], validNoKey[hStage]));
-                mactor.animate(2, validCategoryKey[hPosition], validNoKey[hStage]);
-                factor.animate(1, validCategoryKey[hPosition], validNoKey[hStage]);
+                mactor.setAnimate(2, validCategoryKey[hPosition], validNoKey[hStage]);
+                factor.setAnimate(1, validCategoryKey[hPosition], validNoKey[hStage]);
             }
             else if (hType == 1)
             {
@@ -696,8 +804,8 @@ namespace VNActor
                     Console.WriteLine(String.Format("invalid hStage %d, must be 0~%d", hStage, validNoKey.Count - 1));
                     return;
                 }
-                mactor.animate(4, validCategoryKey[hPosition], validNoKey[hStage]);
-                factor.animate(3, validCategoryKey[hPosition], validNoKey[hStage]);
+                mactor.setAnimate(4, validCategoryKey[hPosition], validNoKey[hStage]);
+                factor.setAnimate(3, validCategoryKey[hPosition], validNoKey[hStage]);
             }
             else if (hType == 2)
             {
@@ -714,8 +822,8 @@ namespace VNActor
                     Console.WriteLine(String.Format("invalid hStage %d, must be 0~%d", hStage, validNoKey.Count - 1));
                     return;
                 }
-                mactor.animate(6, validCategoryKey[hPosition], validNoKey[hStage]);
-                factor.animate(5, validCategoryKey[hPosition], validNoKey[hStage]);
+                mactor.setAnimate(6, validCategoryKey[hPosition], validNoKey[hStage]);
+                factor.setAnimate(5, validCategoryKey[hPosition], validNoKey[hStage]);
             }
             else if (hType == 3)
             {
@@ -732,8 +840,8 @@ namespace VNActor
                     Console.WriteLine(String.Format("invalid hStage %d, must be 0~%d", hStage, validNoKey.Count - 1));
                     return;
                 }
-                mactor.animate(8, validCategoryKey[hPosition], validNoKey[hStage]);
-                factor.animate(7, validCategoryKey[hPosition], validNoKey[hStage]);
+                mactor.setAnimate(8, validCategoryKey[hPosition], validNoKey[hStage]);
+                factor.setAnimate(7, validCategoryKey[hPosition], validNoKey[hStage]);
             }
             else
             {
@@ -756,46 +864,34 @@ namespace VNActor
                     Console.WriteLine(String.Format("invalid hStage %d, must be 0~%d", hStage, validNoKey.Count - 1));
                     return;
                 }
-                mactor.animate(9, validCategoryKey[hPosition], validNoKey[hStage]);
-                factor.animate(9, validCategoryKey[hPosition] + 1, validNoKey[hStage]);
+                mactor.setAnimate(9, validCategoryKey[hPosition], validNoKey[hStage]);
+                factor.setAnimate(9, validCategoryKey[hPosition] + 1, validNoKey[hStage]);
             }
             // auto adjust anime param
             Console.WriteLine(String.Format("factor(%s): height=%.2f breast=%.2f", factor.text_name, factor.height, factor.breast));
-            var anime_option_param = (factor.height, factor.breast);
+            var anime_option_param = new AnimeOption_s { height = factor.height, breast = factor.breast};
             if (factor.isHAnime)
             {
-                factor.set_anime_option_param(anime_option_param);
+                factor.anime_option_param = anime_option_param;
             }
             if (mactor.isHAnime)
             {
-                mactor.set_anime_option_param(anime_option_param);
+                mactor.anime_option_param = anime_option_param;
             }
             foreach (var extActor in extActors)
             {
                 if (extActor != null && extActor.isHAnime)
                 {
-                    extActor.set_anime_option_param(anime_option_param);
+                    extActor.anime_option_param = anime_option_param;
                 }
             }
         }
 
-        public static void char_tuya(Actor chara, ActorData param)
-        {
-            // param = skin tuya 0~1
-            chara.tuya = param.tuya;
-        }
-
-        public static void char_wet(Actor chara, ActorData param)
-        {
-            // param = skin wet 0~1
-            chara.set_wet(param.wetness);
-        }
-
-        public static (string, string, string, string, string) get_hanime_group_names()
+        public static string[] get_hanime_group_names()
         {
             var info = Info.Instance;
             var gcDic = info.dicAGroupCategory;
-            return (gcDic[1].name, gcDic[3].name, gcDic[5].name, gcDic[7].name, gcDic[9].name);
+            return new string[] { gcDic[1].name, gcDic[3].name, gcDic[5].name, gcDic[7].name, gcDic[9].name };
         }
 
 
@@ -830,18 +926,13 @@ namespace VNActor
             return nName;
         }
 
-        public static void char_juice(Actor chara, ActorData param)
-        {
-            // param = juice level on (face, FrontUp, BackUp, FrontDown, BackDown) where 0-none, 1-few, 2-lots, or just on int to set all
-            chara.set_juice(param.juice);
-        }
-
         public static void char_tear(Actor chara, ActorData param)
         {
             // param = tear level(0,1,2,3) or (0~1 for PH)
-            chara.set_tear(param.tearLevel);
+            chara.tearLevel = param.tearLevel;
         }
 
+        /* TODO
         public static void char_accessory(Actor chara, ActorData param)
         {
             // param = (accIndex, accShow)
@@ -856,15 +947,9 @@ namespace VNActor
             // param = (accIndex, accShow)
             chara.set_accessory(param.accessory.accIndex, param.accessory.accShow);
         }
+        */
 
-        public static void char_all_accessories(Actor chara, ActorData param)
-        {
-            if (chara is Actor aiChara)
-            {
-                char_all_accessories(aiChara, param);
-            }
-        }
-
+        /*
         public static void char_all_accessories(Actor chara, ActorData param)
         {
             // param = 0(hide all)/1(show all)
@@ -872,25 +957,15 @@ namespace VNActor
             // param = (accShow0, accShow1, ... accShow19)
             chara.set_accessory(param.showAllAccessories);
         }
+        */
 
-        public static void char_neck_look_full2(Actor chara, ActorData param)
-        {
-            if (chara is Actor aiChara)
-            {
-                char_neck_look_full2(aiChara, param);
-            }
-            else
-            {
-                return;
-            }
-        }
-
+        /*
         public static void char_neck_look_full2(Actor chara, ActorData param)
         {
             // param = array of bytes, use dump to get it
             try
             {
-                chara.set_look_neck_full2(param.neck);
+                chara.look_neck_full2 = param.neck;
             }
             catch (Exception e)
             {
@@ -898,6 +973,9 @@ namespace VNActor
                 Console.WriteLine("Sorry, we just pass it...");
             }
         }
+        */
+
+        /*
 
         private static Dictionary<string, (CharaActFunction, bool)> char_act_funcs = new Dictionary<string, (CharaActFunction, bool)> {
         {
@@ -1060,6 +1138,6 @@ namespace VNActor
             "pl_aipedata",
             (char_pl_aipedata, false)}};
 
-
+        */
     }
 }

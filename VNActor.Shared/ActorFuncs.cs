@@ -173,7 +173,7 @@ namespace VNActor
             // param = array of bytes, use dump to get it
             try
             {
-                chara.set_look_neck_full2(param.neck);
+                chara.look_neck_full2 = param.neck;
             }
             catch (Exception e)
             {
