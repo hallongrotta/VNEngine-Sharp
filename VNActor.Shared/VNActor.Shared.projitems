@@ -18,6 +18,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Light.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Item.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NEOActorData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NEOItemData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PropFuncs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Route.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utils.cs" />

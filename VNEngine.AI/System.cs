@@ -124,7 +124,10 @@ namespace VNEngine
                 throw new NotImplementedException();
             }
 
-            
+            public SystemData()
+            {
+
+            }
 
             public SystemData(NeoV2Controller game)
             {

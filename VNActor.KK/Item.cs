@@ -13,136 +13,59 @@ namespace VNActor
        
 
         [MessagePackObject(keyAsPropertyName: true)]
-        public class ItemData : IDataClass
+        public class ItemData : NEOItemData, IDataClass
         {
-            // Item
-            public bool visible;
-            public Vector3 position;
-            public Vector3 rotation;
-            public Vector3 scale;
-            public Dictionary<int, Color> color;
-            public float? alpha;
-            public Panel? pnl_set;
-            public PanelDetail_s? pnl_dtl;
-            public Emission_s? emission;
-            public List<Vector3> fk_set;
-            public float? anim_spd;
-            public Dictionary<int, Pattern> ptn_set;
-            public Dictionary<int, PatternDetail_s> ptn_dtl;
-            public float? light_cancel;
-            public Line_s? line;
-            public Color? shadow_color;
-            public bool? db_active;
-
-            public void Remove(string key)
-            {
-                throw new NotImplementedException();
-            }
 
             public ItemData()
             {
 
             }
 
-            public ItemData(Item p)
+            override public void Apply(Item i)
             {
-                // export full status of prop
-                visible = p.visible;
-                position = p.pos;
-                rotation = p.rot;
-                scale = p.scale;
-                if (p.isAnime)
+                base.Apply(i);
+                if (i.hasLine)
                 {
-                    anim_spd = p.anime_speed;
+                    if (line is Line_s line_s)
+                    {
+                        line = line_s;
+                    }
                 }
-                else
+                if (i.hasShadowColor)
                 {
-                    anim_spd = null;
+                    if (shadow_color is Color c)
+                    {
+                        shadow_color = c;
+                    }
                 }
-                if (p.isColorable)
+                if (i.hasLightCancel)
                 {
-                    color = p.color;
+                    if (light_cancel is float cancel)
+                        light_cancel = cancel;
                 }
-                else
+                if (i.isFK)
                 {
-                    color = null;
+                    i.import_fk_bone_info(fk_set);
                 }
-                if (p.hasPattern)
-                {
-                    ptn_set = p.pattern;
-                    ptn_dtl = p.pattern_detail;
-                }
-                else
-                {
-                    ptn_set = null;
-                    ptn_dtl = null;
-                }
+            }
 
-                if (p.hasPanel)
+            public ItemData(Item i) : base(i)
+            {              
+                if (i.hasLine)
                 {
-                    pnl_set = p.panel;
-                    pnl_dtl = p.panel_detail;
+                    line = i.line;
                 }
-                else
+                if (i.hasShadowColor)
                 {
-                    pnl_set = null;
-                    pnl_dtl = null;
+                    shadow_color = i.shadow_color;
                 }
-                if (p.hasEmission)
+                if (i.hasLightCancel)
                 {
-                    emission = p.emission;
+                    light_cancel = i.light_cancel;
                 }
-                else
+                if (i.isFK)
                 {
-                    emission = null;
-                }
-                if (p.hasAlpha)
-                {
-                    alpha = p.alpha;
-                }
-                else
-                {
-                    alpha = null;
-                }
-                if (p.hasLine)
-                {
-                    line = p.line;
-                }
-                else
-                {
-                    line = null;
-                }
-                if (p.hasShadowColor)
-                {
-                    shadow_color = p.shadow_color;
-                }
-                else
-                {
-                    shadow_color = null;
-                }
-                if (p.hasLightCancel)
-                {
-                    light_cancel = p.light_cancel;
-                }
-                else
-                {
-                    light_cancel = null;
-                }
-                if (p.isFK)
-                {
-                    fk_set = p.export_fk_bone_info();
-                }
-                else
-                {
-                    fk_set = null;
-                }
-                if (p.isDynamicBone)
-                {
-                    db_active = p.dynamicbone_enable;
-                }
-                else
-                {
-                    db_active = null;
+                    fk_set = i.export_fk_bone_info();
                 }
             }
         }
@@ -633,68 +556,9 @@ namespace VNActor
 
         public void import_status(ItemData p)
         {
-            // export full status of prop
-            visible = p.visible;
-            pos = p.position;
-            rot = p.rotation;
-            scale = p.scale;
-            if (p.anim_spd is float f)
-            {
-                anime_speed = f;
-            }
-            if (isColorable && (p.color is Dictionary<int, Color>))
-            {
-                color = p.color;
-            }
-            if (hasPattern)
-            {
-                pattern = p.ptn_set;
-                pattern_detail = p.ptn_dtl;
-            }
+            p.Apply(this);
 
-            if (hasPanel && p.pnl_set is Panel panel_set && p.pnl_dtl is PanelDetail_s detail)
-            {
-                panel = panel_set;
-                panel_detail = detail;
-            }
-            if (hasEmission && p.emission is Emission_s e)
-            {
-                emission = e;
-            }
-            if (hasAlpha && p.alpha is float alpha_set)
-            {
-                alpha = alpha_set;
-            }
-            if (hasLine)
-            {
-                if (p.line is Line_s line_s)
-                {
-                    line = line_s;
-                }
-            }
-            if (hasShadowColor)
-            {
-                if (p.shadow_color is Color c)
-                {
-                    shadow_color = c;
-                }
-            }
-            if (hasLightCancel)
-            {
-                if (p.light_cancel is float cancel)
-                    light_cancel = cancel;
-            }
-            if (isFK)
-            {
-                import_fk_bone_info(p.fk_set);
-            }
-            if (isDynamicBone)
-            {
-                if (p.db_active is bool b)
-                {
-                    dynamicbone_enable = b;
-                }
-            }
+
         }
 
 

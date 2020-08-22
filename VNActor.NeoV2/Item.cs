@@ -7,129 +7,98 @@ using UnityEngine;
 
 namespace VNActor
 {
-    public partial class Item
+    public partial class Item : IVNObject
     {
 
-        public class ItemData : IDataClass
+        public class ItemData : NEOItemData, IDataClass
         {
-
-            public bool visible;
-            public Vector3 position;
-            public Vector3 rotation;
-            public Vector3 scale;
-            public Dictionary<int, Color> color;
-            public float? alpha;
-            public Panel? pnl_set;
-            public PanelDetail_s? pnl_dtl;
-            public Emission_s? emission;
-            public List<Vector3> fk_set;
-            public float? anim_spd;
-            public Dictionary<int, Pattern> ptn_set;
-            public Dictionary<int, PatternDetail_s> ptn_dtl;
-            public float? light_cancel;
-            public Line_s? line;
-            public Color? shadow_color;
-            public bool? db_active;
-
             // Distinct
             private bool option;
             private bool fk_active;
             private Metallic_s[] metallic;
             private int anim_ptn;
 
-            public ItemData(Item i)
+            public ItemData() : base()
             {
-                // export full status of prop
-                visible = i.visible;
-                position = i.pos;
-                rotation = i.rot;
-                if (i.isItem)
+
+            }
+
+            public override void Apply(Item i)
+            {
+                base.Apply(i);
+                if (i.hasOption)
                 {
-                    scale = i.scale;
-                    if (i.isColorable)
+                    i.option = option;
+                }
+                if (i.hasMetallic)
+                {
+                    i.metallic = metallic;
+                }
+                if (i.isFK)
+                {
+                    i.fk_enable = fk_active;
+                    if (fk_active)
                     {
-                        color = i.get_color();
-                    }
-                    if (i.hasPattern)
-                    {
-                        ptn_set = i.pattern;
-                        ptn_dtl = i.pattern_detail;
-                    }
-                    if (i.hasPanel)
-                    {
-                        pnl_set = i.panel;
-                        pnl_dtl = i.panel_detail;
-                    }
-                    if (i.hasMetallic)
-                    {
-                        metallic = i.metallic;
-                    }
-                    if (i.hasEmission)
-                    {
-                        emission = i.emission;
-                    }
-                    if (i.hasAlpha)
-                    {
-                        alpha = i.alpha;
-                    }
-                    if (i.hasOption)
-                    {
-                        option = i.option;
-                    }
-                    if (i.isFK)
-                    {
-                        fk_active = i.fk_enable;
-                        if (fk_active)
-                        {
-                            fk_set = i.export_fk_bone_info();
-                        }
-                        else
-                        {
-                            fk_set = null;
-                        }
-                    }
-                    if (i.isDynamicBone)
-                    {
-                        db_active = i.dynamicbone_enable;
-                    }
-                    if (i.isAnime)
-                    {
-                        anim_spd = i.anime_speed;
-                    }
-                    if (i.hasAnimePattern)
-                    {
-                        anim_ptn = i.anime_pattern;
+                        i.import_fk_bone_info(fk_set);
                     }
                 }
-                /*
-                if (i.isLight)
+            }
+
+            public ItemData(Item i) : base(i)
+            {
+                if (i.hasMetallic)
                 {
-                    color = i.color();
-                    enable = i.enable;
-                    intensity = i.intensity;
-                    shadow = i.shadow;
-                    if (i.hasRange)
-                    {
-                        range = i.range();
-                    }
-                    if (i.hasAngle)
-                    {
-                        angle = i.angle();
-                    }
+                    metallic = i.metallic;
                 }
-                if (i.isRoute)
+                if (i.hasOption)
                 {
-                    if (Utils.is_ini_value_true("ExportProp_RouteFull"))
+                    option = i.option;
+                }
+                if (i.isFK)
+                {
+                    fk_active = i.fk_enable;
+                    if (fk_active)
                     {
-                        route_f = i.route_full();
+                        fk_set = i.export_fk_bone_info();
                     }
                     else
                     {
-                        route_p = i.route_play();
+                        fk_set = null;
                     }
                 }
-                */
+                if (i.hasAnimePattern)
+                {
+                    anim_ptn = i.anime_pattern;
+                }
             }
+            /*
+            if (i.isLight)
+            {
+                color = i.color();
+                enable = i.enable;
+                intensity = i.intensity;
+                shadow = i.shadow;
+                if (i.hasRange)
+                {
+                    range = i.range();
+                }
+                if (i.hasAngle)
+                {
+                    angle = i.angle();
+                }
+            }
+            if (i.isRoute)
+            {
+                if (Utils.is_ini_value_true("ExportProp_RouteFull"))
+                {
+                    route_f = i.route_full();
+                }
+                else
+                {
+                    route_p = i.route_play();
+                }
+            }
+            */
         }
 
 
@@ -142,65 +111,67 @@ namespace VNActor
             public float glossiness;
         }
 
-        public void set_color(Color[] color)
+        public Dictionary<int, Color> color
         {
-            // color : a tuple of UnityEngine.Color
-            if (this.isColorable)
+            set
             {
+                // color : a tuple of UnityEngine.Color
+                if (this.isColorable)
+                {
 
-                OCIItem item = (OCIItem)this.objctrl;
+                    OCIItem item = this.objctrl;
 
-                var i = 0;
-                if (item.useColor[0] && i < color.Length && color[i] != null)
-                {
-                    item.itemInfo.colors[0].mainColor = color[i];
+                    var i = 0;
+                    if (item.useColor[0] && color.ContainsKey(i))
+                    {
+                        item.itemInfo.colors[0].mainColor = color[i];
+                    }
+                    i = 1;
+                    if (item.useColor[1] && color.ContainsKey(i))
+                    {
+                        item.itemInfo.colors[1].mainColor = color[i];
+                    }
+                    i = 2;
+                    if (item.useColor[2] && color.ContainsKey(i))
+                    {
+                        item.itemInfo.colors[2].mainColor = color[i];
+                    }
+                    i = 3;
+                    if (item.useColor4  && color.ContainsKey(i))
+                    {
+                        item.itemInfo.colors[3].mainColor = color[i];
+                    }
+                    item.UpdateColor();
                 }
-                i = 1;
-                if (item.useColor[1] && i < color.Length && color[i] != null)
-                {
-                    item.itemInfo.colors[1].mainColor = color[i];
-                }
-                i = 2;
-                if (item.useColor[2] && i < color.Length && color[i] != null)
-                {
-                    item.itemInfo.colors[2].mainColor = color[i];
-                }
-                i = 3;
-                if (item.useColor4 && i < color.Length && color[i] != null)
-                {
-                    item.itemInfo.colors[3].mainColor = color[i];
-                }
-                item.UpdateColor();
             }
-        }
-
-        public Dictionary<int, Color> get_color()
-        {
-            // return a tuple of used color
-            if (this.isColorable)
+            get
             {
-                var cl = new Dictionary<int, Color>();
-                if (this.objctrl.useColor[0])
+                // return a tuple of used color
+                if (this.isColorable)
                 {
-                    cl[0] = this.objctrl.itemInfo.colors[0].mainColor;
+                    var cl = new Dictionary<int, Color>();
+                    if (this.objctrl.useColor[0])
+                    {
+                        cl[0] = this.objctrl.itemInfo.colors[0].mainColor;
+                    }
+                    if (this.objctrl.useColor[1])
+                    {
+                        cl[1] = this.objctrl.itemInfo.colors[1].mainColor;
+                    }
+                    if (this.objctrl.useColor[2])
+                    {
+                        cl[2] = this.objctrl.itemInfo.colors[2].mainColor;
+                    }
+                    if (this.objctrl.useColor4)
+                    {
+                        cl[3] = this.objctrl.itemInfo.colors[3].mainColor;
+                    }
+                    return cl;
                 }
-                if (this.objctrl.useColor[1])
+                else
                 {
-                    cl[1] = this.objctrl.itemInfo.colors[1].mainColor;
+                    return null;
                 }
-                if (this.objctrl.useColor[2])
-                {
-                    cl[2] = this.objctrl.itemInfo.colors[2].mainColor;
-                }
-                if (this.objctrl.useColor4)
-                {
-                    cl[3] = this.objctrl.itemInfo.colors[3].mainColor;
-                }
-                return cl;
-            }
-            else
-            {
-                throw new Exception("not colorable");
             }
         }
 
@@ -709,7 +680,15 @@ namespace VNActor
 
         public override void import_status(IDataClass status)
         {
-            throw new NotImplementedException();
+            if (status is ItemData i)
+            {
+                import_status(i);
+            }
+        }
+
+        public void import_status(ItemData i)
+        {
+            i.Apply(this);
         }
 
         /*
