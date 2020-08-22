@@ -17,6 +17,17 @@ namespace VNEngine
 
         new public static NeoV2Controller Instance { get; private set; }
 
+        public NeoV2Controller() : base()
+        {
+
+            if (Instance != null)
+            {
+                throw new InvalidOperationException("Can only create one instance of Controller");
+            }
+            this.engine_name = "neov2";
+            Instance = this;
+        }
+
         public NeoV2Controller(List<Button_s> vnButtonsStart) : base()
         {
             this.engine_name = "neov2";

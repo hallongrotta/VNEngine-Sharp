@@ -43,11 +43,8 @@ namespace VNEngine
                     BepInEx.Configuration.KeyboardShortcut shortcut = (BepInEx.Configuration.KeyboardShortcut)Config[entry].BoxedValue;
                     return shortcut.IsDown();
                 }
-                else
-                {
-                    return false;
-                }
             }
+            return false;
         }
 
         public bool CheckConfigEntry(string category, string key)

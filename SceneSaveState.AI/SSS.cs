@@ -2,8 +2,9 @@
 using BepInEx.Configuration;
 using SceneSaveState;
 using UnityEngine;
+using VNEngine;
 
-namespace VNEngine
+namespace SceneSaveState
 {
     [BepInProcess(VNEngine.Constants.StudioProcessName)]
     //[BepInDependency(GUID)]
