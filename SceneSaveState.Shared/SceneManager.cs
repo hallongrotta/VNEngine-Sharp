@@ -108,7 +108,7 @@ namespace SceneSaveState
         public void Add(Scene s)
         {
             scenes.Add(s);
-            currentSceneIndex++;
+            currentSceneIndex = scenes.Count-1;
         }
         public void Insert(Scene s)
         {
