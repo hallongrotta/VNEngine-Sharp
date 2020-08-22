@@ -34,10 +34,10 @@ namespace VNActor
 
             override public void Apply(Actor a)
             {
-                base.Apply(a);
                 a.tearLevel = tearLevel;
                 a.coordinate_type = coordinateType;
                 a.shoes_type = shoesType;
+                base.Apply(a);
             }
 
             public ActorData(Actor a, ActorData prevStatus) : this(a)
