@@ -1,6 +1,6 @@
 ﻿namespace VNActor
 {
-    interface IVNObject
+    public interface IVNObject
     {
         void import_status(IDataClass status);
 

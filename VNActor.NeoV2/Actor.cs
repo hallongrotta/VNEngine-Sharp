@@ -11,7 +11,7 @@ namespace VNActor
 {
 
     // AI Actor
-    public partial class Actor
+    public partial class Actor : IVNObject
     {
 
         public class ActorData : IDataClass
@@ -930,6 +930,11 @@ namespace VNActor
         {
             // param = tear level(0,1,2,3) or (0~1 for PH)
             chara.tearLevel = param.tearLevel;
+        }
+
+        public void import_status(IDataClass status)
+        {
+            throw new NotImplementedException();
         }
 
         /* TODO

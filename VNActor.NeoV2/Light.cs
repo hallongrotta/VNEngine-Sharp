@@ -97,6 +97,11 @@ namespace VNActor
             throw new System.NotImplementedException();
         }
 
+        public void import_status(LightData status)
+        {
+            import_status(status);
+        }
+
         public override void import_status(IDataClass status)
         {
             throw new System.NotImplementedException();
