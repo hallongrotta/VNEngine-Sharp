@@ -20,13 +20,6 @@ namespace VNEngine
 
         new public static CharaStudioController Instance { get; private set; }
 
-        public const string PluginName = "VN Controller";
-        public const string GUID = "com.kasanari.bepinex.vncontroller";
-        public const string Version = "1.0";
-        internal new static ManualLogSource Logger;
-
-
-
         public CharaStudioController() : base()
         {
 

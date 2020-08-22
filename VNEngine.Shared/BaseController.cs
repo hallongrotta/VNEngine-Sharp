@@ -10,7 +10,11 @@ namespace VNEngine
 
     public class BaseController : BaseUnityPlugin
     {
-        new internal static ManualLogSource Logger;
+        public const string PluginName = "VN Controller";
+        public const string GUID = "com.kasanari.bepinex.vncontroller";
+        public const string Version = "1.0";
+        internal new static ManualLogSource Logger;
+
         //private Component component;
         //private int counter;
         //private bool show_buttons;
@@ -32,14 +36,17 @@ namespace VNEngine
         public bool checkKeyCode(string configkey)
         {
             var entry = new ConfigDefinition("Keyboard Shortcuts", configkey);
-            if (Config.ContainsKey(entry))
+            if (entry != null)
             {
-                BepInEx.Configuration.KeyboardShortcut shortcut = (BepInEx.Configuration.KeyboardShortcut)Config[entry].BoxedValue;
-                return shortcut.IsDown();
-            }
-            else
-            {
-                return false;
+                if (Config.ContainsKey(entry))
+                {
+                    BepInEx.Configuration.KeyboardShortcut shortcut = (BepInEx.Configuration.KeyboardShortcut)Config[entry].BoxedValue;
+                    return shortcut.IsDown();
+                }
+                else
+                {
+                    return false;
+                }
             }
         }
 
