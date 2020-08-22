@@ -34,7 +34,7 @@ namespace VNEngine
             var entry = new ConfigDefinition("Keyboard Shortcuts", configkey);
             if (Config.ContainsKey(entry))
             {
-                KeyboardShortcut shortcut = (KeyboardShortcut)Config[entry].BoxedValue;
+                BepInEx.Configuration.KeyboardShortcut shortcut = (BepInEx.Configuration.KeyboardShortcut)Config[entry].BoxedValue;
                 return shortcut.IsDown();
             }
             else
@@ -50,13 +50,13 @@ namespace VNEngine
 
         public void loadConfig()
         {
-            Config.Bind("Keyboard Shortcuts", "ToggleVNControllerWindow", new KeyboardShortcut(KeyCode.F8, KeyCode.LeftControl), "Show or hide the VN Controller window in Studio.");
-            Config.Bind("Keyboard Shortcuts", "Reset", new KeyboardShortcut(KeyCode.F3, KeyCode.LeftControl), "Reset VN Controller.");
-            Config.Bind("Keyboard Shortcuts", "ReloadCurrentGame", new KeyboardShortcut(KeyCode.F10), "Reload current game.");
-            Config.Bind("Keyboard Shortcuts", "VNFrameDeveloperConsole", new KeyboardShortcut(KeyCode.F5, KeyCode.LeftControl), "Show or hide the VN Controller window in Studio");
-            Config.Bind("Keyboard Shortcuts", "DumpCamera", new KeyboardShortcut(KeyCode.F4, KeyCode.LeftControl, KeyCode.LeftAlt), "Show or hide the VN Controller window in Studio");
-            Config.Bind("Keyboard Shortcuts", "DeveloperConsole", new KeyboardShortcut(KeyCode.F4, KeyCode.LeftControl), "Show or hide the VN Controller window in Studio");
-            Config.Bind("Keyboard Shortcuts", "ReloadVNEngine", new KeyboardShortcut(KeyCode.F1, KeyCode.LeftControl), "Show or hide the VN Controller window in Studio");
+            Config.Bind("Keyboard Shortcuts", "ToggleVNControllerWindow", new BepInEx.Configuration.KeyboardShortcut(KeyCode.F8, KeyCode.LeftControl), "Show or hide the VN Controller window in Studio.");
+            Config.Bind("Keyboard Shortcuts", "Reset", new BepInEx.Configuration.KeyboardShortcut(KeyCode.F3, KeyCode.LeftControl), "Reset VN Controller.");
+            Config.Bind("Keyboard Shortcuts", "ReloadCurrentGame", new BepInEx.Configuration.KeyboardShortcut(KeyCode.F10), "Reload current game.");
+            Config.Bind("Keyboard Shortcuts", "VNFrameDeveloperConsole", new BepInEx.Configuration.KeyboardShortcut(KeyCode.F5, KeyCode.LeftControl), "Show or hide the VN Controller window in Studio");
+            Config.Bind("Keyboard Shortcuts", "DumpCamera", new BepInEx.Configuration.KeyboardShortcut(KeyCode.F4, KeyCode.LeftControl, KeyCode.LeftAlt), "Show or hide the VN Controller window in Studio");
+            Config.Bind("Keyboard Shortcuts", "DeveloperConsole", new BepInEx.Configuration.KeyboardShortcut(KeyCode.F4, KeyCode.LeftControl), "Show or hide the VN Controller window in Studio");
+            Config.Bind("Keyboard Shortcuts", "ReloadVNEngine", new BepInEx.Configuration.KeyboardShortcut(KeyCode.F1, KeyCode.LeftControl), "Show or hide the VN Controller window in Studio");
             Config.Bind("Skins", "usekeysforbuttons", false);
         }
 

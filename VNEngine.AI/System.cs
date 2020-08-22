@@ -1,105 +1,108 @@
-﻿using System;
+﻿using Studio;
+using System;
 using System.Collections.Generic;
+using UnityEngine;
+using VNActor;
 using VNEngine;
 
-namespace VNEngineNEOV2
+namespace VNEngine
 {
     public partial class System
     {
+
+        public static void sys_map_option(NeoV2Controller game, bool param)
+        {
+            Map map;
+            // set map option visible: param = 1/0
+            if (game.isNEOV2)
+            {
+                map = Map.Instance;
+                map.VisibleOption = param;
+            }
+            else
+            {
+                Console.WriteLine("sys_map_option only supports StudioNEOV2");
+            }
+        }
+
+
+        public static void sys_map_rot(VNNeoController game, Vector3 param)
+        {
+            game.studio_scene.mapInfo.ca.rot = param;
+        }
+
+        public static void sys_map_pos(VNNeoController game, Vector3 param)
+        {
+            game.studio_scene.mapInfo.ca.pos = param;
+        }
+
+        public static void sys_map(VNNeoController game, int param)
+        {
+            // set map
+            if (param != game.studio_scene.mapInfo.no)
+            {
+                game.studio.AddMap(param);
+            }
+        }
+
         public struct SystemData : IDataClass
         {
-            private (object no, object play) bgm;
-            private (object no, object play) env;
-            private (object fileName, object play, bool) wav;
-            private object map;
-            private object map_pos;
-            private object map_rot;
-            private object map_sun;
-            private bool map_opt;
-            private object skybox;
-            private object bg_png;
-            private object fm_png;
-            private SceneInfo sc;
-            private (object rgbDiffuse, object cameraLightIntensity, object, object, object cameraLightShadow) char_light;
+
+            public BGM_s bgm;
+
+            public Wav_s? wav;
+            public int map;
+            public Vector3 map_pos;
+            public Vector3 map_rot;
+
+            public bool map_light;
+
+            public bool map_opt;
+
+            public string bg_png;
+            public string fm_png;
+
+            public CharLight_s char_light;
 
             public void Remove(string key)
             {
                 throw new NotImplementedException();
             }
 
-            public static void sys_map_option(NeoV2Controller game, bool param)
-            {
-                Map map;
-                // set map option visible: param = 1/0
-                if (game.isNEOV2)
-                {
-                    map = Map.Instance;
-                    map.VisibleOption = param;
-                }
-                else
-                {
-                    Console.WriteLine("sys_map_option only supports StudioNEOV2");
-                }
-            }
-            public SystemData(VNNeoController game)
+            
+
+            public SystemData(NeoV2Controller game)
             {
                 // export a dict contains all system status
                 //from Studio import Studio
                 //studio = Studio.Instance
 
-                bgm = (game.studio.bgmCtrl.no, game.studio.bgmCtrl.play);
-                if (game.isStudioNEO)
+                bgm = new BGM_s { no = game.studio.bgmCtrl.no, play = game.studio.bgmCtrl.play };
+
+                if (game.studio.outsideSoundCtrl.fileName != "")
                 {
-                    env = (game.studio.envCtrl.no, game.studio.envCtrl.play);
+                    wav = new Wav_s { fileName = game.studio.outsideSoundCtrl.fileName, play = game.studio.outsideSoundCtrl.play, repeat = game.studio.outsideSoundCtrl.repeat == BGMCtrl.Repeat.All };
                 }
-                wav = (game.studio.outsideSoundCtrl.fileName, game.studio.outsideSoundCtrl.play, game.studio.outsideSoundCtrl.repeat == BGMCtrl.Repeat.All);
-                map = game.studio_scene.map;
-                map_pos = game.studio_scene.caMap.pos;
-                map_rot = game.studio_scene.caMap.rot;
-                if (game.isCharaStudio)
+                else
                 {
-                    map_sun = game.studio_scene.sunLightType;
+                    wav = null;
                 }
-                if (game.isCharaStudio || game.isNEOV2)
-                {
-                    map_opt = game.studio_scene.mapOption;
-                }
-                if (game.isPlayHomeStudio)
-                {
-                    skybox = game.studio_scene.skybox;
-                }
+
+                map = game.studio_scene.mapInfo.no;
+
+                map_pos = game.studio_scene.mapInfo.ca.pos;
+                map_rot = game.studio_scene.mapInfo.ca.rot;
+                map_light = game.studio_scene.mapInfo.light;
+                map_opt = game.studio_scene.mapInfo.option;
+
                 bg_png = game.scene_get_bg_png_orig();
-                if (game.isCharaStudio || game.isNEOV2)
-                {
-                    fm_png = game.scene_get_framefile();
-                }
-                if (game.isStudioNEO)
-                {
-                    sc = game.studio_scene;
-                    char_light = (sc.cameraLightColor.rgbDiffuse, sc.cameraLightIntensity, sc.cameraLightRot[0], sc.cameraLightRot[1], sc.cameraLightShadow);
-                }
-                else if (game.isPlayHomeStudio)
-                {
-                    sc = game.studio_scene;
-                    char_light = (sc.cameraLightColor, sc.cameraLightIntensity, sc.cameraLightRot[0], sc.cameraLightRot[1], sc.cameraLightShadow, sc.cameraMethod);
-                }
-                else if (game.isCharaStudio || game.isNEOV2)
-                {
-                    var cl = game.studio_scene.charaLight;
-                    char_light = (cl.color, cl.intensity, cl.rot[0], cl.rot[1], cl.shadow);
-                }
-                // external plugins data
-                if (game.isStudioNEO)
-                {
-                    if (extplugins.ExtPlugin.exists("HSStudioNEOExtSave"))
-                    {
-                        if (is_ini_value_true("ExportSys_NeoExtSave"))
-                        {
-                            var pl_neoext = extplugins.HSStudioNEOExtSave();
-                            pl_neoextsave = pl_neoext.ExtDataGet();
-                        }
-                    }
-                }
+
+                fm_png = game.scene_get_framefile();
+
+                var cl = game.studio_scene.charaLight;
+                char_light = new CharLight_s { rgbDiffuse = cl.color, cameraLightIntensity = cl.intensity, rot_y = cl.rot[0], rot_x = cl.rot[1], cameraLightShadow = cl.shadow };
+                
+                /* TODO
                 if (game.isStudioNEO || game.isCharaStudio)
                 {
                     if (extplugins.ExtPlugin.exists("NodesConstraints"))
@@ -122,9 +125,10 @@ namespace VNEngineNEOV2
                         }
                     }
                 }
+                */
             }
 
-
+            /*
             public static Dictionary<string, (SystemFunc, bool)> sys_act_funcs = new Dictionary<string, (SystemFunc, bool)> {
         {
             "idle",
@@ -207,7 +211,8 @@ namespace VNEngineNEOV2
         {
             "pl_dhh",
             (sys_pl_dhh, false)}};
-
+            */
         }
+
     }
 }

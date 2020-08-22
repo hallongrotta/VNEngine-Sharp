@@ -8,19 +8,7 @@ namespace VNEngine
     partial class Utils
     {
 
-        public struct Button_s
-        {
-            public string label;
-            public Action<VNController, int> btnCallFull;
-            public int v;
 
-            public Button_s(string title, Action<VNController, int> btnCallFull, int v) : this()
-            {
-                this.label = title;
-                this.btnCallFull = btnCallFull;
-                this.v = v;
-            }
-        }
 
         public static void sys_map_sun(CharaStudioController game, int param)
         {

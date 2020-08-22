@@ -142,8 +142,6 @@ namespace VNActor
             public float glossiness;
         }
 
-        private object enable;
-
         public void set_color(Color[] color)
         {
             // color : a tuple of UnityEngine.Color

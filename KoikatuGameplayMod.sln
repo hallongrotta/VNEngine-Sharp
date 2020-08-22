@@ -37,6 +37,8 @@ Global
 		VNEngine.Shared\VNEngine.Shared.projitems*{1fb1b473-387f-425b-8eaa-421b1869a4bd}*SharedItemsImports = 4
 		VNActor.Shared\VNActor.Shared.projitems*{37792876-cc1b-4033-8ab7-4d3cca4715a4}*SharedItemsImports = 13
 		SceneSaveState.Shared\SceneSaveState.Shared.projitems*{60460611-db66-4373-9499-8e57a8814910}*SharedItemsImports = 13
+		VNActor.Shared\VNActor.Shared.projitems*{6621fc6c-9992-400a-862a-18dc2f855eda}*SharedItemsImports = 4
+		VNEngine.Shared\VNEngine.Shared.projitems*{e1c9e23e-b127-4fcd-8200-e5c75648a27f}*SharedItemsImports = 4
 		VNActor.Shared\VNActor.Shared.projitems*{e687512c-010e-4f55-ac98-3e02bc89d60c}*SharedItemsImports = 4
 		SceneSaveState.Shared\SceneSaveState.Shared.projitems*{f04a21fc-c895-4f4d-a83d-9aec3b921d25}*SharedItemsImports = 4
 	EndGlobalSection

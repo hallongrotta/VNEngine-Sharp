@@ -12,6 +12,20 @@ namespace VNEngine
     public static partial class Utils
     {
 
+        public struct Button_s
+        {
+            public string label;
+            public Action<VNController, int> btnCallFull;
+            public int v;
+
+            public Button_s(string title, Action<VNController, int> btnCallFull, int v) : this()
+            {
+                this.label = title;
+                this.btnCallFull = btnCallFull;
+                this.v = v;
+            }
+        }
+
         public static int vnge_version;
 
         public static string get_engine_id()

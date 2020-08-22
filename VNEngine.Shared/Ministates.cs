@@ -1,6 +1,8 @@
 ﻿using Studio;
 using System.Collections.Generic;
 using VNActor;
+using MessagePack;
+using System;
 
 namespace VNEngine
 {
@@ -42,7 +44,10 @@ namespace VNEngine
             foreach (var elData in elem.child)
             {
 
-                var elDataObj = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, TreeNodeObject>>(elData.textName);
+                var data = Int32.Parse(elData.textName);
+                var bytes = BitConverter.GetBytes(data);
+
+                var elDataObj = MessagePackSerializer.Deserialize<Dictionary<string, TreeNodeObject>>(bytes);
 
                 foreach (KeyValuePair<string, TreeNodeObject> kv in elDataObj)
                 {

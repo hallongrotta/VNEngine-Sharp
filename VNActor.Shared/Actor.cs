@@ -1291,18 +1291,6 @@ get
             }
         }
 
-        public void import_status(IDataClass status)
-        {
-            throw new NotImplementedException();
-        }
-
-        IDataClass IVNObject.export_full_status()
-        {
-            throw new NotImplementedException();
-        }
-
         // face sliders
-
-
     }
 }

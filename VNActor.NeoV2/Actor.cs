@@ -14,7 +14,7 @@ namespace VNActor
     public partial class Actor
     {
 
-        public class ActorData
+        public class ActorData : IDataClass
         {
             internal float tearLevel;
             internal float tuya;
@@ -702,7 +702,7 @@ namespace VNActor
             chara.wet = param.wetness;
         }
 
-        public ActorData export_full_status()
+        public IDataClass export_full_status()
         {
             // export a dict contains all actor status
             return new ActorData(this);

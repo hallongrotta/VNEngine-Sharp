@@ -1,4 +1,5 @@
-﻿using Studio;
+﻿using MessagePack;
+using Studio;
 using System.IO;
 using System.Linq;
 using UnityEngine;
@@ -10,6 +11,42 @@ namespace VNEngine
 {
     public partial class System
     {
+
+        [MessagePackObject]
+        public struct Wav_s
+        {
+            [Key(0)]
+            public string fileName;
+            [Key(1)]
+            public bool play;
+            [Key(2)]
+            public bool repeat;
+        }
+
+        [MessagePackObject]
+        public struct BGM_s
+        {
+            [Key(0)]
+            public int no;
+            [Key(1)]
+            public bool play;
+        }
+
+        [MessagePackObject]
+        public struct CharLight_s
+        {
+            [Key(0)]
+            public Color rgbDiffuse;
+            [Key(2)]
+            public float cameraLightIntensity;
+            [Key(3)]
+            public float rot_y;
+            [Key(4)]
+            public float rot_x;
+            [Key(5)]
+            public bool cameraLightShadow;
+        }
+
 
         //===============================================================================================
         // system action wrapper functions
@@ -397,23 +434,9 @@ namespace VNEngine
             sys_map(game, param.map);
         }
 
-        public static void sys_map(VNNeoController game, int param)
-        {
-            // set map
-            if (param != game.studio_scene.map)
-            {
-                game.studio.AddMap(param);
-            }
-        }
-
-
         public static void sys_map_pos(VNNeoController game, SystemData param)
         {
             sys_map_pos(game, param.map_pos);
-        }
-        public static void sys_map_pos(VNNeoController game, Vector3 param)
-        {
-            game.studio_scene.caMap.pos = param;
         }
 
         public static void sys_map_rot(VNNeoController game, SystemData param)
@@ -421,10 +444,6 @@ namespace VNEngine
             sys_map_rot(game, param.map_rot);
         }
 
-        public static void sys_map_rot(VNNeoController game, Vector3 param)
-        {
-            game.studio_scene.caMap.rot = param;
-        }
 
         /*        public static object sys_skybox(VNNeoController game, int[] param)
                 {

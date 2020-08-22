@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Studio;
+using UnityEngine;
+using static VNEngine.Utils;
 
 namespace VNEngine
 {
@@ -8,15 +11,14 @@ namespace VNEngine
         : VNNeoController
     {
 
-        public NeoV2Controller(List<string> vnButtonsStart, List<(Action<object>, object)> vnButtonsActionsStart) : base()
+        public NeoV2Controller(List<Button_s> vnButtonsStart) : base()
         {
             this.engine_name = "neov2";
             this._vnButtons = vnButtonsStart;
-            this._vnButtonsActions = vnButtonsActionsStart;
         }
 
         // --- support functions ----
-        public void load_scene(string file)
+        override public void load_scene(string file)
         {
             this._load_scene_before(file);
             this.funcLockedText = "Loading scene...";
@@ -38,7 +40,7 @@ namespace VNEngine
             this.isFuncLocked = false;
         }
 
-        public string get_scene_dir()
+        override public string get_scene_dir()
         {
             return Path.GetFullPath(Path.Combine(Application.dataPath, "..", "UserData", "Studio", "scene"));
         }

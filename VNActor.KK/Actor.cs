@@ -652,7 +652,7 @@ namespace VNActor
                 {
                     // print lst
                     // print arrstate
-                    var binaryReader = new BinaryReader(new MemoryStream(str64));
+                    var binaryReader = new BinaryReader(new MemoryStream(value));
                     this.objctrl.neckLookCtrl.LoadNeckLookCtrl(binaryReader);
                 }
             }

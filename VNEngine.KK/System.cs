@@ -11,40 +11,7 @@ namespace VNEngine
     public partial class System
     {
 
-        [MessagePackObject]
-        public struct Wav_s
-        {
-            [Key(0)]
-            public string fileName;
-            [Key(1)]
-            public bool play;
-            [Key(2)]
-            public bool repeat;
-        }
-
-        [MessagePackObject]
-        public struct BGM_s
-        {
-            [Key(0)]
-            public int no;
-            [Key(1)]
-            public bool play;
-        }
-
-        [MessagePackObject]
-        public struct CharLight_s
-        {
-            [Key(0)]
-            public Color rgbDiffuse;
-            [Key(2)]
-            public float cameraLightIntensity;
-            [Key(3)]
-            public float rot_y;
-            [Key(4)]
-            public float rot_x;
-            [Key(5)]
-            public bool cameraLightShadow;
-        }
+        
 
         [MessagePackObject(keyAsPropertyName: true)]
         public class SystemData : IDataClass
@@ -137,10 +104,31 @@ namespace VNEngine
             sys_char_light(game, s);
         }
 
+        public static void sys_map_rot(VNNeoController game, Vector3 param)
+        {
+            game.studio_scene.caMap.rot = param;
+        }
+
         public static void map_sun(CharaStudioController game, SystemData param)
         {
             map_sun(game, param.sun);
         }
+
+        public static void sys_map_pos(VNNeoController game, Vector3 param)
+        {
+            game.studio_scene.caMap.pos = param;
+        }
+
+        public static void sys_map(VNNeoController game, int param)
+        {
+            // set map
+            if (param != game.studio_scene.map)
+            {
+                game.studio.AddMap(param);
+            }
+        }
+
+
 
         public static void map_sun(CharaStudioController game, int param)
         {
