@@ -316,6 +316,7 @@ namespace SceneSaveState
             GUILayout.BeginHorizontal();
             Instance.currentVNData.enabled = GUILayout.Toggle(Instance.currentVNData.enabled, "  Use cam in Visual Novel");
             GUILayout.FlexibleSpace();
+            /* TODO
             if (Instance.currentVNData.enabled)
             {
                 var txt = Utils.btntext_get_if_selected2("More", Instance.currentVNData.addprops.a1 || Instance.currentVNData.addprops.a2);
@@ -324,6 +325,7 @@ namespace SceneSaveState
                     subwinindex = 100;
                 }
             }
+            */
             GUILayout.EndHorizontal();
             //GUILayout.Label("  Replics for VN for cam (not necessary):")
             // if GUILayout.Button("Add scene (selected only)"):
