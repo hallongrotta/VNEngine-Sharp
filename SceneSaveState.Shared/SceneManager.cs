@@ -117,7 +117,7 @@ namespace SceneSaveState
 
         public void Insert(Scene s, int position)
         {
-            scenes.Insert(position, s);
+            scenes.Insert(position+1, s);
             currentSceneIndex++;
         }
 
