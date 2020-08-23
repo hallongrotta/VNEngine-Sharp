@@ -22,7 +22,7 @@ namespace VNEngine
         public static string prop_folder_prefix = "vnprop:";
         public static string light_folder_prefix = "vnlight:";
 
-        //public Dictionary<string, Actor> _scenef_actors;
+        //public Dictionary<string, VNActor.Actor> _scenef_actors;
 
         //public Dictionary<string, Item> _scenef_props;
 
@@ -180,14 +180,14 @@ namespace VNEngine
             IDataClass status;
             var output = "";
             this.LoadTrackedActorsAndProps();
-            Dictionary<string, Actor> actors = this.scenef_get_all_actors();
+            Dictionary<string, VNActor.Actor> actors = this.scenef_get_all_actors();
             string id_global = "";
             try
             {
                 foreach (var id in actors.Keys)
                 {
                     id_global = id;
-                    Actor actor = (Actor)this.scenef_get_actor(id);
+                    VNActor.Actor actor = (VNActor.Actor)this.scenef_get_actor(id);
                     status = actor.export_full_status();
                     //output += String.Format("'%s': ", id) + VNFrame.script2string(status) + ",\n"; TODO
                 }
@@ -242,8 +242,8 @@ namespace VNEngine
             string id = "";
             try
             {
-                Actor fem = (Actor)HSNeoOCI.create_from_selected();
-                var actor = (Actor)fem;
+                VNActor.Actor fem = (VNActor.Actor)HSNeoOCI.create_from_selected();
+                var actor = (VNActor.Actor)fem;
                 id = actor.text_name;
                 var status = actor.export_full_status();
                 /* TODO
@@ -347,7 +347,7 @@ namespace VNEngine
                     file.WriteLine(String.Format("objctrlchar = game.get_objctrl_num_tochar(%s) # char name %s, animid=%s", key, Utils.to_roman_file(objctrl.treeNodeObject.textName), Utils.to_roman_file(chara.charAnimeCtrl.name)));
                     //print("objctrlchar = game.get_objctrl_num_tochar(%s) # char name" % (key))
                     // objctrl.charAnimeCtrl.name
-                    var pctrl = new Actor(chara);
+                    var pctrl = new VNActor.Actor(chara);
                     pctrl.dump_obj();
                 }
                 else
@@ -384,38 +384,38 @@ namespace VNEngine
             return dobjctrl[num];
         }
 
-        public Actor get_objctrl_num_tochar(int num)
+        public VNActor.Actor get_objctrl_num_tochar(int num)
         {
-            // return Actor by num
-            return new Actor((OCIChar)this.get_objctrl_num(num));
+            // return VNActor.Actor by num
+            return new VNActor.Actor((OCIChar)this.get_objctrl_num(num));
         }
 
-        new public List<Actor> scene_get_all_females()
+        new public List<VNActor.Actor> scene_get_all_females()
         {
-            var ar = new List<Actor>();
+            var ar = new List<VNActor.Actor>();
             var dobjctrl = this.studio.dicObjectCtrl;
             foreach (var key in dobjctrl.Keys)
             {
                 var objctrl = dobjctrl[key];
                 if (objctrl is OCICharFemale chara)
                 {
-                    var pctrl = new Actor(chara);
+                    var pctrl = new VNActor.Actor(chara);
                     ar.Add(pctrl);
                 }
             }
             return ar;
         }
 
-        new public List<Actor> scene_get_all_males()
+        new public List<VNActor.Actor> scene_get_all_males()
         {
-            var ar = new List<Actor>();
+            var ar = new List<VNActor.Actor>();
             var dobjctrl = this.studio.dicObjectCtrl;
             foreach (var key in dobjctrl.Keys)
             {
                 var objctrl = dobjctrl[key];
                 if (objctrl is OCICharMale chara)
                 {
-                    var pctrl = new Actor(chara);
+                    var pctrl = new VNActor.Actor(chara);
                     ar.Add(pctrl);
                 }
             }
@@ -596,7 +596,7 @@ namespace VNEngine
                     {
                         var hsociChar = HSNeoOCI.create_from_treenode(fld.treeNodeObject.parent.parent.parent);
 
-                        if (hsociChar is Actor chara)
+                        if (hsociChar is VNActor.Actor chara)
                         {
                             if (actorTitle is null)
                             {
@@ -763,7 +763,7 @@ namespace VNEngine
        */
 
 
-        public Dictionary<string, Actor> scenef_get_all_actors()
+        public Dictionary<string, VNActor.Actor> scenef_get_all_actors()
         {
             return this._scenef_actors;
         }
@@ -803,17 +803,17 @@ namespace VNEngine
             return null;
         }
 
-        public Actor scenef_get_actor(string id)
+        public VNActor.Actor scenef_get_actor(string id)
         {
             if (this.scenef_get_all_actors().ContainsKey(id))
             {
-                Actor obj = this.scenef_get_all_actors()[id];
+                VNActor.Actor obj = this.scenef_get_all_actors()[id];
                 return obj;
             }
             return null;
         }
 
-        public void scenef_reg_actor(string id, Actor actor)
+        public void scenef_reg_actor(string id, VNActor.Actor actor)
         {
             this._scenef_actors[id] = actor;
         }
@@ -825,7 +825,7 @@ namespace VNEngine
 
         public void scenef_clean_actorsprops()
         {
-            this._scenef_actors = new Dictionary<string, Actor>();
+            this._scenef_actors = new Dictionary<string, VNActor.Actor>();
             this._scenef_props = new Dictionary<string, HSNeoOCIProp>();
         }
 
@@ -857,12 +857,12 @@ namespace VNEngine
                 }*/
 
         // --------- sync_h ---------
-        public void sync_h(Actor female, Actor male)
+        public void sync_h(VNActor.Actor female, VNActor.Actor male)
         {
             // if factor.isHAnime:
-            female.anime_option_param = new Actor.AnimeOption_s { height = female.height, breast = female.breast };
+            female.anime_option_param = new VNActor.Actor.AnimeOption_s { height = female.height, breast = female.breast };
             // if mactor.isHAnime:
-            male.anime_option_param = new Actor.AnimeOption_s { height = female.height, breast = female.breast };
+            male.anime_option_param = new VNActor.Actor.AnimeOption_s { height = female.height, breast = female.breast };
         }
     }
 

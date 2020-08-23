@@ -94,9 +94,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\VNActor.NeoV2\VNActor.NeoV2.csproj">
-      <Project>{6621fc6c-9992-400a-862a-18dc2f855eda}</Project>
-      <Name>VNActor.NeoV2</Name>
+    <ProjectReference Include="..\VNActor.AI\VNActor.AI.csproj">
+      <Project>{95bf9f7c-5f40-43c3-8191-6034fccc5cb3}</Project>
+      <Name>VNActor.AI</Name>
     </ProjectReference>
     <ProjectReference Include="..\VNEngine.AI\VNEngine.AI.csproj">
       <Project>{e1c9e23e-b127-4fcd-8200-e5c75648a27f}</Project>

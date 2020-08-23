@@ -27,7 +27,7 @@ namespace VNEngine
 
         public GameFunc _onCameraEnd;
 
-        protected Dictionary<string, Actor> _scenef_actors;
+        protected Dictionary<string, VNActor.Actor> _scenef_actors;
 
         protected Dictionary<string, HSNeoOCIProp> _scenef_props;
 
@@ -235,7 +235,7 @@ namespace VNEngine
             //this.gdata = new GData();
             //this.scenedata = new GData();
             this.gpersdata = new Dictionary<string, object>();
-            this._scenef_actors = new Dictionary<string, Actor>();
+            this._scenef_actors = new Dictionary<string, VNActor.Actor>();
             this._scenef_props = new Dictionary<string, HSNeoOCIProp>();
             this.current_game = "";
             this._eventListenerDic = new Dictionary<string, List<GameFunc>>();
@@ -266,7 +266,7 @@ namespace VNEngine
             //this.gdata = new GData();
             this.gpersdata = new Dictionary<string, object>();
             //this.scenedata = new GData();
-            this._scenef_actors = new Dictionary<string, Actor>();
+            this._scenef_actors = new Dictionary<string, VNActor.Actor>();
             this._scenef_props = new Dictionary<string, HSNeoOCIProp>();
             this.current_game = "";
             // lip sync
@@ -904,14 +904,14 @@ namespace VNEngine
             this.anim_to_camera_obj(duration, this.get_camera_num(camnum), style, onCameraEnd);
         }
 
-        public List<Actor> scene_get_all_females()
+        public List<VNActor.Actor> scene_get_all_females()
         {
-            return new List<Actor>();
+            return new List<VNActor.Actor>();
         }
 
-        public List<Actor> scene_get_all_males()
+        public List<VNActor.Actor> scene_get_all_males()
         {
-            return new List<Actor>();
+            return new List<VNActor.Actor>();
         }
 
         public void debug_print_all_chars()

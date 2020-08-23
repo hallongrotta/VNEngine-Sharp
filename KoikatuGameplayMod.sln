@@ -24,8 +24,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VNEngine.KK", "VNEngine.KK\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VNEngine.AI", "VNEngine.AI\VNEngine.AI.csproj", "{E1C9E23E-B127-4FCD-8200-E5C75648A27F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VNActor.NeoV2", "VNActor.NeoV2\VNActor.NeoV2.csproj", "{6621FC6C-9992-400A-862A-18DC2F855EDA}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VNActor.Legacy", "VNActor.Legacy\VNActor.Legacy.csproj", "{152273F9-B59C-43D1-8A9A-9729938044CB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SceneSaveState.KK", "SceneSaveState.KK\SceneSaveState.KK.csproj", "{F04A21FC-C895-4F4D-A83D-9AEC3B921D25}"
@@ -34,14 +32,32 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SceneSaveState.AI", "SceneS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SceneSaveState.HS2", "SceneSaveState.HS2\SceneSaveState.HS2.csproj", "{E31D9B1E-BB35-473D-8F8C-12FB2740D2E9}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "VNEngine.NEOV2.Shared", "VNEngine.NEOV2.Shared\VNEngine.NEOV2.Shared.shproj", "{9521BDCC-076F-42DC-BD06-77BFA0E961E3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VNEngine.HS2", "VNEngine.HS2\VNEngine.HS2.csproj", "{14B84207-C19A-41B4-930D-028499912193}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VNActor.AI", "VNActor.AI\VNActor.AI.csproj", "{95BF9F7C-5F40-43C3-8191-6034FCCC5CB3}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "VNActor.NEOV2.Shared", "VNActor.NEOV2.Shared\VNActor.NEOV2.Shared.shproj", "{5FE76C7A-830B-45F9-B11F-D338B7D9089B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VNActor.HS2", "VNActor.HS2\VNActor.HS2.csproj", "{4592781A-5B7E-472C-A3A2-4E559C4C9A74}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		VNEngine.Shared\VNEngine.Shared.projitems*{062d595d-8e9b-4149-a5a0-16e45773f9d6}*SharedItemsImports = 13
+		VNEngine.NEOV2.Shared\VNEngine.NEOV2.Shared.projitems*{14b84207-c19a-41b4-930d-028499912193}*SharedItemsImports = 4
+		VNEngine.Shared\VNEngine.Shared.projitems*{14b84207-c19a-41b4-930d-028499912193}*SharedItemsImports = 4
 		VNEngine.Shared\VNEngine.Shared.projitems*{1fb1b473-387f-425b-8eaa-421b1869a4bd}*SharedItemsImports = 4
 		VNActor.Shared\VNActor.Shared.projitems*{37792876-cc1b-4033-8ab7-4d3cca4715a4}*SharedItemsImports = 13
+		VNActor.NEOV2.Shared\VNActor.NEOV2.Shared.projitems*{4592781a-5b7e-472c-a3a2-4e559c4c9a74}*SharedItemsImports = 4
+		VNActor.Shared\VNActor.Shared.projitems*{4592781a-5b7e-472c-a3a2-4e559c4c9a74}*SharedItemsImports = 4
+		VNActor.NEOV2.Shared\VNActor.NEOV2.Shared.projitems*{5fe76c7a-830b-45f9-b11f-d338b7d9089b}*SharedItemsImports = 13
 		SceneSaveState.Shared\SceneSaveState.Shared.projitems*{60460611-db66-4373-9499-8e57a8814910}*SharedItemsImports = 13
-		VNActor.Shared\VNActor.Shared.projitems*{6621fc6c-9992-400a-862a-18dc2f855eda}*SharedItemsImports = 4
 		SceneSaveState.Shared\SceneSaveState.Shared.projitems*{6bb3e3c0-f48f-41b1-94b0-290d866f2e92}*SharedItemsImports = 4
+		VNEngine.NEOV2.Shared\VNEngine.NEOV2.Shared.projitems*{9521bdcc-076f-42dc-bd06-77bfa0e961e3}*SharedItemsImports = 13
+		VNActor.NEOV2.Shared\VNActor.NEOV2.Shared.projitems*{95bf9f7c-5f40-43c3-8191-6034fccc5cb3}*SharedItemsImports = 4
+		VNActor.Shared\VNActor.Shared.projitems*{95bf9f7c-5f40-43c3-8191-6034fccc5cb3}*SharedItemsImports = 4
+		VNEngine.NEOV2.Shared\VNEngine.NEOV2.Shared.projitems*{e1c9e23e-b127-4fcd-8200-e5c75648a27f}*SharedItemsImports = 4
 		VNEngine.Shared\VNEngine.Shared.projitems*{e1c9e23e-b127-4fcd-8200-e5c75648a27f}*SharedItemsImports = 4
 		SceneSaveState.Shared\SceneSaveState.Shared.projitems*{e31d9b1e-bb35-473d-8f8c-12fb2740d2e9}*SharedItemsImports = 4
 		VNActor.Shared\VNActor.Shared.projitems*{e687512c-010e-4f55-ac98-3e02bc89d60c}*SharedItemsImports = 4
@@ -72,10 +88,6 @@ Global
 		{E1C9E23E-B127-4FCD-8200-E5C75648A27F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E1C9E23E-B127-4FCD-8200-E5C75648A27F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E1C9E23E-B127-4FCD-8200-E5C75648A27F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6621FC6C-9992-400A-862A-18DC2F855EDA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6621FC6C-9992-400A-862A-18DC2F855EDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6621FC6C-9992-400A-862A-18DC2F855EDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6621FC6C-9992-400A-862A-18DC2F855EDA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{152273F9-B59C-43D1-8A9A-9729938044CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{152273F9-B59C-43D1-8A9A-9729938044CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{152273F9-B59C-43D1-8A9A-9729938044CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -92,6 +104,18 @@ Global
 		{E31D9B1E-BB35-473D-8F8C-12FB2740D2E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E31D9B1E-BB35-473D-8F8C-12FB2740D2E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E31D9B1E-BB35-473D-8F8C-12FB2740D2E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14B84207-C19A-41B4-930D-028499912193}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14B84207-C19A-41B4-930D-028499912193}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14B84207-C19A-41B4-930D-028499912193}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14B84207-C19A-41B4-930D-028499912193}.Release|Any CPU.Build.0 = Release|Any CPU
+		{95BF9F7C-5F40-43C3-8191-6034FCCC5CB3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95BF9F7C-5F40-43C3-8191-6034FCCC5CB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95BF9F7C-5F40-43C3-8191-6034FCCC5CB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95BF9F7C-5F40-43C3-8191-6034FCCC5CB3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4592781A-5B7E-472C-A3A2-4E559C4C9A74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4592781A-5B7E-472C-A3A2-4E559C4C9A74}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4592781A-5B7E-472C-A3A2-4E559C4C9A74}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4592781A-5B7E-472C-A3A2-4E559C4C9A74}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,4 +1,4 @@
-﻿#if AI
+﻿#if NEOV2
 using AIChara;
 #endif
 

@@ -13,11 +13,11 @@ namespace VNEngine
 
         public static void sys_map_option(NeoV2Controller game, bool param)
         {
-            Map map;
+            Studio.Map map;
             // set map option visible: param = 1/0
             if (game.isNEOV2)
             {
-                map = Map.Instance;         
+                map = Studio.Map.Instance;         
                 map.VisibleOption = param;
             }
             else
