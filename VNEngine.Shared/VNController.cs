@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 using VNActor;
-using VNEngine.Shared;
 using static VNEngine.Utils;
 using static VNEngine.VNCamera;
 //using WindowsInput;

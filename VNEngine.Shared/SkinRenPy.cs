@@ -5,7 +5,7 @@ using UnityEngine;
 using static VNEngine.Utils;
 using static VNEngine.VNController;
 
-namespace VNEngine.Shared
+namespace VNEngine
 {
     //import GameCursor, CameraControl
 
