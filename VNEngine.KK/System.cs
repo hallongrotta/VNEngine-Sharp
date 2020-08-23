@@ -11,7 +11,12 @@ namespace VNEngine
     public partial class System
     {
 
-        
+        public struct Ace
+        {
+            public float blend;
+            public int no;
+        }
+
 
         [MessagePackObject(keyAsPropertyName: true)]
         public class SystemData : IDataClass
@@ -30,6 +35,7 @@ namespace VNEngine
 
             public CharLight_s char_light;
 
+            public Ace ace;
             public void Remove(string key)
             {
                 throw new NotImplementedException();
@@ -73,6 +79,8 @@ namespace VNEngine
                 var cl = game.studio_scene.charaLight;
                 char_light = new CharLight_s { rgbDiffuse = cl.color, cameraLightIntensity = cl.intensity, rot_y = cl.rot[0], rot_x = cl.rot[1], cameraLightShadow = cl.shadow };
 
+                ace = System.ace;
+
                 /* TODO
                 if (game.isStudioNEO || game.isCharaStudio)
                 {
@@ -102,6 +110,21 @@ namespace VNEngine
             sys_bg_png(game, s);
             sys_fm_png(game, s);
             sys_char_light(game, s);
+            ace = s.ace;
+            Studio.Studio.Instance.systemButtonCtrl.UpdateInfo();
+        }
+
+        private static Ace ace
+        {
+            get
+            {
+                return new Ace { no = CharaStudioController.Instance.studio_scene.aceNo, blend = CharaStudioController.Instance.studio_scene.aceBlend };
+            }
+            set
+            {
+                CharaStudioController.Instance.studio_scene.aceNo = value.no;
+                CharaStudioController.Instance.studio_scene.aceBlend = value.blend;
+            }
         }
 
         public static void sys_map_rot(VNNeoController game, Vector3 param)
@@ -133,17 +156,11 @@ namespace VNEngine
         public static void map_sun(CharaStudioController game, int param)
         {
             // set sunLightType, param = sunLightType index, CharaStudio only
-            if (game.isCharaStudio)
-            {
 
-                var st = new SunLightInfo.Info.Type[] { SunLightInfo.Info.Type.DayTime, SunLightInfo.Info.Type.Evening, SunLightInfo.Info.Type.Night };
-                var map = Map.Instance;
-                map.sunType = st[param];
-            }
-            else
-            {
-                Console.WriteLine("sys_map_sun only supports CharaStudio");
-            }
+            var st = new SunLightInfo.Info.Type[] { SunLightInfo.Info.Type.DayTime, SunLightInfo.Info.Type.Evening, SunLightInfo.Info.Type.Night };
+            var map = Map.Instance;
+            map.sunType = st[param];
+            
         }
 
         public static void map_option(VNNeoController game, SystemData param)
