@@ -36,11 +36,10 @@ namespace VNActor
             public float vs;
             [Key(5)]
             public float rot;
-            public Color mainColor;
 
             public PanelDetail_s(Color mainColor, float ut, float vt, float us, float vs, float rot) : this()
             {
-                this.mainColor = mainColor;
+                this.color = mainColor;
                 this.ut = ut;
                 this.vt = vt;
                 this.us = us;
