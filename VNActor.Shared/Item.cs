@@ -9,7 +9,7 @@ namespace VNActor
 {
 
     // Shared Item code
-    public partial class Item : HSNeoOCIProp, IVNObject
+    public partial class Item : Prop, IVNObject
     {
 
         [MessagePackObject]

@@ -11,9 +11,9 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Actor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ActorFuncs.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)HSNeoOCI.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)HSNeoOCIFolder.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)HSNeoOCIProp.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NeoOCI.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Folder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Prop.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IVNObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Light.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Item.cs" />

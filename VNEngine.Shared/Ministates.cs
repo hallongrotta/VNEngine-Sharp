@@ -17,7 +17,7 @@ namespace VNEngine
 
         public static List<MiniState_s> ministates_get_list(VNController game)
         {
-            var fld = HSNeoOCIFolder.find_single("-ministates:1.0");
+            var fld = Folder.find_single("-ministates:1.0");
             if (fld == null)
             {
                 return new List<MiniState_s>();

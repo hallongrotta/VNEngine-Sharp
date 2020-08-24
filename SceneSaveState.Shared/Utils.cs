@@ -39,7 +39,7 @@ namespace SceneSaveState
             // if no blocks - autoload
             if (SceneConsole.Instance.block.Count == 0)
             {
-                if (HSNeoOCIFolder.find_single_startswith("-scenesavestate:") != null)
+                if (Folder.find_single_startswith("-scenesavestate:") != null)
                 {
                     SceneConsole.Instance.loadSceneData();
                     SceneConsole.Instance.show_blocking_message_time_sc("Scene data was auto-loaded!");
@@ -348,15 +348,15 @@ namespace SceneSaveState
 
         public static void recalc_autostates()
         {
-            var ar = HSNeoOCIFolder.find_all_startswith("-msauto:vis:");
+            var ar = Folder.find_all_startswith("-msauto:vis:");
             ar.Sort();
             SceneConsole.Instance.arAutoStatesItemsVis = ar;
-            var ar2 = HSNeoOCIFolder.find_all_startswith("-msauto:choice:");
+            var ar2 = Folder.find_all_startswith("-msauto:choice:");
             ar2.Sort();
             SceneConsole.Instance.arAutoStatesItemsChoice = ar2;
         }
 
-        public static string sort_by_textname(HSNeoOCI el)
+        public static string sort_by_textname(NeoOCI el)
         {
             return el.treeNodeObject.textName;
         }
@@ -364,7 +364,7 @@ namespace SceneSaveState
 
 
         // ::::: Essential functions :::::
-        public static HSNeoOCIFolder getFolder(VNNeoController game, string name, bool exact = false)
+        public static Folder getFolder(VNNeoController game, string name, bool exact = false)
         {
             var flds = game.scene_get_all_folders();
             foreach (var fld in flds)
@@ -390,7 +390,7 @@ namespace SceneSaveState
             var ar = new List<VNActor.Actor>();
             foreach (var node in mtreeman.selectNodes)
             {
-                var ochar = HSNeoOCI.create_from_treenode(node);
+                var ochar = NeoOCI.create_from_treenode(node);
                 if (ochar.objctrl is OCIChar)
                 {
                     VNActor.Actor chara = (VNActor.Actor)ochar;
@@ -422,7 +422,7 @@ namespace SceneSaveState
             var ar = new List<VNActor.Actor>();
             foreach (var node in mtreeman.selectNodes)
             {
-                var ochar = HSNeoOCI.create_from_treenode(node);
+                var ochar = NeoOCI.create_from_treenode(node);
                 if (ochar.objctrl is OCIChar)
                 {
                     VNActor.Actor chara = (VNActor.Actor)ochar;
@@ -438,7 +438,7 @@ namespace SceneSaveState
             var ar = new List<Item>();
             foreach (var node in mtreeman.selectNodes)
             {
-                var oitem = HSNeoOCI.create_from_treenode(node);
+                var oitem = NeoOCI.create_from_treenode(node);
                 if (oitem.objctrl is OCIItem)
                 {
                     Item prop = (Item)oitem;
@@ -461,7 +461,7 @@ namespace SceneSaveState
             var ar = new List<Item>();
             foreach (var node in mtreeman.selectNodes)
             {
-                var oitem = HSNeoOCI.create_from_treenode(node);
+                var oitem = NeoOCI.create_from_treenode(node);
                 if (oitem.objctrl is OCIItem)
                 {
                     Item prop = (Item)oitem;
@@ -647,9 +647,9 @@ namespace SceneSaveState
             */
         }
 
-        public static HSNeoOCIFolder folder_add_child(HSNeoOCI parent, string childtext)
+        public static Folder folder_add_child(NeoOCI parent, string childtext)
         {
-            var fold = HSNeoOCIFolder.add(childtext);
+            var fold = Folder.add(childtext);
             fold.set_parent(parent);
             return fold;
         }
@@ -815,10 +815,10 @@ namespace SceneSaveState
         }
 
         // folders
-        public static object add_folder_if_not_exists(string foldertxt, string folderfind, HSNeoOCI parentifcreate, bool overwrite = false)
+        public static object add_folder_if_not_exists(string foldertxt, string folderfind, NeoOCI parentifcreate, bool overwrite = false)
         {
-            var vnext = HSNeoOCIFolder.find_single_startswith(folderfind);
-            if (vnext is HSNeoOCIFolder)
+            var vnext = Folder.find_single_startswith(folderfind);
+            if (vnext is Folder)
             {
                 if (overwrite)
                 {

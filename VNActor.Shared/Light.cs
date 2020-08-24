@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace VNActor
 {
-    public partial class Light : HSNeoOCIProp, IVNObject
+    public partial class Light : Prop, IVNObject
     {
 
         [MessagePackObject]

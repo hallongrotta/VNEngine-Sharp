@@ -4,21 +4,21 @@ using UnityEngine;
 
 namespace VNActor
 {
-    public class HSNeoOCIFolder
-        : HSNeoOCI
+    public class Folder
+        : NeoOCI
     {
 
         new public OCIFolder objctrl;
 
-        public HSNeoOCIFolder(OCIFolder objctrl) : base(objctrl)
+        public Folder(OCIFolder objctrl) : base(objctrl)
         {
             this.objctrl = objctrl;
         }
 
-        public static HSNeoOCIFolder add(string name)
+        public static Folder add(string name)
         {
             OCIFolder fold = AddObjectFolder.Add();
-            HSNeoOCIFolder obj = new HSNeoOCIFolder(fold);
+            Folder obj = new Folder(fold);
             if (name != null)
             {
                 obj.name = name;
@@ -26,10 +26,10 @@ namespace VNActor
             return obj;
         }
 
-        public static List<HSNeoOCIFolder> find_all(string name)
+        public static List<Folder> find_all(string name)
         {
             Studio.Studio studio = Studio.Studio.Instance;
-            List<HSNeoOCIFolder> ar = new List<HSNeoOCIFolder>();
+            List<Folder> ar = new List<Folder>();
             Dictionary<TreeNodeObject, ObjectCtrlInfo> dobjctrl = studio.dicInfo;
             foreach (TreeNodeObject key in dobjctrl.Keys)
             {
@@ -41,7 +41,7 @@ namespace VNActor
                     // ar.append((objctrl.name, objctrl, key))
                     if (txt == name)
                     {
-                        ar.Add(new HSNeoOCIFolder(folder));
+                        ar.Add(new Folder(folder));
                         // this will process for all folders we found
                     }
                 }
@@ -49,10 +49,10 @@ namespace VNActor
             return ar;
         }
 
-        public static HSNeoOCIFolder find_single(string name)
+        public static Folder find_single(string name)
         {
-            List<HSNeoOCIFolder> ar = HSNeoOCIFolder.find_all(name);
-            HSNeoOCIFolder obj = null;
+            List<Folder> ar = Folder.find_all(name);
+            Folder obj = null;
             if (ar.Count > 0)
             {
                 obj = ar[0];
@@ -60,10 +60,10 @@ namespace VNActor
             return obj;
         }
 
-        public static List<HSNeoOCIFolder> find_all_startswith(string name)
+        public static List<Folder> find_all_startswith(string name)
         {
             Studio.Studio studio = Studio.Studio.Instance;
-            List<HSNeoOCIFolder> ar = new List<HSNeoOCIFolder>();
+            List<Folder> ar = new List<Folder>();
             Dictionary<TreeNodeObject, ObjectCtrlInfo> dobjctrl = studio.dicInfo;
             foreach (TreeNodeObject key in dobjctrl.Keys)
             {
@@ -75,7 +75,7 @@ namespace VNActor
 
                     if (txt.StartsWith(name))
                     {
-                        ar.Add(new HSNeoOCIFolder(folder));
+                        ar.Add(new Folder(folder));
                         // this will process for all folders we found
                     }
                 }
@@ -83,10 +83,10 @@ namespace VNActor
             return ar;
         }
 
-        public static HSNeoOCIFolder find_single_startswith(string name)
+        public static Folder find_single_startswith(string name)
         {
-            List<HSNeoOCIFolder> ar = HSNeoOCIFolder.find_all_startswith(name);
-            HSNeoOCIFolder obj = null;
+            List<Folder> ar = Folder.find_all_startswith(name);
+            Folder obj = null;
             if (ar.Count > 0)
             {
                 obj = ar[0];
@@ -110,12 +110,12 @@ namespace VNActor
         public void delete_all_children()
         {
             List<TreeNodeObject> ar = this.treeNodeObject.child;
-            List<HSNeoOCI> ar2 = new List<HSNeoOCI>();
+            List<NeoOCI> ar2 = new List<NeoOCI>();
             foreach (var treeobj in ar)
             {
-                ar2.Add(HSNeoOCI.create_from_treenode(treeobj));
+                ar2.Add(NeoOCI.create_from_treenode(treeobj));
             }
-            foreach (HSNeoOCI obj in ar2)
+            foreach (NeoOCI obj in ar2)
             {
                 obj.delete();
             }

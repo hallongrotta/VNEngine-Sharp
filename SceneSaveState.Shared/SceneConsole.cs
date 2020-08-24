@@ -35,9 +35,9 @@ namespace SceneSaveState
 
         public Dictionary<string, object> all_acc;
 
-        public List<HSNeoOCIFolder> arAutoStatesItemsChoice;
+        public List<Folder> arAutoStatesItemsChoice;
 
-        public List<HSNeoOCIFolder> arAutoStatesItemsVis;
+        public List<Folder> arAutoStatesItemsVis;
 
         public bool autoAddCam;
 
@@ -265,8 +265,8 @@ namespace SceneSaveState
             isSaveVerify = true;
             isSaveOld = false;
             updAutoStatesTimer = 0;
-            arAutoStatesItemsVis = new List<HSNeoOCIFolder>();
-            arAutoStatesItemsChoice = new List<HSNeoOCIFolder>();
+            arAutoStatesItemsVis = new List<Folder>();
+            arAutoStatesItemsChoice = new List<Folder>();
             backupTimeDuration = Utils.get_ini_value_def_int("AutoBackupTimeInSeconds", 600);
             backupTimeCur = backupTimeDuration;
             vnFastIsRunImmediately = false;
@@ -326,7 +326,7 @@ namespace SceneSaveState
                     {
                         txtname = actprop.text_name;
                     }
-                    var fld = HSNeoOCIFolder.add("-msauto:" + param + ":" + txtname);
+                    var fld = Folder.add("-msauto:" + param + ":" + txtname);
                     //objSave["__id{0}"%(str(id))] = actprop.export_full_status()
                     fld.set_parent(actprop);
                 }
@@ -345,7 +345,7 @@ namespace SceneSaveState
                 return;
             }
             var arSel0 = arSel[0];
-            var folders = HSNeoOCIFolder.find_all_startswith("-msauto:");
+            var folders = Folder.find_all_startswith("-msauto:");
             foreach (var folder in folders)
             {
                 if (folder.treeNodeObject.parent == arSel0.treeNodeObject)
@@ -359,10 +359,10 @@ namespace SceneSaveState
         public void addSelectedMini()
         {
             // find mini
-            var fld = HSNeoOCIFolder.find_single("-ministates:1.0");
+            var fld = Folder.find_single("-ministates:1.0");
             if (fld == null)
             {
-                fld = HSNeoOCIFolder.add("-ministates:1.0");
+                fld = Folder.add("-ministates:1.0");
             }
             // calc name
             var name = mininewid;
@@ -416,18 +416,18 @@ namespace SceneSaveState
             throw new Exception("Item does not exist");
         }
 
-        public List<HSNeoOCI> get_selected_objs()
+        public List<NeoOCI> get_selected_objs()
         {
             var mtreeman = game.studio.treeNodeCtrl;
-            var ar = new List<HSNeoOCI>();
+            var ar = new List<NeoOCI>();
             foreach (var node in mtreeman.selectNodes)
             {
-                var ochar = HSNeoOCI.create_from_treenode(node);
+                var ochar = NeoOCI.create_from_treenode(node);
                 if (ochar is VNActor.Actor chara)
                 {
                     ar.Add(chara);
                 }
-                else if (ochar is HSNeoOCIProp prop)
+                else if (ochar is Prop prop)
                 {
                     ar.Add(prop);
                 }
@@ -627,7 +627,7 @@ namespace SceneSaveState
 
         public void copySelectedStatusToTracking(List<string> exclude)
         {
-            var elem = HSNeoOCI.create_from_selected();
+            var elem = NeoOCI.create_from_selected();
             if (elem is VNActor.Actor chara)
             {
                 var tmp_status = chara.export_full_status();
@@ -657,12 +657,12 @@ namespace SceneSaveState
 
         public void copySelectedStatus()
         {
-            var elem = HSNeoOCI.create_from_selected();
+            var elem = NeoOCI.create_from_selected();
             if (elem is VNActor.Actor chara)
             {
                 clipboard_status = ((VNActor.Actor)chara).export_full_status();
             }
-            else if (elem is HSNeoOCIProp prop)
+            else if (elem is Prop prop)
             {
                 clipboard_status = prop.export_full_status();
             }
@@ -674,12 +674,12 @@ namespace SceneSaveState
 
         public void pasteSelectedStatus()
         {
-            var elem = HSNeoOCI.create_from_selected();
+            var elem = NeoOCI.create_from_selected();
             if (elem is VNActor.Actor chara)
             {
                 chara.import_status(clipboard_status);
             }
-            else if (elem is HSNeoOCIProp prop)
+            else if (elem is Prop prop)
             {
                 prop.import_status((ItemData)clipboard_status);
             }
@@ -691,12 +691,12 @@ namespace SceneSaveState
 
         public void copySelectedStatus2()
         {
-            var elem = HSNeoOCI.create_from_selected();
+            var elem = NeoOCI.create_from_selected();
             if (elem is VNActor.Actor chara)
             {
                 clipboard_status2 = chara.export_full_status();
             }
-            else if (elem is HSNeoOCIProp prop)
+            else if (elem is Prop prop)
             {
                 clipboard_status2 = prop.export_full_status();
             }
@@ -708,12 +708,12 @@ namespace SceneSaveState
 
         public void pasteSelectedStatus2()
         {
-            var elem = HSNeoOCI.create_from_selected();
+            var elem = NeoOCI.create_from_selected();
             if (elem is VNActor.Actor chara)
             {
                 chara.import_status((ActorData)clipboard_status2);
             }
-            else if (elem is HSNeoOCIProp prop)
+            else if (elem is Prop prop)
             {
                 prop.import_status((ItemData)clipboard_status2);
             }
@@ -753,12 +753,12 @@ namespace SceneSaveState
         }
 
 
-        public void addSelectedToTrack(HSNeoOCIProp prop)
+        public void addSelectedToTrack(Prop prop)
         {
-            HSNeoOCIFolder tagfld;
+            Folder tagfld;
             var props = game.scenef_get_all_props();
 
-            foreach (HSNeoOCIProp p in props.Values)
+            foreach (Prop p in props.Values)
             {
                 if (p.objctrl == prop.objctrl)
                 {
@@ -791,17 +791,17 @@ namespace SceneSaveState
             }
             if (prop is VNActor.Light)
             {
-                tagfld = HSNeoOCIFolder.add(VNNeoController.light_folder_prefix + newid);
+                tagfld = Folder.add(VNNeoController.light_folder_prefix + newid);
                 prop.set_parent(tagfld);
             }
             else if (prop is Route)
             {
-                tagfld = HSNeoOCIFolder.add("-propgrandpa:" + newid);
+                tagfld = Folder.add("-propgrandpa:" + newid);
                 tagfld.set_parent_treenodeobject(prop.treeNodeObject.child[0]);
             }
             else
             {
-                tagfld = HSNeoOCIFolder.add(VNNeoController.prop_folder_prefix + newid);
+                tagfld = Folder.add(VNNeoController.prop_folder_prefix + newid);
                 tagfld.set_parent_treenodeobject(prop.treeNodeObject);
             }
             var curstatus = prop.export_full_status();
@@ -845,7 +845,7 @@ namespace SceneSaveState
                     break;
                 }
             }
-            var tagfld = HSNeoOCIFolder.add(VNNeoController.actor_folder_prefix + id);
+            var tagfld = Folder.add(VNNeoController.actor_folder_prefix + id);
             tagfld.set_parent_treenodeobject(chara.treeNodeObject.child[0].child[0]);
             var curstatus = (ActorData)chara.export_full_status();
             foreach (var i in Enumerable.Range(0, block.Count))
@@ -870,22 +870,22 @@ namespace SceneSaveState
                 {
                     if (objectCtrl is OCIItem item)
                     {
-                        var prop = HSNeoOCI.create_from(item);
+                        var prop = NeoOCI.create_from(item);
                         addSelectedToTrack(prop);
                     }
                     else if (objectCtrl is OCIChar chara)
                     {
-                        var actor = HSNeoOCI.create_from(chara);
+                        var actor = NeoOCI.create_from(chara);
                         addSelectedToTrack(actor);
                     }
                     else if (objectCtrl is OCILight oLight)
                     {
-                        var light = HSNeoOCI.create_from(oLight);
+                        var light = NeoOCI.create_from(oLight);
                         addSelectedToTrack(light);
                     }
                     else if (objectCtrl is OCIRoute oRoute)
                     {
-                        var route = HSNeoOCI.create_from(oRoute);
+                        var route = NeoOCI.create_from(oRoute);
                         addSelectedToTrack(route);
                     } else
                     {
@@ -903,7 +903,7 @@ namespace SceneSaveState
                 show_blocking_message_time_sc("Please, set ID to change to first");
                 return;
             }
-            var elem = HSNeoOCI.create_from_selected();
+            var elem = NeoOCI.create_from_selected();
             if (elem == null)
             {
                 show_blocking_message_time_sc("Nothing selected");
@@ -943,7 +943,7 @@ namespace SceneSaveState
 
         public void delSelectedFromTrack()
         {
-            var elem = HSNeoOCI.create_from_selected();
+            var elem = NeoOCI.create_from_selected();
             if (elem == null)
             {
                 show_blocking_message_time_sc("Nothing selected");
@@ -969,7 +969,7 @@ namespace SceneSaveState
                 }
                 delActorFromTrack(id);
             }
-            else if (elem is HSNeoOCIProp)
+            else if (elem is Prop)
             {
                 var props = game.scenef_get_all_props();
                 var id = "";
@@ -992,10 +992,10 @@ namespace SceneSaveState
             if (actid != "")
             {
                 // we found this char
-                var fld = HSNeoOCIFolder.find_single(VNNeoController.actor_folder_prefix + actid);
+                var fld = Folder.find_single(VNNeoController.actor_folder_prefix + actid);
                 if (fld == null)
                 {
-                    fld = HSNeoOCIFolder.find_single_startswith(VNNeoController.actor_folder_prefix + actid + ":");
+                    fld = Folder.find_single_startswith(VNNeoController.actor_folder_prefix + actid + ":");
                 }
                 // found
                 if (fld != null)
@@ -1015,10 +1015,10 @@ namespace SceneSaveState
             if (actid != "")
             {
                 // we found this char
-                var fld = HSNeoOCIFolder.find_single(VNNeoController.actor_folder_prefix + actid);
+                var fld = Folder.find_single(VNNeoController.actor_folder_prefix + actid);
                 if (fld == null)
                 {
-                    fld = HSNeoOCIFolder.find_single_startswith(VNNeoController.actor_folder_prefix + actid + ":");
+                    fld = Folder.find_single_startswith(VNNeoController.actor_folder_prefix + actid + ":");
                 }
                 // found
                 //if fld != None:
@@ -1050,7 +1050,7 @@ namespace SceneSaveState
             if (propid != "")
             {
                 // we found this prop
-                var fld = HSNeoOCIFolder.find_single(VNNeoController.prop_folder_prefix + propid);
+                var fld = Folder.find_single(VNNeoController.prop_folder_prefix + propid);
                 // found
                 if (fld != null)
                 {
@@ -1064,10 +1064,10 @@ namespace SceneSaveState
             }
         }
 
-        public static HSNeoOCIFolder createFld(string txt, HSNeoOCI parent = null, bool ret = true)
+        public static Folder createFld(string txt, NeoOCI parent = null, bool ret = true)
         {
-            var fld = HSNeoOCIFolder.add(txt);
-            if (parent is HSNeoOCIFolder)
+            var fld = Folder.add(txt);
+            if (parent is Folder)
             {
                 fld.set_parent(parent);
             }
@@ -1081,21 +1081,21 @@ namespace SceneSaveState
             }
         }
 
-        public static HSNeoOCIFolder createFldIfNo(string txt, HSNeoOCIFolder parent, int childNum)
+        public static Folder createFldIfNo(string txt, Folder parent, int childNum)
         {
-            HSNeoOCIFolder fld;
+            Folder fld;
 
                 if (parent.treeNodeObject.child.Count <= childNum)
                 {
                     //print "create folder! %s" % txt
-                    fld = HSNeoOCIFolder.add(txt);
+                    fld = Folder.add(txt);
                     fld.set_parent(parent);
                     return fld;
                 }
                 else
                 {
                     var chld = parent.treeNodeObject.child[childNum];
-                    fld = HSNeoOCI.create_from_treenode(chld) as HSNeoOCIFolder;
+                    fld = NeoOCI.create_from_treenode(chld) as Folder;
                     if (chld.textName != txt)
                     {
                         //print "hit! upd folder! %s" % txt
@@ -1111,15 +1111,15 @@ namespace SceneSaveState
        
         }
 
-        public void restrict_to_child(HSNeoOCIFolder fld, int numchilds)
+        public void restrict_to_child(Folder fld, int numchilds)
         {
             if (fld.treeNodeObject.child.Count > numchilds)
             {
                 var ar = fld.treeNodeObject.child;
-                var ar2 = new List<HSNeoOCI>();
+                var ar2 = new List<NeoOCI>();
                 foreach (var treeobj in ar)
                 {
-                    ar2.Add(HSNeoOCI.create_from_treenode(treeobj));
+                    ar2.Add(NeoOCI.create_from_treenode(treeobj));
                 }
                 foreach (var i in Enumerable.Range(0, ar2.Count))
                 {
@@ -1239,7 +1239,7 @@ namespace SceneSaveState
         public void saveToFile(bool backup = false)
         {
             string filename;
-            HSNeoOCIFolder fld;
+            Folder fld;
             // Template
             // template = {"fchars":{}, "mchars":{}, "propflds":{}, "cams":[], "accs":{}, "props":{}}
             if (svname == "")

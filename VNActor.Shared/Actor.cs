@@ -14,7 +14,7 @@ using UnityEngine;
 namespace VNActor
 {
     // Shared Actor code
-    public partial class Actor : HSNeoOCI, IVNObject
+    public partial class Actor : NeoOCI, IVNObject
     {
 
         [Serializable]

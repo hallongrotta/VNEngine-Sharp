@@ -36,7 +36,7 @@ namespace SceneSaveState
         {
             game.LoadTrackedActorsAndProps();
             Dictionary<string, VNActor.Actor> actors = game.scenef_get_all_actors();
-            Dictionary<string, HSNeoOCIProp> props = game.scenef_get_all_props();
+            Dictionary<string, Prop> props = game.scenef_get_all_props();
             foreach (string actid in actors.Keys)
             {
                 this.actors[actid] = (ActorData)actors[actid].export_full_status();

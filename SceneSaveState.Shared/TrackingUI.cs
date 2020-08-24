@@ -100,7 +100,7 @@ namespace SceneSaveState
         }
 
         // :type elem:HSNeoOCI
-        public static void render_ui_for_tracking(string id, HSNeoOCI elem)
+        public static void render_ui_for_tracking(string id, NeoOCI elem)
         {
             var txt = id + ": " + elem.text_name;
             GUILayout.BeginHorizontal();

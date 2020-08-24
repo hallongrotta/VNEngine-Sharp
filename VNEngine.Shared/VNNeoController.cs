@@ -204,7 +204,7 @@ namespace VNEngine
                 foreach (var id in props.Keys)
                 {
                     id_global = id;
-                    HSNeoOCIProp prop = this.scenef_get_propf(id);
+                    Prop prop = this.scenef_get_propf(id);
                     status = prop.export_full_status();
                     //output += String.Format("'%s': ", id) + VNFrame.script2string(status) + ",\n"; TODO
                 }
@@ -242,7 +242,7 @@ namespace VNEngine
             string id = "";
             try
             {
-                VNActor.Actor fem = (VNActor.Actor)HSNeoOCI.create_from_selected();
+                VNActor.Actor fem = (VNActor.Actor)NeoOCI.create_from_selected();
                 var actor = (VNActor.Actor)fem;
                 id = actor.text_name;
                 var status = actor.export_full_status();
@@ -464,16 +464,16 @@ namespace VNEngine
             return ar;
         }
 
-        public List<HSNeoOCIFolder> scene_get_all_folders()
+        public List<Folder> scene_get_all_folders()
         {
-            var ar = new List<HSNeoOCIFolder>();
+            var ar = new List<Folder>();
             var dobjctrl = this.studio.dicObjectCtrl;
             foreach (var key in dobjctrl.Keys)
             {
                 var objctrl = dobjctrl[key];
                 if (objctrl is OCIFolder fld)
                 {
-                    ar.Add(new HSNeoOCIFolder(fld));
+                    ar.Add(new Folder(fld));
                 }
             }
             return ar;
@@ -594,7 +594,7 @@ namespace VNEngine
 
                     if (!_scenef_actors.ContainsKey(actorAlias))
                     {
-                        var hsociChar = HSNeoOCI.create_from_treenode(fld.treeNodeObject.parent.parent.parent);
+                        var hsociChar = NeoOCI.create_from_treenode(fld.treeNodeObject.parent.parent.parent);
 
                         if (hsociChar is VNActor.Actor chara)
                         {
@@ -620,7 +620,7 @@ namespace VNEngine
 
                     if (!_scenef_props.ContainsKey(propAlias))
                     {
-                        HSNeoOCI oci = HSNeoOCI.create_from_treenode(fld.treeNodeObject.parent);
+                        NeoOCI oci = NeoOCI.create_from_treenode(fld.treeNodeObject.parent);
 
                         if (oci is Item propOci)
                         {
@@ -636,7 +636,7 @@ namespace VNEngine
 
                     if (!_scenef_props.ContainsKey(propAlias))
                     {
-                        HSNeoOCI oci = HSNeoOCI.create_from_treenode(fld.treeNodeObject.child[0]);
+                        NeoOCI oci = NeoOCI.create_from_treenode(fld.treeNodeObject.child[0]);
 
                         if (oci is VNActor.Light propOci)
                         {
@@ -768,26 +768,26 @@ namespace VNEngine
             return this._scenef_actors;
         }
 
-        public Dictionary<string, HSNeoOCIProp> scenef_get_all_props()
+        public Dictionary<string, Prop> scenef_get_all_props()
         {
             return this._scenef_props;
         }
 
-        public HSNeoOCI scenef_get_prop(string id)
+        public NeoOCI scenef_get_prop(string id)
         {
             if (this.scenef_get_all_props().ContainsKey(id))
             {
-                HSNeoOCI obj = this.scenef_get_all_props()[id];
+                NeoOCI obj = this.scenef_get_all_props()[id];
                 return obj;
             }
             return null;
         }
 
-        public HSNeoOCIProp scenef_get_propf(string id)
+        public Prop scenef_get_propf(string id)
         {
             if (this.scenef_get_all_props().ContainsKey(id))
             {
-                HSNeoOCIProp obj = this.scenef_get_all_props()[id];
+                Prop obj = this.scenef_get_all_props()[id];
                 return obj;
             }
             return null;
@@ -797,7 +797,7 @@ namespace VNEngine
         {
             if (this.scenef_get_all_props().ContainsKey(id))
             {
-                HSNeoOCIProp obj = this.scenef_get_all_props()[id];
+                Prop obj = this.scenef_get_all_props()[id];
                 return (VNActor.Light)obj;
             }
             return null;
@@ -826,7 +826,7 @@ namespace VNEngine
         public void scenef_clean_actorsprops()
         {
             this._scenef_actors = new Dictionary<string, VNActor.Actor>();
-            this._scenef_props = new Dictionary<string, HSNeoOCIProp>();
+            this._scenef_props = new Dictionary<string, Prop>();
         }
 
         // ---- lip sync ------- TODO

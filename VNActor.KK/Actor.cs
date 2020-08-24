@@ -13,7 +13,7 @@ namespace VNActor
 {
     // Koikatsu Actor
     public partial class Actor
-        : HSNeoOCI, IVNObject
+        : NeoOCI, IVNObject
     {
 
         [MessagePackObject(keyAsPropertyName: true)]

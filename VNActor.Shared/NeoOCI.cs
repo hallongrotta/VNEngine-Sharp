@@ -3,12 +3,12 @@ using UnityEngine;
 
 namespace VNActor
 {
-    public abstract class HSNeoOCI
+    public abstract class NeoOCI
     {
 
         public ObjectCtrlInfo objctrl;
 
-        public HSNeoOCI(ObjectCtrlInfo objctrl)
+        public NeoOCI(ObjectCtrlInfo objctrl)
         {
             this.objctrl = objctrl;
             return;
@@ -25,11 +25,11 @@ namespace VNActor
 
         public static Route create_from(OCIRoute objctrl) { return new Route(objctrl); }
 
-        public static HSNeoOCIFolder create_from(OCIFolder objctrl) { return new HSNeoOCIFolder(objctrl); }
+        public static Folder create_from(OCIFolder objctrl) { return new Folder(objctrl); }
 
         //public static HSNeoOCI create_from(ObjectCtrlInfo objctrl) { return new HSNeoOCI(objctrl); }
 
-        public static HSNeoOCI create_from_treenode(TreeNodeObject treenode)
+        public static NeoOCI create_from_treenode(TreeNodeObject treenode)
         {
             if (treenode == null)
             {
@@ -69,10 +69,10 @@ namespace VNActor
         }
 
 
-        public static HSNeoOCI create_from_selected()
+        public static NeoOCI create_from_selected()
         {
             Studio.Studio studio = Studio.Studio.Instance;
-            return HSNeoOCI.create_from_treenode(studio.treeNodeCtrl.selectNode);
+            return NeoOCI.create_from_treenode(studio.treeNodeCtrl.selectNode);
         }
 
         public bool visible_treenode
@@ -105,7 +105,7 @@ namespace VNActor
             studio.treeNodeCtrl.SetParent(this.treeNodeObject, parentTreeNode);
         }
 
-        public void set_parent(HSNeoOCI parent)
+        public void set_parent(NeoOCI parent)
         {
             this.set_parent_treenodeobject(parent.treeNodeObject);
         }

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace VNActor
 {
-    public partial class Route : HSNeoOCIProp
+    public partial class Route : Prop
     {
 
         public struct Point : IEquatable<Point>

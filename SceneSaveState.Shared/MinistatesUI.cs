@@ -190,7 +190,7 @@ namespace SceneSaveState
                     i = 0;
                     foreach (var vs in Instance.arAutoStatesItemsVis)
                     {
-                        HSNeoOCIFolder vis = (HSNeoOCIFolder)vs;
+                        Folder vis = (Folder)vs;
                         ar = vis.text_name.Split(':');
                         i += 1;
                         try
@@ -241,7 +241,7 @@ namespace SceneSaveState
                     GUILayout.Space(6);
                     GUILayout.BeginHorizontal();
                     var lbname = "--tmp--";
-                    HSNeoOCIFolder itchoice = (HSNeoOCIFolder)ic;
+                    Folder itchoice = (Folder)ic;
                     try
                     {
                         ar = itchoice.text_name.Split(':');

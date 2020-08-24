@@ -85,7 +85,7 @@ namespace VNEngine
         // ---------------- --- dumping item tree -----------------
         public static void dump_selected_item_tree()
         {
-            HSNeoOCI item = HSNeoOCI.create_from_selected();
+            NeoOCI item = NeoOCI.create_from_selected();
             using (StreamWriter file =
                 new StreamWriter(@"dump_selected_items.txt"))
             {
@@ -109,7 +109,7 @@ namespace VNEngine
             return txt1;
         }
 
-        public static string folder_dump(HSNeoOCIFolder item)
+        public static string folder_dump(Folder item)
         {
             var value = item.name;
             if (!only_roman_chars(value))
@@ -120,16 +120,16 @@ namespace VNEngine
             return txt1;
         }
 
-        public static void _dump_item_tree(StreamWriter f, HSNeoOCI item, int level)
+        public static void _dump_item_tree(StreamWriter f, NeoOCI item, int level)
         {
             var txt1 = "";
             if (item is Item)
             {
                 txt1 = item_dump((Item)item);
             }
-            else if (item is HSNeoOCIFolder)
+            else if (item is Folder)
             {
-                txt1 = folder_dump((HSNeoOCIFolder)item);
+                txt1 = folder_dump((Folder)item);
             }
 
             if (item.treeNodeObject.childCount > 0)
@@ -139,7 +139,7 @@ namespace VNEngine
                 // print all child
                 foreach (var childt in item.treeNodeObject.child)
                 {
-                    var child = HSNeoOCI.create_from_treenode(childt);
+                    var child = NeoOCI.create_from_treenode(childt);
                     _dump_item_tree(f, child, level + 1);
                 }
                 _print_dump(f, "]},", level);
@@ -181,12 +181,12 @@ namespace VNEngine
             public List<ItemTreeItem> ch;
         }
 
-        public static HSNeoOCI load_item_tree(ItemTreeItem obj, Studio.TreeNodeObject itemparenttobj)
+        public static NeoOCI load_item_tree(ItemTreeItem obj, Studio.TreeNodeObject itemparenttobj)
         {
-            HSNeoOCI return_item;
+            NeoOCI return_item;
             if (obj.no is string)
             {
-                HSNeoOCIFolder folder = HSNeoOCIFolder.add(obj.name);
+                Folder folder = Folder.add(obj.name);
                 if (itemparenttobj != null)
                 {
                     folder.set_parent_treenodeobject(itemparenttobj);
