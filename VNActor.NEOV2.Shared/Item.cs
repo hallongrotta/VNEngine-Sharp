@@ -13,10 +13,10 @@ namespace VNActor
         public class ItemData : NEOItemData, IDataClass
         {
             // Distinct
-            private bool option;
-            private bool fk_active;
-            private Metallic_s[] metallic;
-            private int anim_ptn;
+            public bool option;
+            public bool fk_active;
+            public Metallic_s[] metallic;
+            public int anim_ptn;
 
             public ItemData() : base()
             {
