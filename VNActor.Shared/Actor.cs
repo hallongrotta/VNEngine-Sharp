@@ -210,7 +210,8 @@ namespace VNActor
             }
             get
             {
-                return this.objctrl.charInfo.GetEyesPtn();
+                // return eye look at pattern: 0: front, 1: camera, 2: hide from camera, 3: fix, 4: operate
+                return this.objctrl.charInfo.GetLookEyesPtn();
             }
         }
 
