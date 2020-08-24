@@ -6,6 +6,7 @@ using MessagePack;
 using Studio;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEngine;
 
@@ -88,6 +89,27 @@ namespace VNActor
         {
             var objctrl = AddObjectMale.Add(path);
             return new Actor(objctrl);
+        }
+
+        public void SetAccessory(int accIndex, bool accShow)
+        {
+            this.objctrl.ShowAccessory(accIndex, accShow);
+        }
+
+        public bool[] accessory
+        {
+            get
+            {
+                // return accessory state on/off in tuple(20)
+                return this.objctrl.charFileStatus.showAccessory;
+            }
+            set
+            {
+                for (int i = 0; i < value.Length; i++)
+                {
+                    this.objctrl.ShowAccessory(i, value[i]);
+                }
+            }
         }
 
         public ChaControl charInfo
@@ -217,7 +239,7 @@ namespace VNActor
             }
         }
 
-        /*
+
         public int eyebrow_ptn
         {
             get
@@ -230,7 +252,356 @@ namespace VNActor
             {
                 this.objctrl.charInfo.ChangeEyebrowPtn(value);
             }
-        }*/
+        }
+
+        public void import_fk_bone_info(Dictionary<int, Vector3> biDic)
+        {
+            // import fk bone info from dic
+            foreach (var binfo in this.objctrl.listBones)
+            {
+                if (biDic.ContainsKey(binfo.boneID))
+                {
+                    binfo.boneInfo.changeAmount.rot = biDic[binfo.boneID];
+                }
+            }
+        }
+
+        public Dictionary<int, Vector3> export_fk_bone_info(bool activedOnly = true)
+        {
+            // export a dic contents FK bone info
+            var biDic = new Dictionary<int, Vector3>();
+            foreach (var binfo in this.objctrl.listBones)
+            {
+                if (!activedOnly || binfo.active)
+                {
+                    // posClone = Vector3(binfo.posision.x, binfo.posision.y, binfo.posision.z)
+                    var rot = binfo.boneInfo.changeAmount.rot;
+                    var rotClone = new Vector3(rot.x <= 180 ? rot.x : rot.x - 360, rot.y <= 180 ? rot.y : rot.y - 360, rot.z <= 180 ? rot.z : rot.z - 360);
+                    // abDic[binfo.boneID] = (posClone, rotClone)
+                    biDic[binfo.boneID] = rotClone;
+                }
+            }
+            // print "exported", len(biDic), "bones"
+            return biDic;
+        }
+
+        public void import_ik_target_info(Dictionary<string, IK_node_s> itDic)
+        {
+            // import IK target info from dic 
+            foreach (var ikTgt in this.objctrl.listIKTarget)
+            {
+                var ikTgName = ikTgt.boneObject.name;
+                if (itDic.ContainsKey(ikTgName))
+                {
+
+                    ikTgt.targetInfo.changeAmount.pos = itDic[ikTgName].pos;
+
+                    if (IsRotatableIK(ikTgName))
+                    {
+                        if (itDic[ikTgName].rot is Vector3 ik_rot)
+                        {
+                            ikTgt.targetInfo.changeAmount.rot = ik_rot;
+                        }
+                    }
+                }
+            }
+        }
+
+        public Dictionary<string, IK_node_s> export_ik_target_info(bool activedOnly = true)
+        {
+            // export a dic contents IK target info
+            var itDic = new Dictionary<string, IK_node_s>
+            {
+            };
+            foreach (var itInfo in this.objctrl.listIKTarget)
+            {
+                if (!activedOnly || itInfo.active)
+                {
+                    var tgtName = itInfo.boneObject.name;
+                    var pos = itInfo.targetInfo.changeAmount.pos;
+                    var posClone = new Vector3(pos.x, pos.y, pos.z);
+                    if (IsRotatableIK(tgtName))
+                    {
+                        var rot = itInfo.targetInfo.changeAmount.rot;
+                        var rotClone = new Vector3(rot.x, rot.y, rot.z);
+                        //rotClone = Vector3(rot.x if rot.x <= 180 else rot.x - 360, rot.y if rot.y <= 180 else rot.y - 360, rot.z if rot.z <= 180 else rot.z - 360)
+                        itDic[tgtName] = new IK_node_s { pos = posClone, rot = rotClone };
+                    }
+                    else
+                    {
+                        itDic[tgtName] = new IK_node_s { pos = posClone, rot = null };
+                    }
+                }
+            }
+            //print "exported", len(itDic), "IK Targets"
+            return itDic;
+        }
+
+        public void set_kinematic(KinematicMode mode, bool force = false)
+        {
+            // mode: 0-none, 1-IK, 2-FK, 3-IK&FK
+            if (mode == KinematicMode.IKFK)
+            {
+                // enable IK
+                this.objctrl.finalIK.enabled = true;
+                this.objctrl.oiCharInfo.enableIK = true;
+                this.objctrl.ActiveIK(OIBoneInfo.BoneGroup.Body, this.objctrl.oiCharInfo.activeIK[0], true);
+                this.objctrl.ActiveIK(OIBoneInfo.BoneGroup.RightLeg, this.objctrl.oiCharInfo.activeIK[1], true);
+                this.objctrl.ActiveIK(OIBoneInfo.BoneGroup.LeftLeg, this.objctrl.oiCharInfo.activeIK[2], true);
+                this.objctrl.ActiveIK(OIBoneInfo.BoneGroup.RightArm, this.objctrl.oiCharInfo.activeIK[3], true);
+                this.objctrl.ActiveIK(OIBoneInfo.BoneGroup.LeftArm, this.objctrl.oiCharInfo.activeIK[4], true);
+                // enable FK, disable "body" because it should be controlled by IK
+                this.objctrl.oiCharInfo.activeFK[3] = false;
+                this.objctrl.fkCtrl.enabled = true;
+                this.objctrl.oiCharInfo.enableFK = true;
+                foreach (var i in Enumerable.Range(0, FKCtrl.parts.Length))
+                {
+                    try
+                    {
+                        this.objctrl.ActiveFK(FKCtrl.parts[i], this.objctrl.oiCharInfo.activeFK[i], true);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(String.Format($"Error set kinematic to 3(IK&FK), when ActiveFK[{i}: {FKCtrl.parts[i]}]. Error message = {e}"));
+                    }
+                }
+                // call ActiveKinematicMode to set pvCopy?
+                this.objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.IK, true, false);
+            }
+            else if (mode == KinematicMode.FK)
+            {
+                if (this.objctrl.oiCharInfo.enableIK)
+                {
+                    try
+                    {
+                        this.objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.IK, false, force);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine($"Error set kinematic to 2(FK), when clear IK. Error message = {e}");
+                    }
+                }
+                if (!this.objctrl.oiCharInfo.enableFK)
+                {
+                    try
+                    {
+                        this.objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.FK, true, force);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine($"Error set kinematic to 2(FK), when set FK. Error message = {e}");
+                    }
+                }
+            }
+            else if (mode == KinematicMode.IK)
+            {
+                if (this.objctrl.oiCharInfo.enableFK)
+                {
+                    try
+                    {
+                        this.objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.FK, false, force);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine($"Error set kinematic to 1(IK), when clear FK. Error message = {e}");
+                    }
+                }
+                if (!this.objctrl.oiCharInfo.enableIK)
+                {
+                    try
+                    {
+                        this.objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.IK, true, force);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine($"Error set kinematic to 1(IK), when set IK. Error message = {e}");
+                    }
+                }
+            }
+            else
+            {
+                if (this.objctrl.oiCharInfo.enableIK)
+                {
+                    try
+                    {
+                        this.objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.IK, false, force);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine($"Error set kinematic to 0(None), when clear IK. Error message = {e}");
+                    }
+                }
+                if (this.objctrl.oiCharInfo.enableFK)
+                {
+                    try
+                    {
+                        this.objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.FK, false, force);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine($"Error set kinematic to 0(None), when clear FK. Error message = {e}");
+                    }
+                }
+            }
+        }
+
+        public byte[] look_neck_full2
+        {
+            get
+            {
+                // needed only to save Fixed state
+                if (this.look_neck == 4)
+                {
+                    var memoryStream = new MemoryStream();
+                    var binaryWriter = new BinaryWriter(memoryStream);
+                    this.objctrl.neckLookCtrl.SaveNeckLookCtrl(binaryWriter);
+                    binaryWriter.Close();
+                    memoryStream.Close();
+                    return memoryStream.ToArray();
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            set
+            {
+                // needed only to set Fixed state
+                if (!value.IsNullOrEmpty())
+                {
+                    // if non-fixed-state - move to it!
+                    this.look_neck = 4;
+                }
+                if (this.look_neck == 4)
+                {
+                    // print lst
+                    // print arrstate
+                    var binaryReader = new BinaryReader(new MemoryStream(value));
+                    this.objctrl.neckLookCtrl.LoadNeckLookCtrl(binaryReader);
+                }
+            }
+        }
+
+        public float get_face_shape(int p1)
+        {
+            return this.charInfo.GetShapeFaceValue(p1);
+        }
+
+        public void set_face_shape(int p1, float p2)
+        {
+            this.charInfo.SetShapeFaceValue(p1, p2);
+        }
+
+        public int face_shapes_count
+        {
+            get
+            {
+                return this.face_shapes_all.Length;
+            }
+        }
+
+        public string[] face_shape_names
+        {
+            get
+            {
+                return ChaFileDefine.cf_headshapename;
+            }
+        }
+
+        public float[] face_shapes_all
+        {
+            get
+            {
+                var ct = this.face_shapes_count;
+                var res = new float[ct];
+                for (int i = 0; i < ct; i++)
+                {
+                    res[i] = this.get_face_shape(i);
+                }
+                return res;
+            }
+            set
+            {
+                for (int i = 0; i < value.Length; i++)
+                {
+                    this.set_face_shape(i, value[i]);
+                }
+            }
+        }
+
+        public float[] body_shapes_all
+        {
+            get
+            {
+                return this.objctrl.oiCharInfo.charFile.custom.body.shapeValueBody;
+            }
+        }
+
+        public int body_shapes_count
+        {
+            get
+            {
+                return this.body_shapes_all.Length;
+            }
+        }
+
+        public string[] body_shape_names
+        {
+            get
+            {
+                return ChaFileDefine.cf_bodyshapename;
+            }
+        }
+
+        public float height
+        {
+            get
+            {
+                // get height:
+                return this.objctrl.oiCharInfo.charFile.custom.body.shapeValueBody[0];
+            }
+        }
+
+        public byte[] cloth
+        {
+            get
+            {
+                // return state index of (top, bottom, bra, shorts, grove, panst, sock, shoes) in tuple
+                byte[] cloth = new byte[this.objctrl.charFileStatus.clothesState.Length];
+
+                for (int i = 0; i < this.objctrl.charFileStatus.clothesState.Length; i++)
+                {
+                    cloth[i] = this.objctrl.charFileStatus.clothesState[i];
+                }
+
+                return cloth;
+            }
+            set
+            {
+                for (int i = 0; i < value.Length; i++)
+                {
+                    this.objctrl.SetClothesState(i, value[i]);
+                }
+            }
+        }
+
+        public void import_status(IDataClass tmp_status)
+        {
+            if (tmp_status is ActorData data)
+            {
+                import_status(data);
+            }
+        }
+
+        public IDataClass export_full_status()
+        {
+            return new ActorData(this);
+        }
+
+        public void import_status(ActorData a)
+        {
+            a.Apply(this);
+        }
 
         /*
         public void move(Vector3 pos, Vector3 rot, Vector3 scale)
