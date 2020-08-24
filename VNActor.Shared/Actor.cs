@@ -96,7 +96,7 @@ namespace VNActor
             this.objctrl.ShowAccessory(accIndex, accShow);
         }
 
-        public bool[] accessory
+        public bool[] Accessories
         {
             get
             {
@@ -112,7 +112,7 @@ namespace VNActor
             }
         }
 
-        public ChaControl charInfo
+        public ChaControl CharInfo
         {
             get
             {
@@ -120,7 +120,7 @@ namespace VNActor
             }
         }
 
-        public OICharInfo oiCharInfo
+        public OICharInfo OICharInfo
         {
             get
             {
@@ -128,35 +128,35 @@ namespace VNActor
             }
         }
 
-        override public Vector3 pos
+        override public Vector3 Position
         {
             get
             {
-                return this.charInfo.transform.localPosition;
+                return this.CharInfo.transform.localPosition;
             }
             set
             {
-                this.charInfo.transform.localPosition = value;
+                this.CharInfo.transform.localPosition = value;
             }
         }
 
-        override public Vector3 rot
+        override public Vector3 Rotation
         {
             get
             {
-                return this.charInfo.transform.localRotation.eulerAngles;
+                return this.CharInfo.transform.localRotation.eulerAngles;
             }
             set
             {
-                this.charInfo.transform.localRotation = Quaternion.Euler(value.x, value.y, value.z);
+                this.CharInfo.transform.localRotation = Quaternion.Euler(value.x, value.y, value.z);
             }
         }
 
-        public Vector3 scale
+        public Vector3 Scale
         {
             get
             {
-                return this.charInfo.transform.localScale;
+                return this.CharInfo.transform.localScale;
             }
             set
             {
@@ -450,7 +450,7 @@ namespace VNActor
             get
             {
                 // needed only to save Fixed state
-                if (this.look_neck == 4)
+                if (this.LookNeckPattern == 4)
                 {
                     var memoryStream = new MemoryStream();
                     var binaryWriter = new BinaryWriter(memoryStream);
@@ -470,9 +470,9 @@ namespace VNActor
                 if (!value.IsNullOrEmpty())
                 {
                     // if non-fixed-state - move to it!
-                    this.look_neck = 4;
+                    this.LookNeckPattern = 4;
                 }
-                if (this.look_neck == 4)
+                if (this.LookNeckPattern == 4)
                 {
                     // print lst
                     // print arrstate
@@ -484,12 +484,12 @@ namespace VNActor
 
         public float get_face_shape(int p1)
         {
-            return this.charInfo.GetShapeFaceValue(p1);
+            return this.CharInfo.GetShapeFaceValue(p1);
         }
 
         public void set_face_shape(int p1, float p2)
         {
-            this.charInfo.SetShapeFaceValue(p1, p2);
+            this.CharInfo.SetShapeFaceValue(p1, p2);
         }
 
         public int face_shapes_count
@@ -699,8 +699,8 @@ namespace VNActor
             //print "objctrlchar.move(pos=%s, rot=%s)"%(str(self.charInfo.GetPosition()), str(self.charInfo.GetRotation()))
             try
             {
-                Console.WriteLine(String.Format("objctrlchar.move(pos=%s, rot=%s, scale=%s)", this.charInfo.transform.localPosition.ToString(), this.charInfo.transform.localRotation.eulerAngles.ToString(), this.charInfo.transform.localScale.ToString()));
-                Console.WriteLine(String.Format("objctrlchar.animate(%s, %s, %s, %s, %s)", this.oiCharInfo.animeInfo.group.ToString(), this.oiCharInfo.animeInfo.category.ToString(), this.oiCharInfo.animeInfo.no.ToString(), this.oiCharInfo.animePattern.ToString(), this.oiCharInfo.animeSpeed.ToString()));
+                Console.WriteLine(String.Format("objctrlchar.move(pos=%s, rot=%s, scale=%s)", this.CharInfo.transform.localPosition.ToString(), this.CharInfo.transform.localRotation.eulerAngles.ToString(), this.CharInfo.transform.localScale.ToString()));
+                Console.WriteLine(String.Format("objctrlchar.animate(%s, %s, %s, %s, %s)", this.OICharInfo.animeInfo.group.ToString(), this.OICharInfo.animeInfo.category.ToString(), this.OICharInfo.animeInfo.no.ToString(), this.OICharInfo.animePattern.ToString(), this.OICharInfo.animeSpeed.ToString()));
                 //print "objctrlchar.tears_level = %s" % (str(self.tears_level))
             }
             catch (Exception e)
@@ -713,7 +713,7 @@ namespace VNActor
         public delegate void CharaActFunction(Actor chara, ActorData param);
         //private Dictionary<string, (ActorData, bool)> char_act_funcs;
 
-        public int sex
+        public int Sex
         {
             get
             {
@@ -722,21 +722,7 @@ namespace VNActor
             }
         }
 
-        // value: 0(hide)/1(visible)
-        public bool visible
-        {
-            get
-            {
-                // get visible status
-                return this.objctrl.treeNodeObject.visible;
-            }
-            set
-            {
-                this.objctrl.treeNodeObject.visible = value;
-            }
-        }
-
-        public bool isVoicePlay
+        public bool IsVoicePlay
         {
             get
             {
@@ -745,7 +731,7 @@ namespace VNActor
             }
         }
 
-        public bool isAnimeOver
+        public bool IsAnimeOver
         {
             get
             {
@@ -756,7 +742,7 @@ namespace VNActor
             }
         }
 
-        public bool isHAnime
+        public bool IsHAnime
         {
             get
             {
@@ -833,7 +819,7 @@ namespace VNActor
             }
         }
 
-        public void setAnimate(
+        public void SetAnimate(
             int group,
             int category,
             int no,
@@ -849,19 +835,19 @@ namespace VNActor
             {
                 normalizedTime = 0;
             }
-            var curAnime = this.animate;
-            if (force || curAnime.group != group || curAnime.category != category || curAnime.no != no || this.animeSpeed == 0.0 && !noNormalizedTime && this.objctrl.charAnimeCtrl.normalizedTime != normalizedTime)
+            var curAnime = this.Animation;
+            if (force || curAnime.group != group || curAnime.category != category || curAnime.no != no || this.AnimeSpeed == 0.0 && !noNormalizedTime && this.objctrl.charAnimeCtrl.normalizedTime != normalizedTime)
             {
                 this.objctrl.LoadAnime(group, category, no, normalizedTime);
             }
         }
 
-        public Animation_s animate
+        public Animation_s Animation
         {
             get
             {
                 // return (group, category, no) in tuple         
-                if (this.animeSpeed == 0.0)
+                if (this.AnimeSpeed == 0.0)
                 {
                     return new Animation_s { group = this.objctrl.oiCharInfo.animeInfo.group, category = this.objctrl.oiCharInfo.animeInfo.category, no = this.objctrl.oiCharInfo.animeInfo.no, normalizedTime = this.objctrl.charAnimeCtrl.normalizedTime };
                 }
@@ -872,7 +858,7 @@ namespace VNActor
             }
         }
 
-        public float animeSpeed
+        public float AnimeSpeed
         {
             get
             {
@@ -885,7 +871,7 @@ namespace VNActor
             }
         }
 
-        public float animePattern
+        public float AnimePattern
         {
             get
             {
@@ -899,7 +885,7 @@ namespace VNActor
             }
         }
 
-        public AnimeOption_s anime_option_param
+        public AnimeOption_s AnimationOption
         {
             set
             {
@@ -914,7 +900,7 @@ namespace VNActor
             }
         }
 
-        public bool anime_option_visible
+        public bool AnimationItemVisible
         {
             set
             {
@@ -928,7 +914,7 @@ namespace VNActor
             }
         }
 
-        public bool anime_forceloop
+        public bool AnimationForceLoop
         {
             get
             {
@@ -940,7 +926,7 @@ namespace VNActor
                 this.objctrl.charAnimeCtrl.isForceLoop = value;
             }
         }
-        public float facered
+        public float FaceRedness
         {
             get
             {
@@ -954,7 +940,7 @@ namespace VNActor
             }
         }
 
-        public float nipple_stand
+        public float NippleStand
         {
             get
             {
@@ -968,7 +954,7 @@ namespace VNActor
             }
         }
 
-        public Son_s son
+        public Son_s Son
         {
             get
             {
@@ -985,26 +971,7 @@ namespace VNActor
             }
         }
 
-        /*
-        public bool son
-        {
-            get
-            {
-                // return son visible
-                return this.objctrl.oiCharInfo.visibleSon;
-            }
-            set
-            {
-                // son visible: 0(False)/1(True)
-                if (this.sex == 0)
-                {
-                    this.objctrl.SetVisibleSon(value);
-                }
-            }
-        }
-        */
-
-        public bool simple
+        public bool Simple
         {
             get
             {
@@ -1014,19 +981,19 @@ namespace VNActor
             set
             {
                 // simple = one color, for male only: 1(true)/0(false)
-                if (this.sex == 0)
+                if (this.Sex == 0)
                 {
                     this.objctrl.SetVisibleSimple(value);
                 }
             }
         }
 
-        public Color simple_color
+        public Color SimpleColor
         {
             set
             {
                 // simple color, for male only
-                if (this.sex == 0)
+                if (this.Sex == 0)
                 {
                     this.objctrl.SetSimpleColor(value);
                 }
@@ -1043,7 +1010,7 @@ namespace VNActor
             this.look_eyes_ptn = ptn_dir;
             if (ptn_dir == 4)
             {
-                this.look_eye_pos = dir;
+                this.EyeLookPos = dir;
             }
         }
 
@@ -1072,7 +1039,7 @@ namespace VNActor
         }
         */
 
-        public int look_eye_ptn
+        public int EyeLookPattern
         {
             get
             {
@@ -1086,7 +1053,7 @@ namespace VNActor
             }
         }
 
-        public Vector3 look_eye_pos
+        public Vector3 EyeLookPos
         {
             set
             {
@@ -1098,7 +1065,7 @@ namespace VNActor
             }
         }
 
-        public int look_neck
+        public int LookNeckPattern
         {
             set
             {
@@ -1113,7 +1080,7 @@ namespace VNActor
             }
         }
 
-        public float eyes_open
+        public float EyesOpenLevel
         {
             set
             {
@@ -1127,7 +1094,7 @@ namespace VNActor
             }
         }
 
-        public bool eyes_blink
+        public bool EyesBlink
         {
             set
             {
@@ -1141,7 +1108,7 @@ namespace VNActor
             }
         }
 
-        public float mouth_open
+        public float MouthOpenLevel
         {
             set
             {
@@ -1155,7 +1122,7 @@ namespace VNActor
             }
         }
 
-        public bool lip_sync
+        public bool LipSync
         {
             set
             {
@@ -1166,11 +1133,11 @@ namespace VNActor
             get
             {
                 // return lip sync status
-                return this.oiCharInfo.lipSync;
+                return this.OICharInfo.lipSync;
             }
         }
 
-        public Hands_s hand_ptn
+        public Hands_s HandPattern
         {
             set
             {
@@ -1201,7 +1168,7 @@ namespace VNActor
         public void del_all_voice()
         {
             // stop and delete all voice
-            if (this.isVoicePlay)
+            if (this.IsVoicePlay)
             {
                 this.stop_voice();
             }
@@ -1224,7 +1191,7 @@ namespace VNActor
             }
         }
 
-        public List<int[]> voice_lst
+        public List<int[]> VoiceList
         {
             get
             {
@@ -1240,7 +1207,7 @@ namespace VNActor
         }
 
 
-        public int voice_repeat
+        public int VoiceRepeat
         {
             set
             {
@@ -1279,7 +1246,7 @@ namespace VNActor
         public void play_voice(int index = 0)
         {
             // index = which voice to play
-            if (this.isVoicePlay)
+            if (this.IsVoicePlay)
             {
                 this.stop_voice();
             }
@@ -1292,7 +1259,7 @@ namespace VNActor
             this.objctrl.StopVoice();
         }
 
-        public KinematicMode kinematic
+        public KinematicMode Kinematic
         {
             get
             {
@@ -1603,12 +1570,12 @@ namespace VNActor
         // see sceneutils.py for realization of this props
         public float get_body_shape(int p1)
         {
-            return this.charInfo.GetShapeBodyValue(p1);
+            return this.CharInfo.GetShapeBodyValue(p1);
         }
 
         public void set_body_shape(int p1, float p2)
         {
-            this.charInfo.SetShapeBodyValue(p1, p2);
+            this.CharInfo.SetShapeBodyValue(p1, p2);
         }
 
 

@@ -26,9 +26,9 @@ namespace VNActor
             public ActorData(Actor a) : base(a)
             {
 
-                tuya = a.tuya;
-                wetness = a.wet;
-                tearLevel = a.tearLevel;
+                tuya = a.SkinGloss;
+                wetness = a.SkinWetness;
+                tearLevel = a.TearLevel;
 
                 /*
                 // ext data, enable by ini setting
@@ -67,13 +67,13 @@ namespace VNActor
             override public void Apply(Actor a)
             {
                 base.Apply(a);
-                a.tuya = tuya;
-                a.wet = wetness;
-                a.tearLevel = tearLevel;
+                a.SkinGloss = tuya;
+                a.SkinWetness = wetness;
+                a.TearLevel = tearLevel;
             }
         }
 
-        public float breast
+        public float Breast
         {
             get
             {
@@ -104,7 +104,7 @@ namespace VNActor
             }
         }
 
-        public byte[] juice
+        public byte[] Juice
         {
             set
             {
@@ -131,7 +131,7 @@ namespace VNActor
             }
         }
 
-        public float tearLevel
+        public float TearLevel
         {
             get
             {
@@ -145,7 +145,7 @@ namespace VNActor
             }
         }
 
-        public float tuya
+        public float SkinGloss
         {
             set
             {
@@ -158,7 +158,7 @@ namespace VNActor
                 return this.objctrl.oiCharInfo.SkinTuyaRate;
             }
         }
-        public float wet
+        public float SkinWetness
         {
             get
             {
@@ -245,13 +245,13 @@ namespace VNActor
         public static void char_tuya(Actor chara, ActorData param)
         {
             // param = skin tuya 0~1
-            chara.tuya = param.tuya;
+            chara.SkinGloss = param.tuya;
         }
 
         public static void char_wet(Actor chara, ActorData param)
         {
             // param = skin wet 0~1
-            chara.wet = param.wetness;
+            chara.SkinWetness = param.wetness;
         }
 
         public object h_partner(int hType = 0, int hPosition = 0)
@@ -278,24 +278,24 @@ namespace VNActor
             // hStage:
             // extActors: 
             // sync with partner
-            if (this.pos != partner.pos || this.rot != partner.rot || this.scale != partner.scale)
+            if (this.Position != partner.Position || this.Rotation != partner.Rotation || this.Scale != partner.Scale)
             {
-                partner.move(pos: this.pos, rot: this.rot, scale: this.scale);
+                partner.move(pos: this.Position, rot: this.Rotation, scale: this.Scale);
             }
-            if (this.animeSpeed != partner.animeSpeed)
+            if (this.AnimeSpeed != partner.AnimeSpeed)
             {
-                partner.animeSpeed = this.animeSpeed;
+                partner.AnimeSpeed = this.AnimeSpeed;
             }
-            if (this.animePattern != partner.animePattern)
+            if (this.AnimePattern != partner.AnimePattern)
             {
-                partner.animePattern = this.animePattern;
+                partner.AnimePattern = this.AnimePattern;
             }
-            if (this.anime_forceloop != partner.anime_forceloop)
+            if (this.AnimationForceLoop != partner.AnimationForceLoop)
             {
-                partner.anime_forceloop = this.anime_forceloop;
+                partner.AnimationForceLoop = this.AnimationForceLoop;
             }
             // decide sex role
-            if (this.sex == 0)
+            if (this.Sex == 0)
             {
                 mactor = this;
                 factor = partner;
@@ -306,10 +306,10 @@ namespace VNActor
                 factor = this;
             }
             // show son for male
-            var mss = mactor.son;
-            if (!mss.visible && mactor.sex == 0)
+            var mss = mactor.Son;
+            if (!mss.visible && mactor.Sex == 0)
             {
-                mactor.son = new Son_s { visible = true, length = mss.length };
+                mactor.Son = new Son_s { visible = true, length = mss.length };
             }
             // load anime
             var info = Info.Instance;
@@ -332,8 +332,8 @@ namespace VNActor
                 }
                 Console.WriteLine(String.Format("%s anime(%d, %d, %d)", mactor.text_name, 2, validCategoryKey[hPosition], validNoKey[hStage]));
                 Console.WriteLine(String.Format("%s anime(%d, %d, %d)", factor.text_name, 1, validCategoryKey[hPosition], validNoKey[hStage]));
-                mactor.setAnimate(2, validCategoryKey[hPosition], validNoKey[hStage]);
-                factor.setAnimate(1, validCategoryKey[hPosition], validNoKey[hStage]);
+                mactor.SetAnimate(2, validCategoryKey[hPosition], validNoKey[hStage]);
+                factor.SetAnimate(1, validCategoryKey[hPosition], validNoKey[hStage]);
             }
             else if (hType == 1)
             {
@@ -350,8 +350,8 @@ namespace VNActor
                     Console.WriteLine(String.Format("invalid hStage %d, must be 0~%d", hStage, validNoKey.Count - 1));
                     return;
                 }
-                mactor.setAnimate(4, validCategoryKey[hPosition], validNoKey[hStage]);
-                factor.setAnimate(3, validCategoryKey[hPosition], validNoKey[hStage]);
+                mactor.SetAnimate(4, validCategoryKey[hPosition], validNoKey[hStage]);
+                factor.SetAnimate(3, validCategoryKey[hPosition], validNoKey[hStage]);
             }
             else if (hType == 2)
             {
@@ -368,8 +368,8 @@ namespace VNActor
                     Console.WriteLine(String.Format("invalid hStage %d, must be 0~%d", hStage, validNoKey.Count - 1));
                     return;
                 }
-                mactor.setAnimate(6, validCategoryKey[hPosition], validNoKey[hStage]);
-                factor.setAnimate(5, validCategoryKey[hPosition], validNoKey[hStage]);
+                mactor.SetAnimate(6, validCategoryKey[hPosition], validNoKey[hStage]);
+                factor.SetAnimate(5, validCategoryKey[hPosition], validNoKey[hStage]);
             }
             else if (hType == 3)
             {
@@ -386,8 +386,8 @@ namespace VNActor
                     Console.WriteLine(String.Format("invalid hStage %d, must be 0~%d", hStage, validNoKey.Count - 1));
                     return;
                 }
-                mactor.setAnimate(8, validCategoryKey[hPosition], validNoKey[hStage]);
-                factor.setAnimate(7, validCategoryKey[hPosition], validNoKey[hStage]);
+                mactor.SetAnimate(8, validCategoryKey[hPosition], validNoKey[hStage]);
+                factor.SetAnimate(7, validCategoryKey[hPosition], validNoKey[hStage]);
             }
             else
             {
@@ -410,25 +410,25 @@ namespace VNActor
                     Console.WriteLine(String.Format("invalid hStage %d, must be 0~%d", hStage, validNoKey.Count - 1));
                     return;
                 }
-                mactor.setAnimate(9, validCategoryKey[hPosition], validNoKey[hStage]);
-                factor.setAnimate(9, validCategoryKey[hPosition] + 1, validNoKey[hStage]);
+                mactor.SetAnimate(9, validCategoryKey[hPosition], validNoKey[hStage]);
+                factor.SetAnimate(9, validCategoryKey[hPosition] + 1, validNoKey[hStage]);
             }
             // auto adjust anime param
-            Console.WriteLine(String.Format("factor(%s): height=%.2f breast=%.2f", factor.text_name, factor.height, factor.breast));
-            var anime_option_param = new AnimeOption_s { height = factor.height, breast = factor.breast};
-            if (factor.isHAnime)
+            Console.WriteLine(String.Format("factor(%s): height=%.2f breast=%.2f", factor.text_name, factor.height, factor.Breast));
+            var anime_option_param = new AnimeOption_s { height = factor.height, breast = factor.Breast};
+            if (factor.IsHAnime)
             {
-                factor.anime_option_param = anime_option_param;
+                factor.AnimationOption = anime_option_param;
             }
-            if (mactor.isHAnime)
+            if (mactor.IsHAnime)
             {
-                mactor.anime_option_param = anime_option_param;
+                mactor.AnimationOption = anime_option_param;
             }
             foreach (var extActor in extActors)
             {
-                if (extActor != null && extActor.isHAnime)
+                if (extActor != null && extActor.IsHAnime)
                 {
-                    extActor.anime_option_param = anime_option_param;
+                    extActor.AnimationOption = anime_option_param;
                 }
             }
         }
@@ -475,7 +475,7 @@ namespace VNActor
         public static void char_tear(Actor chara, ActorData param)
         {
             // param = tear level(0,1,2,3) or (0~1 for PH)
-            chara.tearLevel = param.tearLevel;
+            chara.TearLevel = param.tearLevel;
         }
 
         /* TODO

@@ -249,7 +249,7 @@ namespace VNActor
             throw new NotImplementedException();
         }
 
-        override public Vector3 pos
+        override public Vector3 Position
         {
             get
             {
@@ -261,7 +261,7 @@ namespace VNActor
             }
         }
 
-        override public Vector3 rot
+        override public Vector3 Rotation
         {
             get
             {

@@ -695,9 +695,9 @@ namespace VNEngine
         public void sync_h(VNActor.Actor female, VNActor.Actor male)
         {
             // if factor.isHAnime:
-            female.anime_option_param = new VNActor.Actor.AnimeOption_s { height = female.height, breast = female.breast };
+            female.AnimationOption = new VNActor.Actor.AnimeOption_s { height = female.height, breast = female.Breast };
             // if mactor.isHAnime:
-            male.anime_option_param = new VNActor.Actor.AnimeOption_s { height = female.height, breast = female.breast };
+            male.AnimationOption = new VNActor.Actor.AnimeOption_s { height = female.height, breast = female.Breast };
         }
     }
 

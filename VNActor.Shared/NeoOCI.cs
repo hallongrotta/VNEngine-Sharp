@@ -14,8 +14,21 @@ namespace VNActor
             return;
         }
 
-        public abstract Vector3 pos { get; set; }
-        public abstract Vector3 rot { get; set; }
+        public virtual bool Visible
+        {
+            get
+            {
+                // get visible status
+                return this.objctrl.treeNodeObject.visible;
+            }
+            set
+            {
+                this.objctrl.treeNodeObject.visible = value;
+            }
+        }
+
+        public abstract Vector3 Position { get; set; }
+        public abstract Vector3 Rotation { get; set; }
 
         public static Actor create_from(OCIChar objctrl) { return new Actor(objctrl); }
 

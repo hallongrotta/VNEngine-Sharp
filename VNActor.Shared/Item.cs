@@ -155,7 +155,7 @@ namespace VNActor
             }
         }
 
-        override public Vector3 pos
+        override public Vector3 Position
         {
             get
             {
@@ -167,7 +167,7 @@ namespace VNActor
             }
         }
 
-        override public Vector3 rot
+        override public Vector3 Rotation
         {
             get
             {
@@ -206,18 +206,7 @@ namespace VNActor
             }
         }
 
-        public bool visible
-        {
-            get
-            {
-                // get visible status
-                return this.objctrl.treeNodeObject.visible;
-            }
-            set
-            {
-                this.objctrl.treeNodeObject.visible = value;
-            }
-        }
+
 
         public string name
         {

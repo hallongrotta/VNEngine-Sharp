@@ -88,47 +88,47 @@ namespace VNActor
 
         public NEOActorData(Actor a)
         {
-            visible = a.visible;
-            position = a.pos;
-            rotation = a.rot;
-            scale = a.scale;
-            animeSpeed = a.animeSpeed;
-            animePattern = a.animePattern;
+            visible = a.Visible;
+            position = a.Position;
+            rotation = a.Rotation;
+            scale = a.Scale;
+            animeSpeed = a.AnimeSpeed;
+            animePattern = a.AnimePattern;
    
-            forceLoop = a.anime_forceloop;
+            forceLoop = a.AnimationForceLoop;
 
-            accessoryStatus = new bool[a.accessory.Length];
-            Array.Copy(a.accessory, accessoryStatus, accessoryStatus.Length);
+            accessoryStatus = new bool[a.Accessories.Length];
+            Array.Copy(a.Accessories, accessoryStatus, accessoryStatus.Length);
 
-            faceRedness = a.facered;
-            son = a.son;
+            faceRedness = a.FaceRedness;
+            son = a.Son;
 
-            anim = a.animate;
+            anim = a.Animation;
 
-            animeOption = new AnimeOption_s { height = a.height, breast = a.breast };
+            animeOption = new AnimeOption_s { height = a.height, breast = a.Breast };
 
             cloth = a.cloth;
 
-            juice = a.juice;
-            nippleHardness = a.nipple_stand;
+            juice = a.Juice;
+            nippleHardness = a.NippleStand;
 
-            simple = a.simple;
-            simpleColor = a.simple_color;
+            simple = a.Simple;
+            simpleColor = a.SimpleColor;
 
-            eyeLookPattern = a.look_eye_ptn;
-            eyeLookPos = a.look_eye_pos;
-            neckPattern = a.look_neck;
+            eyeLookPattern = a.EyeLookPattern;
+            eyeLookPos = a.EyeLookPos;
+            neckPattern = a.LookNeckPattern;
 
             neck = a.look_neck_full2;
             eyebrowPattern = a.eyebrow_ptn;
             eyePattern = a.eyes_ptn;
-            eyesOpen = a.eyes_open;
-            blinking = a.eyes_blink;
+            eyesOpen = a.EyesOpenLevel;
+            blinking = a.EyesBlink;
             mouthPattern = a.mouth_ptn;
-            mouthOpen = a.mouth_open;
-            lipSync = a.lip_sync;
-            handMotions = a.hand_ptn;
-            kinematicType = a.kinematic;
+            mouthOpen = a.MouthOpenLevel;
+            lipSync = a.LipSync;
+            handMotions = a.HandPattern;
+            kinematicType = a.Kinematic;
 
             fkActive = null;
             fk = null;
@@ -148,30 +148,30 @@ namespace VNActor
                 ik = a.export_ik_target_info();
             }
 
-            voiceList = a.voice_lst;
-            voiceRepeat = a.voice_repeat;            
+            voiceList = a.VoiceList;
+            voiceRepeat = a.VoiceRepeat;            
         }
 
         virtual public void Apply(Actor a)
         {
-            a.visible = visible;
-            a.pos = position;
-            a.rot = rotation;
-            a.scale = scale;
-            a.animeSpeed = animeSpeed;
-            a.animePattern = animePattern;
-            a.anime_forceloop = forceLoop;
-            a.accessory = accessoryStatus;
-            a.facered = faceRedness;
-            son = a.son;
+            a.Visible = visible;
+            a.Position = position;
+            a.Rotation = rotation;
+            a.Scale = scale;
+            a.AnimeSpeed = animeSpeed;
+            a.AnimePattern = animePattern;
+            a.AnimationForceLoop = forceLoop;
+            a.Accessories = accessoryStatus;
+            a.FaceRedness = faceRedness;
+            son = a.Son;
 
             if (anim.normalizedTime is float time)
             {
-                a.setAnimate(anim.group, anim.category, anim.no, time);
+                a.SetAnimate(anim.group, anim.category, anim.no, time);
             }
             else
             {
-                a.setAnimate(anim.group, anim.category, anim.no);
+                a.SetAnimate(anim.group, anim.category, anim.no);
             }
 
 
@@ -179,25 +179,25 @@ namespace VNActor
 
             a.cloth = cloth;
 
-            a.juice = juice;
-            a.nipple_stand = nippleHardness;
+            a.Juice = juice;
+            a.NippleStand = nippleHardness;
 
-            a.simple = simple;
-            a.simple_color = simpleColor;
+            a.Simple = simple;
+            a.SimpleColor = simpleColor;
 
-            a.look_eye_ptn = eyeLookPattern;
-            a.look_eye_pos = eyeLookPos;
-            a.look_neck = neckPattern;
+            a.EyeLookPattern = eyeLookPattern;
+            a.EyeLookPos = eyeLookPos;
+            a.LookNeckPattern = neckPattern;
 
             a.look_neck_full2 = neck;
             a.eyebrow_ptn = eyebrowPattern;
             a.eyes_ptn = eyePattern;
-            a.eyes_open = eyesOpen;
-            a.eyes_blink = blinking;
+            a.EyesOpenLevel = eyesOpen;
+            a.EyesBlink = blinking;
             a.mouth_ptn = mouthPattern;
-            a.mouth_open = mouthOpen;
-            a.lip_sync = lipSync;
-            a.hand_ptn = handMotions;
+            a.MouthOpenLevel = mouthOpen;
+            a.LipSync = lipSync;
+            a.HandPattern = handMotions;
             a.set_kinematic(kinematicType);
 
             if (kinematicType == KinematicMode.IK)
@@ -219,7 +219,7 @@ namespace VNActor
             }
 
             //voice_lst = voiceList;
-            a.voice_repeat = voiceRepeat;
+            a.VoiceRepeat = voiceRepeat;
         } 
     }
 }

@@ -34,9 +34,9 @@ namespace VNActor
         public NEOItemData(Item i)
         {
             // export full status of prop
-            visible = i.visible;
-            position = i.pos;
-            rotation = i.rot;
+            visible = i.Visible;
+            position = i.Position;
+            rotation = i.Rotation;
             scale = i.scale;
             if (i.isColorable)
             {
@@ -77,9 +77,9 @@ namespace VNActor
         virtual public void Apply(Item i)
         {
             // export full status of prop
-            i.visible = visible;
-            i.pos = position;
-            i.rot = rotation;
+            i.Visible = visible;
+            i.Position = position;
+            i.Rotation = rotation;
             i.scale = scale;
             if (anim_spd is float f)
             {

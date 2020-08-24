@@ -396,7 +396,7 @@ namespace SceneSaveState
             var af = new List<VNActor.Actor>();
             foreach (var chara in ar)
             {
-                if (chara.sex == 0)
+                if (chara.Sex == 0)
                 {
                     am.Add(chara);
                 }

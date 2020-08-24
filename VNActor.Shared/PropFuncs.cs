@@ -12,7 +12,7 @@ namespace VNActor
         public static void prop_visible(Item prop, ItemData param)
         {
             // param = 0(hide)/1(show)
-            prop.visible = param.visible;
+            prop.Visible = param.visible;
         }
 
         public static void prop_move(Item prop, ItemData param)
@@ -23,9 +23,9 @@ namespace VNActor
         public static void prop_move(Item prop, Vector3 param)
         {
             // param = (pos_delta_x, pos_delta_y, pos_delta_z)
-            var cp = prop.pos;
+            var cp = prop.Position;
             var ncp = new Vector3(cp.x + param[0], cp.y + param[1], cp.z + param[2]);
-            prop.pos = ncp;
+            prop.Position = ncp;
         }
 
         public static void prop_move_to(Item prop, ItemData param)
@@ -35,7 +35,7 @@ namespace VNActor
 
         public static void prop_move_to(Item prop, Vector3 param)
         {
-            prop.pos = param;
+            prop.Position = param;
         }
 
         public static void prop_rotate(Item prop, ItemData param)
@@ -46,9 +46,9 @@ namespace VNActor
         public static void prop_rotate(Item prop, Vector3 param)
         {
             // param = (rot_delta_x, rot_delta_y, rot_delta_z)
-            var rt = prop.rot;
+            var rt = prop.Rotation;
             var nrt = new Vector3(rt.x + param[0], rt.y + param[1], rt.z + param[2]);
-            prop.rot = nrt;
+            prop.Rotation = nrt;
         }
 
         public static void prop_rotate_to(Item prop, ItemData param)
@@ -58,7 +58,7 @@ namespace VNActor
 
         public static void prop_rotate_to(Item prop, Vector3 param)
         {
-            prop.rot = param;
+            prop.Rotation = param;
         }
 
         public static void prop_scale_to(Item prop, ItemData param)

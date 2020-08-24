@@ -267,7 +267,7 @@ namespace VNEngine
             VNActor.Actor actor = game.GetActor(param);
             if (actor is VNActor.Actor act)
             {
-                return act.isAnimeOver;
+                return act.IsAnimeOver;
             }
             else
             {
@@ -287,7 +287,7 @@ namespace VNEngine
             VNActor.Actor actor = game.GetActor(param);
             if (actor is VNActor.Actor act)
             {
-                return !act.isVoicePlay;
+                return !act.IsVoicePlay;
             }
             else
             {

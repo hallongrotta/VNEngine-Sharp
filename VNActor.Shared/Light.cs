@@ -34,8 +34,8 @@ namespace VNActor
 
             public LightData(Light l)
             {
-                position = l.pos;
-                rotation = l.rot;
+                position = l.Position;
+                rotation = l.Rotation;
                 color = l.color;
                 enable = l.enable;
                 intensity = l.intensity;
@@ -164,7 +164,7 @@ namespace VNActor
             }
         }
 
-        override public Vector3 pos
+        override public Vector3 Position
         {
             get
             {
@@ -176,7 +176,7 @@ namespace VNActor
             }
         }
 
-        override public Vector3 rot
+        override public Vector3 Rotation
         {
             get
             {
@@ -221,8 +221,8 @@ namespace VNActor
 
         public void import_status(LightData l)
         {
-            pos = l.position;
-            rot = l.rotation;
+            Position = l.position;
+            Rotation = l.rotation;
             color = l.color;
             enable = l.enable;
             intensity = l.intensity;
@@ -236,6 +236,18 @@ namespace VNActor
             if (status is LightData)
             {
                 import_status(status);
+            }
+        }
+
+        public override bool Visible
+        {
+            get
+            {
+                return true;
+            }
+            set
+            {
+
             }
         }
     }

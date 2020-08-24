@@ -104,7 +104,7 @@ namespace VNEngine
             catch (Exception)
             {
             }
-            string txt1 = String.Format("{" + "'no': {0}, 'prs': ({1},{2},{3})", item.no, item.pos, item.rot, item.scale);
+            string txt1 = String.Format("{" + "'no': {0}, 'prs': ({1},{2},{3})", item.no, item.Position, item.Rotation, item.scale);
             txt1 += addparams;
             return txt1;
         }
@@ -116,7 +116,7 @@ namespace VNEngine
             {
                 value = "nonlatinname";
             }
-            string txt1 = String.Format("{" + "'no': 'fold', 'name': '{2}', 'pr': ({0},{1})", item.pos, item.rot, value);
+            string txt1 = String.Format("{" + "'no': 'fold', 'name': '{2}', 'pr': ({0},{1})", item.Position, item.Rotation, value);
             return txt1;
         }
 
@@ -191,8 +191,8 @@ namespace VNEngine
                 {
                     folder.set_parent_treenodeobject(itemparenttobj);
                 }
-                folder.pos = obj.pr.pos;
-                folder.rot = obj.pr.rot;
+                folder.Position = obj.pr.pos;
+                folder.Rotation = obj.pr.rot;
                 return_item = folder;
             }
             else
@@ -202,8 +202,8 @@ namespace VNEngine
                 {
                     item.set_parent_treenodeobject(itemparenttobj);
                 }
-                item.pos = obj.prs.pos;
-                item.rot = obj.prs.rot;
+                item.Position = obj.prs.pos;
+                item.Rotation = obj.prs.rot;
                 item.scale = obj.prs.scale;
                 if (obj.anSp != null)
                 {
