@@ -1,10 +1,8 @@
 ﻿using Studio;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using VNActor;
-using VNEngine;
 
 namespace VNEngine
 {
@@ -15,7 +13,7 @@ namespace VNEngine
         {
             Studio.Map map;
             // set map option visible: param = 1/0
-            map = Studio.Map.Instance;         
+            map = Studio.Map.Instance;
             map.VisibleOption = param;
         }
 
@@ -23,31 +21,31 @@ namespace VNEngine
         {
             // set frame png, param = png file name, CharaStudio only
 
-                var pngName = param.Trim();
-                if (pngName != "")
+            var pngName = param.Trim();
+            if (pngName != "")
+            {
+                if (!pngName.ToLower().EndsWith(".png"))
                 {
-                    if (!pngName.ToLower().EndsWith(".png"))
-                    {
-                        pngName += ".png";
-                    }
-                    // load png in game scene folder if existed
-                    var pngInScene = Utils.combine_path(game.get_scene_dir(), game.sceneDir, pngName);
-                    if (File.Exists(pngInScene))
-                    {
-                        var pngRevPath = Utils.combine_path("..", "studio", "scene", game.sceneDir, pngName);
-                        game.scene_set_framefile(pngRevPath);
-                        return;
-                    }
-                    // load png in game default background folder if existed
-                    var pngInDefault = Path.GetFullPath(Utils.combine_path(Application.dataPath, "..", "UserData", "frame", pngName));
-                    if (File.Exists(pngInDefault))
-                    {
-                        game.scene_set_framefile(pngName);
-                        return;
-                    }
+                    pngName += ".png";
                 }
-                // remove if param == "" or file not existed
-                game.scene_set_framefile("");
+                // load png in game scene folder if existed
+                var pngInScene = Utils.combine_path(game.get_scene_dir(), game.sceneDir, pngName);
+                if (File.Exists(pngInScene))
+                {
+                    var pngRevPath = Utils.combine_path("..", "studio", "scene", game.sceneDir, pngName);
+                    game.scene_set_framefile(pngRevPath);
+                    return;
+                }
+                // load png in game default background folder if existed
+                var pngInDefault = Path.GetFullPath(Utils.combine_path(Application.dataPath, "..", "UserData", "frame", pngName));
+                if (File.Exists(pngInDefault))
+                {
+                    game.scene_set_framefile(pngName);
+                    return;
+                }
+            }
+            // remove if param == "" or file not existed
+            game.scene_set_framefile("");
         }
 
         public static void sys_map_rot(VNNeoController game, Vector3 param)
@@ -109,7 +107,7 @@ namespace VNEngine
             get
             {
                 SceneInfo sceneInfo = StudioController.Instance.studio_scene;
-                return new ColorCorrection { no = sceneInfo.cgLookupTexture, blend = sceneInfo.cgBlend, contrast = sceneInfo.cgContrast, brightness = sceneInfo.cgBrightness, saturation = sceneInfo.cgSaturation};
+                return new ColorCorrection { no = sceneInfo.cgLookupTexture, blend = sceneInfo.cgBlend, contrast = sceneInfo.cgContrast, brightness = sceneInfo.cgBrightness, saturation = sceneInfo.cgSaturation };
             }
             set
             {

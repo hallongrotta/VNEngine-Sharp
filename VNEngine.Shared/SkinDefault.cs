@@ -237,7 +237,7 @@ namespace VNEngine
                 this.controller.dump_selected_vnframe(controller);
             }
             GUILayout.EndHorizontal();
-            
+
             GUILayout.EndVertical();
             GUI.DragWindow();
         }

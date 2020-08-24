@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
-using VNActor;
 using static VNEngine.Utils;
 using static VNEngine.VNCamera;
 //using WindowsInput;
@@ -642,18 +641,44 @@ namespace VNEngine
             this.set_buttons(ar2, this.vnButtonsStyle);
         }
 
-        
+
         public void set_buttons_alt(List<Button_s> arButTextsActions, string style = "normal")
         {
             this.set_buttons(arButTextsActions, style);
+
+/* Unmerged change from project 'VNEngine.AI'
+Before:
         }
         
         
         public void set_buttons_end_game()
+After:
+        }
+
+
+        public void set_buttons_end_game()
+*/
+
+/* Unmerged change from project 'VNEngine.HS2'
+Before:
+        }
+        
+        
+        public void set_buttons_end_game()
+After:
+        }
+
+
+        public void set_buttons_end_game()
+*/
+        }
+
+
+        public void set_buttons_end_game()
         {
             var buttons = new List<Button_s>() { new Button_s("End Game & Return >>", this._onEndGame, -1) };
             this.set_buttons(buttons);
-        }       
+        }
 
         public void _onEndGame(VNController game, int i)
         {
@@ -938,7 +963,7 @@ namespace VNEngine
             GameFunc endFunc = _menuStack.Last();
             _menuStack.RemoveAt(-1);
             this.call_game_func(endFunc);
-        }       
+        }
 
         // ---------- checking for engine types --------------
         // -------- other ----------

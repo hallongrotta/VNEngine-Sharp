@@ -1,8 +1,8 @@
-﻿using Studio;
+﻿using MessagePack;
+using Studio;
+using System;
 using System.Collections.Generic;
 using VNActor;
-using MessagePack;
-using System;
 
 namespace VNEngine
 {

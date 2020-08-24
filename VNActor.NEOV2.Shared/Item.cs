@@ -134,7 +134,7 @@ namespace VNActor
                         objctrl.itemInfo.colors[2].mainColor = value[i];
                     }
                     i = 3;
-                    if (objctrl.useColor4  && color.ContainsKey(i))
+                    if (objctrl.useColor4 && color.ContainsKey(i))
                     {
                         objctrl.itemInfo.colors[3].mainColor = value[i];
                     }
@@ -416,7 +416,7 @@ namespace VNActor
                     return this.objctrl.CheckEmission;
                 }
             }
-        }       
+        }
 
         public bool hasAlpha
         {
@@ -424,7 +424,7 @@ namespace VNActor
             {
                 return this.isColorable && this.objctrl.CheckAlpha;
             }
-        }        
+        }
 
         public bool option
         {

@@ -350,7 +350,7 @@ namespace VNActor
                     throw new Exception("This item has no emission");
                 }
             }
-        }      
+        }
 
         public float alpha
         {

@@ -1,4 +1,7 @@
-﻿using System;
+﻿
+/* Unmerged change from project 'SceneSaveState.AI'
+Before:
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using VNEngine;
@@ -6,18 +9,89 @@ using VNActor;
 using System.Linq;
 using MessagePack;
 using static VNEngine.VNCamera;
-using System.IO;
+After:
+using BepInEx.Logging;
+using ExtensibleSaveFormat;
+using KKAPI.Studio.SaveLoad;
+using KKAPI.Utilities;
+using MessagePack;
 using Studio;
+using System;
+using System.VNCamera;
+*/
+
+/* Unmerged change from project 'SceneSaveState.HS2'
+Before:
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+using VNEngine;
+using VNActor;
+using System.Linq;
+using MessagePack;
+using static VNEngine.VNCamera;
+After:
+using BepInEx.Logging;
+using ExtensibleSaveFormat;
+using KKAPI.Studio.SaveLoad;
+using KKAPI.Utilities;
+using MessagePack;
+using Studio;
+using System;
+using System.VNCamera;
+*/
+using ExtensibleSaveFormat;
+using KKAPI.Studio.SaveLoad;
+using KKAPI.Utilities;
+using MessagePack;
+using Studio;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+
+/* Unmerged change from project 'SceneSaveState.AI'
+Before:
 using static VNActor.Actor;
 using static VNActor.Item;
 using System.Text;
 using KKAPI.Studio.SaveLoad;
 using KKAPI.Utilities;
 using ExtensibleSaveFormat;
+After:
+using System.Text;
+using UnityEngine;
+using VNActor;
+using VNEngine;
+using KKAPI.Actor;
+using static VNActor.Item;
+*/
+
+/* Unmerged change from project 'SceneSaveState.HS2'
+Before:
+using static VNActor.Actor;
+using static VNActor.Item;
+using System.Text;
+using KKAPI.Studio.SaveLoad;
+using KKAPI.Utilities;
+using ExtensibleSaveFormat;
+After:
+using System.Text;
+using UnityEngine;
+using VNActor;
+using VNEngine;
+using KKAPI.Actor;
+using static VNActor.Item;
+*/
+using UnityEngine;
+using VNActor;
+using VNEngine;
+using static VNActor.Actor;
+using static VNActor.Item;
 using static VNActor.Light;
 using static VNEngine.Utils;
+using static VNEngine.VNCamera;
 using static VNEngine.VNCamera.VNData;
-using BepInEx.Logging;
 
 namespace SceneSaveState
 {
@@ -448,7 +522,7 @@ namespace SceneSaveState
         {
             changeSceneCam(CamTask.DELETE);
         }
-             
+
         public void changeSceneCam()
         {
             changeSceneCam(task: CamTask.ADD);
@@ -539,7 +613,7 @@ namespace SceneSaveState
                     currentVNData.addvncmds = "";
                 }
 
-                currentVNData.addprops = addata.addprops;               
+                currentVNData.addprops = addata.addprops;
 
                 game.set_text(camera_data.addata.whosay, camera_data.addata.whatsay);
             }
@@ -586,7 +660,7 @@ namespace SceneSaveState
                 {
                     changeSceneCam(CamTask.ADD);
                 }
-            }           
+            }
         }
 
         // Remove stuff
@@ -721,7 +795,7 @@ namespace SceneSaveState
             {
                 show_blocking_message_time_sc("Can't paste status 2");
             }
-        }   
+        }
 
         public void addSysTracking()
         {
@@ -734,7 +808,7 @@ namespace SceneSaveState
                     //scene.actors["sys"] = curstatus;
                     scene.sys = (VNEngine.System.SystemData)curstatus;
                 }
-                isSysTracking = true; 
+                isSysTracking = true;
             }
             else
             {
@@ -779,7 +853,7 @@ namespace SceneSaveState
             foreach (var i in Enumerable.Range(0, 1000 - 0))
             {
                 var id = baseid + i;
-                
+
                 if (props.ContainsKey(id))
                 {
                 }
@@ -816,7 +890,7 @@ namespace SceneSaveState
                 else if (curstatus is LightData lightData)
                 {
                     scene.lights[newid] = lightData;
-                }             
+                }
                 // updating set
             }
         }
@@ -863,7 +937,7 @@ namespace SceneSaveState
             {
                 show_blocking_message_time_sc("Nothing selected");
                 return;
-            } 
+            }
             else
             {
                 foreach (ObjectCtrlInfo objectCtrl in objects)
@@ -887,7 +961,8 @@ namespace SceneSaveState
                     {
                         var route = NeoOCI.create_from(oRoute);
                         addSelectedToTrack(route);
-                    } else
+                    }
+                    else
                     {
                         return;
                     }
@@ -938,7 +1013,7 @@ namespace SceneSaveState
         public void delSelectedFromTrack(object o)
         {
             delSelectedFromTrack();
-        } 
+        }
 
 
         public void delSelectedFromTrack()
@@ -1085,30 +1160,30 @@ namespace SceneSaveState
         {
             Folder fld;
 
-                if (parent.treeNodeObject.child.Count <= childNum)
+            if (parent.treeNodeObject.child.Count <= childNum)
+            {
+                //print "create folder! %s" % txt
+                fld = Folder.add(txt);
+                fld.set_parent(parent);
+                return fld;
+            }
+            else
+            {
+                var chld = parent.treeNodeObject.child[childNum];
+                fld = NeoOCI.create_from_treenode(chld) as Folder;
+                if (chld.textName != txt)
                 {
-                    //print "create folder! %s" % txt
-                    fld = Folder.add(txt);
-                    fld.set_parent(parent);
-                    return fld;
+                    //print "hit! upd folder! %s" % txt
+                    fld.name = txt;
+                    //return fld
                 }
                 else
                 {
-                    var chld = parent.treeNodeObject.child[childNum];
-                    fld = NeoOCI.create_from_treenode(chld) as Folder;
-                    if (chld.textName != txt)
-                    {
-                        //print "hit! upd folder! %s" % txt
-                        fld.name = txt;
-                        //return fld
-                    }
-                    else
-                    {
-                        //print "hit!! no creation! %s" % txt
-                    }
-                    return fld;
+                    //print "hit!! no creation! %s" % txt
                 }
-       
+                return fld;
+            }
+
         }
 
         public void restrict_to_child(Folder fld, int numchilds)
@@ -1301,7 +1376,7 @@ namespace SceneSaveState
             var file_path = folder_path + filename.ToString() + ".txt";
             //else:
             //file_path = folder_path + str(self.svname) + "_backup.txt"
-            var abs_file_path = Path.Combine(script_dir, file_path);  
+            var abs_file_path = Path.Combine(script_dir, file_path);
             /*
             System.Xml.Serialization.XmlSerializer writer =
             new System.Xml.Serialization.XmlSerializer(typeof(List<save_data>));
@@ -1601,33 +1676,33 @@ namespace SceneSaveState
                 using (var w = new StreamWriter(f))
                 {
 
-// var f = codecs.open(filename, "w+", encoding: "utf-8");
+                    // var f = codecs.open(filename, "w+", encoding: "utf-8");
                     w.Write("[\n");
-                foreach (var i in Enumerable.Range(0, block.Count))
-                {
-                    Scene scene = block[i];
-                    // only process scene if 1 cam is VN cam - other, skip
-                    //cam = scene.cams[0]
-                    foreach (var j in Enumerable.Range(0, scene.cams.Count))
+                    foreach (var i in Enumerable.Range(0, block.Count))
                     {
-                        var cam = scene.cams[j];
-                        var addparams = cam.addata;
-                        //if addparams["addparam"]:  # only process if 1 cam is VN cam
-                        //fullobj = {'z_sc': i+1, 'z_cam': j, 'who': addparams["whosay"], "say": addparams["whatsay"] }
-                        /* TODO
-                        var fullobj = (
-                            i + 1,
-                            j,
-                            addparams.addparam,
-                            addparams.whosay,
-                            addparams.whatsay
-                        );*/
-                        var res = MessagePackSerializer.Serialize(addparams);
-                        w.Write(String.Format("{0},\n", res));
+                        Scene scene = block[i];
+                        // only process scene if 1 cam is VN cam - other, skip
+                        //cam = scene.cams[0]
+                        foreach (var j in Enumerable.Range(0, scene.cams.Count))
+                        {
+                            var cam = scene.cams[j];
+                            var addparams = cam.addata;
+                            //if addparams["addparam"]:  # only process if 1 cam is VN cam
+                            //fullobj = {'z_sc': i+1, 'z_cam': j, 'who': addparams["whosay"], "say": addparams["whatsay"] }
+                            /* TODO
+                            var fullobj = (
+                                i + 1,
+                                j,
+                                addparams.addparam,
+                                addparams.whosay,
+                                addparams.whatsay
+                            );*/
+                            var res = MessagePackSerializer.Serialize(addparams);
+                            w.Write(String.Format("{0},\n", res));
+                        }
                     }
-                }
-                w.Write("{}\n");
-                w.Write("]\n");
+                    w.Write("{}\n");
+                    w.Write("]\n");
                 }
             }
             catch (Exception e)
@@ -1648,15 +1723,15 @@ namespace SceneSaveState
                 List<CamData> arr = new List<CamData>(); // Utils.DeserializeData<List<KeyValuePair<int, CamData>>>(filecont); TODO
                 for (int i = 0; i < arr.Count; i++)
                 {
-                    
+
                     var elem = arr[i];
                     var scenenum = i;
-                        var scene = block[scenenum];
-                        var cam = scene.cams[elem.camnum];
-                        cam.addata = elem.addata;
-                        
-                        cam.addata.whosay = elem.addata.whosay;
-                        cam.addata.whatsay = elem.addata.whatsay;
+                    var scene = block[scenenum];
+                    var cam = scene.cams[elem.camnum];
+                    cam.addata = elem.addata;
+
+                    cam.addata.whosay = elem.addata.whosay;
+                    cam.addata.whatsay = elem.addata.whatsay;
                 }
             }
             catch (Exception e)
@@ -1806,7 +1881,8 @@ namespace SceneSaveState
                     pluginData.data["scenes"] = sceneData;
                     SetExtendedData(pluginData);
                     logger.LogMessage($"Saved {((double)sceneData.Length / 1000):N} Kb of scene state data.");
-                } catch (Exception e)
+                }
+                catch (Exception e)
                 {
                     logger.LogError("Error occurred while saving scene data: " + e.ToString());
                     logger.LogMessage("Failed to save scene data, check debug log for more info.");

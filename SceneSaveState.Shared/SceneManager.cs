@@ -9,10 +9,10 @@ namespace SceneSaveState
 
         private List<Scene> scenes;
 
-        public string[] SceneStrings 
-        { 
-            get 
-            { 
+        public string[] SceneStrings
+        {
+            get
+            {
                 if ((scene_str_array == null) || scene_str_array.Length != scenes.Count)
                 {
                     scene_str_array = new string[scenes.Count];
@@ -26,7 +26,7 @@ namespace SceneSaveState
                 {
                     return scene_str_array;
                 }
-            } 
+            }
         }
 
         public string[] CamStrings
@@ -60,7 +60,7 @@ namespace SceneSaveState
 
         public CamData CurrentCam { get { return CurrentScene.cams[currentCamIndex]; } }
 
-        public int currentCamCount 
+        public int currentCamCount
         {
             get
             {
@@ -108,7 +108,7 @@ namespace SceneSaveState
         public void Add(Scene s)
         {
             scenes.Add(s);
-            currentSceneIndex = scenes.Count-1;
+            currentSceneIndex = scenes.Count - 1;
         }
         public void Insert(Scene s)
         {
@@ -117,7 +117,7 @@ namespace SceneSaveState
 
         public void Insert(Scene s, int position)
         {
-            scenes.Insert(position+1, s);
+            scenes.Insert(position + 1, s);
             currentSceneIndex++;
         }
 

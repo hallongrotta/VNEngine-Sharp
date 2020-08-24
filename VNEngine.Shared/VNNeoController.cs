@@ -3,9 +3,7 @@ using Studio;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using UnityEngine;
-using UnityEngine.UI;
 using VNActor;
 using static VNEngine.Utils;
 using static VNEngine.VNCamera;
@@ -44,15 +42,15 @@ namespace VNEngine
         //         
         public void to_camera(int camnum)
         {
-                Studio.Studio studio = Studio.Studio.Instance;
-                SceneInfo si = studio.sceneInfo;
-                Studio.CameraControl.CameraData[] cdatas = si.cameraData;
+            Studio.Studio studio = Studio.Studio.Instance;
+            SceneInfo si = studio.sceneInfo;
+            Studio.CameraControl.CameraData[] cdatas = si.cameraData;
 
-                Studio.CameraControl.CameraData cdata = cameraData;
-                //var targetInfos = trav.Field("listBones");
+            Studio.CameraControl.CameraData cdata = cameraData;
+            //var targetInfos = trav.Field("listBones");
 
-                //CameraData cdata = c.cameraData;
-                cdata.Copy(cdatas[camnum - 1]);          
+            //CameraData cdata = c.cameraData;
+            cdata.Copy(cdatas[camnum - 1]);
         }
 
         public static Studio.CameraControl.CameraData cameraData
@@ -545,7 +543,7 @@ namespace VNEngine
         }
         */
 
-        
+
 
         /*
         public void scenef_register_actorsprops()
@@ -662,7 +660,7 @@ namespace VNEngine
        */
 
 
-        
+
 
         // ---- lip sync ------- TODO
         /*        new public void set_text(string character, string text)
@@ -695,9 +693,9 @@ namespace VNEngine
         public void sync_h(VNActor.Actor female, VNActor.Actor male)
         {
             // if factor.isHAnime:
-            female.AnimationOption = new VNActor.Actor.AnimeOption_s { height = female.height, breast = female.Breast };
+            female.AnimationOption = new VNActor.Actor.AnimeOption_s { height = female.Height, breast = female.Breast };
             // if mactor.isHAnime:
-            male.AnimationOption = new VNActor.Actor.AnimeOption_s { height = female.height, breast = female.Breast };
+            male.AnimationOption = new VNActor.Actor.AnimeOption_s { height = female.Height, breast = female.Breast };
         }
     }
 

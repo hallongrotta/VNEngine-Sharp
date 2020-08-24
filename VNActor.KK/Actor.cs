@@ -1,12 +1,8 @@
 ﻿using MessagePack;
-using Sirenix.OdinInspector.Demos;
 using Studio;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Reflection;
-using UnityEngine;
 
 
 namespace VNActor
@@ -18,7 +14,7 @@ namespace VNActor
 
         [MessagePackObject(keyAsPropertyName: true)]
         public class ActorData : NEOActorData, IDataClass
-        {        
+        {
 
             [Key("ShoesType")]
             public int shoesType;
@@ -244,8 +240,8 @@ namespace VNActor
         public bool IsRotatableIK(string ikNodeName)
         {
             return ikNodeName.Contains("_hand_") || ikNodeName.Contains("_leg03_");
-        } 
-        
+        }
+
         public byte[] ClothCoordinate
         {
             get
@@ -430,8 +426,8 @@ namespace VNActor
                 factor.SetAnimate(9, validCategoryKey[hPosition] + 1, validNoKey[hStage]);
             }
             // auto adjust anime param
-            Console.WriteLine(String.Format("factor({0}): height={1} breast={2}", factor.text_name, factor.height, factor.Breast));
-            var anime_option_param = new AnimeOption_s { height = factor.height, breast = factor.Breast };
+            Console.WriteLine(String.Format("factor({0}): height={1} breast={2}", factor.text_name, factor.Height, factor.Breast));
+            var anime_option_param = new AnimeOption_s { height = factor.Height, breast = factor.Breast };
             if (factor.IsHAnime)
             {
                 factor.AnimationOption = anime_option_param;

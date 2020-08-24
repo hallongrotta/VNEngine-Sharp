@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
 using VNEngine;
 using static SceneSaveState.SceneConsole;
@@ -74,7 +73,7 @@ namespace SceneSaveState
             {
                 GUILayout.BeginVertical();
                 cam_scroll = GUILayout.BeginScrollView(cam_scroll, GUILayout.Height(185), GUILayout.Width(camviewwidth));
-                for ( int i = 0; i < Instance.block.CurrentScene.cams.Count - 0; i++)
+                for (int i = 0; i < Instance.block.CurrentScene.cams.Count - 0; i++)
                 {
                     if (i == Instance.block.currentCamIndex)
                     {

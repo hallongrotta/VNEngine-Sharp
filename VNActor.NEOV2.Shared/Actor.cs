@@ -1,11 +1,8 @@
 ﻿using AIChara;
-using MessagePack;
 using Studio;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using UnityEngine;
 
 namespace VNActor
 {
@@ -170,12 +167,12 @@ namespace VNActor
                 // level: wet 0~1
                 this.objctrl.SetWetRate(value);
             }
-        }     
+        }
 
         public bool IsRotatableIK(string ikNodeName)
         {
             return ikNodeName.Contains("_Hand_") || ikNodeName.Contains("_Foot01_");
-        }       
+        }
 
         public byte[] curcloth_coordinate
         {
@@ -414,8 +411,8 @@ namespace VNActor
                 factor.SetAnimate(9, validCategoryKey[hPosition] + 1, validNoKey[hStage]);
             }
             // auto adjust anime param
-            Console.WriteLine(String.Format("factor(%s): height=%.2f breast=%.2f", factor.text_name, factor.height, factor.Breast));
-            var anime_option_param = new AnimeOption_s { height = factor.height, breast = factor.Breast};
+            Console.WriteLine(String.Format("factor(%s): height=%.2f breast=%.2f", factor.text_name, factor.Height, factor.Breast));
+            var anime_option_param = new AnimeOption_s { height = factor.Height, breast = factor.Breast };
             if (factor.IsHAnime)
             {
                 factor.AnimationOption = anime_option_param;

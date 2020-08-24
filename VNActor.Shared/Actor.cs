@@ -164,7 +164,7 @@ namespace VNActor
             }
         }
 
-        public int look_eyes_ptn
+        public int LookEyesPattern
         {
             get
             {
@@ -176,19 +176,7 @@ namespace VNActor
             }
         }
 
-        public int look_neck_ptn
-        {
-            get
-            {
-                return this.objctrl.charInfo.GetLookNeckPtn();
-            }
-            set
-            {
-                this.objctrl.charInfo.ChangeLookNeckPtn(value);
-            }
-        }
-
-        public int mouth_ptn
+        public int MouthPattern
         {
             set
             {
@@ -202,7 +190,7 @@ namespace VNActor
             }
         }
 
-        public float mouth_openmax
+        public float MouthOpenMax
         {
             get
             {
@@ -214,7 +202,7 @@ namespace VNActor
             }
         }
 
-        public int eyes_ptn
+        public int EyePattern
         {
             set
             {
@@ -226,7 +214,7 @@ namespace VNActor
             }
         }
 
-        public float eyes_openmax
+        public float EyesOpenMax
         {
             get
             {
@@ -240,7 +228,7 @@ namespace VNActor
         }
 
 
-        public int eyebrow_ptn
+        public int EyebrowPattern
         {
             get
             {
@@ -445,7 +433,7 @@ namespace VNActor
             }
         }
 
-        public byte[] look_neck_full2
+        public byte[] LookNeckFull2
         {
             get
             {
@@ -492,15 +480,15 @@ namespace VNActor
             this.CharInfo.SetShapeFaceValue(p1, p2);
         }
 
-        public int face_shapes_count
+        public int FaceShapesCount
         {
             get
             {
-                return this.face_shapes_all.Length;
+                return this.FaceShapesAll.Length;
             }
         }
 
-        public string[] face_shape_names
+        public string[] FaceShapesNames
         {
             get
             {
@@ -508,11 +496,11 @@ namespace VNActor
             }
         }
 
-        public float[] face_shapes_all
+        public float[] FaceShapesAll
         {
             get
             {
-                var ct = this.face_shapes_count;
+                var ct = this.FaceShapesCount;
                 var res = new float[ct];
                 for (int i = 0; i < ct; i++)
                 {
@@ -529,7 +517,7 @@ namespace VNActor
             }
         }
 
-        public float[] body_shapes_all
+        public float[] BodyShapesAll
         {
             get
             {
@@ -537,15 +525,15 @@ namespace VNActor
             }
         }
 
-        public int body_shapes_count
+        public int BodyShapesCount
         {
             get
             {
-                return this.body_shapes_all.Length;
+                return this.BodyShapesAll.Length;
             }
         }
 
-        public string[] body_shape_names
+        public string[] BodyShapesNames
         {
             get
             {
@@ -553,7 +541,7 @@ namespace VNActor
             }
         }
 
-        public float height
+        public float Height
         {
             get
             {
@@ -562,7 +550,7 @@ namespace VNActor
             }
         }
 
-        public byte[] cloth
+        public byte[] Clothes
         {
             get
             {
@@ -1007,7 +995,7 @@ namespace VNActor
 
         public void set_look_eye(int ptn_dir, Vector3 dir)
         {
-            this.look_eyes_ptn = ptn_dir;
+            this.LookEyesPattern = ptn_dir;
             if (ptn_dir == 4)
             {
                 this.EyeLookPos = dir;

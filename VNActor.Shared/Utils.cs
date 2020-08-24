@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static VNActor.Actor;
@@ -40,7 +39,7 @@ namespace VNActor
             // return Array[Byte](list)
         }
 
-        public static bool FKDictionariesEqual(Dictionary<int, Vector3> dict1, Dictionary<int, Vector3> dict2) 
+        public static bool FKDictionariesEqual(Dictionary<int, Vector3> dict1, Dictionary<int, Vector3> dict2)
         {
             bool equal = false;
             if (dict1.Count == dict2.Count) // Require equal count.

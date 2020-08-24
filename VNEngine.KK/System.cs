@@ -160,7 +160,7 @@ namespace VNEngine
             var st = new SunLightInfo.Info.Type[] { SunLightInfo.Info.Type.DayTime, SunLightInfo.Info.Type.Evening, SunLightInfo.Info.Type.Night };
             var map = Map.Instance;
             map.sunType = st[param];
-            
+
         }
 
         public static void map_option(VNNeoController game, SystemData param)
@@ -213,9 +213,9 @@ namespace VNEngine
         }
 
         public static void sys_map(StudioController game, SystemData s)
-            {
-                sys_map(game, s.map);
-            }
+        {
+            sys_map(game, s.map);
+        }
         public static void sys_map(StudioController game, int param)
         {
             // set map

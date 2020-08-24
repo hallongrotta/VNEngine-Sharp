@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
 using static VNActor.Actor;
 
@@ -38,29 +37,81 @@ namespace VNActor
         public float mouthOpen;
 
         public int mouthPattern;
-   
+
         public bool blinking;
-        
+
         public float eyesOpen;
-      
+
+
+/* Unmerged change from project 'VNActor.AI'
+Before:
         public int eyePattern;
         
         public int eyebrowPattern;
         
         public int neckPattern;
-       
-        public Vector3 eyeLookPos;
+After:
+        public int eyePattern;
+
+        public int eyebrowPattern;
+
+        public int neckPattern;
+*/
+
+/* Unmerged change from project 'VNActor.HS2'
+Before:
+        public int eyePattern;
         
+        public int eyebrowPattern;
+        
+        public int neckPattern;
+After:
+        public int eyePattern;
+
+        public int eyebrowPattern;
+
+        public int neckPattern;
+*/
+        public int eyePattern;
+
+        public int eyebrowPattern;
+
+        public int neckPattern;
+
+        public Vector3 eyeLookPos;
+
         public int eyeLookPattern;
-       
+
+
+/* Unmerged change from project 'VNActor.AI'
+Before:
         public Son_s son;
         
         public Animation_s anim;
-      
+After:
+        public Son_s son;
+
+        public Animation_s anim;
+*/
+
+/* Unmerged change from project 'VNActor.HS2'
+Before:
+        public Son_s son;
+        
+        public Animation_s anim;
+After:
+        public Son_s son;
+
+        public Animation_s anim;
+*/
+        public Son_s son;
+
+        public Animation_s anim;
+
         public bool simple;
-       
+
         public Color simpleColor;
-    
+
         public byte[] juice;
 
         public bool[] accessoryStatus;
@@ -94,7 +145,7 @@ namespace VNActor
             scale = a.Scale;
             animeSpeed = a.AnimeSpeed;
             animePattern = a.AnimePattern;
-   
+
             forceLoop = a.AnimationForceLoop;
 
             accessoryStatus = new bool[a.Accessories.Length];
@@ -105,9 +156,9 @@ namespace VNActor
 
             anim = a.Animation;
 
-            animeOption = new AnimeOption_s { height = a.height, breast = a.Breast };
+            animeOption = new AnimeOption_s { height = a.Height, breast = a.Breast };
 
-            cloth = a.cloth;
+            cloth = a.Clothes;
 
             juice = a.Juice;
             nippleHardness = a.NippleStand;
@@ -119,12 +170,12 @@ namespace VNActor
             eyeLookPos = a.EyeLookPos;
             neckPattern = a.LookNeckPattern;
 
-            neck = a.look_neck_full2;
-            eyebrowPattern = a.eyebrow_ptn;
-            eyePattern = a.eyes_ptn;
+            neck = a.LookNeckFull2;
+            eyebrowPattern = a.EyebrowPattern;
+            eyePattern = a.EyePattern;
             eyesOpen = a.EyesOpenLevel;
             blinking = a.EyesBlink;
-            mouthPattern = a.mouth_ptn;
+            mouthPattern = a.MouthPattern;
             mouthOpen = a.MouthOpenLevel;
             lipSync = a.LipSync;
             handMotions = a.HandPattern;
@@ -149,7 +200,7 @@ namespace VNActor
             }
 
             voiceList = a.VoiceList;
-            voiceRepeat = a.VoiceRepeat;            
+            voiceRepeat = a.VoiceRepeat;
         }
 
         virtual public void Apply(Actor a)
@@ -177,7 +228,7 @@ namespace VNActor
 
             //(height, breast) = a.animeOption;
 
-            a.cloth = cloth;
+            a.Clothes = cloth;
 
             a.Juice = juice;
             a.NippleStand = nippleHardness;
@@ -189,12 +240,12 @@ namespace VNActor
             a.EyeLookPos = eyeLookPos;
             a.LookNeckPattern = neckPattern;
 
-            a.look_neck_full2 = neck;
-            a.eyebrow_ptn = eyebrowPattern;
-            a.eyes_ptn = eyePattern;
+            a.LookNeckFull2 = neck;
+            a.EyebrowPattern = eyebrowPattern;
+            a.EyePattern = eyePattern;
             a.EyesOpenLevel = eyesOpen;
             a.EyesBlink = blinking;
-            a.mouth_ptn = mouthPattern;
+            a.MouthPattern = mouthPattern;
             a.MouthOpenLevel = mouthOpen;
             a.LipSync = lipSync;
             a.HandPattern = handMotions;
@@ -220,6 +271,6 @@ namespace VNActor
 
             //voice_lst = voiceList;
             a.VoiceRepeat = voiceRepeat;
-        } 
+        }
     }
 }

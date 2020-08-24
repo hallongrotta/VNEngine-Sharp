@@ -102,7 +102,7 @@ namespace VNActor
             // param = 0(all), 1(half), 2(nude)
             // or
             // param = (top, bottom, bra, shorts, grove, panst, sock, shoe)
-            chara.cloth = param.cloth;
+            chara.Clothes = param.cloth;
         }
 
         public static void char_juice(Actor chara, ActorData param)
@@ -175,7 +175,7 @@ namespace VNActor
             // param = array of bytes, use dump to get it
             try
             {
-                chara.look_neck_full2 = param.neck;
+                chara.LookNeckFull2 = param.neck;
             }
             catch (Exception e)
             {
@@ -201,13 +201,13 @@ namespace VNActor
         public static void char_eyebrow(Actor chara, ActorData param)
         {
             // param = eyebrow pattern
-            chara.eyebrow_ptn = param.eyebrowPattern;
+            chara.EyebrowPattern = param.eyebrowPattern;
         }
 
         public static void char_eyes(Actor chara, ActorData param)
         {
             // param = eye pattern
-            chara.eyes_ptn = param.eyePattern;
+            chara.EyePattern = param.eyePattern;
         }
 
         public static void char_eyes_open(Actor chara, ActorData param)
@@ -225,7 +225,7 @@ namespace VNActor
         public static void char_mouth(Actor chara, ActorData param)
         {
             // param = mouth pattern
-            chara.mouth_ptn = param.mouthPattern;
+            chara.MouthPattern = param.mouthPattern;
         }
 
         public static void char_mouth_open(Actor chara, ActorData param)
@@ -371,7 +371,7 @@ namespace VNActor
             // param = face shape array
             try
             {
-                chara.face_shapes_all = param;
+                chara.FaceShapesAll = param;
             }
             catch (Exception e)
             {

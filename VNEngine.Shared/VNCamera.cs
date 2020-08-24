@@ -2,7 +2,6 @@
 using Studio;
 using System.Collections.Generic;
 using UnityEngine;
-using static VNEngine.Utils;
 
 namespace VNEngine
 {
@@ -284,7 +283,7 @@ namespace VNEngine
                     return;
                 }
             }
-            game.studio.ChangeCamera(null);         
+            game.studio.ChangeCamera(null);
         }
 
         // :type game: vngameengine.VNNeoController
@@ -294,7 +293,7 @@ namespace VNEngine
             if (game.studio.ociCamera != null)
             {
                 return game.studio.ociCamera.name;
-            }          
+            }
             return null;
         }
 

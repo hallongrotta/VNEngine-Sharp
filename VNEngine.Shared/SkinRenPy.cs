@@ -71,7 +71,7 @@ namespace VNEngine
             controller.windowRect = new Rect(Screen.width / 2 - controller.wwidth / 2, Screen.height - controller.wheight, controller.wwidth, controller.wheight);
             //GUI.skin.panel.onActive.textColor
             var style = new GUIStyle("label");
-            this.controller.windowStyle = style;          
+            this.controller.windowStyle = style;
             //style.
             //GUI.skin.window = style
             //GUI.backgroundColor.a = 0.7

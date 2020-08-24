@@ -10,7 +10,7 @@ namespace VNActor
     public partial class Item : IVNObject
     {
 
-       
+
 
         [MessagePackObject(keyAsPropertyName: true)]
         public class ItemData : NEOItemData, IDataClass
@@ -50,7 +50,7 @@ namespace VNActor
             }
 
             public ItemData(Item i) : base(i)
-            {              
+            {
                 if (i.hasLine)
                 {
                     line = i.line;
@@ -314,7 +314,7 @@ namespace VNActor
                     return this.objctrl.checkEmission;
                 }
             }
-        }       
+        }
 
         public bool hasAlpha
         {

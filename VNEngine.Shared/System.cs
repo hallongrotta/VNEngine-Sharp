@@ -3,7 +3,6 @@ using Studio;
 using System.IO;
 using System.Linq;
 using UnityEngine;
-using VNActor;
 using static VNEngine.Utils;
 using static VNEngine.VNCamera;
 
@@ -523,14 +522,14 @@ namespace VNEngine
                             game.studio.cameraLightCtrl.Reflect();
                         }*/
 
-                var cl = game.studio_scene.charaLight;
-                cl.color = param.rgbDiffuse;
-                cl.intensity = param.cameraLightIntensity;
-                cl.rot[0] = param.rot_y;
-                cl.rot[1] = param.rot_x;
-                cl.shadow = param.cameraLightShadow;
-                game.studio.cameraLightCtrl.Reflect();
-            
+            var cl = game.studio_scene.charaLight;
+            cl.color = param.rgbDiffuse;
+            cl.intensity = param.cameraLightIntensity;
+            cl.rot[0] = param.rot_y;
+            cl.rot[1] = param.rot_x;
+            cl.shadow = param.cameraLightShadow;
+            game.studio.cameraLightCtrl.Reflect();
+
         }
         /*
                 public static void sys_pl_neoextsave(VNNeoController game, int[] param)
