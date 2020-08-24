@@ -8,6 +8,7 @@ using UnityEngine;
 namespace VNActor
 {
 
+    // Shared Item code
     public partial class Item : HSNeoOCIProp, IVNObject
     {
 
@@ -35,7 +36,7 @@ namespace VNActor
             public float vs;
             [Key(5)]
             public float rot;
-            private Color mainColor;
+            public Color mainColor;
 
             public PanelDetail_s(Color mainColor, float ut, float vt, float us, float vs, float rot) : this()
             {
@@ -55,14 +56,6 @@ namespace VNActor
             public Color color;
             [Key(1)]
             public float power;
-            private Color eColor;
-            private float ePower;
-
-            public Emission_s(Color eColor, float ePower) : this()
-            {
-                this.eColor = eColor;
-                this.ePower = ePower;
-            }
         }
 
         [MessagePackObject]
@@ -338,6 +331,113 @@ namespace VNActor
                 // return anime speed
                 return this.objctrl.animeSpeed;
             }
+        }
+
+        public Emission_s emission
+        {
+            set
+            {
+                // param: (color, power)
+                if (this.hasEmission)
+                {
+                    var eColor = value.color;
+                    var ePower = value.power;
+                    //this.objctrl.SetEmissionColor(eColor);
+                    //this.objctrl.SetEmissionPower(ePower);
+                    this.objctrl.itemInfo.emissionColor = eColor;
+                    this.objctrl.itemInfo.emissionPower = ePower;
+                    this.objctrl.UpdateColor();
+                }
+            }
+            get
+            {
+                if (this.hasEmission)
+                {
+                    var eColor = this.objctrl.itemInfo.emissionColor;
+                    var ePower = this.objctrl.itemInfo.emissionPower;
+                    return new Emission_s { color = eColor, power = ePower };
+                }
+                else
+                {
+                    throw new Exception("This item has no emission");
+                }
+            }
+        }      
+
+        public float alpha
+        {
+            set
+            {
+                // param: 0~1 for alpha
+                this.objctrl.SetAlpha(value);
+            }
+            get
+            {
+                if (this.hasAlpha)
+                {
+                    return this.objctrl.itemInfo.alpha;
+                }
+                else
+                {
+                    throw new Exception();
+                }
+            }
+        }
+
+        public bool dynamicbone_enable
+        {
+            set
+            {
+                // param: dynamic bone (yure) enable/disable
+                if (this.isDynamicBone)
+                {
+                    this.objctrl.ActiveDynamicBone(value);
+                }
+            }
+            get
+            {
+                if (this.isDynamicBone)
+                {
+                    return this.objctrl.itemInfo.enableDynamicBone;
+                }
+                else
+                {
+                    throw new Exception();
+                }
+            }
+        }
+
+        public bool isDynamicBone
+        {
+            get
+            {
+                if (this.isItem)
+                {
+                    return this.objctrl.isDynamicBone;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
+        override public IDataClass export_full_status()
+        {
+            return new ItemData(this);
+        }
+
+        override public void import_status(IDataClass p)
+        {
+            if (p is ItemData)
+            {
+                import_status(p);
+            }
+        }
+
+        public void import_status(ItemData p)
+        {
+            p.Apply(this);
         }
 
         /*

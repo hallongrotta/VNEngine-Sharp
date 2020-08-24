@@ -79,22 +79,22 @@ namespace VNActor
                     var i = 0;
                     if (this.objctrl.useColor[0] && i < color.Count && color.ContainsKey(i))
                     {
-                        this.objctrl.itemInfo.color[0] = color[i];
+                        this.objctrl.itemInfo.color[0] = value[i];
                     }
                     i = 1;
                     if (this.objctrl.useColor[1] && i < color.Count && color.ContainsKey(i))
                     {
-                        this.objctrl.itemInfo.color[1] = color[i];
+                        this.objctrl.itemInfo.color[1] = value[i];
                     }
                     i = 2;
                     if (this.objctrl.useColor[2] && i < color.Count && color.ContainsKey(i))
                     {
-                        this.objctrl.itemInfo.color[2] = color[i];
+                        this.objctrl.itemInfo.color[2] = value[i];
                     }
                     i = 3;
                     if (this.objctrl.useColor4 && i < color.Count && color.ContainsKey(i))
                     {
-                        this.objctrl.itemInfo.color[7] = color[i];
+                        this.objctrl.itemInfo.color[7] = value[i];
                     }
                     this.objctrl.UpdateColor();
                 }
@@ -314,62 +314,13 @@ namespace VNActor
                     return this.objctrl.checkEmission;
                 }
             }
-        }
-
-        public Emission_s emission
-        {
-            set
-            {
-                // param: (color, power)
-                if (this.hasEmission)
-                {
-                    var eColor = value.color;
-                    var ePower = value.power;
-                    this.objctrl.itemInfo.emissionColor = eColor;
-                    this.objctrl.itemInfo.emissionPower = ePower;
-                    this.objctrl.UpdateColor();
-                }
-            }
-            get
-            {
-                if (this.hasEmission)
-                {
-                    var eColor = this.objctrl.itemInfo.emissionColor;
-                    var ePower = this.objctrl.itemInfo.emissionPower;
-                    return new Emission_s { color = eColor, power = ePower };
-                }
-                else
-                {
-                    throw new Exception();
-                }
-            }
-        }
+        }       
 
         public bool hasAlpha
         {
             get
             {
                 return this.isColorable && this.objctrl.checkAlpha;
-            }
-        }
-
-        public float alpha
-        {
-            set
-            {
-                // param: 0~1 for alpha
-                this.objctrl.SetAlpha(value);
-            }
-            get
-            {
-                if (this.hasAlpha)
-                {
-                    return this.objctrl.itemInfo.alpha;
-                }
-                else
-                {
-                    throw new Exception();
-                }
             }
         }
 
@@ -470,59 +421,6 @@ namespace VNActor
             }
         }
 
-        public bool isDynamicBone
-        {
-            get
-            {
-                if (this.isItem)
-                {
-                    return this.objctrl.isDynamicBone;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        }
-
-        public bool dynamicbone_enable
-        {
-            set
-            {
-                // param: dynamic bone (yure) enable/disable
-                if (this.isDynamicBone)
-                {
-                    this.objctrl.ActiveDynamicBone(value);
-                }
-            }
-            get
-            {
-                if (this.isDynamicBone)
-                {
-                    return this.objctrl.itemInfo.enableDynamicBone;
-                }
-                else
-                {
-                    throw new Exception();
-                }
-            }
-        }
-
-        /*
-        public bool isRoute
-        {
-            get
-            {
-                return base.objctrl is OCIRoute;
-            }
-        }
-        */
-
-        override public IDataClass export_full_status()
-        {
-            return new ItemData(this);
-        }
-
         public static void prop_line(Item prop, ItemData param)
         {
             // param: (color, width)
@@ -546,20 +444,7 @@ namespace VNActor
             prop.color = param;
         }
 
-        override public void import_status(IDataClass p)
-        {
-            if (p is ItemData)
-            {
-                import_status(p);
-            }
-        }
 
-        public void import_status(ItemData p)
-        {
-            p.Apply(this);
-
-
-        }
 
 
         /* TODO

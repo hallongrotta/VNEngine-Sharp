@@ -118,30 +118,27 @@ namespace VNActor
                 // color : a tuple of UnityEngine.Color
                 if (this.isColorable)
                 {
-
-                    OCIItem item = this.objctrl;
-
                     var i = 0;
-                    if (item.useColor[0] && color.ContainsKey(i))
+                    if (objctrl.useColor[0] && color.ContainsKey(i))
                     {
-                        item.itemInfo.colors[0].mainColor = color[i];
+                        objctrl.itemInfo.colors[0].mainColor = value[i];
                     }
                     i = 1;
-                    if (item.useColor[1] && color.ContainsKey(i))
+                    if (objctrl.useColor[1] && color.ContainsKey(i))
                     {
-                        item.itemInfo.colors[1].mainColor = color[i];
+                        objctrl.itemInfo.colors[1].mainColor = value[i];
                     }
                     i = 2;
-                    if (item.useColor[2] && color.ContainsKey(i))
+                    if (objctrl.useColor[2] && color.ContainsKey(i))
                     {
-                        item.itemInfo.colors[2].mainColor = color[i];
+                        objctrl.itemInfo.colors[2].mainColor = value[i];
                     }
                     i = 3;
-                    if (item.useColor4  && color.ContainsKey(i))
+                    if (objctrl.useColor4  && color.ContainsKey(i))
                     {
-                        item.itemInfo.colors[3].mainColor = color[i];
+                        objctrl.itemInfo.colors[3].mainColor = value[i];
                     }
-                    item.UpdateColor();
+                    objctrl.UpdateColor();
                 }
             }
             get
@@ -419,38 +416,7 @@ namespace VNActor
                     return this.objctrl.CheckEmission;
                 }
             }
-        }
-
-        public Emission_s emission
-        {
-            set
-            {
-                // param: (color, power)
-                if (this.hasEmission)
-                {
-                    var eColor = value.color;
-                    var ePower = value.power;
-                    //self.objctrl.SetEmissionColor(eColor)
-                    //self.objctrl.SetEmissionPower(ePower)
-                    this.objctrl.itemInfo.emissionColor = eColor;
-                    this.objctrl.itemInfo.emissionPower = ePower;
-                    this.objctrl.UpdateColor();
-                }
-            }
-            get
-            {
-                if (this.hasEmission)
-                {
-                    var eColor = this.objctrl.itemInfo.emissionColor;
-                    var ePower = this.objctrl.itemInfo.emissionPower;
-                    return new Emission_s(eColor, ePower);
-                }
-                else
-                {
-                    throw new Exception("This item has no emission");
-                }
-            }
-        }
+        }       
 
         public bool hasAlpha
         {
@@ -458,28 +424,7 @@ namespace VNActor
             {
                 return this.isColorable && this.objctrl.CheckAlpha;
             }
-        }
-
-        public float alpha
-        {
-            get
-            {
-                if (this.hasAlpha)
-                {
-                    return this.objctrl.itemInfo.alpha;
-                }
-                else
-                {
-                    throw new Exception("No alpha");
-                }
-            }
-            set
-            {                            
-                // param: 0~1 for alpha
-                this.objctrl.SetAlpha(value);
-
-            }
-        }
+        }        
 
         public bool option
         {
@@ -534,45 +479,6 @@ namespace VNActor
             }
         }
 
-        public bool isDynamicBone
-        {
-            get
-            {
-                if (this.isItem)
-                {
-                    return this.objctrl.isDynamicBone;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        }
-
-        public bool dynamicbone_enable
-        {
-            set
-            {
-                // param: dynamic bone (yure) enable/disable
-                if (this.isDynamicBone)
-                {
-                    this.objctrl.ActiveDynamicBone(value);
-                }
-            }
-            get
-            {
-                if (this.isDynamicBone)
-                {
-                    return this.objctrl.itemInfo.enableDynamicBone;
-                }
-                else
-                {
-                    throw new Exception();
-                }
-            }
-        }
-
-
         public bool hasAnimePattern
         {
             get
@@ -610,12 +516,6 @@ namespace VNActor
             {
                 return base.objctrl is OCIRoute;
             }
-        }
-
-
-        override public IDataClass export_full_status()
-        {
-            return new ItemData(this);
         }
 
         public static void prop_pattern(Item prop, Dictionary<int, Pattern> param)
@@ -676,19 +576,6 @@ namespace VNActor
         {
             // param = pattern index
             prop.anime_pattern = param;
-        }
-
-        public override void import_status(IDataClass status)
-        {
-            if (status is ItemData i)
-            {
-                import_status(i);
-            }
-        }
-
-        public void import_status(ItemData i)
-        {
-            i.Apply(this);
         }
 
         /*
