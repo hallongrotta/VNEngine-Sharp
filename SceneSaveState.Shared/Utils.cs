@@ -28,7 +28,6 @@ namespace SceneSaveState
         // :type game:vngameengine.VNNeoController
         public static void start(VNNeoController game)
         {
-            game.gdata.hook_update_allowed = true;
             UI.sceneConsoleGUIStart(game);
             SceneFolders.LoadTrackedActorsAndProps();
             // if no blocks - autoload
@@ -214,10 +213,6 @@ namespace SceneSaveState
 
         public static void hook_update(VNController game)
         {
-            if (!game.gdata.hook_update_allowed)
-            {
-                return;
-            }
             var dt = Time.deltaTime;
             if (SceneConsole.Instance.game.visible)
             {
@@ -269,11 +264,6 @@ namespace SceneSaveState
                      }
                  }
              } */
-        }
-
-        public static void hook_upd_restore(VNController game)
-        {
-            game.gdata.hook_update_allowed = true;
         }
 
         public static void sceneConsoleGUIClose(object param)
@@ -509,7 +499,7 @@ namespace SceneSaveState
             chara.import_status(status);
         }
 
-        public static new IDataClass get_status_diff_optimized(IDataClass oldstatus, IDataClass status)
+        public static IDataClass get_status_diff_optimized(IDataClass oldstatus, IDataClass status)
         {
             /* TODO
             var ofs = oldstatus;

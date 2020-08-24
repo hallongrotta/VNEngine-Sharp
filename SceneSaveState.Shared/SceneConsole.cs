@@ -1808,7 +1808,7 @@ namespace SceneSaveState
 
         public void onEndVNSS(VNController game = null)
         {
-            this.game.skin_set(this.game.gdata.vnbupskin);
+            this.game.skin_set(this.game.skin_default);
         }
 
         //def _exportAddBlock(self,fld_acode,):

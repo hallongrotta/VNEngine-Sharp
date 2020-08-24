@@ -155,23 +155,11 @@ namespace VNEngine
             f.Write(new String(' ', level * 4) + txt + "\n");
         }
 
-        public struct pr_s
-        {
-            internal Vector3 pos;
-            internal Vector3 rot;
-        }
-
-        public struct prs_s
-        {
-            internal Vector3 pos;
-            internal Vector3 rot;
-            internal Vector3 scale;
-        }
-
         public struct ItemTreeItem
         {
-            public pr_s pr;
-            public prs_s prs;
+            public Vector3 pos;
+            public Vector3 rot;
+            public Vector3 scale;
             public object no;
             public string name;
             public int group;
@@ -190,8 +178,8 @@ namespace VNEngine
                 {
                     folder.set_parent_treenodeobject(itemparenttobj);
                 }
-                folder.Position = obj.pr.pos;
-                folder.Rotation = obj.pr.rot;
+                folder.Position = obj.pos;
+                folder.Rotation = obj.rot;
                 return_item = folder;
             }
             else
@@ -201,9 +189,9 @@ namespace VNEngine
                 {
                     item.set_parent_treenodeobject(itemparenttobj);
                 }
-                item.Position = obj.prs.pos;
-                item.Rotation = obj.prs.rot;
-                item.scale = obj.prs.scale;
+                item.Position = obj.pos;
+                item.Rotation = obj.rot;
+                item.scale = obj.scale;
                 if (obj.anSp != null)
                 {
                     item.objctrl.animeSpeed = (float)obj.anSp;

@@ -16,7 +16,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)SkinRenPy.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StudioController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)System.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)GData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Ministates.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SkinBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SkinCustomWindow.cs" />

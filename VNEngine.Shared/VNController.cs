@@ -70,8 +70,6 @@ namespace VNEngine
 
         public string funcLockedText;
 
-        public GData gdata;
-
         public Dictionary<string, object> gpersdata;
 
         public bool isfAutoLipSync;
@@ -128,8 +126,6 @@ namespace VNEngine
         }
 
         public Dictionary<string, RegisteredChar_s> registeredChars;
-
-        public GData scenedata;
 
         public string sceneDir;
 
@@ -808,10 +804,6 @@ After:
         */
 
         // reseting scene - must be overrided by engine
-        public void reset()
-        {
-            return;
-        }
 
         public void call_game_func(Utils.Button_s param)
         {
@@ -1397,7 +1389,6 @@ After:
         public void _unload_scene_before()
         {
             this.event_dispatch("before_scene_unload", null);
-            this.scenedata = new GData();
         }
 
         // -------- game persistent data ----------

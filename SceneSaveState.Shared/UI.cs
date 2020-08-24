@@ -72,12 +72,6 @@ namespace SceneSaveState
 
         public static void sceneConsoleGUIStart(VNNeoController game)
         {
-            //sc.game_skin_saved = game.skin
-            if (game.gdata.sss_game_skin_saved is null)
-            {
-                game.gdata.sss_game_skin_saved = game.skin;
-            }
-
             var skin = new SkinCustomWindow();
             skin.funcSetup = sceneConsoleSkinSetup;
             //skin.funcWindowGUI = sceneConsoleSkinWindowGUI;

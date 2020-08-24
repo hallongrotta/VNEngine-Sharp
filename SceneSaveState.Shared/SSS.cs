@@ -16,7 +16,6 @@ namespace SceneSaveState
         public const string Version = "1.0";
 
         StudioController game;
-        private bool visible = false;
         private Rect windowRect;
         private GUIStyle windowStyle;
         private GUI.WindowFunction windowCallback;
