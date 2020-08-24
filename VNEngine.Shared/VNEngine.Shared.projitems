@@ -13,6 +13,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)AutoScriptInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)BaseController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SkinRenPy.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)StudioController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)System.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Ministates.cs" />

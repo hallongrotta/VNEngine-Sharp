@@ -14,30 +14,28 @@ namespace VNEngine
     [BepInProcess(Constants.StudioProcessName)]
     //[BepInDependency(GUID)]
     [BepInPlugin(GUID, PluginName, Version)]
-    public class CharaStudioController
+    public partial class StudioController
         : VNNeoController
     {
 
-        new public static CharaStudioController Instance { get; private set; }
+        new public static StudioController Instance { get; private set; }
 
-        public CharaStudioController() : base()
+        public StudioController() : base()
         {
 
             if (Instance != null)
             {
                 throw new InvalidOperationException("Can only create one instance of Controller");
             }
-            this.engine_name = "charastudio";
             Instance = this;
         }
 
-        public CharaStudioController(List<Button_s> vnButtonsStart) : base()
+        public StudioController(List<Button_s> vnButtonsStart) : base()
         {
             if (Instance != null)
             {
                 throw new InvalidOperationException("Can only create one instance of Controller");
             }
-            this.engine_name = "charastudio";
             this._vnButtons = vnButtonsStart;
             Instance = this;
 

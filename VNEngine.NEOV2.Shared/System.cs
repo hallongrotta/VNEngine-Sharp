@@ -11,22 +11,15 @@ namespace VNEngine
     public partial class System
     {
 
-        public static void sys_map_option(NeoV2Controller game, bool param)
+        public static void sys_map_option(StudioController game, bool param)
         {
             Studio.Map map;
             // set map option visible: param = 1/0
-            if (game.isNEOV2)
-            {
-                map = Studio.Map.Instance;         
-                map.VisibleOption = param;
-            }
-            else
-            {
-                Console.WriteLine("sys_map_option only supports StudioNEOV2");
-            }
+            map = Studio.Map.Instance;         
+            map.VisibleOption = param;
         }
 
-        public static void sys_fm_png(NeoV2Controller game, string param = "")
+        public static void sys_fm_png(StudioController game, string param = "")
         {
             // set frame png, param = png file name, CharaStudio only
 
@@ -76,19 +69,19 @@ namespace VNEngine
             }
         }
 
-        public static void sys_map_light(NeoV2Controller game, bool param)
+        public static void sys_map_light(StudioController game, bool param)
         {
             game.studio_scene.mapInfo.light = param;
         }
 
         static public IDataClass export_sys_status(VNNeoController game)
         {
-            return new SystemData((NeoV2Controller)game);
+            return new SystemData((StudioController)game);
         }
 
         public static void import_status(SystemData s)
         {
-            var game = NeoV2Controller.Instance;
+            var game = StudioController.Instance;
             sys_bgm(game, s);
             sys_wav(game, s);
             sys_map(game, s);
@@ -115,16 +108,16 @@ namespace VNEngine
         {
             get
             {
-                SceneInfo sceneInfo = NeoV2Controller.Instance.studio_scene;
+                SceneInfo sceneInfo = StudioController.Instance.studio_scene;
                 return new ColorCorrection { no = sceneInfo.cgLookupTexture, blend = sceneInfo.cgBlend, contrast = sceneInfo.cgContrast, brightness = sceneInfo.cgBrightness, saturation = sceneInfo.cgSaturation};
             }
             set
             {
-                NeoV2Controller.Instance.studio_scene.cgLookupTexture = value.no;
-                NeoV2Controller.Instance.studio_scene.cgBlend = value.blend;
-                NeoV2Controller.Instance.studio_scene.cgBrightness = value.brightness;
-                NeoV2Controller.Instance.studio_scene.cgContrast = value.contrast;
-                NeoV2Controller.Instance.studio_scene.cgSaturation = value.saturation;
+                StudioController.Instance.studio_scene.cgLookupTexture = value.no;
+                StudioController.Instance.studio_scene.cgBlend = value.blend;
+                StudioController.Instance.studio_scene.cgBrightness = value.brightness;
+                StudioController.Instance.studio_scene.cgContrast = value.contrast;
+                StudioController.Instance.studio_scene.cgSaturation = value.saturation;
             }
         }
 
@@ -159,7 +152,7 @@ namespace VNEngine
 
             }
 
-            public SystemData(NeoV2Controller game)
+            public SystemData(StudioController game)
             {
                 // export a dict contains all system status
                 //from Studio import Studio

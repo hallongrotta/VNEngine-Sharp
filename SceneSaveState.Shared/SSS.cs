@@ -15,7 +15,7 @@ namespace SceneSaveState
         public const string GUID = "com.kasanari.bepinex.sceneconsole";
         public const string Version = "1.0";
 
-        CharaStudioController game;
+        StudioController game;
         private bool visible = false;
         private Rect windowRect;
         private GUIStyle windowStyle;
@@ -23,13 +23,13 @@ namespace SceneSaveState
         private int wwidth;
         private int wheight;
 
-        public static ConfigEntry<KeyboardShortcut> SSSHotkey { get; private set; }
+        public static ConfigEntry<BepInEx.Configuration.KeyboardShortcut> SSSHotkey { get; private set; }
 
         internal void Start()
         {
             UnityEngine.Debug.Log("SceneSaveState started.");
-            SSSHotkey = Config.Bind("Keyboard Shortcuts", "Toggle VN Controller Window", new KeyboardShortcut(KeyCode.B), "Show or hide the VN Controller window in Studio");
-            game = CharaStudioController.Instance;
+            SSSHotkey = Config.Bind("Keyboard Shortcuts", "Toggle VN Controller Window", new BepInEx.Configuration.KeyboardShortcut(KeyCode.B), "Show or hide the VN Controller window in Studio");
+            game = StudioController.Instance;
             //KKAPI.Chara.CharacterApi.RegisterExtraBehaviour<CharaStudioController>(GUID);
             //StudioSaveLoadApi.RegisterExtraBehaviour<AnimationControllerSceneController>(GUID);
 

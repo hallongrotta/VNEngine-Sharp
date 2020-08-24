@@ -28,11 +28,6 @@ namespace SceneSaveState
         // :type game:vngameengine.VNNeoController
         public static void start(VNNeoController game)
         {
-            if (game.isClassicStudio)
-            {
-                game.show_blocking_message_time("This only for NEO-engines, sorry");
-                return;
-            }
             game.gdata.hook_update_allowed = true;
             UI.sceneConsoleGUIStart(game);
             game.LoadTrackedActorsAndProps();
@@ -711,14 +706,7 @@ namespace SceneSaveState
         public static bool treenode_check_select(TreeNodeObject treenode)
         {
             VNNeoController game = SceneConsole.Instance.game;
-            if (game.isCharaStudio)
-            {
-                return game.studio.treeNodeCtrl.CheckSelect(treenode);
-            }
-            else
-            {
-                return false;
-            }
+            return game.studio.treeNodeCtrl.CheckSelect(treenode);
         }
 
         // util colors

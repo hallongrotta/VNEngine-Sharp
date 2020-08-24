@@ -48,29 +48,6 @@ namespace VNEngine
         //         
         public void to_camera(int camnum)
         {
-            if (this.isCharaStudio)
-            {
-                /* TODO
-                // old code simulating key press
-                var ar = new List<VirtualKeyCode> {
-                    VirtualKeyCode.VK_1,
-                    VirtualKeyCode.VK_2,
-                    VirtualKeyCode.VK_3,
-                    VirtualKeyCode.VK_4,
-                    VirtualKeyCode.VK_5,
-                    VirtualKeyCode.VK_6,
-                    VirtualKeyCode.VK_7,
-                    VirtualKeyCode.VK_8,
-                    VirtualKeyCode.VK_9,
-                    VirtualKeyCode.VK_0
-                };
-                InputSimulator inputSimulator = new InputSimulator();
-                inputSimulator.Keyboard.KeyPress(ar[camnum - 1]);
-                // enable it due to fucking reason - in CharaStudio camera not always setting at correct position
-                */
-            }
-            else
-            {
                 Studio.Studio studio = Studio.Studio.Instance;
                 SceneInfo si = studio.sceneInfo;
                 Studio.CameraControl.CameraData[] cdatas = si.cameraData;
@@ -79,8 +56,7 @@ namespace VNEngine
                 //var targetInfos = trav.Field("listBones");
 
                 //CameraData cdata = c.cameraData;
-                cdata.Copy(cdatas[camnum - 1]);
-            }
+                cdata.Copy(cdatas[camnum - 1]);          
         }
 
         public static Studio.CameraControl.CameraData cameraData

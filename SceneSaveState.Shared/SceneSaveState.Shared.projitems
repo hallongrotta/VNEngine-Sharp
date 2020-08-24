@@ -16,6 +16,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Scene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SceneConsole.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SceneManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SSS.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TrackingUI.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utils.cs" />

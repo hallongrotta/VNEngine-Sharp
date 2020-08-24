@@ -145,7 +145,7 @@ namespace VNActor
                 // route_f, full route setting
                 route.Stop();
                 RouteInfo cur_status = this.route_full;
-                foreach (var i in Enumerable.Range(0, 4))
+                for (int i = 0; i < 4; i++)
                 {
                     if (param.pts[i].Equals(cur_status.pts[i]))
                     {
@@ -166,7 +166,7 @@ namespace VNActor
                     else if (i == 2)
                     {
                         // points
-                        foreach (var j in Enumerable.Range(0, cur_status.pts.Count))
+                        for (int j = 0; j < cur_status.pts.Count; j++)
                         {
                             var pt = param.pts[j];
                             var pt_cur = cur_status.pts[j];

@@ -269,38 +269,32 @@ namespace VNEngine
         {
             // set the named camera as active camera, if name is None or not found, switch to default camera
             // if active an object camera, return true. Or return false if non object camera actived.
-            if (game.isCharaStudio || game.isNEOV2)
+            foreach (var ociobj in game.studio.dicObjectCtrl.Values)
             {
-                foreach (var ociobj in game.studio.dicObjectCtrl.Values)
+                if (ociobj is OCICamera cam)
                 {
-                    if (ociobj is OCICamera cam)
+                    if (cam.name == name)
                     {
-                        if (cam.name == name)
+                        if (game.studio.ociCamera != cam)
                         {
-                            if (game.studio.ociCamera != cam)
-                            {
-                                game.studio.ChangeCamera(cam);
-                            }
-
+                            game.studio.ChangeCamera(cam);
                         }
-                        return;
+
                     }
+                    return;
                 }
-                game.studio.ChangeCamera(null);
             }
+            game.studio.ChangeCamera(null);         
         }
 
         // :type game: vngameengine.VNNeoController
         public static string get_camera_name(VNNeoController game)
         {
             // return the current active camera's name, or return None if no camera actived.
-            if (game.isCharaStudio || game.isNEOV2)
+            if (game.studio.ociCamera != null)
             {
-                if (game.studio.ociCamera != null)
-                {
-                    return game.studio.ociCamera.name;
-                }
-            }
+                return game.studio.ociCamera.name;
+            }          
             return null;
         }
 

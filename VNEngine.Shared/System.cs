@@ -382,14 +382,9 @@ namespace VNEngine
                 var wavInScene = combine_path(game.get_scene_dir(), game.sceneDir, wavName);
                 if (File.Exists(wavInScene))
                 {
-                    if (game.isStudioNEO)
-                    {
-                        wavRevPath = combine_path("..", "studioneo", "scene", game.sceneDir, wavName);
-                    }
-                    else
-                    {
-                        wavRevPath = combine_path("..", "studio", "scene", game.sceneDir, wavName);
-                    }
+
+                    wavRevPath = combine_path("..", "studio", "scene", game.sceneDir, wavName);
+
                     if (game.studio.outsideSoundCtrl.fileName != wavRevPath)
                     {
                         game.studio.outsideSoundCtrl.Play(wavRevPath);
@@ -482,14 +477,9 @@ namespace VNEngine
                     return;
                 }
                 // load png in game default background folder if existed
-                if (game.isCharaStudio || game.isNEOV2)
-                {
-                    pngInDefault = Path.GetFullPath(combine_path(Application.dataPath, "..", "UserData", "bg", pngName));
-                }
-                else
-                {
-                    pngInDefault = Path.GetFullPath(combine_path(Application.dataPath, "..", "UserData", "background", pngName));
-                }
+
+                pngInDefault = Path.GetFullPath(combine_path(Application.dataPath, "..", "UserData", "bg", pngName));
+
                 if (File.Exists(pngInDefault))
                 {
                     game.scene_set_bg_png_orig(pngName);
@@ -532,8 +522,7 @@ namespace VNEngine
                             sc.cameraMethod = param[5];
                             game.studio.cameraLightCtrl.Reflect();
                         }*/
-            if (game.isCharaStudio || game.isNEOV2)
-            {
+
                 var cl = game.studio_scene.charaLight;
                 cl.color = param.rgbDiffuse;
                 cl.intensity = param.cameraLightIntensity;
@@ -541,7 +530,7 @@ namespace VNEngine
                 cl.rot[1] = param.rot_x;
                 cl.shadow = param.cameraLightShadow;
                 game.studio.cameraLightCtrl.Reflect();
-            }
+            
         }
         /*
                 public static void sys_pl_neoextsave(VNNeoController game, int[] param)

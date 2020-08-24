@@ -9,7 +9,7 @@
     <Import_RootNamespace>VNEngine.NEOV2.Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)NeoV2Controller.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)StudioController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)System.cs" />
   </ItemGroup>
 </Project>

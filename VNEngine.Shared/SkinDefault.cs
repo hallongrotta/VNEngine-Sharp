@@ -218,27 +218,26 @@ namespace VNEngine
                 this.controller.debug_print_all_chars();
             }
             GUILayout.EndHorizontal();
-            if (!this.controller.isClassicStudio)
+
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("Dump selected item/folder tree", customButton, GUILayout.Width(fullw), GUILayout.Height(this.buttonHeight)))
             {
-                GUILayout.BeginHorizontal();
-                if (GUILayout.Button("Dump selected item/folder tree", customButton, GUILayout.Width(fullw), GUILayout.Height(this.buttonHeight)))
-                {
-                    Utils.dump_selected_item_tree();
-                    this.controller.show_blocking_message_time("Tree dumped!");
-                }
-                GUILayout.EndHorizontal();
-                GUILayout.BeginHorizontal();
-                if (GUILayout.Button("VNFrame scene dump", customButton, GUILayout.Width(fullw / 2 - 2), GUILayout.Height(this.buttonHeight)))
-                {
-                    this.controller.dump_scene_vnframe(controller);
-                    // self.show_blocking_message_time("VNFrame scene dumped!")
-                }
-                if (GUILayout.Button("VNFActor select dump", customButton, GUILayout.Width(fullw / 2 - 2), GUILayout.Height(this.buttonHeight)))
-                {
-                    this.controller.dump_selected_vnframe(controller);
-                }
-                GUILayout.EndHorizontal();
+                Utils.dump_selected_item_tree();
+                this.controller.show_blocking_message_time("Tree dumped!");
             }
+            GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("VNFrame scene dump", customButton, GUILayout.Width(fullw / 2 - 2), GUILayout.Height(this.buttonHeight)))
+            {
+                this.controller.dump_scene_vnframe(controller);
+                // self.show_blocking_message_time("VNFrame scene dumped!")
+            }
+            if (GUILayout.Button("VNFActor select dump", customButton, GUILayout.Width(fullw / 2 - 2), GUILayout.Height(this.buttonHeight)))
+            {
+                this.controller.dump_selected_vnframe(controller);
+            }
+            GUILayout.EndHorizontal();
+            
             GUILayout.EndVertical();
             GUI.DragWindow();
         }

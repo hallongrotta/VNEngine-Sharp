@@ -11,26 +11,24 @@ namespace VNEngine
     [BepInProcess(Constants.StudioProcessName)]
     //[BepInDependency(GUID)]
     [BepInPlugin(GUID, PluginName, Version)]
-    public class NeoV2Controller
+    public partial class StudioController
         : VNNeoController
     {
 
-        new public static NeoV2Controller Instance { get; private set; }
+        new public static StudioController Instance { get; private set; }
 
-        public NeoV2Controller() : base()
+        public StudioController() : base()
         {
 
             if (Instance != null)
             {
                 throw new InvalidOperationException("Can only create one instance of Controller");
             }
-            this.engine_name = "neov2";
             Instance = this;
         }
 
-        public NeoV2Controller(List<Button_s> vnButtonsStart) : base()
+        public StudioController(List<Button_s> vnButtonsStart) : base()
         {
-            this.engine_name = "neov2";
             this._vnButtons = vnButtonsStart;
         }
 

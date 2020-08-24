@@ -28,7 +28,7 @@ namespace VNEngine
         //private GUI.WindowFunction windowCallback;
         //private bool isClassicStudio;
         protected Dictionary<string, string> engineOptions;
-        protected string engine_name;
+
         protected string pygamepath;
 
         public ManualLogSource GetLogger { get { return Logger; } }

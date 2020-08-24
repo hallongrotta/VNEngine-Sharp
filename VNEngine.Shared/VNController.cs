@@ -946,47 +946,7 @@ namespace VNEngine
             GameFunc endFunc = _menuStack.Last();
             _menuStack.RemoveAt(-1);
             this.call_game_func(endFunc);
-        }
-
-        public bool isClassicStudio
-        {
-            get
-            {
-                return base.engine_name == "studio";
-            }
-        }
-
-        public bool isStudioNEO
-        {
-            get
-            {
-                return this.engine_name == "neo";
-            }
-        }
-
-        public bool isNEOV2
-        {
-            get
-            {
-                return this.engine_name == "neov2";
-            }
-        }
-
-        public bool isCharaStudio
-        {
-            get
-            {
-                return this.engine_name == "charastudio";
-            }
-        }
-
-        public bool isPlayHomeStudio
-        {
-            get
-            {
-                return this.engine_name == "phstudio";
-            }
-        }
+        }       
 
         // ---------- checking for engine types --------------
         // -------- other ----------

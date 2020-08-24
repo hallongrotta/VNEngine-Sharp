@@ -46,7 +46,7 @@ namespace VNEngine
 
             }
 
-            public SystemData(CharaStudioController game)
+            public SystemData(StudioController game)
             {
                 // export a dict contains all system status
                 //from Studio import Studio
@@ -99,7 +99,7 @@ namespace VNEngine
 
         public static void import_status(SystemData s)
         {
-            var game = CharaStudioController.Instance;
+            var game = StudioController.Instance;
             sys_bgm(game, s);
             sys_wav(game, s);
             sys_map(game, s);
@@ -118,12 +118,12 @@ namespace VNEngine
         {
             get
             {
-                return new Ace { no = CharaStudioController.Instance.studio_scene.aceNo, blend = CharaStudioController.Instance.studio_scene.aceBlend };
+                return new Ace { no = StudioController.Instance.studio_scene.aceNo, blend = StudioController.Instance.studio_scene.aceBlend };
             }
             set
             {
-                CharaStudioController.Instance.studio_scene.aceNo = value.no;
-                CharaStudioController.Instance.studio_scene.aceBlend = value.blend;
+                StudioController.Instance.studio_scene.aceNo = value.no;
+                StudioController.Instance.studio_scene.aceBlend = value.blend;
             }
         }
 
@@ -132,7 +132,7 @@ namespace VNEngine
             game.studio_scene.caMap.rot = param;
         }
 
-        public static void map_sun(CharaStudioController game, SystemData param)
+        public static void map_sun(StudioController game, SystemData param)
         {
             map_sun(game, param.sun);
         }
@@ -153,7 +153,7 @@ namespace VNEngine
 
 
 
-        public static void map_sun(CharaStudioController game, int param)
+        public static void map_sun(StudioController game, int param)
         {
             // set sunLightType, param = sunLightType index, CharaStudio only
 
@@ -172,77 +172,65 @@ namespace VNEngine
         {
             Map map;
             // set map option visible: param = 1/0
-            if (game.isCharaStudio)
-            {
-                map = Map.Instance;
-                map.visibleOption = param;
-            }
+            map = Map.Instance;
+            map.visibleOption = param;
         }
 
-        public static void sys_fm_png(CharaStudioController game, SystemData param)
+        public static void sys_fm_png(StudioController game, SystemData param)
         {
             sys_fm_png(game, param.fm_png);
         }
 
-        public static void sys_fm_png(CharaStudioController game, string param = "")
+        public static void sys_fm_png(StudioController game, string param = "")
         {
             // set frame png, param = png file name, CharaStudio only
-            if (game.isCharaStudio || game.isNEOV2)
+            var pngName = param.Trim();
+            if (pngName != "")
             {
-                var pngName = param.Trim();
-                if (pngName != "")
+                if (!pngName.ToLower().EndsWith(".png"))
                 {
-                    if (!pngName.ToLower().EndsWith(".png"))
-                    {
-                        pngName += ".png";
-                    }
-                    // load png in game scene folder if existed
-                    var pngInScene = Utils.combine_path(game.get_scene_dir(), game.sceneDir, pngName);
-                    if (File.Exists(pngInScene))
-                    {
-                        var pngRevPath = Utils.combine_path("..", "studio", "scene", game.sceneDir, pngName);
-                        game.scene_set_framefile(pngRevPath);
-                        return;
-                    }
-                    // load png in game default background folder if existed
-                    var pngInDefault = Path.GetFullPath(Utils.combine_path(Application.dataPath, "..", "UserData", "frame", pngName));
-                    if (File.Exists(pngInDefault))
-                    {
-                        game.scene_set_framefile(pngName);
-                        return;
-                    }
+                    pngName += ".png";
                 }
+                // load png in game scene folder if existed
+                var pngInScene = Utils.combine_path(game.get_scene_dir(), game.sceneDir, pngName);
+                if (File.Exists(pngInScene))
+                {
+                    var pngRevPath = Utils.combine_path("..", "studio", "scene", game.sceneDir, pngName);
+                    game.scene_set_framefile(pngRevPath);
+                    return;
+                }
+                // load png in game default background folder if existed
+                var pngInDefault = Path.GetFullPath(Utils.combine_path(Application.dataPath, "..", "UserData", "frame", pngName));
+                if (File.Exists(pngInDefault))
+                {
+                    game.scene_set_framefile(pngName);
+                    return;
+                }
+
                 // remove if param == "" or file not existed
                 game.scene_set_framefile("");
             }
-            else
-            {
-                Console.WriteLine("sys_fm_png only supports CharaStudio");
-            }
         }
 
-        public static void sys_map(CharaStudioController game, SystemData s)
+        public static void sys_map(StudioController game, SystemData s)
             {
                 sys_map(game, s.map);
             }
-        public static void sys_map(CharaStudioController game, int param)
+        public static void sys_map(StudioController game, int param)
         {
             // set map
             if (param != game.studio_scene.map)
             {
-                if (game.isCharaStudio)
-                {
-                    game.change_map_to(param);
-                }
+                game.change_map_to(param);
             }
         }
 
         static public IDataClass export_sys_status(VNNeoController game)
         {
-            return new SystemData((CharaStudioController)game);
+            return new SystemData((StudioController)game);
         }
 
-        public delegate void SystemFunc(CharaStudioController game, SystemData param);
+        public delegate void SystemFunc(StudioController game, SystemData param);
 
         public struct ActFunc
         {
