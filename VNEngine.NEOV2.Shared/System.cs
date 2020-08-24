@@ -98,6 +98,34 @@ namespace VNEngine
             sys_bg_png(game, s);
             sys_fm_png(game, s.fm_png);
             sys_char_light(game, s);
+            colorCorrection = s.colorCorrection;
+            Studio.Studio.Instance.systemButtonCtrl.UpdateInfo();
+        }
+
+        public struct ColorCorrection
+        {
+            public int no;
+            public float blend;
+            public int saturation;
+            public int brightness;
+            public int contrast;
+        }
+
+        private static ColorCorrection colorCorrection
+        {
+            get
+            {
+                SceneInfo sceneInfo = NeoV2Controller.Instance.studio_scene;
+                return new ColorCorrection { no = sceneInfo.cgLookupTexture, blend = sceneInfo.cgBlend, contrast = sceneInfo.cgContrast, brightness = sceneInfo.cgBrightness, saturation = sceneInfo.cgSaturation};
+            }
+            set
+            {
+                NeoV2Controller.Instance.studio_scene.cgLookupTexture = value.no;
+                NeoV2Controller.Instance.studio_scene.cgBlend = value.blend;
+                NeoV2Controller.Instance.studio_scene.cgBrightness = value.brightness;
+                NeoV2Controller.Instance.studio_scene.cgContrast = value.contrast;
+                NeoV2Controller.Instance.studio_scene.cgSaturation = value.saturation;
+            }
         }
 
         public class SystemData : IDataClass
@@ -118,6 +146,8 @@ namespace VNEngine
             public string fm_png;
 
             public CharLight_s char_light;
+
+            public ColorCorrection colorCorrection;
 
             public void Remove(string key)
             {
@@ -159,7 +189,9 @@ namespace VNEngine
 
                 var cl = game.studio_scene.charaLight;
                 char_light = new CharLight_s { rgbDiffuse = cl.color, cameraLightIntensity = cl.intensity, rot_y = cl.rot[0], rot_x = cl.rot[1], cameraLightShadow = cl.shadow };
-                
+
+                colorCorrection = System.colorCorrection;
+
                 /* TODO
                 if (game.isStudioNEO || game.isCharaStudio)
                 {
