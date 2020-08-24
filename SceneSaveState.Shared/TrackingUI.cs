@@ -42,7 +42,7 @@ namespace SceneSaveState
             GUILayout.Space(15);
             if (GUILayout.Button("Refresh", GUILayout.Height(50), GUILayout.Width(80)))
             {
-                Instance.game.LoadTrackedActorsAndProps();
+                SceneFolders.LoadTrackedActorsAndProps();
             }
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
@@ -81,7 +81,7 @@ namespace SceneSaveState
             //GUILayout.BeginHorizontal()
             tracking_scroll = GUILayout.BeginScrollView(tracking_scroll);
             GUILayout.Label("Actors:");
-            var actors = Instance.game.scenef_get_all_actors();
+            var actors = Instance.game.AllActors;
             foreach (var actorid in actors.Keys)
             {
                 //GUILayout.Label("  "+actorid+": "+actors[actorid].text_name)
@@ -91,7 +91,7 @@ namespace SceneSaveState
                 render_ui_for_tracking(actorid, actor);
             }
             GUILayout.Label("Props:");
-            var props = Instance.game.scenef_get_all_props();
+            var props = Instance.game.AllProps;
             foreach (var propid in props.Keys)
             {
                 render_ui_for_tracking(propid, props[propid]);

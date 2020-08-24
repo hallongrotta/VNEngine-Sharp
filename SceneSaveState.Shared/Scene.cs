@@ -34,9 +34,9 @@ namespace SceneSaveState
 
         public Scene(VNNeoController game, bool importSys) : this()
         {
-            game.LoadTrackedActorsAndProps();
-            Dictionary<string, VNActor.Actor> actors = game.scenef_get_all_actors();
-            Dictionary<string, Prop> props = game.scenef_get_all_props();
+            SceneFolders.LoadTrackedActorsAndProps();
+            Dictionary<string, VNActor.Actor> actors = game.AllActors;
+            Dictionary<string, Prop> props = game.AllProps;
             foreach (string actid in actors.Keys)
             {
                 this.actors[actid] = (ActorData)actors[actid].export_full_status();
@@ -129,7 +129,7 @@ namespace SceneSaveState
                 {
                 }
                 //Utils.char_import_status_diff_optimized(game.scenef_get_actor(actid), char_status);
-                var actor = game.scenef_get_actor(actid);
+                var actor = game.GetActor(actid);
                 try
                 {
                     actor?.import_status(char_status);
@@ -138,7 +138,7 @@ namespace SceneSaveState
                 {
                     SceneConsole.Instance.game.GetLogger.LogError($"Error occurred when importing Actor with id {actid}" + e.ToString());
                     SceneConsole.Instance.game.GetLogger.LogMessage($"Missing actor with id {actid}");
-                    game.LoadTrackedActorsAndProps();
+                    SceneFolders.LoadTrackedActorsAndProps();
                 }
             }
             foreach (var propid in this.props.Keys)
@@ -146,7 +146,7 @@ namespace SceneSaveState
                 //vnframe.act(game, {propid: self.props[propid]})
                 //print propid
                 //print game.scenef_get_all_props()
-                Item prop = game.scenef_get_propf(propid) as Item;
+                Item prop = game.GetProp(propid) as Item;
                 ItemData status = this.props[propid];
                 try
                 {
@@ -155,7 +155,7 @@ namespace SceneSaveState
                 catch (Exception e)
                 {
                     game.GetLogger.LogError($"Error occurred when importing Item with id {propid}" + e.ToString());
-                    game.LoadTrackedActorsAndProps();
+                    SceneFolders.LoadTrackedActorsAndProps();
                     SceneConsole.Instance.game.GetLogger.LogMessage($"Missing item with id {propid}");
                 }
             }
@@ -164,7 +164,7 @@ namespace SceneSaveState
                 //vnframe.act(game, {propid: self.props[propid]})
                 //print propid
                 //print game.scenef_get_all_props()
-                Light light = game.scenef_get_light(lightid);
+                Light light = SceneFolders.scenef_get_light(lightid);
                 LightData status = this.lights[lightid];
                 try
                 {
@@ -174,7 +174,7 @@ namespace SceneSaveState
                 {
                     SceneConsole.Instance.game.GetLogger.LogError($"Error occurred when importing Item with id {lightid}" + e.ToString());
                     SceneConsole.Instance.game.GetLogger.LogMessage($"Missing light with id {lightid}");
-                    game.LoadTrackedActorsAndProps();
+                    SceneFolders.LoadTrackedActorsAndProps();
                 }
             }
         }

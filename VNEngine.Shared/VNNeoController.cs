@@ -18,10 +18,6 @@ namespace VNEngine
 
         public static VNNeoController Instance { get; private set; }
 
-        public static string actor_folder_prefix = "vnactor:";
-        public static string prop_folder_prefix = "vnprop:";
-        public static string light_folder_prefix = "vnlight:";
-
         //public Dictionary<string, VNActor.Actor> _scenef_actors;
 
         //public Dictionary<string, Item> _scenef_props;
@@ -151,19 +147,45 @@ namespace VNEngine
             return String.Format("a:%s:camo:%s", st.ToString(), s1.Replace("(", "").Replace(")", "").Replace(" ", ""));
         }
 
+        public Dictionary<string, VNActor.Actor> AllActors
+        {
+            get
+            {
+                return SceneFolders.AllActors;
+            }
+        }
+
+        public Dictionary<string, Prop> AllProps
+        {
+            get
+            {
+                return SceneFolders.AllProps;
+            }
+        }
+
+        public Prop GetProp(string id)
+        {
+            return SceneFolders.scenef_get_propf(id);
+        }
+
+        public VNActor.Actor GetActor(string id)
+        {
+            return SceneFolders.scenef_get_actor(id);
+        }
+
         public void dump_scene_vnframe(VNController game)
         {
             IDataClass status;
             var output = "";
-            this.LoadTrackedActorsAndProps();
-            Dictionary<string, VNActor.Actor> actors = this.scenef_get_all_actors();
+            SceneFolders.LoadTrackedActorsAndProps();
+            Dictionary<string, VNActor.Actor> actors = this.AllActors;
             string id_global = "";
             try
             {
                 foreach (var id in actors.Keys)
                 {
                     id_global = id;
-                    VNActor.Actor actor = (VNActor.Actor)this.scenef_get_actor(id);
+                    VNActor.Actor actor = (VNActor.Actor)this.GetActor(id);
                     status = actor.export_full_status();
                     //output += String.Format("'%s': ", id) + VNFrame.script2string(status) + ",\n"; TODO
                 }
@@ -174,13 +196,13 @@ namespace VNEngine
                 game.show_blocking_message_time(String.Format("Error during dump actor %s!", id_global));
                 return;
             }
-            var props = this.scenef_get_all_props();
+            var props = this.AllProps;
             try
             {
                 foreach (var id in props.Keys)
                 {
                     id_global = id;
-                    Prop prop = this.scenef_get_propf(id);
+                    Prop prop = this.GetProp(id);
                     status = prop.export_full_status();
                     //output += String.Format("'%s': ", id) + VNFrame.script2string(status) + ",\n"; TODO
                 }
@@ -429,17 +451,6 @@ namespace VNEngine
             return ar;
         }
 
-        public List<OCIFolder> scene_get_all_folders_raw()
-        {
-            var ar = new List<OCIFolder>();
-            var dobjctrl = this.studio.dicObjectCtrl;
-            foreach (OCIFolder folder in dobjctrl.Values.OfType<OCIFolder>())
-            {
-                ar.Add(folder);
-            }
-            return ar;
-        }
-
         public List<Folder> scene_get_all_folders()
         {
             var ar = new List<Folder>();
@@ -534,95 +545,7 @@ namespace VNEngine
         }
         */
 
-        public void LoadTrackedActorsAndProps()
-        {
-            List<OCIFolder> folders = scene_get_all_folders_raw();
-            _scenef_actors.Clear();
-            _scenef_props.Clear();
-
-            foreach (OCIFolder fld in folders)
-            {
-                string fldName = fld.name;
-                if (fldName.StartsWith(actor_folder_prefix))
-                {
-
-                    string actorAlias;
-                    string actorColor = "ffffff";
-                    string actorTitle = null;
-
-                    // analysis actor tag
-                    var tagElements = fldName.Split(':');
-                    if (tagElements.Length == 2)
-                    {
-                        actorAlias = tagElements[1];
-                    }
-                    else if (tagElements.Length == 3)
-                    {
-                        actorAlias = tagElements[1];
-                        actorColor = tagElements[2];
-                    }
-                    else
-                    {
-                        actorAlias = tagElements[1];
-                        actorColor = tagElements[2];
-                        actorTitle = tagElements[3];
-                    }
-
-                    if (!_scenef_actors.ContainsKey(actorAlias))
-                    {
-                        var hsociChar = NeoOCI.create_from_treenode(fld.treeNodeObject.parent.parent.parent);
-
-                        if (hsociChar is VNActor.Actor chara)
-                        {
-                            if (actorTitle is null)
-                            {
-                                actorTitle = hsociChar.text_name;
-                            }
-
-                            _scenef_actors[actorAlias] = chara;
-
-                            register_char(actorAlias, actorColor, actorTitle);
-
-                            Logger.LogDebug("Registered actor: '" + actorAlias + "' as " + actorTitle + " (#" + actorColor + ")");
-                        }
-                    }
-                }
-                else if (fldName.StartsWith(prop_folder_prefix))
-                {
-                    // analysis props tag
-
-                    string propAlias = fldName.Substring(prop_folder_prefix.Length).Trim();
-                    // register props
-
-                    if (!_scenef_props.ContainsKey(propAlias))
-                    {
-                        NeoOCI oci = NeoOCI.create_from_treenode(fld.treeNodeObject.parent);
-
-                        if (oci is Item propOci)
-                        {
-                            _scenef_props[propAlias] = propOci;
-                            Logger.LogDebug("Registered prop: '" + Utils.to_roman(propAlias) + "' as " + Utils.to_roman(oci.text_name));
-                        }
-                    }
-                }
-                else if (fldName.StartsWith(light_folder_prefix))
-                {
-                    string propAlias = fldName.Substring(light_folder_prefix.Length).Trim();
-                    // register props
-
-                    if (!_scenef_props.ContainsKey(propAlias))
-                    {
-                        NeoOCI oci = NeoOCI.create_from_treenode(fld.treeNodeObject.child[0]);
-
-                        if (oci is VNActor.Light propOci)
-                        {
-                            _scenef_props[propAlias] = propOci;
-                            Logger.LogDebug("Registered light: '" + Utils.to_roman(propAlias) + "' as " + Utils.to_roman(oci.text_name));
-                        }
-                    }
-                }
-            }
-        }
+        
 
         /*
         public void scenef_register_actorsprops()
@@ -739,71 +662,7 @@ namespace VNEngine
        */
 
 
-        public Dictionary<string, VNActor.Actor> scenef_get_all_actors()
-        {
-            return this._scenef_actors;
-        }
-
-        public Dictionary<string, Prop> scenef_get_all_props()
-        {
-            return this._scenef_props;
-        }
-
-        public NeoOCI scenef_get_prop(string id)
-        {
-            if (this.scenef_get_all_props().ContainsKey(id))
-            {
-                NeoOCI obj = this.scenef_get_all_props()[id];
-                return obj;
-            }
-            return null;
-        }
-
-        public Prop scenef_get_propf(string id)
-        {
-            if (this.scenef_get_all_props().ContainsKey(id))
-            {
-                Prop obj = this.scenef_get_all_props()[id];
-                return obj;
-            }
-            return null;
-        }
-
-        public VNActor.Light scenef_get_light(string id)
-        {
-            if (this.scenef_get_all_props().ContainsKey(id))
-            {
-                Prop obj = this.scenef_get_all_props()[id];
-                return (VNActor.Light)obj;
-            }
-            return null;
-        }
-
-        public VNActor.Actor scenef_get_actor(string id)
-        {
-            if (this.scenef_get_all_actors().ContainsKey(id))
-            {
-                VNActor.Actor obj = this.scenef_get_all_actors()[id];
-                return obj;
-            }
-            return null;
-        }
-
-        public void scenef_reg_actor(string id, VNActor.Actor actor)
-        {
-            this._scenef_actors[id] = actor;
-        }
-
-        public void scenef_reg_prop(string id, Item prop)
-        {
-            this._scenef_props[id] = prop;
-        }
-
-        public void scenef_clean_actorsprops()
-        {
-            this._scenef_actors = new Dictionary<string, VNActor.Actor>();
-            this._scenef_props = new Dictionary<string, Prop>();
-        }
+        
 
         // ---- lip sync ------- TODO
         /*        new public void set_text(string character, string text)

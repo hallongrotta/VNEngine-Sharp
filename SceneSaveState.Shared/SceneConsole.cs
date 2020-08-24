@@ -631,7 +631,7 @@ namespace SceneSaveState
             if (elem is VNActor.Actor chara)
             {
                 var tmp_status = chara.export_full_status();
-                var actors = game.scenef_get_all_actors();
+                var actors = game.AllActors;
                 foreach (var key in actors.Keys)
                 {
                     VNActor.Actor actor = (VNActor.Actor)actors[key];
@@ -756,7 +756,7 @@ namespace SceneSaveState
         public void addSelectedToTrack(Prop prop)
         {
             Folder tagfld;
-            var props = game.scenef_get_all_props();
+            var props = game.AllProps;
 
             foreach (Prop p in props.Values)
             {
@@ -791,7 +791,7 @@ namespace SceneSaveState
             }
             if (prop is VNActor.Light)
             {
-                tagfld = Folder.add(VNNeoController.light_folder_prefix + newid);
+                tagfld = Folder.add(SceneFolders.light_folder_prefix + newid);
                 prop.set_parent(tagfld);
             }
             else if (prop is Route)
@@ -801,7 +801,7 @@ namespace SceneSaveState
             }
             else
             {
-                tagfld = Folder.add(VNNeoController.prop_folder_prefix + newid);
+                tagfld = Folder.add(SceneFolders.prop_folder_prefix + newid);
                 tagfld.set_parent_treenodeobject(prop.treeNodeObject);
             }
             var curstatus = prop.export_full_status();
@@ -823,7 +823,7 @@ namespace SceneSaveState
 
         public void addSelectedToTrack(VNActor.Actor chara)
         {
-            var actors = game.scenef_get_all_actors();
+            var actors = game.AllActors;
 
             foreach (VNActor.Actor actor in actors.Values)
             {
@@ -845,7 +845,7 @@ namespace SceneSaveState
                     break;
                 }
             }
-            var tagfld = Folder.add(VNNeoController.actor_folder_prefix + id);
+            var tagfld = Folder.add(SceneFolders.actor_folder_prefix + id);
             tagfld.set_parent_treenodeobject(chara.treeNodeObject.child[0].child[0]);
             var curstatus = (ActorData)chara.export_full_status();
             foreach (var i in Enumerable.Range(0, block.Count))
@@ -892,7 +892,7 @@ namespace SceneSaveState
                         return;
                     }
                 }
-                game.LoadTrackedActorsAndProps();
+                SceneFolders.LoadTrackedActorsAndProps();
             }
         }
 
@@ -911,7 +911,7 @@ namespace SceneSaveState
             }
             if (elem is VNActor.Actor chara)
             {
-                var actors = game.scenef_get_all_actors();
+                var actors = game.AllActors;
                 string id = "";
                 foreach (var actid in actors.Keys)
                 {
@@ -932,7 +932,7 @@ namespace SceneSaveState
                 changeActorTrackId(id, toId);
             }
             // updating set
-            game.LoadTrackedActorsAndProps();
+            SceneFolders.LoadTrackedActorsAndProps();
         }
 
         public void delSelectedFromTrack(object o)
@@ -951,7 +951,7 @@ namespace SceneSaveState
             }
             if (elem is VNActor.Actor chara)
             {
-                var actors = game.scenef_get_all_actors();
+                var actors = game.AllActors;
                 var id = "";
                 foreach (var actid in actors.Keys)
                 {
@@ -971,7 +971,7 @@ namespace SceneSaveState
             }
             else if (elem is Prop)
             {
-                var props = game.scenef_get_all_props();
+                var props = game.AllProps;
                 var id = "";
                 foreach (var propid in props.Keys)
                 {
@@ -984,7 +984,7 @@ namespace SceneSaveState
                 delPropFromTrack(id);
             }
             // updating set
-            game.LoadTrackedActorsAndProps();
+            SceneFolders.LoadTrackedActorsAndProps();
         }
 
         public void delActorFromTrack(string actid)
@@ -992,10 +992,10 @@ namespace SceneSaveState
             if (actid != "")
             {
                 // we found this char
-                var fld = Folder.find_single(VNNeoController.actor_folder_prefix + actid);
+                var fld = Folder.find_single(SceneFolders.actor_folder_prefix + actid);
                 if (fld == null)
                 {
-                    fld = Folder.find_single_startswith(VNNeoController.actor_folder_prefix + actid + ":");
+                    fld = Folder.find_single_startswith(SceneFolders.actor_folder_prefix + actid + ":");
                 }
                 // found
                 if (fld != null)
@@ -1015,18 +1015,18 @@ namespace SceneSaveState
             if (actid != "")
             {
                 // we found this char
-                var fld = Folder.find_single(VNNeoController.actor_folder_prefix + actid);
+                var fld = Folder.find_single(SceneFolders.actor_folder_prefix + actid);
                 if (fld == null)
                 {
-                    fld = Folder.find_single_startswith(VNNeoController.actor_folder_prefix + actid + ":");
+                    fld = Folder.find_single_startswith(SceneFolders.actor_folder_prefix + actid + ":");
                 }
                 // found
                 //if fld != None:
                 //    fld.delete()
                 string fldoldname = fld.name;
-                string lastelems = fldoldname.Substring((VNNeoController.actor_folder_prefix + actid).Length);
+                string lastelems = fldoldname.Substring((SceneFolders.actor_folder_prefix + actid).Length);
                 //print lastelems
-                fld.name = VNNeoController.actor_folder_prefix + toid + lastelems;
+                fld.name = SceneFolders.actor_folder_prefix + toid + lastelems;
                 //
                 for (int i = 0; i < block.Count; i++)
                 {
@@ -1050,7 +1050,7 @@ namespace SceneSaveState
             if (propid != "")
             {
                 // we found this prop
-                var fld = Folder.find_single(VNNeoController.prop_folder_prefix + propid);
+                var fld = Folder.find_single(SceneFolders.prop_folder_prefix + propid);
                 // found
                 if (fld != null)
                 {
@@ -1424,7 +1424,7 @@ namespace SceneSaveState
         public void loadSceneData(bool file = false, bool backup = false, bool setToFirst = true)
         {
             string filename;
-            game.LoadTrackedActorsAndProps();
+            SceneFolders.LoadTrackedActorsAndProps();
             Dictionary<string, Scene> block_dict = null;
             if (file == false)
             {
@@ -1740,7 +1740,7 @@ namespace SceneSaveState
         public string get_next_speaker(string curSpeakAlias, bool next)
         {
             // next from unknown speaker
-            var all_actors = game.scenef_get_all_actors();
+            var all_actors = game.AllActors;
             var keylist = all_actors.Keys.ToList();
             if (curSpeakAlias != defaultSpeakerAlias && !all_actors.ContainsKey(curSpeakAlias))
             {
@@ -1791,7 +1791,7 @@ namespace SceneSaveState
         {
             SetExtendedData(new PluginData() { data = null });
             block = new SceneManager();
-            game.LoadTrackedActorsAndProps();
+            SceneFolders.LoadTrackedActorsAndProps();
         }
 
         protected override void OnSceneSave()
@@ -1840,7 +1840,7 @@ namespace SceneSaveState
                     }
                 }
             }
-            game.LoadTrackedActorsAndProps();
+            SceneFolders.LoadTrackedActorsAndProps();
         }
     }
 }

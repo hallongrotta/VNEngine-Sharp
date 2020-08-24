@@ -27,10 +27,6 @@ namespace VNEngine
 
         public GameFunc _onCameraEnd;
 
-        protected Dictionary<string, VNActor.Actor> _scenef_actors;
-
-        protected Dictionary<string, Prop> _scenef_props;
-
         public List<Button_s> _vnButtons;
 
         public string _vnStText;
@@ -235,8 +231,6 @@ namespace VNEngine
             //this.gdata = new GData();
             //this.scenedata = new GData();
             this.gpersdata = new Dictionary<string, object>();
-            this._scenef_actors = new Dictionary<string, VNActor.Actor>();
-            this._scenef_props = new Dictionary<string, Prop>();
             this.current_game = "";
             this._eventListenerDic = new Dictionary<string, List<GameFunc>>();
             this.isfAutoLipSync = false;
@@ -266,8 +260,6 @@ namespace VNEngine
             //this.gdata = new GData();
             this.gpersdata = new Dictionary<string, object>();
             //this.scenedata = new GData();
-            this._scenef_actors = new Dictionary<string, VNActor.Actor>();
-            this._scenef_props = new Dictionary<string, Prop>();
             this.current_game = "";
             // lip sync
             this.isfAutoLipSync = false;

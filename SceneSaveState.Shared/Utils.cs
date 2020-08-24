@@ -30,7 +30,7 @@ namespace SceneSaveState
         {
             game.gdata.hook_update_allowed = true;
             UI.sceneConsoleGUIStart(game);
-            game.LoadTrackedActorsAndProps();
+            SceneFolders.LoadTrackedActorsAndProps();
             // if no blocks - autoload
             if (SceneConsole.Instance.block.Count == 0)
             {
