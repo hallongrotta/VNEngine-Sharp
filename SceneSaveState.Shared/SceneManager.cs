@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using static VNEngine.VNCamera;
 
@@ -366,5 +368,90 @@ namespace SceneSaveState
                 currentCamIndex = index;
             }
         }
+
+        public void ImportCamTextsCustom()
+        {
+            try
+            {
+                string[] text = File.ReadAllLines("sss_camtexts.out");
+                VNData[] vndata = new VNData[text.Length];
+                int i = 0;
+                foreach (string line in text)
+                {
+                    string[] entries = line.Split('\t');
+                    if (entries.Length == 2)
+                    {
+                        VNData data = new VNData();
+                        data.whosay = entries[0];
+                        data.whatsay = entries[1];
+                        data.enabled = true;
+                        vndata[i] = data;
+                    }
+                    i++;
+                }
+                int j = 0;
+                foreach (Scene scene in scenes)
+                {
+                    foreach (CamData cam in scene.cams)
+                    {
+                        cam.addata = vndata[j];
+                        j++;
+                        if (j >= text.Length) { break; }
+                    }
+                }
+            } catch (Exception)
+            {
+                return;
+            }       
+        }
+
+        // export cam texts
+        public void exportCamTexts()
+        {
+            var filename = Path.Combine(Directory.GetCurrentDirectory(), "sss_camtexts.xml");
+            System.Xml.Serialization.XmlSerializer writer =
+            new System.Xml.Serialization.XmlSerializer(typeof(List<VNData>));
+            List<VNData> data = new List<VNData>();
+            foreach (Scene scene in scenes)
+            {
+                foreach (CamData cam in scene.cams)
+                {
+                    data.Add(cam.addata);
+                }
+            }
+            FileStream file = File.Create(filename);
+            writer.Serialize(file, data);
+            file.Close();
+        }
+
+        // export cam texts
+        public void importCamTexts()
+        {
+            var filename = "sss_camtexts.xml";
+            try
+            {
+                System.Xml.Serialization.XmlSerializer reader =
+                new System.Xml.Serialization.XmlSerializer(typeof(List<VNData>));
+                StreamReader file = new StreamReader(
+                    filename);
+                int j = 0;
+                List<VNData> data = reader.Deserialize(file) as List<VNData>;
+                foreach (Scene scene in scenes)
+                {
+                    foreach (CamData cam in scene.cams)
+                    {
+                        cam.addata = data[j];
+                        j++;
+                        if (j >= data.Count) { break; }
+                    }
+                }
+                file.Close();
+            }
+            catch (Exception)
+            {
+                return;
+            }
+        }
+
     }
 }

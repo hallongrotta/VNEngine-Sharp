@@ -159,14 +159,22 @@ namespace SceneSaveState
             GUILayout.Space(5);
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
-            if (GUILayout.Button("Export cam texts\nto sss_camtexts.txt", GUILayout.Height(btnSmallHeight), GUILayout.Width(210)))
+            if (GUILayout.Button("Export cam texts\nto sss_camtexts.xml", GUILayout.Height(btnSmallHeight), GUILayout.Width(210)))
             {
-                Instance.exportCamTexts();
+                Instance.block.exportCamTexts();
             }
             GUILayout.FlexibleSpace();
-            if (GUILayout.Button("Import cam texts\nfrom sss_camtexts.txt", GUILayout.Height(btnSmallHeight), GUILayout.Width(210)))
+            if (GUILayout.Button("Import cam texts\nfrom sss_camtexts.xml", GUILayout.Height(btnSmallHeight), GUILayout.Width(210)))
             {
-                Instance.importCamTexts();
+                Instance.block.importCamTexts();
+            }
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+            if (GUILayout.Button("Import cam texts\nfrom sss_camtexts.txt (Python)", GUILayout.Height(btnSmallHeight), GUILayout.Width(210)))
+            {
+                Instance.block.ImportCamTextsCustom();
             }
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();

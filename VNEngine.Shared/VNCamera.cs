@@ -46,8 +46,8 @@ namespace VNEngine
             {
                 [Key(0)]
                 public adv_properties a1o;
-                [Key(1)]
-                public Dictionary<string, bool> a2o;
+                //[Key(1)]
+                //public Dictionary<string, bool> a2o;
                 [Key(2)]
                 public bool a1;
                 [Key(3)]
