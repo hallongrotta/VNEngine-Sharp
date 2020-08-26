@@ -210,8 +210,7 @@ namespace VNActor
             }
             get
             {
-                // return eye look at pattern: 0: front, 1: camera, 2: hide from camera, 3: fix, 4: operate
-                return this.objctrl.charInfo.GetLookEyesPtn();
+                return this.objctrl.charInfo.GetEyesPtn();
             }
         }
 
@@ -252,6 +251,15 @@ namespace VNActor
                 {
                     binfo.boneInfo.changeAmount.rot = biDic[binfo.boneID];
                 }
+            }
+        }
+
+        public void reset_fk_bone_info()
+        {
+            // import fk bone info from dic
+            foreach (var binfo in this.objctrl.listBones)
+            {
+                    binfo.boneInfo.changeAmount.rot = Vector3.zero;
             }
         }
 
