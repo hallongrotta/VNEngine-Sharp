@@ -347,7 +347,7 @@ namespace SceneSaveState
                 GUILayout.EndHorizontal();
                 GUILayout.BeginHorizontal();
                 GUILayout.Label("  What say:", GUILayout.Width(90));
-                Instance.currentVNData.whatsay = GUILayout.TextField(Instance.currentVNData.whatsay, GUILayout.Width(210));
+                Instance.currentVNData.whatsay = GUILayout.TextArea(Instance.currentVNData.whatsay, GUILayout.Width(210), GUILayout.Height(85));
                 if (GUILayout.Button("X", GUILayout.Width(20)))
                 {
                     Instance.currentVNData.whatsay = "";
@@ -358,7 +358,7 @@ namespace SceneSaveState
                 }
                 GUILayout.EndHorizontal();
                 GUILayout.Space(5);
-                GUILayout.BeginHorizontal();
+                /*GUILayout.BeginHorizontal();
                 GUILayout.Label("  Adv VN cmds", GUILayout.Width(90));
                 Instance.currentVNData.addvncmds = GUILayout.TextArea(Instance.currentVNData.addvncmds, GUILayout.Width(235), GUILayout.Height(55));
                 if (GUILayout.Button("X", GUILayout.Width(20)))
@@ -370,6 +370,7 @@ namespace SceneSaveState
                 // if GUILayout.Button("...", GUILayout.Width(20)):
                 //     sc.cam_whatsay = "..."
                 GUILayout.EndHorizontal();
+                */
             }
             GUILayout.EndVertical();
             GUILayout.EndHorizontal();
