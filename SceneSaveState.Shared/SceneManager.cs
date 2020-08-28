@@ -54,11 +54,50 @@ namespace SceneSaveState
         public string[] scene_cam_str;
         private string[] scene_str_array;
 
-        public int currentSceneIndex { get; private set; }
+        public int sceneIndex;
+
+        public int currentSceneIndex { 
+            get 
+            { 
+                return sceneIndex; 
+            }
+            private set 
+            { 
+                if (value < scenes.Count)
+                {
+                    if (value == -1 && scenes.Count == 0)
+                    {
+                        sceneIndex = value;
+                    }
+                    else if (value == -1 && scenes.Count > 0)
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        sceneIndex = value;
+                    }
+                }
+            } 
+        }
 
         public int currentCamIndex { get; private set; }
 
-        public Scene CurrentScene { get { return scenes[currentSceneIndex]; } private set { scenes[currentSceneIndex] = value; } }
+        public Scene CurrentScene { 
+            get 
+            { 
+                if (HasScenes) 
+                { 
+                    return scenes[currentSceneIndex]; 
+                } 
+                else 
+                { return null; 
+                } 
+            } 
+            private set 
+            { scenes[currentSceneIndex] = value; 
+            } 
+        }
 
         public CamData CurrentCam { get { return CurrentScene.cams[currentCamIndex]; } }
 
