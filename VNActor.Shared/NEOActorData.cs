@@ -180,22 +180,17 @@ After:
             lipSync = a.LipSync;
             handMotions = a.HandPattern;
             kinematicType = a.Kinematic;
-
-            fkActive = null;
-            fk = null;
-            ikActive = null;
-            ik = null;
+            fkActive = new bool[a.get_FK_active().Length];
+            ikActive = new bool[a.get_IK_active().Length];
+            Array.Copy(a.get_FK_active(), fkActive, fkActive.Length);
+            Array.Copy(a.get_IK_active(), ikActive, ikActive.Length);
 
             if (kinematicType == KinematicMode.FK || kinematicType == KinematicMode.IKFK)
             {
-                fkActive = new bool[a.get_FK_active().Length];
-                Array.Copy(a.get_FK_active(), fkActive, fkActive.Length);
                 fk = a.export_fk_bone_info();
             }
             if (kinematicType == KinematicMode.IK || kinematicType == KinematicMode.IKFK)
             {
-                ikActive = new bool[a.get_IK_active().Length];
-                Array.Copy(a.get_IK_active(), ikActive, ikActive.Length);
                 ik = a.export_ik_target_info();
             }
 
@@ -205,6 +200,20 @@ After:
 
         virtual public void Apply(Actor a)
         {
+
+
+            //if (this.kinematicType != KinematicMode.IK)
+            //{
+            if (a.Position != position || a.Animation.no != anim.no)
+            {
+                a.set_kinematic(KinematicMode.FK); // Enable FK by default so that stuff does not jiggle when moved.
+                //a.reset_fk_bone_info();
+                a.set_FK_active(new bool[] { true, false, true, false, false, false, false });
+            }
+
+            //} 
+
+
             a.Visible = visible;
             a.Position = position;
             a.Rotation = rotation;
@@ -250,22 +259,20 @@ After:
             a.LipSync = lipSync;
             a.HandPattern = handMotions;
             a.set_kinematic(kinematicType);
+            a.set_IK_active(ikActive);
+            a.set_FK_active(fkActive);
 
             if (kinematicType == KinematicMode.IK)
             {
-                a.set_IK_active(ikActive);
                 a.import_ik_target_info(ik);
             }
             else if (kinematicType == KinematicMode.FK)
             {
-                a.set_FK_active(fkActive);
                 a.import_fk_bone_info(fk);
             }
             else if (kinematicType == KinematicMode.IKFK)
             {
-                a.set_IK_active(ikActive);
                 a.import_ik_target_info(ik);
-                a.set_FK_active(fkActive);
                 a.import_fk_bone_info(fk);
             }
 
