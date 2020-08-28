@@ -850,6 +850,10 @@ namespace SceneSaveState
             {
                 baseid = "light";
             }
+            else if (prop is Folder)
+            {
+                baseid = "folder";
+            }
             foreach (var i in Enumerable.Range(0, 1000 - 0))
             {
                 var id = baseid + i;
@@ -878,19 +882,11 @@ namespace SceneSaveState
                 tagfld = Folder.add(SceneFolders.prop_folder_prefix + newid);
                 tagfld.set_parent_treenodeobject(prop.treeNodeObject);
             }
-            var curstatus = prop.export_full_status();
+            var curstatus = prop.export_full_status() as NEOPropData;
             for (int i = 0; i < block.Count; i++)
             {
                 Scene scene = block[i];
-
-                if (curstatus is ItemData propData)
-                {
-                    scene.props[newid] = propData;
-                }
-                else if (curstatus is LightData lightData)
-                {
-                    scene.lights[newid] = lightData;
-                }
+                scene.props[newid] = curstatus;
                 // updating set
             }
         }
@@ -961,6 +957,11 @@ namespace SceneSaveState
                     {
                         var route = NeoOCI.create_from(oRoute);
                         addSelectedToTrack(route);
+                    }
+                    else if (objectCtrl is OCIFolder oFolder)
+                    {
+                        var fld = NeoOCI.create_from(oFolder);
+                        addSelectedToTrack(fld);
                     }
                     else
                     {
@@ -1052,7 +1053,7 @@ namespace SceneSaveState
                 {
                     if (props[propid].objctrl == elem.objctrl)
                     {
-                        // found
+                        id = propid; // found
                         break;
                     }
                 }
@@ -1352,7 +1353,7 @@ namespace SceneSaveState
         {
             public Dictionary<string, ActorData> actors;
             public List<CamData> cams;
-            public Dictionary<string, ItemData> props;
+            public Dictionary<string, NEOPropData> props;
 
             public save_data()
             {
@@ -1450,7 +1451,7 @@ namespace SceneSaveState
                     //print actors
                     //print props
                     //print cams
-                    block.Add(new Scene(actors, props, null, cams));
+                    block.Add(new Scene(actors, props, cams));
 
                     // id = int(key)
                     // for id in range(0,len(block_dict)):
@@ -1720,6 +1721,7 @@ namespace SceneSaveState
                 calcPos = 0;
             }
             block.SetCurrent(calcPos);
+            loadCurrentScene();
             Console.WriteLine(String.Format("Run VNSS from state {0}", calcPos.ToString()));
             game.vnscenescript_run_current(onEndVNSS, calcPos.ToString());
         }

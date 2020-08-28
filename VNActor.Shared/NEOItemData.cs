@@ -4,11 +4,8 @@ using static VNActor.Item;
 
 namespace VNActor
 {
-    public class NEOItemData : IDataClass
+    public class NEOItemData : NEOPropData, IDataClass
     {
-        public bool visible;
-        public Vector3 position;
-        public Vector3 rotation;
         public Vector3 scale;
         public Dictionary<int, Color> color;
         public float? alpha;
@@ -24,17 +21,14 @@ namespace VNActor
         public Color? shadow_color;
         public bool? db_active;
 
-        public NEOItemData()
+        public NEOItemData() : base()
         {
 
         }
 
-        public NEOItemData(Item i)
+        public NEOItemData(Item i) : base(i)
         {
             // export full status of prop
-            visible = i.Visible;
-            position = i.Position;
-            rotation = i.Rotation;
             scale = i.scale;
             if (i.isColorable)
             {
@@ -75,9 +69,7 @@ namespace VNActor
         virtual public void Apply(Item i)
         {
             // export full status of prop
-            i.Visible = visible;
-            i.Position = position;
-            i.Rotation = rotation;
+            base.Apply(i);
             i.scale = scale;
             if (anim_spd is float f)
             {

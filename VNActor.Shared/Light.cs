@@ -8,36 +8,36 @@ namespace VNActor
     {
 
         [MessagePackObject]
-        public class LightData : IDataClass
+        public class LightData : NEOPropData, IDataClass
         {
             [Key(0)]
             public Color color;
             [Key(1)]
-            public bool enable;
-            [Key(2)]
             public float intensity;
-            [Key(3)]
+            [Key(2)]
             public bool shadow;
-            [Key(4)]
+            [Key(3)]
             public float range;
-            [Key(5)]
+            [Key(4)]
             public float angle;
-            [Key(6)]
-            public Vector3 position;
-            [Key(7)]
-            public Vector3 rotation;
 
-            public LightData()
+            public LightData() : base()
             {
 
             }
 
-            public LightData(Light l)
+            public LightData(Light l) : base(l)
             {
-                position = l.Position;
-                rotation = l.Rotation;
                 color = l.color;
-                enable = l.enable;
+                shadow = l.shadow;
+                range = l.range;
+                angle = l.angle;
+            }
+
+            public void Apply(Light l)
+            {
+                base.Apply(l);
+                color = l.color;
                 intensity = l.intensity;
                 shadow = l.shadow;
                 range = l.range;
@@ -136,7 +136,7 @@ namespace VNActor
             }
         }
 
-        public bool enable
+        override public bool Visible
         {
             get
             {
@@ -191,7 +191,7 @@ namespace VNActor
         public static void prop_enable(Light prop, LightData param)
         {
             // param = 0(hide)/1(show)
-            prop.enable = param.enable;
+            prop.Visible = param.visible;
         }
 
         public static void prop_intensity(Light prop, LightData param)
@@ -221,14 +221,7 @@ namespace VNActor
 
         public void import_status(LightData l)
         {
-            Position = l.position;
-            Rotation = l.rotation;
-            color = l.color;
-            enable = l.enable;
-            intensity = l.intensity;
-            shadow = l.shadow;
-            range = l.range;
-            angle = l.angle;
+            l.Apply(this);
         }
 
         override public void import_status(IDataClass status)
@@ -236,18 +229,6 @@ namespace VNActor
             if (status is LightData)
             {
                 import_status(status);
-            }
-        }
-
-        public override bool Visible
-        {
-            get
-            {
-                return true;
-            }
-            set
-            {
-
             }
         }
     }

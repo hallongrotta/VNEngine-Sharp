@@ -87,7 +87,7 @@ namespace VNEngine
                     {
                         NeoOCI oci = NeoOCI.create_from_treenode(fld.treeNodeObject.parent);
 
-                        if (oci is Item propOci)
+                        if (oci is Prop propOci)
                         {
                             AllProps[propAlias] = propOci;
                             StudioController.Instance.GetLogger.LogDebug("Registered prop: '" + Utils.to_roman(propAlias) + "' as " + Utils.to_roman(oci.text_name));

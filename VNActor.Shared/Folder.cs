@@ -5,7 +5,7 @@ using UnityEngine;
 namespace VNActor
 {
     public class Folder
-        : NeoOCI
+        : Prop
     {
 
         new public OCIFolder objctrl;
@@ -118,6 +118,19 @@ namespace VNActor
             foreach (NeoOCI obj in ar2)
             {
                 obj.delete();
+            }
+        }
+
+        public override IDataClass export_full_status()
+        {
+            return new NEOPropData(this);
+        }
+
+        public override void import_status(IDataClass status)
+        {
+            if (status is NEOPropData pd)
+            {
+                pd.Apply(this);
             }
         }
 

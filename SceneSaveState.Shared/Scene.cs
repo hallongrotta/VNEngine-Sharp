@@ -16,19 +16,17 @@ namespace SceneSaveState
 
         public List<CamData> cams;
         public Dictionary<string, ActorData> actors;
-        public Dictionary<string, ItemData> props;
-        public Dictionary<string, LightData> lights;
+        public Dictionary<string, NEOPropData> props;
         public SystemData sys;
 
-        public Scene(Dictionary<string, ActorData> actors, Dictionary<string, ItemData> props, Dictionary<string, LightData> lights, List<CamData> cams)
+        public Scene(Dictionary<string, ActorData> actors, Dictionary<string, NEOPropData> props, List<CamData> cams)
         {
             this.cams = cams;
             this.actors = actors;
             this.props = props;
-            this.lights = lights;
         }
 
-        public Scene() : this(new Dictionary<string, ActorData>(), new Dictionary<string, ItemData>(), new Dictionary<string, LightData>(), new List<CamData>())
+        public Scene() : this(new Dictionary<string, ActorData>(), new Dictionary<string, NEOPropData>(), new List<CamData>())
         {
         }
 
@@ -44,13 +42,9 @@ namespace SceneSaveState
             foreach (string propid in props.Keys)
             {
                 var prop = props[propid];
-                if (prop is Item p)
+                if (prop is Prop p)
                 {
-                    this.props[propid] = (ItemData)p.export_full_status();
-                }
-                else if (prop is Light l)
-                {
-                    this.lights[propid] = (LightData)l.export_full_status();
+                    this.props[propid] = (NEOPropData)p.export_full_status();
                 }
             }
             if (importSys)
@@ -65,7 +59,6 @@ namespace SceneSaveState
             var stractors = Utils.SerializeData(this.actors);
             var strprops = Utils.SerializeData(this.props);
             var strcams = Utils.SerializeData(this.cams);
-            var strlights = Utils.SerializeData(this.lights);
             byte[] strsys = null;
             if (this.sys != null)
             {
@@ -74,10 +67,9 @@ namespace SceneSaveState
 
 
             Dictionary<string, ActorData> copied_actors = Utils.DeserializeData<Dictionary<string, ActorData>>(stractors);
-            Dictionary<string, ItemData> copied_props = Utils.DeserializeData<Dictionary<string, ItemData>>(strprops);
-            Dictionary<string, LightData> copied_lights = Utils.DeserializeData<Dictionary<string, LightData>>(strlights);
+            Dictionary<string, NEOPropData> copied_props = Utils.DeserializeData<Dictionary<string, NEOPropData>>(strprops);
             List<CamData> copied_cams = Utils.DeserializeData<List<CamData>>(strcams);
-            var copied_scene = new Scene(copied_actors, copied_props, copied_lights, copied_cams);
+            var copied_scene = new Scene(copied_actors, copied_props, copied_cams);
             if (this.sys != null && strsys != null)
             {
                 SystemData copied_sys = Utils.DeserializeData<SystemData>(strsys);
@@ -146,35 +138,32 @@ namespace SceneSaveState
                 //vnframe.act(game, {propid: self.props[propid]})
                 //print propid
                 //print game.scenef_get_all_props()
-                Item prop = game.GetProp(propid) as Item;
-                ItemData status = this.props[propid];
+                Prop prop = game.GetProp(propid);
+                
                 try
                 {
-                    prop?.import_status(status);
+                    if (prop is Item i)
+                    {
+                        ItemData status = this.props[propid] as ItemData;
+                        i.import_status(status);
+
+                    }
+                    else if (prop is Light l)
+                    {
+                        LightData status = this.props[propid] as LightData;
+                        l.import_status(status);
+                    }
+                    else
+                    {
+                        NEOPropData status = this.props[propid];
+                        prop.import_status(status);
+                    }
                 }
                 catch (Exception e)
                 {
-                    game.GetLogger.LogError($"Error occurred when importing Item with id {propid}" + e.ToString());
+                    game.GetLogger.LogError($"Error occurred when importing Prop with id {propid}" + e.ToString());
                     SceneFolders.LoadTrackedActorsAndProps();
-                    SceneConsole.Instance.game.GetLogger.LogMessage($"Missing item with id {propid}");
-                }
-            }
-            foreach (var lightid in this.lights.Keys)
-            {
-                //vnframe.act(game, {propid: self.props[propid]})
-                //print propid
-                //print game.scenef_get_all_props()
-                Light light = SceneFolders.scenef_get_light(lightid);
-                LightData status = this.lights[lightid];
-                try
-                {
-                    light?.import_status(status);
-                }
-                catch (Exception e)
-                {
-                    SceneConsole.Instance.game.GetLogger.LogError($"Error occurred when importing Item with id {lightid}" + e.ToString());
-                    SceneConsole.Instance.game.GetLogger.LogMessage($"Missing light with id {lightid}");
-                    SceneFolders.LoadTrackedActorsAndProps();
+                    SceneConsole.Instance.game.GetLogger.LogMessage($"Error occurred when importing Prop with id {propid}");
                 }
             }
         }

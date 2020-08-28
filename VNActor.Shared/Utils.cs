@@ -8,6 +8,7 @@ namespace VNActor
 
     public interface IDataClass
     {
+
     }
 
     class Utils
