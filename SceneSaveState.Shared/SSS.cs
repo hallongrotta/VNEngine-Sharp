@@ -8,6 +8,7 @@ namespace SceneSaveState
     [BepInProcess(VNEngine.Constants.StudioProcessName)]
     //[BepInDependency(GUID)]
     [BepInPlugin(GUID, PluginName, Version)]
+    [BepInDependency(ExtensibleSaveFormat.ExtendedSave.GUID)]
     public class SSS : BaseUnityPlugin
     {
 
