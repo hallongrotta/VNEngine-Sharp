@@ -128,7 +128,7 @@ namespace SceneSaveState
                         if (Instance.promptOnDelete)
                         {
                             warning_action = Instance.deleteSceneCam;
-                            warning_param = new WarningParam_s("Delete selected cam?", CamTask.DELETE, false);
+                            warning_param = new WarningParam_s("Delete selected cam?", false);
                         }
                         else
                         {
@@ -278,7 +278,7 @@ namespace SceneSaveState
                 if (Instance.promptOnDelete == true)
                 {
                     warning_action = Instance.removeScene;
-                    warning_param = new WarningParam_s("Delete selected scene?", null, false);
+                    warning_param = new WarningParam_s("Delete selected scene?", false);
                 }
                 else
                 {

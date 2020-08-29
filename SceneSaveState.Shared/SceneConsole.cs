@@ -98,12 +98,12 @@ namespace SceneSaveState
 
     internal class SceneConsole : SceneCustomFunctionController
     {
-
+        public const string backup_folder_name = "sssdata";
         public const string defaultSpeakerAlias = "s";
+        public const string defaultSaveName = "SSS.dat";
+        public const string defaultBackupName = "SSS.dat.backup";
 
         public bool isSysTracking = true;
-
-        public Vector2 adv_scroll;
 
         public List<Folder> arAutoStatesItemsChoice;
 
@@ -179,8 +179,6 @@ namespace SceneSaveState
 
         public bool promptOnDelete;
 
-        public string scenefile;
-
         public string sel_font_col;
 
         //public Dictionary<string, KeyValuePair<string, string>> shortcuts;
@@ -192,8 +190,6 @@ namespace SceneSaveState
         public bool skipClothesChanges;
 
         public string svname = "";
-
-        public object temp_states;
 
         public int updAutoStatesTimer;
 
@@ -231,7 +227,6 @@ namespace SceneSaveState
             guiOnShow = false;
             // --- Essential Data ---
             versionSceneDataParsing = "7.0";
-            scenefile = "";
             last_acc_id = 0;
             block = new SceneManager();
             // self.basechars = self.getAllBaseChars()
@@ -271,8 +266,7 @@ namespace SceneSaveState
             ldname = "";
             // self.optionint = 0
             // -- Advanced --
-            adv_scroll = new Vector2(0, 0);
-            temp_states = null;
+
             charname = "";
             autoLoad = true;
             autoAddCam = true;
@@ -474,7 +468,7 @@ namespace SceneSaveState
 
         }
 
-        public void deleteSceneCam(object param)
+        public void deleteSceneCam()
         {
             changeSceneCam(CamTask.DELETE);
         }
@@ -1253,168 +1247,41 @@ namespace SceneSaveState
         }
         */
 
-        public void saveToFile(object param)
+        public void SaveToFile()
         {
-            saveToFile((bool)param);
-        }
-
-        public void saveToFile(bool backup = false)
-        {
-            string filename;
-            Folder fld;
-            // Template
-            // template = {"fchars":{}, "mchars":{}, "propflds":{}, "cams":[], "accs":{}, "props":{}}
             if (svname == "")
             {
-                fld = Utils.getFolder(game, "-scfile:", false);
-                if (!(fld == null))
-                {
-                    svname = fld.text_name.Substring("-scfile:".Length);
-                }
-            }
-            else
-            {
-                fld = Utils.getFolder(game, "-scfile:" + svname, true);
-                if (fld == null)
-                {
-                    // create pointer fld
-                    createFld("-scfile:" + svname, parent: null, ret: false);
-                }
-            }
-            if (!(svname == ""))
-            {
-                if (backup == false)
-                {
-                    filename = svname.ToString();
-                }
-                else
-                {
-                    filename = svname.ToString() + "_backup";
-                }
-                saveToFileDirect(filename);
+                SaveToFile(defaultSaveName);
             }
         }
 
-        public class save_data
+        public void SaveToFile(string filename)
         {
-            public Dictionary<string, ActorData> actors;
-            public List<CamData> cams;
-            public Dictionary<string, NEOPropData> props;
+            var app_dir = Path.GetDirectoryName(Application.dataPath);
 
-            public save_data()
+            if (!Directory.Exists(backup_folder_name))
             {
-
+                Directory.CreateDirectory(backup_folder_name);
             }
+
+            var file_path = Path.Combine(backup_folder_name, filename);
+            var abs_file_path = Path.Combine(app_dir, file_path);
+            var data = Utils.SerializeData(this.block.ExportScenes());
+            File.WriteAllBytes(abs_file_path, data);
         }
 
-        public void saveToFileDirect(string filename)
-        {
-            var save_data = new List<save_data>();
-            foreach (var i in Enumerable.Range(0, block.Count - 0))
-            {
-                save_data[i].actors = block[i].actors;
-                save_data[i].cams = block[i].cams;
-                save_data[i].props = block[i].props;
-            }
-            // save file
-            var script_dir = Path.GetDirectoryName(Application.dataPath);
-            var folder_path = "sssdata/";
-            //if backup == False:
-            var file_path = folder_path + filename.ToString() + ".txt";
-            //else:
-            //file_path = folder_path + str(self.svname) + "_backup.txt"
-            var abs_file_path = Path.Combine(script_dir, file_path);
-            /*
-            System.Xml.Serialization.XmlSerializer writer =
-            new System.Xml.Serialization.XmlSerializer(typeof(List<save_data>));
-            FileStream file = System.IO.File.Create(abs_file_path);
-            writer.Serialize(file, save_data);
-            */
-            /*
-            using (System.IO.StreamWriter file =
-            new System.IO.StreamWriter(abs_file_path))
-            {
-
-                file.Write(MessagePackSerializer.Serialize(save_data));
-            }
-            */
-        }
-
-        public static Dictionary<string, Scene> loadFromFileDirect(string filename)
+        public void LoadFromFile(string filename)
         {
             var script_dir = Path.GetDirectoryName(Application.dataPath);
-            var folder_path = "sssdata/";
-            var file_path = folder_path + filename.ToString() + ".txt";
+            var file_path = Path.Combine(backup_folder_name, filename);
             var abs_file_path = Path.Combine(script_dir, file_path);
             if (File.Exists(abs_file_path))
             {
                 byte[] data = File.ReadAllBytes(abs_file_path);
-                var block_dict = Utils.DeserializeData<Dictionary<string, Scene>>(data);
-                return block_dict;
+                var scenes = Utils.DeserializeData<Scene[]>(data);
+                block = new SceneManager(scenes);
             }
-            return null;
-        }
-
-        public void loadSceneDataInternalDict(Dictionary<string, Scene> block_dict, bool file)
-        {
-            if (!(block_dict == null))
-            {
-                // init zero
-                scenefile = "";
-                nameset = new List<List<string>> {
-                    new List<string>(),
-                    new List<string>()
-                };
-                // attaining data
-                foreach (var key in block_dict.Keys.ToList())
-                {
-                    var actors = block_dict[key].actors;
-                    var props = block_dict[key].props;
-                    var cams = new List<CamData>();
-                    if (file == true)
-                    {
-                        cams = block_dict[key].cams;
-                        // cams.Add(block_dict[key]["cams"][id])
-                    }
-                    else
-                    {
-                        foreach (var cam in block_dict[key].cams)
-                        {
-                            //print key, id
-                            cams.Add(cam);
-                        }
-                    }
-                    //print actors
-                    //print props
-                    //print cams
-                    block.Add(new Scene(actors, props, cams));
-
-                    // id = int(key)
-                    // for id in range(0,len(block_dict)):
-                    // fchars = block_dict[key]["fchars"]
-                    // mchars = block_dict[key]["mchars"]
-                    // propflds = block_dict[key]["propflds"]
-                    // accs = block_dict[key]["accs"]
-                    // props = block_dict[key]["props"]
-                    // cams = []
-                    // if file == True:
-                    //     cams = block_dict[key]["cams"]
-                    //     # cams.Add(block_dict[key]["cams"][id])
-                    // else:
-                    //     for id in sorted(block_dict[key]["cams"]):
-                    //         cams.Add(block_dict[key]["cams"][id])
-                    // self.block.Add(Scene(fchars, mchars, propflds, accs, cams, props))
-                    // self.scene_strings.Add("Scene " + str(key))
-                    // self.updateAllSceneChars(tag, newch)
-                    // self.updateNameset()
-                    // self.updateTagChars()
-                    // self.updateTagItems()
-                    // self.updateTagPropFlds()
-                    // self.updateTagProps()
-                    //self.show_blocking_message_time_sc("Scene data loaded!")
-                }
-            }
-        }
+        }        
 
         public void loadSceneDataBackupTimer(object param)
         {
@@ -1423,52 +1290,49 @@ namespace SceneSaveState
 
         public void loadSceneDataBackupTimer()
         {
-            var block_dict = loadFromFileDirect("_backuptimer");
-            loadSceneDataInternalDict(block_dict, true);
+            LoadFromFile("_backuptimer");
         }
 
-        public void loadSceneData(object param)
+        public void loadSceneData()
         {
-            bool[] bool_params = (bool[])param;
-            loadSceneData(bool_params[1], bool_params[2], bool_params[3]);
+            loadSceneData(false, true);
         }
 
-        public void loadSceneData(bool file = false, bool backup = false, bool setToFirst = true)
+        public void loadSceneData(bool backup = false, bool setToFirst = true)
         {
             string filename;
             SceneFolders.LoadTrackedActorsAndProps();
-            Dictionary<string, Scene> block_dict = null;
-            if (file == false)
+
+            if (backup)
             {
-                // get scenedata
-                //block_dict = this.findAndLoadSceneData(backup: backup);
+                if (svname == "")
+                {
+                    filename = defaultBackupName;
+                }
+                else
+                {
+                    filename = svname + ".backup";
+                }
             }
             else
             {
                 if (svname == "")
                 {
-                    var fld = Utils.getFolder(game, "-scfile:", false);
-                    if (!(fld == null))
-                    {
-                        svname = fld.text_name.Substring("-scfile:".Length);
-                    }
-                }
-                if (backup == false)
-                {
-                    filename = svname.ToString();
+                    filename = defaultSaveName;
                 }
                 else
                 {
-                    filename = svname.ToString() + "_backup";
+                    filename = svname;
                 }
-                // abs_file_path = os.Path.Combine(script_dir, file_path)
-                // if os.File.Exists(abs_file_path):
-                //     f = open(abs_file_path, "r")
-                //     block_dict = Utils.DeserializeData(f.read(), object_hook=sceneDecoder)  # , indent = 4, separators = (","," : ")))
-                //     f.close()
-                block_dict = loadFromFileDirect(filename);
             }
-            loadSceneDataInternalDict(block_dict, file);
+
+            // abs_file_path = os.Path.Combine(script_dir, file_path)
+            // if os.File.Exists(abs_file_path):
+            //     f = open(abs_file_path, "r")
+            //     block_dict = Utils.DeserializeData(f.read(), object_hook=sceneDecoder)  # , indent = 4, separators = (","," : ")))
+            //     f.close()
+            LoadFromFile(filename);
+            
             // loading
             if (setToFirst)
             {

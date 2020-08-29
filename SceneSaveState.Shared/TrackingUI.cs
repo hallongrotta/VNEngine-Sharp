@@ -29,7 +29,7 @@ namespace SceneSaveState
                 if (Instance.promptOnDelete)
                 {
                     warning_action = Instance.delSelectedFromTrack;
-                    warning_param = new WarningParam_s("Delete selected actor from scenes?", null, false);
+                    warning_param = new WarningParam_s("Delete selected actor from scenes?", false);
                 }
                 else
                 {

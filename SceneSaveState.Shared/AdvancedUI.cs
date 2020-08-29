@@ -13,7 +13,7 @@ namespace SceneSaveState
         public static void sceneConsoleAdvUI()
         {
             //SceneConsole.Instance = SceneConsole.Instance;
-            Instance.adv_scroll = GUILayout.BeginScrollView(Instance.adv_scroll);
+            adv_scroll = GUILayout.BeginScrollView(adv_scroll);
             GUILayout.Label("<b>Advanced controls</b>");
             GUILayout.Space(10);
             GUILayout.Label("Change character name:");

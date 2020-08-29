@@ -30,22 +30,23 @@ namespace SceneSaveState
         public static Vector2 saveload_scroll = new Vector2(0, 0);
         public static Vector2 scene_scroll = new Vector2(0, 0);
         public static Vector2 tracking_scroll = new Vector2(0, 0);
+        public static Vector2 adv_scroll = new Vector2(0, 0);
+
         public struct WarningParam_s
         {
             public string msg;
             public object func_param;
             public bool single_op;
 
-            public WarningParam_s(string msg, object p, bool v2) : this()
+            public WarningParam_s(string msg, bool v2) : this()
             {
                 this.msg = msg;
-                func_param = p;
                 single_op = v2;
             }
         }
 
         public static WarningParam_s? warning_param;
-        public static Action<object> warning_action;
+        public static Action warning_action;
 
         public static void setWindowName(int index)
         {
@@ -131,7 +132,7 @@ namespace SceneSaveState
                 if (!(warning_param is null))
                 {
                     WarningParam_s warning_params = (WarningParam_s)warning_param;
-                    warningUI(warning_action, warning_params.func_param, msg: warning_params.msg, single_op: warning_params.single_op);
+                    warningUI(warning_action, msg: warning_params.msg, single_op: warning_params.single_op);
                 }
                 else if (Instance.isFuncLocked == true)
                 {
@@ -218,7 +219,7 @@ namespace SceneSaveState
                         {
                             var col = Instance.sel_font_col;
                             warning_action = Utils.sceneConsoleGUIClose;
-                            warning_param = new WarningParam_s(String.Format("Do you really want to close window? (<b><color={0}>Warning:</color> All current scenedata will be deleted</b>)", col), null, false);
+                            warning_param = new WarningParam_s(String.Format("Do you really want to close window? (<b><color={0}>Warning:</color> All current scenedata will be deleted</b>)", col), false);
                         }
                         GUILayout.EndHorizontal();
                         GUILayout.EndVertical();
@@ -280,43 +281,6 @@ namespace SceneSaveState
             GUILayout.EndHorizontal();
             // GUILayout.FlexibleSpace()
         }
-
-        public static void warningUI(Action<object> func, object func_param, bool single_op = false, string msg = "")
-        {
-            GUILayout.Space(125);
-            // GUILayout.FlexibleSpace()
-            GUILayout.BeginHorizontal();
-            GUILayout.FlexibleSpace();
-            GUILayout.Label(msg);
-            GUILayout.FlexibleSpace();
-            GUILayout.EndHorizontal();
-            GUILayout.Space(125);
-            GUILayout.BeginHorizontal();
-            if (!(single_op == true))
-            {
-                if (GUILayout.Button("Yes", GUILayout.Height(100)))
-                {
-                    func(func_param);
-                    warning_param = null;
-                }
-                if (GUILayout.Button("Hell No!", GUILayout.Height(100)))
-                {
-                    warning_param = null;
-                }
-            }
-            else
-            {
-                GUILayout.FlexibleSpace();
-                if (GUILayout.Button("OK!", GUILayout.Height(100)))
-                {
-                    warning_param = null;
-                }
-                GUILayout.FlexibleSpace();
-            }
-            GUILayout.EndHorizontal();
-            // GUILayout.FlexibleSpace()
-        }
-
 
         public static void minimizeWindow()
         {

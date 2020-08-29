@@ -34,11 +34,11 @@ namespace SceneSaveState
                 if (Instance.block.Count > 0)
                 {
                     warning_action = Instance.loadSceneData;
-                    warning_param = new WarningParam_s("Do you wish to load scenedata from file? (Will overwrite console data)", new bool[] { true, false }, false);
+                    warning_param = new WarningParam_s("Do you wish to load scenedata from file? (Will overwrite console data)", false);
                 }
                 else
                 {
-                    Instance.loadSceneData(file: true, backup: false);
+                    Instance.loadSceneData(backup: false);
                 }
             }
             GUILayout.FlexibleSpace();
@@ -49,12 +49,12 @@ namespace SceneSaveState
                 fld = Utils.getFolder(Instance.game, Instance.svname, true);
                 if (!(fld == null))
                 {
-                    warning_action = Instance.saveToFile;
-                    warning_param = new WarningParam_s("Scenedata exists. Overwrite?", false, false);
+                    warning_action = Instance.SaveToFile;
+                    warning_param = new WarningParam_s("Scenedata exists. Overwrite?", false);
                 }
                 else
                 {
-                    Instance.saveToFile(backup: false);
+                    Instance.SaveToFile("SSS.dat");
                 }
             }
             GUILayout.FlexibleSpace();
@@ -76,12 +76,12 @@ namespace SceneSaveState
                     if (fld == null)
                     {
                         warning_action = Instance.loadSceneData;
-                        warning_param = new WarningParam_s("Do you wish to load backup scenedata from scene? (Will overwrite console data)", new bool[] { false, true }, false);
+                        warning_param = new WarningParam_s("Do you wish to load backup scenedata from scene? (Will overwrite console data)", false);
                     }
                     else
                     {
                         warning_action = Instance.loadSceneData;
-                        warning_param = new WarningParam_s("Do you wish to load backup scenedata from file? (Will overwrite console data)", new bool[] { true, true }, false);
+                        warning_param = new WarningParam_s("Do you wish to load backup scenedata from file? (Will overwrite console data)", false);
                     }
                 }
                 else if (fld == null)
@@ -90,7 +90,7 @@ namespace SceneSaveState
                 }
                 else
                 {
-                    Instance.loadSceneData(file: true, backup: true);
+                    Instance.loadSceneData(backup: true);
                 }
             }
             GUILayout.FlexibleSpace();
@@ -100,7 +100,7 @@ namespace SceneSaveState
                 if (Instance.block.Count > 0)
                 {
                     warning_action = Instance.loadSceneDataBackupTimer;
-                    warning_param = new WarningParam_s("Do you wish to load backup scenedata from file auto-saved by timer? (Will overwrite console data)", null, false);
+                    warning_param = new WarningParam_s("Do you wish to load backup scenedata from file auto-saved by timer? (Will overwrite console data)", false);
                 }
                 else
                 {

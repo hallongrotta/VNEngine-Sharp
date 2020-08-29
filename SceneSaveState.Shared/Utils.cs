@@ -1,4 +1,5 @@
 ﻿using MessagePack;
+using MessagePack.Resolvers;
 using Studio;
 using System;
 using System.Collections.Generic;
@@ -44,13 +45,35 @@ namespace SceneSaveState
 
         public static byte[] SerializeData<T>(T item)
         {
-            return MessagePackSerializer.Serialize(item, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
+            try
+            {
+                return MessagePackSerializer.Serialize(item, StandardResolver.Instance);
+            }
+            catch (FormatterNotRegisteredException)
+            {
+                return MessagePackSerializer.Serialize(item, ContractlessStandardResolver.Instance);
+            }
+            catch (InvalidOperationException)
+            {
+                throw;
+            }
         }
 
 
         public static T DeserializeData<T>(byte[] s)
         {
-            return MessagePackSerializer.Deserialize<T>(s, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
+            try
+            {
+                return MessagePackSerializer.Deserialize<T>(s, StandardResolver.Instance);
+            }
+            catch (FormatterNotRegisteredException)
+            {
+                return MessagePackSerializer.Deserialize<T>(s, ContractlessStandardResolver.Instance);
+            }
+            catch (InvalidOperationException)
+            {
+                throw;
+            }
         }
 
 
@@ -228,7 +251,7 @@ namespace SceneSaveState
                         Console.WriteLine(String.Format("VNGE SSS: try backup by timer (every {0} seconds)... ({1} scenes)", SceneConsole.Instance.backupTimeDuration.ToString(), SceneConsole.Instance.block.Count.ToString()));
                         try
                         {
-                            SceneConsole.Instance.saveToFileDirect("_backuptimer");
+                            SceneConsole.Instance.SaveToFile("backup.dat");
                             Console.WriteLine("VNGE SSS: made backup by timer!");
                         }
                         catch
