@@ -14,6 +14,7 @@ namespace VNActor
         public class ActorData : NEOActorData, IDataClass
         {
             public float tearLevel;
+            public byte[] coordinate;
             public float tuya;
             public float wetness;
 
@@ -26,6 +27,7 @@ namespace VNActor
                 tuya = a.SkinGloss;
                 wetness = a.SkinWetness;
                 tearLevel = a.TearLevel;
+                coordinate = a.curcloth_coordinate;
 
                 /*
                 // ext data, enable by ini setting
@@ -67,6 +69,7 @@ namespace VNActor
                 a.SkinGloss = tuya;
                 a.SkinWetness = wetness;
                 a.TearLevel = tearLevel;
+                a.curcloth_coordinate = coordinate;
             }
         }
 
@@ -184,8 +187,11 @@ namespace VNActor
             {
                 try
                 {
-                    this.objctrl.charInfo.nowCoordinate.LoadBytes(value, ChaFileDefine.ChaFileCoordinateVersion);
-                    this.objctrl.charInfo.Reload();
+                    if (!value.SequenceEqual(curcloth_coordinate))
+                    {
+                        this.objctrl.charInfo.nowCoordinate.LoadBytes(value, ChaFileDefine.ChaFileCoordinateVersion);
+                        this.objctrl.charInfo.Reload(false, true, true);
+                    }
                 }
                 catch (Exception e)
                 {
