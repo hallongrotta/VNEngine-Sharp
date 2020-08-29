@@ -103,11 +103,7 @@ namespace SceneSaveState
 
         public bool isSysTracking = true;
 
-        public Dictionary<string, object> accstate;
-
         public Vector2 adv_scroll;
-
-        public Dictionary<string, object> all_acc;
 
         public List<Folder> arAutoStatesItemsChoice;
 
@@ -122,14 +118,6 @@ namespace SceneSaveState
         public double backupTimeCur;
 
         public double backupTimeDuration;
-
-        public Dictionary<string, object> baseacc;
-
-        public List<List<object>> basechars;
-
-        public Dictionary<string, object> basepropflds;
-
-        public Dictionary<string, object> baseprops;
 
         public SceneManager block;
 
@@ -146,12 +134,6 @@ namespace SceneSaveState
         public string[] consolenames;
 
         //public int cur_cam;
-
-        public List<object> dict;
-
-        public Dictionary<string, object> dictparse;
-
-        public List<List<object>> dupchars;
 
         public int fset_index;
 
@@ -197,13 +179,7 @@ namespace SceneSaveState
 
         public bool promptOnDelete;
 
-        public List<object> propfldtag;
-
-        public List<object> proptag;
-
         public string scenefile;
-
-        public List<object> sdict;
 
         public string sel_font_col;
 
@@ -255,29 +231,9 @@ namespace SceneSaveState
             guiOnShow = false;
             // --- Essential Data ---
             versionSceneDataParsing = "7.0";
-            dict = new List<object>();
-            sdict = new List<object>();
-            dictparse = new Dictionary<string, object>();
             scenefile = "";
-            basechars = new List<List<object>> {
-                new List<object>(),
-                new List<object>()
-            };
-            dupchars = new List<List<object>> {
-                new List<object>(),
-                new List<object>()
-            };
             last_acc_id = 0;
             block = new SceneManager();
-            all_acc = new Dictionary<string, object>();
-            baseacc = new Dictionary<string, object>();
-            accstate = new Dictionary<string, object>();
-            propfldtag = new List<object>();
-            basepropflds = new Dictionary<string, object>();
-            proptag = new List<object>();
-            baseprops = new Dictionary<string, object>
-            {
-            };
             // self.basechars = self.getAllBaseChars()
             // self.dupchars = self.getAllDupChars()
             // self.updateNameset()
@@ -745,7 +701,7 @@ namespace SceneSaveState
             }
             else if (elem is Prop prop)
             {
-                prop.import_status((ItemData)clipboard_status);
+                prop.import_status(clipboard_status);
             }
             else
             {
@@ -779,7 +735,7 @@ namespace SceneSaveState
             }
             else if (elem is Prop prop)
             {
-                prop.import_status((ItemData)clipboard_status2);
+                prop.import_status(clipboard_status2);
             }
             else
             {
@@ -1404,17 +1360,7 @@ namespace SceneSaveState
             if (!(block_dict == null))
             {
                 // init zero
-                dict = new List<object>();
-                dictparse = new Dictionary<string, object>
-                {
-                };
                 scenefile = "";
-                baseacc = new Dictionary<string, object>
-                {
-                };
-                accstate = new Dictionary<string, object>
-                {
-                };
                 nameset = new List<List<string>> {
                     new List<string>(),
                     new List<string>()
