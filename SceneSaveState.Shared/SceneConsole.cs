@@ -681,22 +681,12 @@ namespace SceneSaveState
 
         public void loadCurrentScene()
         {
-            setSceneState(block.CurrentScene);
+            SetSceneState(block.CurrentScene);
             if (block.Count > 0 && block.currentCamCount > 0)
             {
                 block.FirstCam();
                 setCamera();
             }
-        }
-
-        public void setSceneState(Scene s)
-        {
-            var game = VNNeoController.Instance;
-            if (isSysTracking)
-            {
-                VNEngine.System.import_status(s.sys);
-            }
-            s.setSceneState(game);
         }
 
         public void copySelectedStatusToTracking(List<string> exclude)
@@ -1793,6 +1783,77 @@ namespace SceneSaveState
             SetExtendedData(new PluginData() { data = null });
             block = new SceneManager();
             SceneFolders.LoadTrackedActorsAndProps();
+        }
+
+        // Set scene chars with state data from dictionary
+
+        public void SetSceneState(Scene s)
+        {
+            if (isSysTracking)
+            {
+                VNEngine.System.import_status(s.sys);
+            }
+            foreach (var actid in s.actors.Keys)
+            {
+                ActorData char_status = s.actors[actid];
+                try
+                {
+                    /* TODO
+                    if (SceneConsole.Instance != null)
+                    {
+                        if (SceneConsole.Instance.skipClothesChanges)
+                        {
+                            char_status.Remove("acc_all");
+                            char_status.Remove("cloth_all");
+                            char_status.Remove("cloth_type");
+                        }
+                    }
+                    */
+                }
+                catch (Exception)
+                {
+                }
+                var actor = game.GetActor(actid);
+                try
+                {
+                    actor?.import_status(char_status);
+                }
+                catch (Exception e)
+                {
+                    SceneConsole.Instance.game.GetLogger.LogError($"Error occurred when importing Actor with id {actid}" + e.ToString());
+                    SceneConsole.Instance.game.GetLogger.LogMessage($"Error occurred when importing Actor with id {actid}");
+                    SceneFolders.LoadTrackedActorsAndProps();
+                }
+            }
+            foreach (var propid in s.props.Keys)
+            {
+                Prop prop = game.GetProp(propid);
+                try
+                {
+                    if (prop is Item i)
+                    {
+                        ItemData status = s.props[propid] as ItemData;
+                        i.import_status(status);
+
+                    }
+                    else if (prop is VNActor.Light l)
+                    {
+                        LightData status = s.props[propid] as LightData;
+                        l.import_status(status);
+                    }
+                    else
+                    {
+                        NEOPropData status = s.props[propid];
+                        prop.import_status(status);
+                    }
+                }
+                catch (Exception e)
+                {
+                    game.GetLogger.LogError($"Error occurred when importing Prop with id {propid}" + e.ToString());
+                    SceneFolders.LoadTrackedActorsAndProps();
+                    Instance.game.GetLogger.LogMessage($"Error occurred when importing Prop with id {propid}");
+                }
+            }
         }
 
         protected override void OnSceneSave()

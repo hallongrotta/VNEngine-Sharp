@@ -95,78 +95,7 @@ namespace SceneSaveState
         }
 
 
-        // Set scene chars with state data from dictionary
-
-        public void setSceneState(VNNeoController game)
-        {
-            foreach (var actid in this.actors.Keys)
-            {
-                //char_import_status_diff_optimized(game.scenef_get_actor(actid),self.actors[actid])
-                ActorData char_status = this.actors[actid];
-                try
-                {
-                    /* TODO
-                    if (SceneConsole.Instance != null)
-                    {
-                        if (SceneConsole.Instance.skipClothesChanges)
-                        {
-                            char_status.Remove("acc_all");
-                            char_status.Remove("cloth_all");
-                            char_status.Remove("cloth_type");
-                        }
-                    }
-                    */
-                }
-                catch (Exception)
-                {
-                }
-                //Utils.char_import_status_diff_optimized(game.scenef_get_actor(actid), char_status);
-                var actor = game.GetActor(actid);
-                try
-                {
-                    actor?.import_status(char_status);
-                }
-                catch (Exception e)
-                {
-                    SceneConsole.Instance.game.GetLogger.LogError($"Error occurred when importing Actor with id {actid}" + e.ToString());
-                    SceneConsole.Instance.game.GetLogger.LogMessage($"Error occurred when importing Actor with id {actid}");
-                    SceneFolders.LoadTrackedActorsAndProps();
-                }
-            }
-            foreach (var propid in this.props.Keys)
-            {
-                //vnframe.act(game, {propid: self.props[propid]})
-                //print propid
-                //print game.scenef_get_all_props()
-                Prop prop = game.GetProp(propid);
-                
-                try
-                {
-                    if (prop is Item i)
-                    {
-                        ItemData status = this.props[propid] as ItemData;
-                        i.import_status(status);
-
-                    }
-                    else if (prop is Light l)
-                    {
-                        LightData status = this.props[propid] as LightData;
-                        l.import_status(status);
-                    }
-                    else
-                    {
-                        NEOPropData status = this.props[propid];
-                        prop.import_status(status);
-                    }
-                }
-                catch (Exception e)
-                {
-                    game.GetLogger.LogError($"Error occurred when importing Prop with id {propid}" + e.ToString());
-                    SceneFolders.LoadTrackedActorsAndProps();
-                    SceneConsole.Instance.game.GetLogger.LogMessage($"Error occurred when importing Prop with id {propid}");
-                }
-            }
-        }
+        
 
 
         // Camera Manip
