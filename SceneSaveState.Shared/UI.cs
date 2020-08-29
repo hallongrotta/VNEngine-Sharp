@@ -32,7 +32,10 @@ namespace SceneSaveState
         public static Vector2 tracking_scroll = new Vector2(0, 0);
         public static Vector2 adv_scroll = new Vector2(0, 0);
 
-        public struct WarningParam_s
+        public static string[] consolenames = new string[] { "SceneSaveState" };
+        public static string[] options = new string[] { "Edit", "Tracking", "Load/Save", "Advanced"};
+
+public struct WarningParam_s
         {
             public string msg;
             public object func_param;
@@ -158,7 +161,7 @@ namespace SceneSaveState
                     {
                         minimizeWindow();
                     }
-                    windowindex = GUILayout.Toolbar(windowindex, Instance.consolenames);
+                    windowindex = GUILayout.Toolbar(windowindex, consolenames);
                     GUILayout.EndHorizontal();
                     GUILayout.Space(10);
                     setWindowName(windowindex);
@@ -166,7 +169,7 @@ namespace SceneSaveState
                     if (windowindex == 0)
                     {
                         GUILayout.BeginVertical();
-                        subwinindex = GUILayout.Toolbar(subwinindex, Instance.options);
+                        subwinindex = GUILayout.Toolbar(subwinindex, options);
                         GUILayout.Space(10);
                         // Edit window
                         if (subwinindex == 0)
@@ -187,7 +190,7 @@ namespace SceneSaveState
                         {
                             // --------- Advanced controls -------------
                             sceneConsoleAdvUI();
-                        }
+                        }                      
                         else if (subwinindex == 4)
                         {
                             // Ministates window

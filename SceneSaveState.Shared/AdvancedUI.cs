@@ -101,73 +101,7 @@ namespace SceneSaveState
             GUILayout.Label(", zoom-out");
             //SceneConsole.Instance.paramAnimCamZoomOut = GUILayout.TextField(SceneConsole.Instance.paramAnimCamZoomOut.ToString(), GUILayout.Width(40)); //TODO
             GUILayout.FlexibleSpace();
-            GUILayout.EndHorizontal();
-            // Debug purpose
-            if (GUILayout.Button("Print block data"))
-            {
-                Console.WriteLine("::::::::::::Debug::::::::::::");
-                // print "sc.cur.index :",sc.cur_index
-                // print "sc.nameset :",sc.nameset
-                // print "sc.block[sc.cur_index].mchars :",sc.block[sc.cur_index].mchars
-                // print "sc.block[sc.cur_index].fchars :",sc.block[sc.cur_index].fchars
-                // print "sc.block[sc.cur_index].props :", sc.block[sc.cur_index].props
-            }
-            if (GUILayout.Button("Print char data"))
-            {
-                Console.WriteLine("::::::::::::Debug::::::::::::");
-                var chara = Utils.getSelectedChar(Instance.game);
-                if (!(chara == null))
-                {
-                    VNActor.Actor.ActorData state = (VNActor.Actor.ActorData)chara.export_full_status();
-                    var fk_dic = state.fk;
-                    Console.WriteLine("fk_set = {");
-                    foreach (KeyValuePair<int, Vector3> entry in fk_dic)
-                    {
-                        var k = entry.Key;
-                        var v = entry.Value;
-                        Console.WriteLine(k.ToString(), ":", v, ",");
-                    }
-                    Console.WriteLine("}");
-                }
-            }
-            if (GUILayout.Button("Print Item FK"))
-            {
-                Console.WriteLine("::::::::::::Debug::::::::::::");
-                Item obj = Utils.getSelectedItem(Instance.game);
-                if (!(obj == null))
-                {
-                    ItemData obst = (ItemData)obj.export_full_status();
-                    for (int i = 0; i < obst.fk_set.Count; i++)
-                    {
-                        Vector3 vector = obst.fk_set[i];
-                        Console.WriteLine(i.ToString(), ":", vector, ",");
-                    }
-                }
-            }
-            GUILayout.Space(25);
-            GUILayout.Label("<b>Shortcut settings</b>");
-            GUILayout.Space(10);
-            GUILayout.BeginHorizontal();
-            //var cnt = 0;
-            /* TODO
-            foreach (var command in SceneConsole.Instance.shortcuts.Keys.OrderBy(_p_1 => _p_1).ToList())
-            {
-                GUILayout.Label(String.Format("%s:", command), GUILayout.Width(110));
-                //SceneConsole.Instance.shortcuts[command] = GUILayout.TextField(SceneConsole.Instance.shortcuts[command], GUILayout.Width(120)); TODO
-                GUILayout.FlexibleSpace();
-                cnt += 1;
-                if (cnt % 2 == 0)
-                {
-                    GUILayout.EndHorizontal();
-                    GUILayout.BeginHorizontal();
-                }
-            }
-            */
-            GUILayout.EndHorizontal();
-            if (GUILayout.Button("Save config", GUILayout.Height(50)))
-            {
-                Utils.saveConfig();
-            }
+            GUILayout.EndHorizontal();     
             GUILayout.EndScrollView();
         }
     }

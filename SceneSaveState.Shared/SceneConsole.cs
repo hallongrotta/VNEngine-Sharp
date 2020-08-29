@@ -131,8 +131,6 @@ namespace SceneSaveState
 
         public IDataClass clipboard_status2;
 
-        public string[] consolenames;
-
         //public int cur_cam;
 
         public int fset_index;
@@ -166,8 +164,6 @@ namespace SceneSaveState
         public string newid;
 
         public string nor_font_col;
-
-        public string[] options;
 
         public float paramAnimCamDuration;
 
@@ -233,9 +229,7 @@ namespace SceneSaveState
             // self.dupchars = self.getAllDupChars()
             // self.updateNameset()
             // :::: UI Data ::::
-            consolenames = new string[] { "SceneSaveState" };
-            //this.consolenames = new string[] { "SceneSaveState", "Pose Library", "Scene Utils" };
-            options = new string[] { "Edit", "Tracking", "Load/Save", "Advanced", "Ministates" };
+
             // -- Main --
             sel_font_col = "#f24115";
             nor_font_col = "#f9f9f9";
