@@ -200,6 +200,17 @@ namespace VNActor
             }
         }
 
+        public bool BreastDBEnable
+        {
+            set
+            {
+                var breastL = CharInfo.GetDynamicBoneBustAndHip(ChaControlDefine.DynamicBoneKind.BreastL);
+                var breastR = CharInfo.GetDynamicBoneBustAndHip(ChaControlDefine.DynamicBoneKind.BreastR);
+                breastL.enabled = value;
+                breastR.enabled = value;
+            }          
+        }
+
         /*
         public float get_body_shape(int p1)
         {
@@ -480,6 +491,8 @@ namespace VNActor
             // param = tear level(0,1,2,3) or (0~1 for PH)
             chara.TearLevel = param.tearLevel;
         }
+
+       
 
         /* TODO
         public static void char_accessory(Actor chara, ActorData param)

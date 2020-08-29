@@ -203,11 +203,8 @@ After:
             //{
             if (a.Position != position || a.Animation.no != anim.no)
             {
-                a.set_kinematic(KinematicMode.FK); // Enable FK by default so that stuff does not jiggle when moved.
-                //a.reset_fk_bone_info();
-                a.set_FK_active(new bool[] { true, false, true, false, false, false, false });
+                a.BreastDBEnable = false;
             }
-
             //} 
 
 
@@ -277,6 +274,11 @@ After:
 
             //voice_lst = voiceList;
             a.VoiceRepeat = voiceRepeat;
+
+            if (a.Position != position || a.Animation.no != anim.no)
+            {
+                a.BreastDBEnable = true;
+            }
         }
     }
 }

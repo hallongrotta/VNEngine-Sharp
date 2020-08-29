@@ -201,6 +201,17 @@ namespace VNActor
             }
         }
 
+        public bool BreastDBEnable
+        {
+            set
+            {
+                var breastL = CharInfo.getDynamicBoneBust(ChaInfo.DynamicBoneKind.BreastL);
+                var breastR = CharInfo.getDynamicBoneBust(ChaInfo.DynamicBoneKind.BreastR);
+                breastL.enabled = value;
+                breastR.enabled = value;
+            }
+        }
+
 
 
         /* TODO KKPE stuff
