@@ -77,7 +77,7 @@ namespace VNEngine
             GUI.Box(new Rect(-10, 0, this.wwidth + 10, this.wheight + 5), "");
             GUI.Box(new Rect(-10, 0, this.wwidth + 10, this.wheight + 5), "");
             GUI.Box(new Rect(-10, 0, this.wwidth + 10, this.wheight + 5), "");
-            GUILayout.BeginHorizontal("", GUILayout.Width(this.wwidth));
+            GUILayout.BeginHorizontal(GUILayout.Width(this.wwidth));
             GUILayout.Space((float)(this.wwidth * (1 - this.contentWidthProp) / 2));
         }
 
