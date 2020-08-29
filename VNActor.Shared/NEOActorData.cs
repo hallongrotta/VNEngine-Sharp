@@ -148,8 +148,7 @@ After:
 
             forceLoop = a.AnimationForceLoop;
 
-            accessoryStatus = new bool[a.Accessories.Length];
-            Array.Copy(a.Accessories, accessoryStatus, accessoryStatus.Length);
+            accessoryStatus = a.Accessories;
 
             faceRedness = a.FaceRedness;
             son = a.Son;
@@ -180,10 +179,8 @@ After:
             lipSync = a.LipSync;
             handMotions = a.HandPattern;
             kinematicType = a.Kinematic;
-            fkActive = new bool[a.get_FK_active().Length];
-            ikActive = new bool[a.get_IK_active().Length];
-            Array.Copy(a.get_FK_active(), fkActive, fkActive.Length);
-            Array.Copy(a.get_IK_active(), ikActive, ikActive.Length);
+            fkActive = a.get_FK_active();
+            ikActive = a.get_IK_active();
 
             if (kinematicType == KinematicMode.FK || kinematicType == KinematicMode.IKFK)
             {
@@ -259,19 +256,21 @@ After:
             a.LipSync = lipSync;
             a.HandPattern = handMotions;
             a.set_kinematic(kinematicType);
-            a.set_IK_active(ikActive);
-            a.set_FK_active(fkActive);
 
             if (kinematicType == KinematicMode.IK)
             {
+                a.set_IK_active(ikActive);
                 a.import_ik_target_info(ik);
             }
             else if (kinematicType == KinematicMode.FK)
             {
+                a.set_FK_active(fkActive);
                 a.import_fk_bone_info(fk);
             }
             else if (kinematicType == KinematicMode.IKFK)
             {
+                a.set_IK_active(ikActive);
+                a.set_FK_active(fkActive);
                 a.import_ik_target_info(ik);
                 a.import_fk_bone_info(fk);
             }

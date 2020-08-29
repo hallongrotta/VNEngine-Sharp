@@ -101,7 +101,9 @@ namespace VNActor
             get
             {
                 // return accessory state on/off in tuple(20)
-                return this.objctrl.charFileStatus.showAccessory;
+                var accessories = new bool[objctrl.charFileStatus.showAccessory.Length];
+                Array.Copy(objctrl.charFileStatus.showAccessory, accessories, objctrl.charFileStatus.showAccessory.Length);
+                return accessories;
             }
             set
             {
@@ -1327,7 +1329,9 @@ namespace VNActor
         public bool[] get_FK_active()
         {
             // return active status for FK part, (hair, neck, Breast, body, right hand, left hand, skirt) in tuple
-            return this.objctrl.oiCharInfo.activeFK;
+            var activeFK = new bool[objctrl.oiCharInfo.activeFK.Length];
+            Array.Copy(objctrl.oiCharInfo.activeFK, activeFK, objctrl.oiCharInfo.activeFK.Length);
+            return activeFK;
         }
 
         /*
@@ -1420,7 +1424,9 @@ namespace VNActor
         public bool[] get_IK_active()
         {
             // return active status for IK part, (body, right leg, left leg, right arm, left arm) in tuple
-            return this.objctrl.oiCharInfo.activeIK;
+            var IKActive = new bool[objctrl.oiCharInfo.activeIK.Length];
+            Array.Copy(objctrl.oiCharInfo.activeIK, IKActive, objctrl.oiCharInfo.activeIK.Length);
+            return IKActive;
         }
 
         /*
