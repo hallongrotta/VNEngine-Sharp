@@ -129,7 +129,7 @@ namespace SceneSaveState
                 catch (Exception e)
                 {
                     SceneConsole.Instance.game.GetLogger.LogError($"Error occurred when importing Actor with id {actid}" + e.ToString());
-                    SceneConsole.Instance.game.GetLogger.LogMessage($"Missing actor with id {actid}");
+                    SceneConsole.Instance.game.GetLogger.LogMessage($"Error occurred when importing Actor with id {actid}");
                     SceneFolders.LoadTrackedActorsAndProps();
                 }
             }
