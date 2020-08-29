@@ -31,7 +31,7 @@ namespace SceneSaveState
                         col = Instance.nor_font_col;
                     }
                     string scn_name = Instance.block.SceneStrings[i];
-                    if (Instance.block[i].cams.Count > 0 && Instance.block[i].cams[0].hasVNData && Instance.block[i].cams[0].addata.enabled)
+                    if (Instance.block[i].cams.Count > 0 && Instance.block[i].cams[0].addata.enabled)
                     {
                         addprops = Instance.block[i].cams[0].addata.addprops;
                         if (addprops.a1)

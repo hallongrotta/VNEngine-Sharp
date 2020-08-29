@@ -119,24 +119,29 @@ namespace SceneSaveState
             GUILayout.EndHorizontal();
             GUILayout.Space(15);
             GUILayout.BeginHorizontal();
+            /*
             GUILayout.FlexibleSpace();
             if (GUILayout.Button("<color=#00ff00>Export</color> scenes and cams\nto VNSceneScript", GUILayout.Height(btnSmallHeight), GUILayout.Width(210)))
             {
                 Instance.exportToVNSS();
             }
+            */
             //GUILayout.Space(210)
             GUILayout.FlexibleSpace();
-            if (GUILayout.Button("...or <color=#00ff00>run</color> VNSceneScript\nfrom beginning", GUILayout.Height(btnSmallHeight), GUILayout.Width(210)))
+            if (GUILayout.Button("<color=#00ff00>Run</color> VN \nfrom beginning", GUILayout.Height(btnSmallHeight), GUILayout.Width(210)))
             {
                 Instance.runVNSS();
             }
+            
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
             //GUILayout.Space(210)
+            /*
             Instance.vnFastIsRunImmediately = GUILayout.Toggle(Instance.vnFastIsRunImmediately, "And run from cur scene", GUILayout.Height(20), GUILayout.Width(210));
             GUILayout.FlexibleSpace();
+            */
             if (GUILayout.Button("from scene", GUILayout.Height(20), GUILayout.Width(105)))
             {
                 Instance.runVNSS("scene");

@@ -516,7 +516,7 @@ namespace SceneSaveState
             VNCamera.CamData camera_data = block.CurrentCam;
             // check and run adv command
             var keepCamera = false;
-            if (camera_data.hasVNData)
+            if (camera_data.addata.enabled)
             {
                 //keepCamera = VNExt.runAdvVNSS(this, camera_data.addata); TODO
             }
@@ -1471,7 +1471,7 @@ namespace SceneSaveState
                 foreach (var j in Enumerable.Range(0, scene.cams.Count))
                 {
                     CamData cam = scene.cams[j];
-                    cam.hasVNData = state;
+                    cam.addata.enabled = state;
                 }
             }
             show_blocking_message_time_sc("Cams changed!");

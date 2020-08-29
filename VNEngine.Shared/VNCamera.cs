@@ -77,7 +77,6 @@ namespace VNEngine
             public float duration;
             public string style;
             public float zoom_delta;
-            public bool hasVNData;
 
             public CamData(Vector3 position, Vector3 rotation, Vector3 distance, float fov)
             {
@@ -90,7 +89,6 @@ namespace VNEngine
                 this.fov = fov;
                 this.addata = new VNData();
                 this.style = "";
-                this.hasVNData = false;
             }
 
             public CamData(Vector3 position, Vector3 rotation, Vector3 distance, float fov, VNData addata)
@@ -104,7 +102,6 @@ namespace VNEngine
                 this.fov = fov;
                 this.addata = addata;
                 this.style = "";
-                this.hasVNData = false;
             }
 
             public CamData()
