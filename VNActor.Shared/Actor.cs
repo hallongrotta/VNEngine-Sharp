@@ -451,12 +451,15 @@ namespace VNActor
                 // needed only to save Fixed state
                 if (this.LookNeckPattern == 4)
                 {
-                    var memoryStream = new MemoryStream();
-                    var binaryWriter = new BinaryWriter(memoryStream);
-                    this.objctrl.neckLookCtrl.SaveNeckLookCtrl(binaryWriter);
-                    binaryWriter.Close();
-                    memoryStream.Close();
-                    return memoryStream.ToArray();
+
+                    using (MemoryStream memoryStream = new MemoryStream())
+                    {
+                        using (BinaryWriter binaryWriter = new BinaryWriter(memoryStream))
+                        {
+                            this.objctrl.neckLookCtrl.SaveNeckLookCtrl(binaryWriter);
+                            return memoryStream.ToArray();
+                        }
+                    }                   
                 }
                 else
                 {
@@ -475,8 +478,13 @@ namespace VNActor
                 {
                     // print lst
                     // print arrstate
-                    var binaryReader = new BinaryReader(new MemoryStream(value));
-                    this.objctrl.neckLookCtrl.LoadNeckLookCtrl(binaryReader);
+                    using (MemoryStream memoryStream = new MemoryStream(value))
+                    {
+                        using (BinaryReader binaryReader = new BinaryReader(memoryStream))
+                        {
+                            this.objctrl.neckLookCtrl.LoadNeckLookCtrl(binaryReader);
+                        }
+                    }                  
                 }
             }
         }

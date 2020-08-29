@@ -2,6 +2,7 @@
 using Studio;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace VNActor
@@ -17,6 +18,7 @@ namespace VNActor
             public byte[] coordinate;
             public float tuya;
             public float wetness;
+            public byte[] eyeAngles;
 
 
             public ActorData() : base() { }
@@ -28,6 +30,8 @@ namespace VNActor
                 wetness = a.SkinWetness;
                 tearLevel = a.TearLevel;
                 coordinate = a.curcloth_coordinate;
+                eyeAngles = a.EyeAngles;
+
 
                 /*
                 // ext data, enable by ini setting
@@ -70,6 +74,8 @@ namespace VNActor
                 a.SkinWetness = wetness;
                 a.TearLevel = tearLevel;
                 a.curcloth_coordinate = coordinate;
+                a.EyeAngles = eyeAngles;
+
             }
         }
 
@@ -81,6 +87,33 @@ namespace VNActor
                 return this.objctrl.oiCharInfo.charFile.custom.body.shapeValueBody[1];
             }
         }
+
+        
+        public byte[] EyeAngles
+        {
+            get
+            {
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    using (BinaryWriter binaryWriter = new BinaryWriter(memoryStream))
+                    {
+                        CharInfo.eyeLookCtrl.eyeLookScript.SaveAngle(binaryWriter);
+                        return memoryStream.ToArray();
+                    }
+                }
+            }
+            set
+            {
+                using (MemoryStream memoryStream = new MemoryStream(value))
+                {
+                    using (BinaryReader binaryReader = new BinaryReader(memoryStream))
+                    {
+                        CharInfo.eyeLookCtrl.eyeLookScript.LoadAngle(binaryReader);
+                    }
+                }
+            }
+        }
+        
 
         public void set_accessory(int accIndex, bool accShow)
         {
