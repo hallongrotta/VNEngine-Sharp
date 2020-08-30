@@ -458,7 +458,7 @@ namespace VNActor
             get
             {
                 // needed only to save Fixed state
-                if (this.LookNeckPattern == 4)
+                if (this.LookNeckPattern == NeckPattern.Fixed)
                 {
 
                     using (MemoryStream memoryStream = new MemoryStream())
@@ -477,13 +477,7 @@ namespace VNActor
             }
             set
             {
-                // needed only to set Fixed state
-                if (!value.IsNullOrEmpty())
-                {
-                    // if non-fixed-state - move to it!
-                    this.LookNeckPattern = 4;
-                }
-                if (this.LookNeckPattern == 4)
+                if (this.LookNeckPattern == NeckPattern.Fixed)
                 {
                     // print lst
                     // print arrstate
@@ -1068,18 +1062,26 @@ namespace VNActor
             }
         }
 
-        public int LookNeckPattern
+        public enum NeckPattern
+        {
+            Front,
+            Camera,
+            Avert,
+            Anime,
+            Fixed
+        }
+
+        public NeckPattern LookNeckPattern
         {
             set
             {
                 // ptn for CharaStudio: 0: front, 1: camera, 2: hide from camera, 3: by anime, 4: fix
-                // ptn for PHStudio: 0: front, 1: camera, 2: by anime, 3: fix
-                this.objctrl.ChangeLookNeckPtn(value);
+                this.objctrl.ChangeLookNeckPtn((int)value);
             }
             get
             {
                 // return neck look pattern: 0: front, 1: camera, 2: hide from camera, 3: by anime, 4: fix
-                return this.objctrl.charInfo.GetLookNeckPtn();
+                return (NeckPattern)this.objctrl.charInfo.GetLookNeckPtn();
             }
         }
 

@@ -77,7 +77,7 @@ namespace VNActor
 
         public int eyebrowPattern;
 
-        public int neckPattern;
+        public NeckPattern neckPattern;
 
         public Vector3 eyeLookPos;
 
