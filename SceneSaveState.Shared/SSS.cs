@@ -2,13 +2,15 @@
 using BepInEx.Configuration;
 using UnityEngine;
 using VNEngine;
+using KKAPI;
 
 namespace SceneSaveState
 {
-    [BepInProcess(VNEngine.Constants.StudioProcessName)]
+    [BepInProcess(Constants.StudioProcessName)]
     //[BepInDependency(GUID)]
     [BepInPlugin(GUID, PluginName, Version)]
     [BepInDependency(ExtensibleSaveFormat.ExtendedSave.GUID)]
+    [BepInDependency(KoikatuAPI.GUID)]
     public class SSS : BaseUnityPlugin
     {
 
