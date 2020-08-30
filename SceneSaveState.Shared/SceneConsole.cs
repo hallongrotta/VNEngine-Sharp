@@ -49,6 +49,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 /* Unmerged change from project 'SceneSaveState.AI'
 Before:
@@ -196,13 +197,17 @@ namespace SceneSaveState
         internal float consoleHeight;
         internal List<string> fset;
         internal List<string> mset;
+
+
+        public double saveDataSize { get; private set; }
+
         /*
-        internal int wiz_step;
-        internal Dictionary<string, string> wiz_data;
-        internal string wiz_error;
-        internal string wiz_view_mode;
-        internal Vector2 vnss_wizard_ui_scroll;
-        */
+internal int wiz_step;
+internal Dictionary<string, string> wiz_data;
+internal string wiz_error;
+internal string wiz_view_mode;
+internal Vector2 vnss_wizard_ui_scroll;
+*/
 
 
         public VNNeoController game
@@ -1241,6 +1246,11 @@ namespace SceneSaveState
         }
         */
 
+        public void Reset()
+        {
+            block = new SceneManager();
+        }
+
         public void SaveToFile()
         {
             if (svname == "")
@@ -1582,11 +1592,17 @@ namespace SceneSaveState
             }
         }
 
+        public double CalculateSaveDataSize(byte[] bytes)
+        {
+            return (double)bytes.Length / 1000;
+        }
+
         public void deleteSaveData()
         {
             SetExtendedData(new PluginData() { data = null });
             block = new SceneManager();
             SceneFolders.LoadTrackedActorsAndProps();
+            this.saveDataSize = 0;
         }
 
         // Set scene chars with state data from dictionary
@@ -1671,7 +1687,9 @@ namespace SceneSaveState
                     byte[] sceneData = MessagePackSerializer.Serialize(block.ExportScenes(), MessagePack.Resolvers.ContractlessStandardResolver.Instance);
                     pluginData.data["scenes"] = sceneData;
                     SetExtendedData(pluginData);
-                    logger.LogMessage($"Saved {((double)sceneData.Length / 1000):N} Kb of scene state data.");
+                    var saveDataSizeKb = CalculateSaveDataSize(sceneData);
+                    logger.LogMessage($"Saved {(saveDataSizeKb):N} Kb of scene state data.");
+                    this.saveDataSize = saveDataSizeKb;
                 }
                 catch (Exception e)
                 {
@@ -1681,7 +1699,7 @@ namespace SceneSaveState
             }
         }
 
-        protected override void OnSceneLoad(SceneOperationKind operation, ReadOnlyDictionary<int, ObjectCtrlInfo> loadedItems)
+        internal void LoadPluginData()
         {
             var pluginData = GetExtendedData();
             if (pluginData == null || pluginData?.data == null)
@@ -1698,7 +1716,9 @@ namespace SceneSaveState
                     {
                         var scenes = MessagePackSerializer.Deserialize<Scene[]>(sceneData, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
                         block = new SceneManager(scenes);
-                        logger.LogMessage($"Loaded {((double)sceneData.Length / 1000):N} Kb of scene state data.");
+                        var saveDataSizeKb = CalculateSaveDataSize(sceneData);
+                        logger.LogMessage($"Loaded {(saveDataSizeKb):N} Kb of scene state data.");
+                        this.saveDataSize = saveDataSizeKb;
                     }
                     catch (Exception e)
                     {
@@ -1708,6 +1728,11 @@ namespace SceneSaveState
                 }
             }
             SceneFolders.LoadTrackedActorsAndProps();
+        }
+
+        protected override void OnSceneLoad(SceneOperationKind operation, ReadOnlyDictionary<int, ObjectCtrlInfo> loadedItems)
+        {
+            LoadPluginData();
         }
     }
 }

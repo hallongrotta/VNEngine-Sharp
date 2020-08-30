@@ -133,12 +133,6 @@ namespace SceneSaveState
             }
         }
 
-        public static void resetConsole(VNNeoController game)
-        {
-            sceneConsoleGUIClose();
-            UI.sceneConsoleGUIStart(game);
-        }
-
         public static void loadConfig()
         {
             // Shortcuts

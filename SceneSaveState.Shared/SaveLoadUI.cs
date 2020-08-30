@@ -15,6 +15,48 @@ namespace SceneSaveState
             saveload_scroll = GUILayout.BeginScrollView(saveload_scroll);
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
+            GUILayout.Label(" ------------------------------------------    Data in card   ------------------------------------------");
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+            GUILayout.Space(5);
+            GUILayout.BeginHorizontal();
+            GUILayout.Label($"Storing <b>{Instance.saveDataSize:N} Kb</b> of saved scene data.");
+            GUILayout.EndHorizontal();
+            GUILayout.Space(5);
+            GUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+            if (GUILayout.Button("Reload Scene Data.", GUILayout.Height(btnBigHeight), GUILayout.Width(210)))
+            {
+                if (Instance.block.Count > 0)
+                {
+                    warning_action = Instance.LoadPluginData;
+                    warning_param = new WarningParam_s("Reload scene data from card? This will overwrite current scenes.", false);
+                }
+                else
+                {
+                    Instance.LoadPluginData();
+                }
+            }
+            GUILayout.FlexibleSpace();
+            if (GUILayout.Button("Delete Saved \n Scene Data.", GUILayout.Height(btnBigHeight), GUILayout.Width(210)))
+            {
+                var msg = "";
+                if (Instance.block.Count > 0)
+                {
+                    msg = "Delete saved scene data and reset current scenes?";
+                }
+                else
+                {
+                    msg = "Delete saved scene data?";
+                }
+                warning_action = Instance.deleteSaveData;
+                warning_param = new WarningParam_s(msg, false);
+            }
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+            GUILayout.Space(20);
+            GUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
             GUILayout.Label(" ----------------------------------------    Data on external file    ----------------------------------------");
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();

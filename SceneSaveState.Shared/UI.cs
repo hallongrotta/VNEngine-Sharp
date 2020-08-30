@@ -210,19 +210,16 @@ public struct WarningParam_s
                             Instance.show_blocking_message_time_sc("SceneSaveState " + mod_version + "\n\nFrom @keitaro\nLightweight and crossplatform version of SceneConsole mod by @chickenManX\nOriginal code by @chickenManX\nSome cool features by @countd360\n\nAlso includes:\nPose Library (by @keitaro, original code by @chickenManX)\nScene Utils (by @keitaro)\n(with Body and Face Sliders) (by @countd360)\n", 5.0f);
                         }
                         GUILayout.FlexibleSpace();
-                        if (GUILayout.Button("Reset console", GUILayout.Width(100)))
+                        if (GUILayout.Button("Reset scenes", GUILayout.Width(100)))
                         {
-                            Utils.resetConsole(Instance.game);
+                            warning_action = Instance.Reset;
+                            warning_param = new WarningParam_s("Delete current scene data? This will not delete scene data saved to the card.", false);               
                         }
-                        if (GUILayout.Button("Delete saved data", GUILayout.Width(100)))
-                        {
-                            Instance.deleteSaveData();
-                        }
+                        GUILayout.FlexibleSpace();
                         if (GUILayout.Button("Close console", GUILayout.Width(100)))
                         {
                             var col = Instance.sel_font_col;
-                            warning_action = Utils.sceneConsoleGUIClose;
-                            warning_param = new WarningParam_s(String.Format("Do you really want to close window? (<b><color={0}>Warning:</color> All current scenedata will be deleted</b>)", col), false);
+                            Utils.sceneConsoleGUIClose();
                         }
                         GUILayout.EndHorizontal();
                         GUILayout.EndVertical();
