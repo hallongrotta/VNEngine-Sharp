@@ -96,6 +96,16 @@ namespace SceneSaveState
                 }
             }
             GUILayout.EndScrollView();
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("Move up"))
+            {
+                Instance.block.move_scene_up();
+            }
+            if (GUILayout.Button("Move down"))
+            {
+                Instance.block.move_scene_down();
+            }
+            GUILayout.EndHorizontal();
         }
 
         public static void DrawCamSelect()
@@ -141,110 +151,70 @@ namespace SceneSaveState
                 GUILayout.EndHorizontal();
             }
             GUILayout.EndScrollView();
-        }
-
-        public static void sceneConsoleEditUI()
-        {
-
-            List<string> fset = Instance.fset;
-            List<string> mset = Instance.mset;
+            GUILayout.Space(15);
             GUILayout.BeginHorizontal();
-            GUILayout.BeginVertical();
-            // Scene tab
-            DrawSceneTab();
-            GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Move up"))
+            if (GUILayout.Button("Add", GUILayout.Width(camviewwidth * 0.7f)))
             {
-                Instance.block.move_scene_up();
+                Instance.changeSceneCam(CamTask.ADD);
             }
-            if (GUILayout.Button("Move down"))
+            if (Instance.block.CurrentScene.cams.Count > 0)
             {
-                Instance.block.move_scene_down();
+                if (GUILayout.Button("Del", GUILayout.Width(camviewwidth * 0.3f)))
+                {
+                    if (Instance.promptOnDelete)
+                    {
+                        warning_action = Instance.deleteSceneCam;
+                        warning_param = new WarningParam_s("Delete selected cam?", false);
+                    }
+                    else
+                    {
+                        Instance.changeSceneCam(CamTask.DELETE);
+                    }
+                }
             }
             GUILayout.EndHorizontal();
-            GUILayout.EndVertical();
-            GUILayout.BeginVertical();
-            // Camera and character selection tabs
+            if (Instance.block.CurrentScene.cams.Count > 0)
+            {
+                if (GUILayout.Button("Update", GUILayout.Width(camviewwidth + 5)))
+                {
+                    Instance.changeSceneCam(CamTask.UPDATE);
+                }
+            }
+            GUILayout.Label("Move cam:");
             GUILayout.BeginHorizontal();
-            GUILayout.BeginVertical();
-            if (Instance.block.Count > 0)
+            var up = "\u2191";
+            var down = "\u2193";
+            if (GUILayout.Button(up, GUILayout.Width(camviewwidth / 2)))
             {
-                DrawCamSelect();
-                // sc.cur_cam = GUILayout.SelectionGrid(sc.cur_cam,sc.scene_cam_str,1,GUILayout.Height(200),GUILayout.Width(125))
-                // if not sc.cur_cam == prev_cam_index:
-                // sc.setCamera()
-                GUILayout.Space(15);
-                GUILayout.BeginHorizontal();
-                if (GUILayout.Button("Add", GUILayout.Width(camviewwidth * 0.7f)))
-                {
-                    Instance.changeSceneCam(CamTask.ADD);
-                }
-                if (Instance.block.CurrentScene.cams.Count > 0)
-                {
-                    if (GUILayout.Button("Del", GUILayout.Width(camviewwidth * 0.3f)))
-                    {
-                        if (Instance.promptOnDelete)
-                        {
-                            warning_action = Instance.deleteSceneCam;
-                            warning_param = new WarningParam_s("Delete selected cam?", false);
-                        }
-                        else
-                        {
-                            Instance.changeSceneCam(CamTask.DELETE);
-                        }
-                    }
-                }
-                GUILayout.EndHorizontal();
-                if (Instance.block.CurrentScene.cams.Count > 0)
-                {
-                    if (GUILayout.Button("Update", GUILayout.Width(camviewwidth + 5)))
-                    {
-                        Instance.changeSceneCam(CamTask.UPDATE);
-                    }
-                }
-                GUILayout.Label("Move cam:");
-                GUILayout.BeginHorizontal();
-                var up = "\u2191";
-                var down = "\u2193";
-                if (GUILayout.Button(up, GUILayout.Width(camviewwidth / 2)))
-                {
-                    Instance.block.move_cam_up();
-                }
-                if (GUILayout.Button(down, GUILayout.Width(camviewwidth / 2)))
-                {
-                    Instance.block.move_cam_down();
-                }
-                GUILayout.EndHorizontal();
+                Instance.block.move_cam_up();
             }
-            else
+            if (GUILayout.Button(down, GUILayout.Width(camviewwidth / 2)))
             {
-                GUILayout.Space(viewheight);
+                Instance.block.move_cam_down();
             }
-            GUILayout.EndVertical();
-            GUILayout.BeginVertical();
+            GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
             if (Instance.block.HasScenes && Instance.block.currentCamCount > 0)
             {
-                GUILayout.Space(25);
-                if (GUILayout.Button("Copy cam set"))
+                if (GUILayout.Button("Copy cams", GUILayout.Width(camviewwidth)))
                 {
                     Instance.copyCamSet();
                 }
             }
-            GUILayout.EndVertical();
-            GUILayout.BeginVertical();
+            GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
             if (Instance.block.HasScenes && Instance.camset != null)
             {
-                GUILayout.Space(25);
-                if (GUILayout.Button("Paste cam set"))
+                if (GUILayout.Button("Paste cams", GUILayout.Width(camviewwidth)))
                 {
                     Instance.pasteCamSet();
                 }
             }
-            
-            GUILayout.EndVertical();
             GUILayout.EndHorizontal();
-            GUILayout.Space(10);
-            // Add scene, Load scene
+        }
+
+        public static void DrawEditButtons()
+        {
             GUILayout.BeginHorizontal();
             GUILayout.BeginVertical();
             if (GUILayout.Button("Insert scene", GUILayout.Height(25)))
@@ -266,8 +236,6 @@ namespace SceneSaveState
             }
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
-            GUILayout.EndHorizontal();
-            GUILayout.Space(10);
             if (GUILayout.Button("Delete scene"))
             {
                 if (Instance.promptOnDelete == true)
@@ -280,21 +248,11 @@ namespace SceneSaveState
                     Instance.removeScene();
                 }
             }
-            GUILayout.BeginHorizontal();
-            // if GUILayout.Button("Add scene (selected only)"):
-            //     sc.addAuto(allbase=False)
-            // if GUILayout.Button("Delete duplicate characters"):
-            //     sc.removeDuplicates()
             GUILayout.EndHorizontal();
-            if (!(Instance.autoLoad == true))
-            {
-                GUILayout.Space(10);
-                if (GUILayout.Button("Load Scene", GUILayout.Height(35)))
-                {
-                    Instance.loadCurrentScene();
-                }
-            }
-            GUILayout.Space(10);
+        }
+
+        public static void DrawNextPrevButtons()
+        {
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Load prev scene", GUILayout.Height(30)))
             {
@@ -305,6 +263,45 @@ namespace SceneSaveState
                 Instance.goto_next_sc();
             }
             GUILayout.EndHorizontal();
+        }
+
+        public static void sceneConsoleEditUI()
+        {
+
+            List<string> fset = Instance.fset;
+            List<string> mset = Instance.mset;
+            GUILayout.BeginHorizontal();
+            GUILayout.BeginVertical();
+            // Scene tab
+            DrawSceneTab();
+
+            GUILayout.EndVertical();
+            GUILayout.BeginVertical();
+            // Camera and character selection tabs
+            GUILayout.BeginHorizontal();
+            GUILayout.BeginVertical();
+            if (Instance.block.Count > 0)
+            {
+                DrawCamSelect();            
+            }
+            else
+            {
+                GUILayout.Space(viewheight);
+            }
+            GUILayout.EndVertical();
+            GUILayout.EndHorizontal();
+            GUILayout.Space(10);
+            // Add scene, Load scene
+            DrawEditButtons();
+            if (!(Instance.autoLoad == true))
+            {
+                GUILayout.Space(10);
+                if (GUILayout.Button("Load Scene", GUILayout.Height(35)))
+                {
+                    Instance.loadCurrentScene();
+                }
+            }
+            GUILayout.Space(10);
             // char texts
             GUILayout.Space(25);
             GUILayout.BeginHorizontal();
