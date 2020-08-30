@@ -7,93 +7,80 @@ namespace SceneSaveState
     public static partial class UI
     {
         public static void sceneConsoleTrackable()
-        {
-            //if sc is SceneConsole:
-            // sc.svname = GUILayout.TextField(sc.svname)
-            // GUILayout.Space(35)
+        {      
             GUILayout.BeginHorizontal();
-            GUILayout.FlexibleSpace();
-            GUILayout.Label(" ---------------------------------    Operations    ------------------------------------");
-            GUILayout.FlexibleSpace();
-            GUILayout.EndHorizontal();
-            GUILayout.Space(15);
-            GUILayout.BeginHorizontal();
-            GUILayout.Space(40);
-            if (GUILayout.Button("Add selected", GUILayout.Height(50), GUILayout.Width(160)))
+            GUILayout.BeginVertical(GUILayout.Width(ColumnWidth));
+            if (GUILayout.Button("Track selected", GUILayout.Height(50), GUILayout.Width(ColumnWidth)))
             {
                 Instance.addSelectedToTrack();
             }
-            GUILayout.Space(15);
-            if (GUILayout.Button("Del selected", GUILayout.Height(50), GUILayout.Width(160)))
+            if (GUILayout.Button("Untrack selected", GUILayout.Height(25), GUILayout.Width(ColumnWidth)))
             {
                 if (Instance.promptOnDelete)
                 {
                     warning_action = Instance.delSelectedFromTrack;
-                    warning_param = new WarningParam_s("Delete selected actor from scenes?", false);
+                    warning_param = new WarningParam_s("Untrack and delete selected from scenes?", false);
                 }
                 else
                 {
                     Instance.delSelectedFromTrack();
                 }
             }
-            GUILayout.Space(15);
-            if (GUILayout.Button("Refresh", GUILayout.Height(50), GUILayout.Width(80)))
+            if (GUILayout.Button("Refresh", GUILayout.Height(25), GUILayout.Width(ColumnWidth)))
             {
                 SceneFolders.LoadTrackedActorsAndProps();
             }
-            GUILayout.FlexibleSpace();
-            GUILayout.EndHorizontal();
-            GUILayout.BeginHorizontal();
-            GUILayout.Space(40);
             if (!Instance.isSysTracking)
             {
-                if (GUILayout.Button("Track scene environment", GUILayout.Height(50), GUILayout.Width(160)))
+                if (GUILayout.Button("Track scene settings", GUILayout.Height(25), GUILayout.Width(ColumnWidth)))
                 {
                     Instance.addSysTracking();
                 }
             }
-            else if (GUILayout.Button("UnTrack scene environment", GUILayout.Height(50), GUILayout.Width(160)))
+            else
             {
-                Instance.delSysTracking();
+                if (GUILayout.Button("Untrack scene settings", GUILayout.Height(25), GUILayout.Width(ColumnWidth)))
+                {
+                    Instance.delSysTracking();
+                }
             }
-            GUILayout.EndHorizontal();
-            GUILayout.BeginHorizontal();
-            GUILayout.Space(40);
-            GUILayout.Label("Pro: Change selected char ID to ", GUILayout.Width(210));
-            //GUILayout.Label("  Who say:", GUILayout.Width(80))
-            Instance.newid = GUILayout.TextField(Instance.newid, GUILayout.Width(120));
-            if (GUILayout.Button("Change", GUILayout.Width(60)))
-            {
-                //sc.cam_whosay = sc.get_next_speaker(sc.cam_whosay, False)
-                Instance.changeSelTrackID(Instance.newid);
-            }
-            GUILayout.EndHorizontal();
-            GUILayout.Space(50);
-            GUILayout.BeginHorizontal();
-            GUILayout.FlexibleSpace();
-            GUILayout.Label(" ----------------------------------------    Tracking chars/props     ----------------------------------------");
-            GUILayout.FlexibleSpace();
-            GUILayout.EndHorizontal();
-            GUILayout.Space(15);
-            //GUILayout.BeginHorizontal()
-            tracking_scroll = GUILayout.BeginScrollView(tracking_scroll);
+            GUILayout.EndVertical();
+
+            GUILayout.BeginVertical(GUILayout.Width(ColumnWidth));
             GUILayout.Label("Actors:");
+            tracking_actors_scroll = GUILayout.BeginScrollView(tracking_actors_scroll);
             var actors = Instance.game.AllActors;
             foreach (var actorid in actors.Keys)
             {
-                //GUILayout.Label("  "+actorid+": "+actors[actorid].text_name)
-                //txt += "  "+actorid+": "+actors[actorid].text_name+"\n"
-                //GUILayout.Label(txt)
                 VNActor.Actor actor = actors[actorid];
                 render_ui_for_tracking(actorid, actor);
             }
+            GUILayout.EndScrollView();
+            GUILayout.EndVertical();
+
+            GUILayout.BeginVertical(GUILayout.Width(ColumnWidth));
             GUILayout.Label("Props:");
+            tracking_props_scroll = GUILayout.BeginScrollView(tracking_props_scroll);
             var props = Instance.game.AllProps;
             foreach (var propid in props.Keys)
             {
                 render_ui_for_tracking(propid, props[propid]);
             }
             GUILayout.EndScrollView();
+
+            GUILayout.EndVertical();
+            GUILayout.EndHorizontal();
+            GUILayout.FlexibleSpace();
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Pro: Change selected char ID to ");
+            //GUILayout.Label("  Who say:", GUILayout.Width(80))
+            Instance.newid = GUILayout.TextField(Instance.newid);
+            if (GUILayout.Button("Change", GUILayout.Width(60)))
+            {
+                //sc.cam_whosay = sc.get_next_speaker(sc.cam_whosay, False)
+                Instance.changeSelTrackID(Instance.newid);
+            }
+            GUILayout.EndHorizontal();
         }
 
         // :type elem:HSNeoOCI

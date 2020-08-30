@@ -1678,10 +1678,10 @@ internal Vector2 vnss_wizard_ui_scroll;
 
         protected override void OnSceneSave()
         {
+            var logger = game.GetLogger;
             var pluginData = new PluginData();
             if (block.Count > 0)
             {
-                var logger = game.GetLogger;
                 try
                 {
                     byte[] sceneData = MessagePackSerializer.Serialize(block.ExportScenes(), MessagePack.Resolvers.ContractlessStandardResolver.Instance);

@@ -36,7 +36,8 @@ namespace SceneSaveState
         public static Vector2 mset_scroll = new Vector2(0, 0);
         public static Vector2 saveload_scroll = new Vector2(0, 0);
         public static Vector2 scene_scroll = new Vector2(0, 0);
-        public static Vector2 tracking_scroll = new Vector2(0, 0);
+        public static Vector2 tracking_actors_scroll = new Vector2(0, 0);
+        public static Vector2 tracking_props_scroll = new Vector2(0, 0);
         public static Vector2 adv_scroll = new Vector2(0, 0);
 
         public static string[] consolenames = new string[] { "SceneSaveState" };
