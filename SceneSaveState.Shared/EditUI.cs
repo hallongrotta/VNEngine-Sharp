@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using UnityEngine;
 using VNEngine;
 using static SceneSaveState.SceneConsole;
@@ -8,15 +9,55 @@ namespace SceneSaveState
 {
     partial class UI
     {
-        public static void sceneConsoleEditUI()
+
+        public static void DrawVNDataOptions()
         {
-            VNCamera.VNData.addprops_struct addprops;
-            object col;
-            List<string> fset = Instance.fset;
-            List<string> mset = Instance.mset;
-            GUILayout.BeginHorizontal();
-            GUILayout.BeginVertical();
-            // Scene tab
+            if (Instance.currentVNData.enabled)
+            {
+                GUILayout.BeginHorizontal();
+                GUILayout.Label("  Who say:", GUILayout.Width(90));
+                Instance.currentVNData.whosay = GUILayout.TextField(Instance.currentVNData.whosay, GUILayout.Width(210));
+                if (GUILayout.Button("<", GUILayout.Width(20)))
+                {
+                    Instance.currentVNData.whosay = Instance.get_next_speaker(Instance.currentVNData.whosay, false);
+                }
+                if (GUILayout.Button(">", GUILayout.Width(20)))
+                {
+                    Instance.currentVNData.whosay = Instance.get_next_speaker(Instance.currentVNData.whosay, true);
+                }
+                GUILayout.EndHorizontal();
+                GUILayout.BeginHorizontal();
+                GUILayout.Label("  What say:", GUILayout.Width(90));
+                Instance.currentVNData.whatsay = GUILayout.TextArea(Instance.currentVNData.whatsay, GUILayout.Width(210), GUILayout.Height(85));
+                if (GUILayout.Button("X", GUILayout.Width(20)))
+                {
+                    Instance.currentVNData.whatsay = "";
+                }
+                if (GUILayout.Button("...", GUILayout.Width(20)))
+                {
+                    Instance.currentVNData.whatsay = "...";
+                }
+                GUILayout.EndHorizontal();
+                GUILayout.Space(5);
+                /*GUILayout.BeginHorizontal();
+                GUILayout.Label("  Adv VN cmds", GUILayout.Width(90));
+                Instance.currentVNData.addvncmds = GUILayout.TextArea(Instance.currentVNData.addvncmds, GUILayout.Width(235), GUILayout.Height(55));
+                if (GUILayout.Button("X", GUILayout.Width(20)))
+                {
+                    Instance.currentVNData.addvncmds = "";
+                }
+                // if GUILayout.Button("X", GUILayout.Width(20)):
+                //     sc.cam_whatsay = ""
+                // if GUILayout.Button("...", GUILayout.Width(20)):
+                //     sc.cam_whatsay = "..."
+                GUILayout.EndHorizontal();
+                */
+            }
+        } 
+
+        public static void DrawSceneTab()
+        {
+            string col;
             scene_scroll = GUILayout.BeginScrollView(scene_scroll, GUILayout.Width(viewwidth));
             if (Instance.block.Count > 0)
             {
@@ -33,7 +74,7 @@ namespace SceneSaveState
                     string scn_name = Instance.block.SceneStrings[i];
                     if (Instance.block[i].cams.Count > 0 && Instance.block[i].cams[0].addata.enabled)
                     {
-                        addprops = Instance.block[i].cams[0].addata.addprops;
+                        VNCamera.VNData.addprops_struct addprops = Instance.block[i].cams[0].addata.addprops;
                         if (addprops.a1)
                         {
                             string sname = addprops.a1o.name;
@@ -55,6 +96,62 @@ namespace SceneSaveState
                 }
             }
             GUILayout.EndScrollView();
+        }
+
+        public static void DrawCamSelect()
+        {
+            string col;
+            cam_scroll = GUILayout.BeginScrollView(cam_scroll, GUILayout.Height(185), GUILayout.Width(camviewwidth));
+            for (int i = 0; i < Instance.block.CurrentScene.cams.Count - 0; i++)
+            {
+                if (i == Instance.block.currentCamIndex)
+                {
+                    col = Instance.sel_font_col;
+                }
+                else
+                {
+                    col = "#f9f9f9";
+                }
+                var cam = Instance.block.CurrentScene.cams[i];
+                VNCamera.VNData addparams = cam.addata;
+                GUILayout.BeginHorizontal();
+                // show name if available
+                var camtxt = Instance.block.CamStrings[i];
+                if (addparams.enabled)
+                {
+                    var addprops = addparams.addprops;
+                    if (addprops.a1)
+                    {
+                        if (addprops.a1o.name != "")
+                        {
+                            camtxt = addprops.a1o.name;
+                        }
+                    }
+                }
+                if (GUILayout.Button(String.Format("<color={0}>{1}</color>", col, camtxt)))
+                {
+                    Instance.block.SetCurrentCam(i);
+                    Instance.setCamera(isAnimated: false);
+                }
+                if (GUILayout.Button(String.Format("<color={0}>a</color>", col), GUILayout.Width(22)))
+                {
+                    Instance.block.SetCurrentCam(i);
+                    Instance.setCamera(isAnimated: true);
+                }
+                GUILayout.EndHorizontal();
+            }
+            GUILayout.EndScrollView();
+        }
+
+        public static void sceneConsoleEditUI()
+        {
+
+            List<string> fset = Instance.fset;
+            List<string> mset = Instance.mset;
+            GUILayout.BeginHorizontal();
+            GUILayout.BeginVertical();
+            // Scene tab
+            DrawSceneTab();
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Move up"))
             {
@@ -69,49 +166,10 @@ namespace SceneSaveState
             GUILayout.BeginVertical();
             // Camera and character selection tabs
             GUILayout.BeginHorizontal();
+            GUILayout.BeginVertical();
             if (Instance.block.Count > 0)
             {
-                GUILayout.BeginVertical();
-                cam_scroll = GUILayout.BeginScrollView(cam_scroll, GUILayout.Height(185), GUILayout.Width(camviewwidth));
-                for (int i = 0; i < Instance.block.CurrentScene.cams.Count - 0; i++)
-                {
-                    if (i == Instance.block.currentCamIndex)
-                    {
-                        col = Instance.sel_font_col;
-                    }
-                    else
-                    {
-                        col = "#f9f9f9";
-                    }
-                    var cam = Instance.block.CurrentScene.cams[i];
-                    VNCamera.VNData addparams = cam.addata;
-                    GUILayout.BeginHorizontal();
-                    // show name if available
-                    var camtxt = Instance.block.CamStrings[i];
-                    if (addparams.enabled)
-                    {
-                        addprops = addparams.addprops;
-                        if (addprops.a1)
-                        {
-                            if (addprops.a1o.name != "")
-                            {
-                                camtxt = addprops.a1o.name;
-                            }
-                        }
-                    }
-                    if (GUILayout.Button(String.Format("<color={0}>{1}</color>", col, camtxt)))
-                    {
-                        Instance.block.SetCurrentCam(i);
-                        Instance.setCamera(isAnimated: false);
-                    }
-                    if (GUILayout.Button(String.Format("<color={0}>a</color>", col), GUILayout.Width(22)))
-                    {
-                        Instance.block.SetCurrentCam(i);
-                        Instance.setCamera(isAnimated: true);
-                    }
-                    GUILayout.EndHorizontal();
-                }
-                GUILayout.EndScrollView();
+                DrawCamSelect();
                 // sc.cur_cam = GUILayout.SelectionGrid(sc.cur_cam,sc.scene_cam_str,1,GUILayout.Height(200),GUILayout.Width(125))
                 // if not sc.cur_cam == prev_cam_index:
                 // sc.setCamera()
@@ -157,85 +215,32 @@ namespace SceneSaveState
                     Instance.block.move_cam_down();
                 }
                 GUILayout.EndHorizontal();
-                GUILayout.EndVertical();
             }
-            GUILayout.BeginVertical();
-            if (true)
+            else
             {
-                // len(sc.nameset[0])>0:
-                fset_scroll = GUILayout.BeginScrollView(fset_scroll, GUILayout.Width(viewwidth), GUILayout.Height(viewheight));
-                for (int i = 0; i < fset.Count - 0; i++)
+                GUILayout.Space(viewheight);
+            }
+            GUILayout.EndVertical();
+            GUILayout.BeginVertical();
+            if (Instance.block.HasScenes && Instance.block.currentCamCount > 0)
+            {
+                GUILayout.Space(25);
+                if (GUILayout.Button("Copy cam set"))
                 {
-                    if (i == Instance.fset_index)
-                    {
-                        col = Instance.sel_font_col;
-                    }
-                    else
-                    {
-                        col = Instance.nor_font_col;
-                    }
-                    if (GUILayout.Button(String.Format("<color={0}>{1}</color>", col, fset[i]), GUILayout.Height(40)))
-                    {
-                        Instance.fset_index = i;
-                    }
-                }
-                GUILayout.EndScrollView();
-                // sc.fset_index = GUILayout.SelectionGrid(sc.fset_index,fset,1,GUILayout.Height(200))
-                // if GUILayout.Button("Change FChar"):
-                //     sc.changeSceneChars(1, "upd")
-                // if GUILayout.Button("Delete FChar"):
-                //     if sc.promptOnDelete:
-                //         sc.warning_param = (sc.changeSceneChars, "Delete selected female character?", (1, "del"), False)
-                //     else:
-                //         sc.changeSceneChars(1, "del")
-                if (Instance.block.HasScenes && Instance.block.currentCamCount > 0)
-                {
-                    GUILayout.Space(25);
-                    if (GUILayout.Button("Copy cam set"))
-                    {
-                        Instance.copyCamSet();
-                    }
+                    Instance.copyCamSet();
                 }
             }
             GUILayout.EndVertical();
             GUILayout.BeginVertical();
-            if (true)
+            if (Instance.block.HasScenes && Instance.camset != null)
             {
-                // len(sc.nameset[1])>0:
-                mset_scroll = GUILayout.BeginScrollView(mset_scroll, GUILayout.Width(viewwidth), GUILayout.Height(viewheight));
-                for (int i = 0; i < mset.Count - 0; i++)
+                GUILayout.Space(25);
+                if (GUILayout.Button("Paste cam set"))
                 {
-                    if (i == Instance.mset_index)
-                    {
-                        col = Instance.sel_font_col;
-                    }
-                    else
-                    {
-                        col = Instance.nor_font_col;
-                    }
-                    if (GUILayout.Button(String.Format("<color={0}>{1}</color>", col, mset[i]), GUILayout.Height(40)))
-                    {
-                        Instance.mset_index = i;
-                    }
-                }
-                GUILayout.EndScrollView();
-                // sc.mset_index = GUILayout.SelectionGrid(sc.mset_index,mset,1,GUILayout.Height(200))
-                // if GUILayout.Button("Change MChar"):
-                //     sc.changeSceneChars(0, "upd")
-                // if GUILayout.Button("Delete MChar"):
-                //     if sc.promptOnDelete:
-                //         sc.warning_param = (sc.changeSceneChars, "Delete selected male character?", (0, "del"), False)
-                //     else:
-                //         sc.changeSceneChars(0, "del")
-                if (Instance.block.HasScenes && Instance.camset != null)
-                {
-                    GUILayout.Space(25);
-                    if (GUILayout.Button("Paste cam set"))
-                    {
-                        Instance.pasteCamSet();
-                    }
+                    Instance.pasteCamSet();
                 }
             }
+            
             GUILayout.EndVertical();
             GUILayout.EndHorizontal();
             GUILayout.Space(10);
@@ -260,17 +265,7 @@ namespace SceneSaveState
                 Instance.UpdateScene();
             }
             GUILayout.EndHorizontal();
-            // if GUILayout.Button("Update props",GUILayout.Height(40)):
-            // sc.addPropStates()
             GUILayout.BeginHorizontal();
-            // if GUILayout.Button("Add scene (base)"):
-            // sc.addAuto(allbase = True)
-            // if GUILayout.Button("Add dup prop folders"):
-            // sc.addPropFolders(dup=True)
-            // if sc.cur_index > -1 and GUILayout.Button("Designate PropFolder", GUILayout.Height(25)):
-            //     sc.addPropFolders()
-            // if sc.cur_index > -1 and GUILayout.Button("Designate Container", GUILayout.Height(25)):
-            //     sc.addProps()
             GUILayout.EndHorizontal();
             GUILayout.Space(10);
             if (GUILayout.Button("Delete scene"))
@@ -331,47 +326,7 @@ namespace SceneSaveState
             //     sc.addAuto(allbase=False)
             // if GUILayout.Button("Delete duplicate characters"):
             //     sc.removeDuplicates()
-            if (Instance.currentVNData.enabled)
-            {
-                GUILayout.BeginHorizontal();
-                GUILayout.Label("  Who say:", GUILayout.Width(90));
-                Instance.currentVNData.whosay = GUILayout.TextField(Instance.currentVNData.whosay, GUILayout.Width(210));
-                if (GUILayout.Button("<", GUILayout.Width(20)))
-                {
-                    Instance.currentVNData.whosay = Instance.get_next_speaker(Instance.currentVNData.whosay, false);
-                }
-                if (GUILayout.Button(">", GUILayout.Width(20)))
-                {
-                    Instance.currentVNData.whosay = Instance.get_next_speaker(Instance.currentVNData.whosay, true);
-                }
-                GUILayout.EndHorizontal();
-                GUILayout.BeginHorizontal();
-                GUILayout.Label("  What say:", GUILayout.Width(90));
-                Instance.currentVNData.whatsay = GUILayout.TextArea(Instance.currentVNData.whatsay, GUILayout.Width(210), GUILayout.Height(85));
-                if (GUILayout.Button("X", GUILayout.Width(20)))
-                {
-                    Instance.currentVNData.whatsay = "";
-                }
-                if (GUILayout.Button("...", GUILayout.Width(20)))
-                {
-                    Instance.currentVNData.whatsay = "...";
-                }
-                GUILayout.EndHorizontal();
-                GUILayout.Space(5);
-                /*GUILayout.BeginHorizontal();
-                GUILayout.Label("  Adv VN cmds", GUILayout.Width(90));
-                Instance.currentVNData.addvncmds = GUILayout.TextArea(Instance.currentVNData.addvncmds, GUILayout.Width(235), GUILayout.Height(55));
-                if (GUILayout.Button("X", GUILayout.Width(20)))
-                {
-                    Instance.currentVNData.addvncmds = "";
-                }
-                // if GUILayout.Button("X", GUILayout.Width(20)):
-                //     sc.cam_whatsay = ""
-                // if GUILayout.Button("...", GUILayout.Width(20)):
-                //     sc.cam_whatsay = "..."
-                GUILayout.EndHorizontal();
-                */
-            }
+            DrawVNDataOptions();
             GUILayout.EndVertical();
             GUILayout.EndHorizontal();
             // if not sc.prev_index == sc.cur_index and not sc.cur_index < 0:
