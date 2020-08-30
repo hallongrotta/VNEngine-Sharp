@@ -17,6 +17,7 @@ namespace SceneSaveState
                 GUILayout.BeginVertical();
                 GUILayout.BeginHorizontal();
                 GUILayout.Label("Who say:", GUILayout.Width(90));
+                GUILayout.FlexibleSpace();
                 if (GUILayout.Button("<", GUILayout.Width(20)))
                 {
                     Instance.currentVNData.whosay = Instance.get_next_speaker(Instance.currentVNData.whosay, false);
@@ -30,6 +31,7 @@ namespace SceneSaveState
 
                 GUILayout.BeginHorizontal();
                 GUILayout.Label("What say:", GUILayout.Width(90));
+                GUILayout.FlexibleSpace();
                 if (GUILayout.Button("X", GUILayout.Width(20)))
                 {
                     Instance.currentVNData.whatsay = "";
@@ -59,8 +61,9 @@ namespace SceneSaveState
 
         public static void DrawSceneTab()
         {
+            GUILayout.BeginVertical();
             string col;
-            scene_scroll = GUILayout.BeginScrollView(scene_scroll, GUILayout.Width(viewwidth));
+            scene_scroll = GUILayout.BeginScrollView(scene_scroll, GUILayout.Width(ColumnWidth));
             if (Instance.block.Count > 0)
             {
                 for (int i = 0; i < Instance.block.Count; i++)
@@ -98,16 +101,19 @@ namespace SceneSaveState
                 }
             }
             GUILayout.EndScrollView();
-            GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Move up"))
+            if (Instance.block.HasScenes)
             {
-                Instance.block.move_scene_up();
+                GUILayout.FlexibleSpace();
+                if (GUILayout.Button("Move up"))
+                {
+                    Instance.block.move_scene_up();
+                }
+                if (GUILayout.Button("Move down"))
+                {
+                    Instance.block.move_scene_down();
+                }
             }
-            if (GUILayout.Button("Move down"))
-            {
-                Instance.block.move_scene_down();
-            }
-            GUILayout.EndHorizontal();
+            GUILayout.EndVertical();
         }
 
         public static void DrawCamSelect()
@@ -154,7 +160,7 @@ namespace SceneSaveState
                 GUILayout.EndHorizontal();
             }
             GUILayout.EndScrollView();
-            GUILayout.Space(15);
+            GUILayout.FlexibleSpace();
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Add", GUILayout.Width(camviewwidth * 0.7f)))
             {
@@ -220,24 +226,24 @@ namespace SceneSaveState
         public static void DrawEditButtons()
         {
             GUILayout.BeginVertical();
-            GUILayout.BeginHorizontal();      
-            if (GUILayout.Button("Insert scene", GUILayout.Height(25)))
-            {
-                Instance.addAuto(insert: true);
-            }
-            if (GUILayout.Button("Dup scene", GUILayout.Height(25)))
-            {
-                Instance.dupScene();
-            }
-            GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Add scene", GUILayout.Height(55)))
+            if (GUILayout.Button("Add scene", GUILayout.Height(55), GUILayout.Width(ColumnWidth / 2)))
             {
                 Instance.addAuto();
             }
-            if (GUILayout.Button("Update scene", GUILayout.Height(55)))
+            if (GUILayout.Button("Update scene", GUILayout.Height(55), GUILayout.Width(ColumnWidth / 2)))
             {
                 Instance.UpdateScene();
+            }
+            GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();      
+            if (GUILayout.Button("Insert scene", GUILayout.Height(25), GUILayout.Width(ColumnWidth/2)))
+            {
+                Instance.addAuto(insert: true);
+            }
+            if (GUILayout.Button("Dup scene", GUILayout.Height(25), GUILayout.Width(ColumnWidth / 2)))
+            {
+                Instance.dupScene();
             }
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
@@ -278,30 +284,31 @@ namespace SceneSaveState
             List<string> mset = Instance.mset;
             GUILayout.BeginHorizontal();
             // Column 1
-            GUILayout.BeginVertical(GUILayout.Width(viewwidth));
+            GUILayout.BeginVertical(GUILayout.Width(ColumnWidth));
+            GUILayout.Label("Scenes");
             // Scene tab
             DrawSceneTab();
             GUILayout.EndVertical();
 
             // Column 2
-            GUILayout.BeginVertical(GUILayout.Width(viewwidth));
+            GUILayout.BeginVertical(GUILayout.Width(ColumnWidth));
+            GUILayout.Label("Scene Cameras");
             GUILayout.BeginHorizontal();
             // Camera and character selection tabs
-
             if (Instance.block.Count > 0)
             {
                 DrawCamSelect();            
             }
             else
             {
-                GUILayout.Space(viewwidth);
+                GUILayout.FlexibleSpace();
             }
             GUILayout.EndHorizontal();
             GUILayout.EndVertical();
 
-            // Column 3
-            GUILayout.BeginVertical(GUILayout.Width(viewwidth));
-            GUILayout.Space(10);
+            // Column 3         
+            GUILayout.BeginVertical(GUILayout.Width(ColumnWidth));
+            GUILayout.Label("Scene Controls");
             // Add scene, Load scene
             DrawEditButtons();
             if (!(Instance.autoLoad == true))
@@ -312,34 +319,12 @@ namespace SceneSaveState
                     Instance.loadCurrentScene();
                 }
             }
-            GUILayout.Space(10);
-            // char texts
-            GUILayout.Space(25);
-            GUILayout.BeginHorizontal();
-            Instance.currentVNData.enabled = GUILayout.Toggle(Instance.currentVNData.enabled, "  Use cam in Visual Novel");
+            Instance.currentVNData.enabled = GUILayout.Toggle(Instance.currentVNData.enabled, "Use cam in Visual Novel");
             GUILayout.FlexibleSpace();
-            /* TODO
-            if (Instance.currentVNData.enabled)
-            {
-                var txt = Utils.btntext_get_if_selected2("More", Instance.currentVNData.addprops.a1 || Instance.currentVNData.addprops.a2);
-                if (GUILayout.Button(txt, GUILayout.Height(20)))
-                {
-                    subwinindex = 100;
-                }
-            }
-            */
-            GUILayout.EndHorizontal();
-            //GUILayout.Label("  Replics for VN for cam (not necessary):")
-            // if GUILayout.Button("Add scene (selected only)"):
-            //     sc.addAuto(allbase=False)
-            // if GUILayout.Button("Delete duplicate characters"):
-            //     sc.removeDuplicates()
             DrawVNDataOptions();
-            GUILayout.EndHorizontal();
+            GUILayout.FlexibleSpace();
             GUILayout.EndVertical();
-            // if not sc.prev_index == sc.cur_index and not sc.cur_index < 0:
-            // sc.loadCurrentScene()
-            // Minimize
+            GUILayout.EndHorizontal();
         }
     }
 }

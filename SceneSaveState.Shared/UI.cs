@@ -8,19 +8,24 @@ namespace SceneSaveState
 {
     public static partial class UI
     {
+
+        private const string about_text =
+            "SceneSaveState rewrite by @kasanari\n" +
+            "SceneSaveState by @keitaro\n" +
+            "Original SceneConsole code by @chickenManX\n" +
+            "Some cool features by @countd360\n";
+
         private static string mod_version = "1.0";
         public static int subwinindex = 0;
 
-        private static int viewheight = 200;
+        private static int ColumnWidth;
 
-        private static int viewwidth = 120;
-
-        internal const int defaultWindowX = 1050;
+        internal const int defaultWindowX = 1000;
         internal const int defaultWindowY = 70;
 
         internal static int windowindex = 0;
 
-        internal static int WindowHeight = 680;
+        internal static int WindowHeight = 350;
         internal static int WindowWidth = 550;
 
         private static int camviewwidth = 120;
@@ -126,11 +131,7 @@ public struct WarningParam_s
 
         public static void sceneConsoleWindowFunc(int id)
         {
-            Instance.fset = new List<string>(Instance.nameset[0]);
-            Instance.mset = new List<string>(Instance.nameset[1]);
-            // prev_cam_index = sc.cur_cam
-            // prev_sc_index = sc.cur_index
-            // sc.prev_index = sc.cur_index
+            ColumnWidth = WindowWidth / 3;
             GUI.DragWindow(new Rect(0, 0, 10000, 20));
             try
             {
@@ -159,10 +160,6 @@ public struct WarningParam_s
                 else
                 {
                     GUILayout.BeginHorizontal();
-                    if (GUILayout.Button("-", GUILayout.Width(45)))
-                    {
-                        minimizeWindow();
-                    }
                     windowindex = GUILayout.Toolbar(windowindex, consolenames);
                     GUILayout.EndHorizontal();
                     GUILayout.Space(10);
@@ -206,18 +203,17 @@ public struct WarningParam_s
                         GUILayout.FlexibleSpace();
                         GUILayout.BeginHorizontal();
                         // GUILayout.Label("<b>Warning:</b> Closing console removes all console data")
-                        if (GUILayout.Button("About v" + mod_version, GUILayout.Width(100)))
-                        {
-                            //resetConsole(sc.game)
-                            Instance.show_blocking_message_time_sc("SceneSaveState " + mod_version + "\n\nFrom @keitaro\nLightweight and crossplatform version of SceneConsole mod by @chickenManX\nOriginal code by @chickenManX\nSome cool features by @countd360\n\nAlso includes:\nPose Library (by @keitaro, original code by @chickenManX)\nScene Utils (by @keitaro)\n(with Body and Face Sliders) (by @countd360)\n", 5.0f);
-                        }
-                        GUILayout.FlexibleSpace();
                         if (GUILayout.Button("Reset scenes", GUILayout.Width(100)))
                         {
                             warning_action = Instance.Reset;
-                            warning_param = new WarningParam_s("Delete current scene data? This will not delete scene data saved to the card.", false);               
+                            warning_param = new WarningParam_s("Delete current scene data? This will not delete scene data saved to the card.", false);
                         }
                         GUILayout.FlexibleSpace();
+                        if (GUILayout.Button("About v" + mod_version, GUILayout.Width(100)))
+                        {
+                            //resetConsole(sc.game)
+                            Instance.show_blocking_message_time_sc($"SceneSaveState {mod_version}\n{about_text}", 5.0f);
+                        }                   
                         if (GUILayout.Button("Close console", GUILayout.Width(100)))
                         {
                             var col = Instance.sel_font_col;
