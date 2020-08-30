@@ -155,13 +155,13 @@ namespace VNActor
         public static void char_eyes_look_ptn(Actor chara, ActorData param)
         {
             // param = 0, 1, 2, 3, 4
-            chara.EyeLookPattern = param.eyeLookPattern;
+            chara.Gaze = param.eyeLookPattern;
         }
 
         public static void char_eyes_look_pos(Actor chara, ActorData param)
         {
             // param = Vector3 or (x, y, z)
-            chara.EyeLookPos = param.eyeLookPos;
+            chara.GazeTarget = param.eyeLookPos;
         }
 
         public static void char_neck_look(Actor chara, ActorData param)

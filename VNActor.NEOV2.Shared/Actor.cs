@@ -18,7 +18,6 @@ namespace VNActor
             public byte[] coordinate;
             public float tuya;
             public float wetness;
-            public byte[] eyeAngles;
 
 
             public ActorData() : base() { }
@@ -30,7 +29,6 @@ namespace VNActor
                 wetness = a.SkinWetness;
                 tearLevel = a.TearLevel;
                 coordinate = a.curcloth_coordinate;
-                eyeAngles = a.EyeAngles;
 
 
                 /*
@@ -74,7 +72,7 @@ namespace VNActor
                 a.SkinWetness = wetness;
                 a.TearLevel = tearLevel;
                 a.curcloth_coordinate = coordinate;
-                a.EyeAngles = eyeAngles;
+               
 
             }
         }
@@ -93,27 +91,36 @@ namespace VNActor
         {
             get
             {
-                using (MemoryStream memoryStream = new MemoryStream())
+                if (Gaze == EyeLookState.Fixed)
                 {
-                    using (BinaryWriter binaryWriter = new BinaryWriter(memoryStream))
+                    using (MemoryStream memoryStream = new MemoryStream())
                     {
-                        CharInfo.eyeLookCtrl.eyeLookScript.SaveAngle(binaryWriter);
-                        return memoryStream.ToArray();
+                        using (BinaryWriter binaryWriter = new BinaryWriter(memoryStream))
+                        {
+                            CharInfo.eyeLookCtrl.eyeLookScript.SaveAngle(binaryWriter);
+                            return memoryStream.ToArray();
+                        }
                     }
+                }
+                else
+                {
+                    return null;
                 }
             }
             set
             {
-                using (MemoryStream memoryStream = new MemoryStream(value))
+                if (Gaze == EyeLookState.Fixed)
                 {
-                    using (BinaryReader binaryReader = new BinaryReader(memoryStream))
+                    using (MemoryStream memoryStream = new MemoryStream(value))
                     {
-                        CharInfo.eyeLookCtrl.eyeLookScript.LoadAngle(binaryReader);
+                        using (BinaryReader binaryReader = new BinaryReader(memoryStream))
+                        {
+                            CharInfo.eyeLookCtrl.eyeLookScript.LoadAngle(binaryReader);
+                        }
                     }
                 }
             }
-        }
-        
+        }       
 
         public void set_accessory(int accIndex, bool accShow)
         {

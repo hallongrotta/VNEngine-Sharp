@@ -42,36 +42,37 @@ namespace VNActor
 
         public float eyesOpen;
 
+        public byte[] eyeAngles;
 
-/* Unmerged change from project 'VNActor.AI'
-Before:
-        public int eyePattern;
-        
-        public int eyebrowPattern;
-        
-        public int neckPattern;
-After:
-        public int eyePattern;
+        /* Unmerged change from project 'VNActor.AI'
+        Before:
+                public int eyePattern;
 
-        public int eyebrowPattern;
+                public int eyebrowPattern;
 
-        public int neckPattern;
-*/
+                public int neckPattern;
+        After:
+                public int eyePattern;
 
-/* Unmerged change from project 'VNActor.HS2'
-Before:
-        public int eyePattern;
-        
-        public int eyebrowPattern;
-        
-        public int neckPattern;
-After:
-        public int eyePattern;
+                public int eyebrowPattern;
 
-        public int eyebrowPattern;
+                public int neckPattern;
+        */
 
-        public int neckPattern;
-*/
+        /* Unmerged change from project 'VNActor.HS2'
+        Before:
+                public int eyePattern;
+
+                public int eyebrowPattern;
+
+                public int neckPattern;
+        After:
+                public int eyePattern;
+
+                public int eyebrowPattern;
+
+                public int neckPattern;
+        */
         public int eyePattern;
 
         public int eyebrowPattern;
@@ -80,7 +81,7 @@ After:
 
         public Vector3 eyeLookPos;
 
-        public int eyeLookPattern;
+        public EyeLookState eyeLookPattern;
 
 
 /* Unmerged change from project 'VNActor.AI'
@@ -165,14 +166,15 @@ After:
             simple = a.Simple;
             simpleColor = a.SimpleColor;
 
-            eyeLookPattern = a.EyeLookPattern;
-            eyeLookPos = a.EyeLookPos;
+            eyeLookPattern = a.Gaze;
+            eyeLookPos = a.GazeTarget;
             neckPattern = a.LookNeckPattern;
 
             neck = a.LookNeckFull2;
             eyebrowPattern = a.EyebrowPattern;
             eyePattern = a.EyePattern;
             eyesOpen = a.EyesOpenLevel;
+            eyeAngles = a.EyeAngles;
             blinking = a.EyesBlink;
             mouthPattern = a.MouthPattern;
             mouthOpen = a.MouthOpenLevel;
@@ -239,13 +241,14 @@ After:
             a.Simple = simple;
             a.SimpleColor = simpleColor;
 
-            a.EyeLookPattern = eyeLookPattern;
-            a.EyeLookPos = eyeLookPos;
+            a.Gaze = eyeLookPattern;
+            a.GazeTarget = eyeLookPos;
             a.LookNeckPattern = neckPattern;
-
+                        
             a.LookNeckFull2 = neck;
             a.EyebrowPattern = eyebrowPattern;
             a.EyePattern = eyePattern;
+            a.EyeAngles = eyeAngles;
             a.EyesOpenLevel = eyesOpen;
             a.EyesBlink = blinking;
             a.MouthPattern = mouthPattern;

@@ -166,15 +166,24 @@ namespace VNActor
             }
         }
 
-        public int LookEyesPattern
+        public enum EyeLookState
+        {
+            Front,
+            Follow,
+            Avert,
+            Fixed,
+            Target
+        }
+
+        public EyeLookState Gaze
         {
             get
             {
-                return this.objctrl.charInfo.GetLookEyesPtn();
+                return (EyeLookState)this.objctrl.charInfo.GetLookEyesPtn();
             }
             set
             {
-                this.objctrl.charInfo.ChangeLookEyesPtn(value);
+                this.objctrl.charInfo.ChangeLookEyesPtn((int)value);
             }
         }
 
@@ -1012,12 +1021,12 @@ namespace VNActor
             }
         }
 
-        public void set_look_eye(int ptn_dir, Vector3 dir)
+        public void set_look_eye(EyeLookState ptn_dir, Vector3 dir)
         {
-            this.LookEyesPattern = ptn_dir;
-            if (ptn_dir == 4)
+            this.Gaze = ptn_dir;
+            if (ptn_dir == EyeLookState.Target)
             {
-                this.EyeLookPos = dir;
+                this.GazeTarget = dir;
             }
         }
 
@@ -1046,21 +1055,8 @@ namespace VNActor
         }
         */
 
-        public int EyeLookPattern
-        {
-            get
-            {
-                // return eye look at pattern: 0: front, 1: camera, 2: hide from camera, 3: fix, 4: operate
-                return this.objctrl.charInfo.GetLookEyesPtn();
-            }
-            set
-            {
-                // eye look at pattern: 0: front, 1: camera, 2: hide from camera, 3: fix, 4: operate
-                this.objctrl.ChangeLookEyesPtn(value);
-            }
-        }
 
-        public Vector3 EyeLookPos
+        public Vector3 GazeTarget
         {
             set
             {
