@@ -14,9 +14,9 @@ namespace SceneSaveState
         {
             if (Instance.currentVNData.enabled)
             {
+                GUILayout.BeginVertical();
                 GUILayout.BeginHorizontal();
-                GUILayout.Label("  Who say:", GUILayout.Width(90));
-                Instance.currentVNData.whosay = GUILayout.TextField(Instance.currentVNData.whosay, GUILayout.Width(210));
+                GUILayout.Label("Who say:", GUILayout.Width(90));
                 if (GUILayout.Button("<", GUILayout.Width(20)))
                 {
                     Instance.currentVNData.whosay = Instance.get_next_speaker(Instance.currentVNData.whosay, false);
@@ -26,9 +26,10 @@ namespace SceneSaveState
                     Instance.currentVNData.whosay = Instance.get_next_speaker(Instance.currentVNData.whosay, true);
                 }
                 GUILayout.EndHorizontal();
+                Instance.currentVNData.whosay = GUILayout.TextField(Instance.currentVNData.whosay);
+
                 GUILayout.BeginHorizontal();
-                GUILayout.Label("  What say:", GUILayout.Width(90));
-                Instance.currentVNData.whatsay = GUILayout.TextArea(Instance.currentVNData.whatsay, GUILayout.Width(210), GUILayout.Height(85));
+                GUILayout.Label("What say:", GUILayout.Width(90));
                 if (GUILayout.Button("X", GUILayout.Width(20)))
                 {
                     Instance.currentVNData.whatsay = "";
@@ -38,7 +39,8 @@ namespace SceneSaveState
                     Instance.currentVNData.whatsay = "...";
                 }
                 GUILayout.EndHorizontal();
-                GUILayout.Space(5);
+                Instance.currentVNData.whatsay = GUILayout.TextArea(Instance.currentVNData.whatsay, GUILayout.Height(85));
+                GUILayout.EndVertical();
                 /*GUILayout.BeginHorizontal();
                 GUILayout.Label("  Adv VN cmds", GUILayout.Width(90));
                 Instance.currentVNData.addvncmds = GUILayout.TextArea(Instance.currentVNData.addvncmds, GUILayout.Width(235), GUILayout.Height(55));
@@ -110,6 +112,7 @@ namespace SceneSaveState
 
         public static void DrawCamSelect()
         {
+            GUILayout.BeginVertical();
             string col;
             cam_scroll = GUILayout.BeginScrollView(cam_scroll, GUILayout.Height(185), GUILayout.Width(camviewwidth));
             for (int i = 0; i < Instance.block.CurrentScene.cams.Count - 0; i++)
@@ -211,12 +214,13 @@ namespace SceneSaveState
                 }
             }
             GUILayout.EndHorizontal();
+            GUILayout.EndVertical();
         }
 
         public static void DrawEditButtons()
         {
-            GUILayout.BeginHorizontal();
             GUILayout.BeginVertical();
+            GUILayout.BeginHorizontal();      
             if (GUILayout.Button("Insert scene", GUILayout.Height(25)))
             {
                 Instance.addAuto(insert: true);
@@ -225,8 +229,9 @@ namespace SceneSaveState
             {
                 Instance.dupScene();
             }
-            GUILayout.EndVertical();
-            if (GUILayout.Button("Add scene (auto)", GUILayout.Height(55), GUILayout.Width(175)))
+            GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("Add scene", GUILayout.Height(55)))
             {
                 Instance.addAuto();
             }
@@ -249,6 +254,7 @@ namespace SceneSaveState
                 }
             }
             GUILayout.EndHorizontal();
+            GUILayout.EndVertical();
         }
 
         public static void DrawNextPrevButtons()
@@ -271,25 +277,30 @@ namespace SceneSaveState
             List<string> fset = Instance.fset;
             List<string> mset = Instance.mset;
             GUILayout.BeginHorizontal();
-            GUILayout.BeginVertical();
+            // Column 1
+            GUILayout.BeginVertical(GUILayout.Width(viewwidth));
             // Scene tab
             DrawSceneTab();
-
             GUILayout.EndVertical();
-            GUILayout.BeginVertical();
-            // Camera and character selection tabs
+
+            // Column 2
+            GUILayout.BeginVertical(GUILayout.Width(viewwidth));
             GUILayout.BeginHorizontal();
-            GUILayout.BeginVertical();
+            // Camera and character selection tabs
+
             if (Instance.block.Count > 0)
             {
                 DrawCamSelect();            
             }
             else
             {
-                GUILayout.Space(viewheight);
+                GUILayout.Space(viewwidth);
             }
-            GUILayout.EndVertical();
             GUILayout.EndHorizontal();
+            GUILayout.EndVertical();
+
+            // Column 3
+            GUILayout.BeginVertical(GUILayout.Width(viewwidth));
             GUILayout.Space(10);
             // Add scene, Load scene
             DrawEditButtons();
@@ -324,8 +335,8 @@ namespace SceneSaveState
             // if GUILayout.Button("Delete duplicate characters"):
             //     sc.removeDuplicates()
             DrawVNDataOptions();
-            GUILayout.EndVertical();
             GUILayout.EndHorizontal();
+            GUILayout.EndVertical();
             // if not sc.prev_index == sc.cur_index and not sc.cur_index < 0:
             // sc.loadCurrentScene()
             // Minimize
