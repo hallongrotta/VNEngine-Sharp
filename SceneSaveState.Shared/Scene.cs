@@ -16,21 +16,25 @@ namespace SceneSaveState
 
         public List<CamData> cams;
         public Dictionary<string, ActorData> actors;
+        public Dictionary<string, NEOItemData> items;
+        public Dictionary<string, LightData> lights;
         public Dictionary<string, NEOPropData> props;
         public SystemData sys;
 
-        public Scene(Dictionary<string, ActorData> actors, Dictionary<string, NEOPropData> props, List<CamData> cams)
+        public Scene(Dictionary<string, ActorData> actors, Dictionary<string, NEOItemData> items, Dictionary<string, LightData> lights, Dictionary<string, NEOPropData> props, List<CamData> cams)
         {
             this.cams = cams;
             this.actors = actors;
             this.props = props;
+            this.items = items;
+            this.lights = lights;
         }
 
-        public Scene() : this(new Dictionary<string, ActorData>(), new Dictionary<string, NEOPropData>(), new List<CamData>())
+        public Scene()
         {
         }
 
-        public Scene(VNNeoController game, bool importSys) : this()
+        public Scene(VNNeoController game, bool importSys) : this(new Dictionary<string, ActorData>(), new Dictionary<string, NEOItemData>(), new Dictionary<string, LightData>(), new Dictionary<string, NEOPropData>(), new List<CamData>())
         {
             SceneFolders.LoadTrackedActorsAndProps();
             Dictionary<string, VNActor.Actor> actors = game.AllActors;
@@ -42,10 +46,7 @@ namespace SceneSaveState
             foreach (string propid in props.Keys)
             {
                 var prop = props[propid];
-                if (prop is Prop p)
-                {
-                    this.props[propid] = (NEOPropData)p.export_full_status();
-                }
+                AddProp(propid, prop);
             }
             if (importSys)
             {
@@ -53,31 +54,44 @@ namespace SceneSaveState
             }
         }
 
-        public Scene copy()
+        public void AddProp(string key, Prop p)
         {
-
-            var stractors = Utils.SerializeData(this.actors);
-            var strprops = Utils.SerializeData(this.props);
-            var strcams = Utils.SerializeData(this.cams);
-            byte[] strsys = null;
-            if (this.sys != null)
+            if (p is Item i)
             {
-                strsys = Utils.SerializeData(this.sys);
+                this.items[key] = i.export_full_status() as NEOItemData;
             }
-
-
-            Dictionary<string, ActorData> copied_actors = Utils.DeserializeData<Dictionary<string, ActorData>>(stractors);
-            Dictionary<string, NEOPropData> copied_props = Utils.DeserializeData<Dictionary<string, NEOPropData>>(strprops);
-            List<CamData> copied_cams = Utils.DeserializeData<List<CamData>>(strcams);
-            var copied_scene = new Scene(copied_actors, copied_props, copied_cams);
-            if (this.sys != null && strsys != null)
+            else if (p is Light l)
             {
-                SystemData copied_sys = Utils.DeserializeData<SystemData>(strsys);
-                copied_scene.sys = copied_sys;
+                this.lights[key] = l.export_full_status() as LightData;
             }
-            return copied_scene;
+            else // Generic prop
+            {
+                this.props[key] = p.export_full_status() as NEOPropData;
+            }
         }
 
+        public void RemoveProp(string key)
+        {
+            if (this.items.ContainsKey(key))
+            {
+                items.Remove(key);
+            }
+            else if (lights.ContainsKey(key))
+            {
+                lights.Remove(key);
+            }
+            else if (props.ContainsKey(key))
+            {
+                props.Remove(key);
+            }
+        }
+
+        public Scene copy()
+        {         
+            byte[] bytes = Utils.SerializeData(this);
+            Scene s = Utils.DeserializeData<Scene>(bytes);
+            return s;
+        }
 
         public bool isEqual(Scene other)
         {

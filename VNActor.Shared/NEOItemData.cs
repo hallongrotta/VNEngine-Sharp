@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using static VNActor.Item;
+using static VNActor.Light;
 
 namespace VNActor
 {
-    public class NEOItemData : NEOPropData, IDataClass
+    abstract public class NEOItemData : NEOPropData, IDataClass
     {
         public Vector3 scale;
         public Dictionary<int, Color> color;

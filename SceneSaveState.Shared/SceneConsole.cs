@@ -821,12 +821,10 @@ internal Vector2 vnss_wizard_ui_scroll;
                 tagfld = Folder.add(SceneFolders.prop_folder_prefix + newid);
                 tagfld.set_parent_treenodeobject(prop.treeNodeObject);
             }
-            var curstatus = prop.export_full_status() as NEOPropData;
             for (int i = 0; i < block.Count; i++)
             {
                 Scene scene = block[i];
-                scene.props[newid] = curstatus;
-                // updating set
+                scene.AddProp(newid, prop);
             }
         }
 
@@ -1074,7 +1072,7 @@ internal Vector2 vnss_wizard_ui_scroll;
                 foreach (var i in Enumerable.Range(0, block.Count))
                 {
                     var scene = block[i];
-                    scene.props.Remove(propid);
+                    scene.RemoveProp(propid);
                 }
             }
         }
@@ -1645,35 +1643,46 @@ internal Vector2 vnss_wizard_ui_scroll;
                     SceneFolders.LoadTrackedActorsAndProps();
                 }
             }
-            foreach (var propid in s.props.Keys)
-            {
-                Prop prop = game.GetProp(propid);
-                try
+            string propid = "";
+            try
                 {
-                    if (prop is Item i)
+                    
+                    foreach (var id in s.items.Keys)
                     {
-                        ItemData status = s.props[propid] as ItemData;
-                        i.import_status(status);
+                        propid = id;
+                        Item i = game.GetProp(id) as Item;
+                        if (i != null)
+                        {
+                            i.import_status(s.items[id]);
+                        }
+                    }
 
-                    }
-                    else if (prop is VNActor.Light l)
+                    foreach (var id in s.lights.Keys)
                     {
-                        LightData status = s.props[propid] as LightData;
-                        l.import_status(status);
+                    propid = id;
+                    VNActor.Light l = game.GetProp(id) as VNActor.Light;
+                    if (l != null)
+                        {
+                            l.import_status(s.lights[id]);
+                        }
                     }
-                    else
+
+                    foreach (var id in s.props.Keys)
                     {
-                        NEOPropData status = s.props[propid];
-                        prop.import_status(status);
+                    propid = id;
+                    Prop p = game.GetProp(id) as Prop;
+                        if (p != null)
+                        {
+                            p.import_status(s.props[id]);
+                        }
                     }
-                }
+            }
                 catch (Exception e)
                 {
                     game.GetLogger.LogError($"Error occurred when importing Prop with id {propid}" + e.ToString());
                     SceneFolders.LoadTrackedActorsAndProps();
                     Instance.game.GetLogger.LogMessage($"Error occurred when importing Prop with id {propid}");
-                }
-            }
+                }           
         }
 
         protected override void OnSceneSave()

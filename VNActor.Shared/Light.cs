@@ -7,7 +7,7 @@ namespace VNActor
     public partial class Light : Prop, IVNObject
     {
 
-        [MessagePackObject]
+        [MessagePackObject(keyAsPropertyName:true)]
         public class LightData : NEOPropData, IDataClass
         {
             [Key(0)]

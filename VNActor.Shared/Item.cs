@@ -417,9 +417,9 @@ namespace VNActor
 
         override public void import_status(IDataClass p)
         {
-            if (p is ItemData)
+            if (p is ItemData id)
             {
-                import_status(p);
+                import_status(id);
             }
         }
 
