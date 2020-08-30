@@ -15,11 +15,13 @@ namespace SceneSaveState
 
         private static int viewwidth = 120;
 
-        internal static int windowheight = 350;
+        internal const int defaultWindowX = 1050;
+        internal const int defaultWindowY = 70;
 
         internal static int windowindex = 0;
 
-        internal static int windowwidth = 500;
+        internal static int WindowHeight = 680;
+        internal static int WindowWidth = 550;
 
         private static int camviewwidth = 120;
 
@@ -98,8 +100,8 @@ public struct WarningParam_s
         public static void sceneConsoleSkinSetup(VNNeoController game)
         {
             setWindowName(windowindex);
-            game.wwidth = windowwidth;
-            game.wheight = windowheight;
+            game.wwidth = WindowWidth;
+            game.wheight = WindowHeight;
             // #game.windowRect = Rect (Screen.width / 2 - game.wwidth / 2, Screen.height - game.wheight - 10, game.wwidth, game.wheight)
             var x = Utils.get_ini_value_def_int("WindowX", (int)(Screen.width - game.wwidth * 1.3));
             var y = Utils.get_ini_value_def_int("WindowY", Screen.height - game.wheight - 650);

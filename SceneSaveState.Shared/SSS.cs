@@ -18,10 +18,7 @@ namespace SceneSaveState
 
         StudioController game;
         private Rect windowRect;
-        private GUIStyle windowStyle;
         private GUI.WindowFunction windowCallback;
-        private int wwidth;
-        private int wheight;
 
         public static ConfigEntry<BepInEx.Configuration.KeyboardShortcut> SSSHotkey { get; private set; }
 
@@ -38,8 +35,6 @@ namespace SceneSaveState
             KKAPI.Studio.SaveLoad.StudioSaveLoadApi.RegisterExtraBehaviour<SceneConsole>(GUID);
 
             UI.setWindowName(UI.windowindex);
-
-            this.windowStyle = new GUIStyle("window");
             this.windowCallback = UI.sceneConsoleWindowFunc;
             sceneConsoleSkinSetup();
         }
@@ -47,18 +42,11 @@ namespace SceneSaveState
         public void sceneConsoleSkinSetup()
         {
             UI.setWindowName(UI.windowindex);
-            this.wwidth = UI.windowwidth;
-            this.wheight = UI.windowheight;
-            // #game.windowRect = Rect (Screen.width / 2 - game.wwidth / 2, Screen.height - game.wheight - 10, game.wwidth, game.wheight)
-            var x = Screen.width - game.wwidth * 1.1f;
-            var y = Screen.height - game.wheight - 600;
-            var w = game.wwidth + 50;
-            var h = game.wheight + 450;
-            // game.windowRect = Rect(Screen.width / 2 - game.wwidth * 1.5, Screen.height - game.wheight - 500,
-            //                        game.wwidth + 50, game.wheight + 400)
+            var x = UI.defaultWindowX;
+            var y = UI.defaultWindowY;
+            var w = UI.WindowWidth;
+            var h = UI.WindowHeight;
             this.windowRect = new Rect(x, y, w, h);
-            //game.windowCallback = GUI.WindowFunction(scriptHelperWindowGUI)
-            this.windowStyle = game.windowStyleDefault;
         }
 
         public void OnGUI()
