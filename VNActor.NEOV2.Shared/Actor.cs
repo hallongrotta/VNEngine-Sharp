@@ -28,7 +28,7 @@ namespace VNActor
                 tuya = a.SkinGloss;
                 wetness = a.SkinWetness;
                 tearLevel = a.TearLevel;
-                coordinate = a.curcloth_coordinate;
+                coordinate = a.ClothCoordinate;
 
 
                 /*
@@ -71,7 +71,7 @@ namespace VNActor
                 a.SkinGloss = tuya;
                 a.SkinWetness = wetness;
                 a.TearLevel = tearLevel;
-                a.curcloth_coordinate = coordinate;
+                a.ClothCoordinate = coordinate;
                
 
             }
@@ -144,6 +144,9 @@ namespace VNActor
             }
         }
 
+        /// <summary>
+        /// Yoghurt splash effects on character.
+        /// </summary>
         public byte[] Juice
         {
             set
@@ -171,6 +174,9 @@ namespace VNActor
             }
         }
 
+        /// <summary>
+        /// Amount of tears in characters eyes. Set in a range of [0, 1].
+        /// </summary>
         public float TearLevel
         {
             get
@@ -185,6 +191,9 @@ namespace VNActor
             }
         }
 
+        /// <summary>
+        /// Skin glossiness effect. Set in a range of [0, 1].
+        /// </summary>
         public float SkinGloss
         {
             set
@@ -198,6 +207,10 @@ namespace VNActor
                 return this.objctrl.oiCharInfo.SkinTuyaRate;
             }
         }
+
+        /// <summary>
+        /// Skin wetness effect. Set in a range of [0, 1].
+        /// </summary>
         public float SkinWetness
         {
             get
@@ -217,7 +230,11 @@ namespace VNActor
             return ikNodeName.Contains("_Hand_") || ikNodeName.Contains("_Foot01_");
         }
 
-        public byte[] curcloth_coordinate
+        /// <summary>
+        /// Full clothing data for character. Can be used to change outfits. 
+        /// Will only reload character if clothing is different than what is currently being worn. 
+        /// </summary>
+        public byte[] ClothCoordinate
         {
             get
             {
@@ -227,7 +244,7 @@ namespace VNActor
             {
                 try
                 {
-                    if (!value.SequenceEqual(curcloth_coordinate))
+                    if (!value.SequenceEqual(ClothCoordinate))
                     {
                         this.objctrl.charInfo.nowCoordinate.LoadBytes(value, ChaFileDefine.ChaFileCoordinateVersion);
                         this.objctrl.charInfo.Reload(false, true, true);
@@ -240,6 +257,9 @@ namespace VNActor
             }
         }
 
+        /// <summary>
+        /// Enable or disable dynamic bones in character breasts.
+        /// </summary>
         public bool BreastDBEnable
         {
             set
