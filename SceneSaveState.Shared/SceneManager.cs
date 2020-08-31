@@ -421,8 +421,8 @@ namespace SceneSaveState
                     if (entries.Length == 2)
                     {
                         VNData data = new VNData();
-                        data.whosay = entries[0];
-                        data.whatsay = entries[1];
+                        data.whosay = entries[1];
+                        data.whatsay = entries[0];
                         data.enabled = true;
                         vndata[i] = data;
                     }
