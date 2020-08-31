@@ -96,7 +96,7 @@ namespace SceneSaveState
             return true;
         }
 
-        public static bool is_status_statuses_equal(Dictionary<string, IDataClass> oldstatus, Dictionary<string, IDataClass> status)
+        public static bool is_status_statuses_equal<T>(Dictionary<string, IDataClass<T>> oldstatus, Dictionary<string, IDataClass<T>> status)
         {
             /*
         if (oldstatus.Count != status.Count) {
@@ -516,7 +516,7 @@ namespace SceneSaveState
             chara.import_status(status);
         }
 
-        public static IDataClass get_status_diff_optimized(IDataClass oldstatus, IDataClass status)
+        public static IDataClass<T> get_status_diff_optimized<T>(IDataClass<T> oldstatus, IDataClass<T> status)
         {
             /* TODO
             var ofs = oldstatus;
@@ -551,7 +551,7 @@ namespace SceneSaveState
             return false;
         }
 
-        public static bool is_status_equal(IDataClass oldstatus, IDataClass status)
+        public static bool is_status_equal<T>(IDataClass<T> oldstatus, IDataClass<T> status)
         {
             if (oldstatus != status)
             {
@@ -605,7 +605,7 @@ namespace SceneSaveState
             return true;
         }
 
-        public static object is_arr_statuses_equal(IDataClass[] ar1, IDataClass[] ar2)
+        public static object is_arr_statuses_equal<T>(IDataClass<T>[] ar1, IDataClass<T>[] ar2)
         {
             if (ar1.Length != ar2.Length)
             {

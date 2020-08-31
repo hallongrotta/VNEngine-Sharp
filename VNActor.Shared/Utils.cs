@@ -6,9 +6,9 @@ using static VNActor.Actor;
 namespace VNActor
 {
 
-    public interface IDataClass
+    public interface IDataClass<T>
     {
-
+        void Apply(T item);
     }
 
     class Utils

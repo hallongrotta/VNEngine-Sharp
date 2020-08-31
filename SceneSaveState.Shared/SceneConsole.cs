@@ -128,9 +128,9 @@ namespace SceneSaveState
 
         public string charname;
 
-        public IDataClass clipboard_status;
+        public IDataClass<IVNObject<object>> clipboard_status;
 
-        public IDataClass clipboard_status2;
+        public IDataClass<IVNObject<object>> clipboard_status2;
 
         //public int cur_cam;
 
@@ -379,6 +379,7 @@ internal Vector2 vnss_wizard_ui_scroll;
             Utils.recalc_autostates();
         }
 
+        /*
         public void addSelectedMini()
         {
             // find mini
@@ -424,6 +425,7 @@ internal Vector2 vnss_wizard_ui_scroll;
             // fldObj.set_parent(fldName)
             mininewid = "";
         }
+        */
 
         public int find_item_in_objlist(ObjectCtrlInfo obj)
         {
@@ -673,11 +675,11 @@ internal Vector2 vnss_wizard_ui_scroll;
             var elem = NeoOCI.create_from_selected();
             if (elem is VNActor.Actor chara)
             {
-                clipboard_status = ((VNActor.Actor)chara).export_full_status();
+                clipboard_status = (IDataClass<IVNObject<object>>)((VNActor.Actor)chara).export_full_status();
             }
             else if (elem is Prop prop)
             {
-                clipboard_status = prop.export_full_status();
+                clipboard_status = (IDataClass<IVNObject<object>>)prop.export_full_status();
             }
             else
             {
@@ -690,11 +692,22 @@ internal Vector2 vnss_wizard_ui_scroll;
             var elem = NeoOCI.create_from_selected();
             if (elem is VNActor.Actor chara)
             {
-                chara.import_status(clipboard_status);
+                chara.import_status((ActorData)clipboard_status);
             }
             else if (elem is Prop prop)
             {
-                prop.import_status(clipboard_status);
+                if (elem is Item i)
+                {
+                    i.import_status((ItemData)clipboard_status2);
+                }
+                else if (elem is VNActor.Light l)
+                {
+                    prop.import_status((LightData)clipboard_status2);
+                }
+                else
+                {
+                    prop.import_status((NEOPropData)clipboard_status2);
+                }
             }
             else
             {
@@ -707,11 +720,11 @@ internal Vector2 vnss_wizard_ui_scroll;
             var elem = NeoOCI.create_from_selected();
             if (elem is VNActor.Actor chara)
             {
-                clipboard_status2 = chara.export_full_status();
+                clipboard_status2 = (IDataClass<IVNObject<object>>)chara.export_full_status();
             }
             else if (elem is Prop prop)
             {
-                clipboard_status2 = prop.export_full_status();
+                clipboard_status2 = (IDataClass<IVNObject<object>>)prop.export_full_status();
             }
             else
             {
@@ -728,7 +741,18 @@ internal Vector2 vnss_wizard_ui_scroll;
             }
             else if (elem is Prop prop)
             {
-                prop.import_status(clipboard_status2);
+                if (elem is Item i)
+                {
+                    i.import_status((ItemData)clipboard_status2);
+                }
+                else if (elem is VNActor.Light l)
+                {
+                    prop.import_status((LightData)clipboard_status2);
+                }
+                else
+                {
+                    prop.import_status((NEOPropData)clipboard_status2);
+                }             
             }
             else
             {
@@ -740,7 +764,7 @@ internal Vector2 vnss_wizard_ui_scroll;
         {
             if (block.Count > 0)
             {
-                var curstatus = VNEngine.System.export_sys_status(game);
+                var curstatus = VNEngine.System.export_full_status();
                 foreach (var i in Enumerable.Range(0, block.Count))
                 {
                     Scene scene = block[i];
@@ -757,11 +781,6 @@ internal Vector2 vnss_wizard_ui_scroll;
 
         public void delSysTracking()
         {
-            foreach (var i in Enumerable.Range(0, block.Count))
-            {
-                var scene = block[i];
-                scene.actors.Remove("sys");
-            }
             isSysTracking = false;
         }
 
@@ -1670,7 +1689,7 @@ internal Vector2 vnss_wizard_ui_scroll;
                     foreach (var id in s.props.Keys)
                     {
                     propid = id;
-                    Prop p = game.GetProp(id) as Prop;
+                    IVNObject<Prop> p = game.GetProp(id) as IVNObject<Prop>;
                         if (p != null)
                         {
                             p.import_status(s.props[id]);
@@ -1693,7 +1712,7 @@ internal Vector2 vnss_wizard_ui_scroll;
             {
                 try
                 {
-                    byte[] sceneData = MessagePackSerializer.Serialize(block.ExportScenes(), MessagePack.Resolvers.ContractlessStandardResolver.Instance);
+                    byte[] sceneData = Utils.SerializeData(block.ExportScenes());
                     pluginData.data["scenes"] = sceneData;
                     SetExtendedData(pluginData);
                     var saveDataSizeKb = CalculateSaveDataSize(sceneData);
@@ -1723,7 +1742,7 @@ internal Vector2 vnss_wizard_ui_scroll;
                     var logger = game.GetLogger;
                     try
                     {
-                        var scenes = MessagePackSerializer.Deserialize<Scene[]>(sceneData, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
+                        var scenes = Utils.DeserializeData<Scene[]>(sceneData);
                         block = new SceneManager(scenes);
                         var saveDataSizeKb = CalculateSaveDataSize(sceneData);
                         logger.LogMessage($"Loaded {(saveDataSizeKb):N} Kb of scene state data.");

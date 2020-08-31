@@ -1,11 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using MessagePack;
+using System.Collections.Generic;
 using UnityEngine;
 using static VNActor.Item;
 using static VNActor.Light;
 
 namespace VNActor
 {
-    abstract public class NEOItemData : NEOPropData, IDataClass
+    [MessagePackObject(keyAsPropertyName:true)]
+    abstract public class NEOItemData : NEOPropData, IDataClass<Item>
     {
         public Vector3 scale;
         public Dictionary<int, Color> color;

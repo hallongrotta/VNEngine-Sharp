@@ -170,7 +170,7 @@ namespace VNEngine
         {
             return SceneFolders.scenef_get_actor(id);
         }
-
+        /*
         public void dump_scene_vnframe(VNController game)
         {
             IDataClass status;
@@ -231,6 +231,7 @@ namespace VNEngine
             }
             this.show_blocking_message_time("VNFrame Scene dumped!");
         }
+        */
 
         public void dump_selected_vnframe(VNController game)
         {

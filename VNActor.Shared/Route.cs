@@ -81,7 +81,7 @@ namespace VNActor
         {
         }
 
-        public struct RouteData : IDataClass
+        public struct RouteData : IDataClass<Route>
         {
             internal RouteInfo? route_f;
             internal bool route_p;
@@ -97,6 +97,11 @@ namespace VNActor
                     route_f = null;
                 }
                 route_p = r.route_play;
+            }
+
+            public void Apply(Route item)
+            {
+                throw new NotImplementedException();
             }
 
             public void Remove(string key)
@@ -239,12 +244,12 @@ namespace VNActor
             prop.SetRouteFull((RouteInfo)param.route_f);
         }
 
-        override public IDataClass export_full_status()
+        new public IDataClass<Route> export_full_status()
         {
             return new RouteData(this);
         }
 
-        override public void import_status(IDataClass status)
+        public void import_status(IDataClass<Route> status)
         {
             throw new NotImplementedException();
         }

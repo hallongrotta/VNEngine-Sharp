@@ -7,13 +7,13 @@ using UnityEngine;
 
 namespace VNActor
 {
-    public partial class Item : IVNObject
+    public partial class Item : IVNObject<Item>
     {
 
 
 
         [MessagePackObject(keyAsPropertyName: true)]
-        public class ItemData : NEOItemData, IDataClass
+        public class ItemData : NEOItemData, IDataClass<Item>
         {
 
             public ItemData()

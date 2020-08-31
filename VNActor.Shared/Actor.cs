@@ -14,7 +14,7 @@ using UnityEngine;
 namespace VNActor
 {
     // Shared Actor code
-    public partial class Actor : NeoOCI, IVNObject
+    public partial class Actor : NeoOCI, IVNObject<Actor>
     {
 
         [Serializable]
@@ -595,7 +595,7 @@ namespace VNActor
             }
         }
 
-        public void import_status(IDataClass tmp_status)
+        public void import_status(IDataClass<Actor> tmp_status)
         {
             if (tmp_status is ActorData data)
             {
@@ -603,7 +603,7 @@ namespace VNActor
             }
         }
 
-        public IDataClass export_full_status()
+        public IDataClass<Actor> export_full_status()
         {
             return new ActorData(this);
         }
@@ -1527,7 +1527,7 @@ namespace VNActor
         }
         */
 
-        public void import_status_diff_optimized(Dictionary<string, IDataClass> status)
+        public void import_status_diff_optimized<T>(Dictionary<string, IDataClass<T>> status)
         {
             return;
         }

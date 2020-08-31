@@ -6,9 +6,8 @@ using VNActor;
 
 namespace VNEngine
 {
-    public partial class System
+    public static partial class System
     {
-
         public static void sys_map_option(StudioController game, bool param)
         {
             Studio.Map map;
@@ -72,27 +71,6 @@ namespace VNEngine
             game.studio_scene.mapInfo.light = param;
         }
 
-        static public IDataClass export_sys_status(VNNeoController game)
-        {
-            return new SystemData((StudioController)game);
-        }
-
-        public static void import_status(SystemData s)
-        {
-            var game = StudioController.Instance;
-            sys_bgm(game, s);
-            sys_wav(game, s);
-            sys_map(game, s);
-            sys_map_pos(game, s);
-            sys_map_rot(game, s);
-            sys_map_option(game, s.map_opt);
-            sys_bg_png(game, s);
-            sys_fm_png(game, s.fm_png);
-            sys_char_light(game, s);
-            colorCorrection = s.colorCorrection;
-            Studio.Studio.Instance.systemButtonCtrl.UpdateInfo();
-        }
-
         public struct ColorCorrection
         {
             public int no;
@@ -119,7 +97,7 @@ namespace VNEngine
             }
         }
 
-        public class SystemData : IDataClass
+        public class SystemData
         {
 
             public BGM_s bgm;
@@ -143,6 +121,21 @@ namespace VNEngine
             public void Remove(string key)
             {
                 throw new NotImplementedException();
+            }
+
+            public void Apply(StudioController game)
+            {
+                sys_bgm(game, this);
+                sys_wav(game, this);
+                sys_map(game, this);
+                sys_map_pos(game, this);
+                sys_map_rot(game, this);
+                sys_map_option(game, this.map_opt);
+                sys_bg_png(game, this);
+                sys_fm_png(game, this.fm_png);
+                sys_char_light(game, this);
+                System.colorCorrection = this.colorCorrection;
+                Studio.Studio.Instance.systemButtonCtrl.UpdateInfo();
             }
 
             public SystemData()

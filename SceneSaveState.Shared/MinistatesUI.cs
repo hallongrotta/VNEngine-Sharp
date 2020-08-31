@@ -35,7 +35,7 @@ namespace SceneSaveState
             GUILayout.Space(tablePadding);
             if (GUILayout.Button("Add state", GUILayout.Width(200)))
             {
-                Instance.addSelectedMini();
+                //Instance.addSelectedMini(); TODO
             }
             GUILayout.FlexibleSpace();
             GUILayout.Label("(optional) custom name: ");

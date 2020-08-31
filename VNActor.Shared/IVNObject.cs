@@ -1,10 +1,10 @@
 ﻿namespace VNActor
 {
-    public interface IVNObject
+    public interface IVNObject<T>
     {
-        void import_status(IDataClass status);
+        void import_status(IDataClass<T> status);
 
-        IDataClass export_full_status();
+        IDataClass<T> export_full_status();
 
     }
 }

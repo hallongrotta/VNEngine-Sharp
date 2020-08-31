@@ -1,14 +1,19 @@
-﻿using System;
+﻿using MessagePack;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
 namespace VNActor
 {
-    public class NEOPropData : IDataClass
+    [MessagePackObject]
+    public class NEOPropData : IDataClass<Prop>
     {
+        [Key("Position")]
         public Vector3 position;
+        [Key("Rotation")]
         public Vector3 rotation;
+        [Key("Visible")]
         public bool visible;
 
         public NEOPropData()

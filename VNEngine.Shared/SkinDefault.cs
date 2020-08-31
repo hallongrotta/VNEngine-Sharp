@@ -229,7 +229,7 @@ namespace VNEngine
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("VNFrame scene dump", customButton, GUILayout.Width(fullw / 2 - 2), GUILayout.Height(this.buttonHeight)))
             {
-                this.controller.dump_scene_vnframe(controller);
+                //this.controller.dump_scene_vnframe(controller);
                 // self.show_blocking_message_time("VNFrame scene dumped!")
             }
             if (GUILayout.Button("VNFActor select dump", customButton, GUILayout.Width(fullw / 2 - 2), GUILayout.Height(this.buttonHeight)))

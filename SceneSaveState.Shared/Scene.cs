@@ -50,11 +50,11 @@ namespace SceneSaveState
             }
             if (importSys)
             {
-                this.sys = (VNEngine.System.SystemData)VNEngine.System.export_sys_status(game);
+                this.sys = (VNEngine.System.SystemData)export_full_status();
             }
         }
 
-        public void AddProp(string key, Prop p)
+        public void AddProp(string key, IVNObject<Prop> p)
         {
             if (p is Item i)
             {

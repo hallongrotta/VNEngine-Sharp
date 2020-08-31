@@ -4,11 +4,11 @@ using UnityEngine;
 
 namespace VNActor
 {
-    public partial class Light : Prop, IVNObject
+    public partial class Light : Prop, IVNObject<Light>
     {
 
         [MessagePackObject(keyAsPropertyName:true)]
-        public class LightData : NEOPropData, IDataClass
+        public class LightData : NEOPropData, IDataClass<Light>
         {
             [Key(0)]
             public Color color;
@@ -214,7 +214,7 @@ namespace VNActor
             prop.range = param.range;
         }
 
-        override public IDataClass export_full_status()
+        new public IDataClass<Light> export_full_status()
         {
             return new LightData(this);
         }
@@ -224,7 +224,7 @@ namespace VNActor
             l.Apply(this);
         }
 
-        override public void import_status(IDataClass status)
+        public void import_status(IDataClass<Light> status)
         {
             if (status is LightData)
             {

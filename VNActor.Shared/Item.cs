@@ -9,7 +9,7 @@ namespace VNActor
 {
 
     // Shared Item code
-    public partial class Item : Prop, IVNObject
+    public partial class Item : Prop, IVNObject<Item>
     {
 
         [MessagePackObject]
@@ -410,12 +410,12 @@ namespace VNActor
             }
         }
 
-        override public IDataClass export_full_status()
+        new public IDataClass<Item> export_full_status()
         {
             return new ItemData(this);
         }
 
-        override public void import_status(IDataClass p)
+        public void import_status(IDataClass<Item> p)
         {
             if (p is ItemData id)
             {

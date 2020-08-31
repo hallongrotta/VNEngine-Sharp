@@ -8,7 +8,7 @@ using static VNEngine.VNCamera;
 
 namespace VNEngine
 {
-    public partial class System
+    public static partial class System
     {
 
         [MessagePackObject]
@@ -46,6 +46,15 @@ namespace VNEngine
             public bool cameraLightShadow;
         }
 
+        public static SystemData export_full_status()
+        {
+            return new SystemData(StudioController.Instance);
+        }
+
+        public static void import_status(SystemData s)
+        {
+            s.Apply(StudioController.Instance);
+        }
 
         //===============================================================================================
         // system action wrapper functions

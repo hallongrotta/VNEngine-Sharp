@@ -8,7 +8,7 @@ using VNActor;
 
 namespace VNEngine
 {
-    public partial class System
+    public static partial class System
     {
 
         public struct Ace
@@ -19,7 +19,7 @@ namespace VNEngine
 
 
         [MessagePackObject(keyAsPropertyName: true)]
-        public class SystemData : IDataClass
+        public class SystemData
         {
             public BGM_s bgm;
 
@@ -95,23 +95,22 @@ namespace VNEngine
                 }
                 */
             }
-        }
 
-        public static void import_status(SystemData s)
-        {
-            var game = StudioController.Instance;
-            sys_bgm(game, s);
-            sys_wav(game, s);
-            sys_map(game, s);
-            sys_map_pos(game, s);
-            sys_map_rot(game, s);
-            map_sun(game, s);
-            map_option(game, s);
-            sys_bg_png(game, s);
-            sys_fm_png(game, s);
-            sys_char_light(game, s);
-            ace = s.ace;
-            Studio.Studio.Instance.systemButtonCtrl.UpdateInfo();
+            internal void Apply(StudioController game)
+            {
+                sys_bgm(game, this);
+                sys_wav(game, this);
+                sys_map(game, this);
+                sys_map_pos(game, this);
+                sys_map_rot(game, this);
+                map_sun(game, this);
+                map_option(game, this);
+                sys_bg_png(game, this);
+                sys_fm_png(game, this);
+                sys_char_light(game, this);
+                System.ace = this.ace;
+                Studio.Studio.Instance.systemButtonCtrl.UpdateInfo();
+            }
         }
 
         private static Ace ace
@@ -223,11 +222,6 @@ namespace VNEngine
             {
                 game.change_map_to(param);
             }
-        }
-
-        static public IDataClass export_sys_status(VNNeoController game)
-        {
-            return new SystemData((StudioController)game);
         }
 
         public delegate void SystemFunc(StudioController game, SystemData param);

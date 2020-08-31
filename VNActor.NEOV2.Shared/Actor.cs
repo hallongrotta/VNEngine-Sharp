@@ -9,10 +9,10 @@ namespace VNActor
 {
 
     // AI Actor
-    public partial class Actor : IVNObject
+    public partial class Actor : IVNObject<Actor>
     {
 
-        public class ActorData : NEOActorData, IDataClass
+        public class ActorData : NEOActorData, IDataClass<Actor>
         {
             public float tearLevel;
             public byte[] coordinate;

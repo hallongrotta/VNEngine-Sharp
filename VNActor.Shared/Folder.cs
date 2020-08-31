@@ -121,19 +121,6 @@ namespace VNActor
             }
         }
 
-        public override IDataClass export_full_status()
-        {
-            return new NEOPropData(this);
-        }
-
-        public override void import_status(IDataClass status)
-        {
-            if (status is NEOPropData pd)
-            {
-                pd.Apply(this);
-            }
-        }
-
         override public Vector3 Position
         {
             get

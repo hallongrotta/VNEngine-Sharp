@@ -10,11 +10,11 @@ namespace VNActor
 {
     // Koikatsu Actor
     public partial class Actor
-        : NeoOCI, IVNObject
+        : NeoOCI, IVNObject<Actor>
     {
 
         [MessagePackObject(keyAsPropertyName: true)]
-        public class ActorData : NEOActorData, IDataClass
+        public class ActorData : NEOActorData, IDataClass<Actor>
         {
 
             [Key("ShoesType")]

@@ -3,14 +3,20 @@
 namespace VNActor
 {
     abstract public class Prop
-        : NeoOCI, IVNObject
+        : NeoOCI, IVNObject<Prop>
     {
-
         public Prop(ObjectCtrlInfo objctrl) : base(objctrl)
         {
         }
 
-        public abstract IDataClass export_full_status();
-        public abstract void import_status(IDataClass status);
+        public IDataClass<Prop> export_full_status()
+        {
+            return new NEOPropData(this);
+        }
+
+        public void import_status(IDataClass<Prop> status)
+        {
+            status.Apply(this);
+        }
     }
 }
