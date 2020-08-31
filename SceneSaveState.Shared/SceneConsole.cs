@@ -1665,37 +1665,23 @@ internal Vector2 vnss_wizard_ui_scroll;
             string propid = "";
             try
                 {
-                    
                     foreach (var id in s.items.Keys)
                     {
                         propid = id;
-                        Item i = game.GetProp(id) as Item;
-                        if (i != null)
-                        {
-                            i.import_status(s.items[id]);
-                        }
+                        s.items[id].Apply(game.GetProp(id));
+                        
                     }
-
                     foreach (var id in s.lights.Keys)
                     {
-                    propid = id;
-                    VNActor.Light l = game.GetProp(id) as VNActor.Light;
-                    if (l != null)
-                        {
-                            l.import_status(s.lights[id]);
-                        }
+                        propid = id;
+                        s.lights[id].Apply(game.GetProp(id));
                     }
-
                     foreach (var id in s.props.Keys)
                     {
-                    propid = id;
-                    IVNObject<Prop> p = game.GetProp(id) as IVNObject<Prop>;
-                        if (p != null)
-                        {
-                            p.import_status(s.props[id]);
-                        }
+                        propid = id;
+                        s.props[id].Apply(game.GetProp(id));
                     }
-            }
+                }
                 catch (Exception e)
                 {
                     game.GetLogger.LogError($"Error occurred when importing Prop with id {propid}" + e.ToString());
