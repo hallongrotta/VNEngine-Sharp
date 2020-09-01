@@ -54,6 +54,18 @@ namespace SceneSaveState
             }
         }
 
+        public void ApplyStatus<T>(T obj, IDataClass<T> status) where T: NeoOCI
+        {
+            if (status != null)
+            {
+                status.Apply(obj);
+            }
+            else
+            {
+                obj.Visible = false;
+            }
+        }
+
         public void AddProp(string key, IVNObject<Prop> p)
         {
             if (p is Item i)

@@ -782,104 +782,7 @@ internal Vector2 vnss_wizard_ui_scroll;
         {
             isSysTracking = false;
         }
-
-
-        public void addSelectedToTrack(Prop prop)
-        {
-            Folder tagfld;
-            var props = game.AllProps;
-
-            foreach (Prop p in props.Values)
-            {
-                if (p.objctrl == prop.objctrl)
-                {
-                    return;
-                }
-            }
-
-            string baseid = "";
-            string newid = "";
-            if (prop is Item)
-            {
-                baseid = "item";
-            }
-            else if (prop is VNActor.Light)
-            {
-                baseid = "light";
-            }
-            else if (prop is Folder)
-            {
-                baseid = "folder";
-            }
-            foreach (var i in Enumerable.Range(0, 1000 - 0))
-            {
-                var id = baseid + i;
-
-                if (props.ContainsKey(id))
-                {
-                }
-                else
-                {
-                    newid = id;
-                    break;
-                }
-            }
-            if (prop is VNActor.Light)
-            {
-                tagfld = Folder.add(SceneFolders.light_folder_prefix + newid);
-                prop.set_parent(tagfld);
-            }
-            else if (prop is Route)
-            {
-                tagfld = Folder.add("-propgrandpa:" + newid);
-                tagfld.set_parent_treenodeobject(prop.treeNodeObject.child[0]);
-            }
-            else
-            {
-                tagfld = Folder.add(SceneFolders.prop_folder_prefix + newid);
-                tagfld.set_parent_treenodeobject(prop.treeNodeObject);
-            }
-            for (int i = 0; i < block.Count; i++)
-            {
-                Scene scene = block[i];
-                scene.AddProp(newid, prop);
-            }
-        }
-
-        public void addSelectedToTrack(VNActor.Actor chara)
-        {
-            var actors = game.AllActors;
-
-            foreach (VNActor.Actor actor in actors.Values)
-            {
-                if (actor.objctrl == chara.objctrl)
-                {
-                    return;
-                }
-            }
-
-            var id = "";
-            foreach (var i in Enumerable.Range(0, 1000 - 0))
-            {
-                id = "act" + i.ToString();
-                if (actors.ContainsKey(id))
-                {
-                }
-                else
-                {
-                    break;
-                }
-            }
-            var tagfld = Folder.add(SceneFolders.actor_folder_prefix + id);
-            tagfld.set_parent_treenodeobject(chara.treeNodeObject.child[0].child[0]);
-            var curstatus = (ActorData)chara.export_full_status();
-            foreach (var i in Enumerable.Range(0, block.Count))
-            {
-                Scene scene = block[i];
-                scene.actors[id] = curstatus;
-            }
-        }
-
+      
         public void addSelectedToTrack()
         {
             var objects = KKAPI.Studio.StudioAPI.GetSelectedObjects();
@@ -891,31 +794,15 @@ internal Vector2 vnss_wizard_ui_scroll;
             }
             else
             {
-                foreach (ObjectCtrlInfo objectCtrl in objects)
+                foreach (var objectCtrl in objects)
                 {
-                    if (objectCtrl is OCIItem item)
+                    try
                     {
-                        addSelectedToTrack(new Item(item));
+                        SceneFolders.AddToTrack(objectCtrl);
                     }
-                    else if (objectCtrl is OCIChar chara)
+                    catch
                     {
-                        addSelectedToTrack(new VNActor.Actor(chara));
-                    }
-                    else if (objectCtrl is OCILight oLight)
-                    {
-                        addSelectedToTrack(new VNActor.Light(oLight));
-                    }
-                    else if (objectCtrl is OCIRoute oRoute)
-                    {
-                        addSelectedToTrack(new Route(oRoute));
-                    }
-                    else if (objectCtrl is OCIFolder oFolder)
-                    {
-                        addSelectedToTrack(new Folder(oFolder));
-                    }
-                    else
-                    {
-                        return;
+                        continue;
                     }
                 }
                 SceneFolders.LoadTrackedActorsAndProps();
@@ -1626,62 +1513,60 @@ internal Vector2 vnss_wizard_ui_scroll;
             }
             foreach (var actid in s.actors.Keys)
             {
-                ActorData char_status = s.actors[actid];
-                try
+                var actors = game.AllActors;
+
+                foreach (var kvp in actors)
                 {
-                    /* TODO
-                    if (SceneConsole.Instance != null)
+                    s.actors.TryGetValue(kvp.Key, out ActorData char_status);
+
+                    if (char_status is null)
                     {
-                        if (SceneConsole.Instance.skipClothesChanges)
+                        kvp.Value.Visible = false;
+                    }
+                    else
+                    {
+                        try
                         {
-                            char_status.Remove("acc_all");
-                            char_status.Remove("cloth_all");
-                            char_status.Remove("cloth_type");
+                            char_status.Apply(kvp.Value);
+                        }
+                        catch (Exception e)
+                        {
+                            SceneConsole.Instance.game.GetLogger.LogError($"Error occurred when importing Actor with id {actid}" + e.ToString());
+                            SceneConsole.Instance.game.GetLogger.LogMessage($"Error occurred when importing Actor with id {actid}");
+                            SceneFolders.LoadTrackedActorsAndProps();
                         }
                     }
-                    */
-                }
-                catch (Exception)
-                {
-                }
-                var actor = game.GetActor(actid);
-                try
-                {
-                        char_status.Apply(actor);
-                }
-                catch (Exception e)
-                {
-                    SceneConsole.Instance.game.GetLogger.LogError($"Error occurred when importing Actor with id {actid}" + e.ToString());
-                    SceneConsole.Instance.game.GetLogger.LogMessage($"Error occurred when importing Actor with id {actid}");
-                    SceneFolders.LoadTrackedActorsAndProps();
-                }
+                }               
             }
             string propid = "";
             try
+            {
+                foreach (var kvp in game.AllProps)
                 {
-                    foreach (var id in s.items.Keys)
+                    propid = kvp.Key;
+                    if (kvp.Value is Item)
                     {
-                        propid = id;
-                        s.items[id].Apply(game.GetProp(id));
-                        
+                        s.items.TryGetValue(kvp.Key, out var status);
+                        s.ApplyStatus(kvp.Value, status);
                     }
-                    foreach (var id in s.lights.Keys)
+                    else if (kvp.Value is VNActor.Light)
                     {
-                        propid = id;
-                        s.lights[id].Apply(game.GetProp(id));
+                        s.lights.TryGetValue(kvp.Key, out var status);
+                        s.ApplyStatus(kvp.Value, status);
                     }
-                    foreach (var id in s.props.Keys)
+                    else if (kvp.Value is Prop)
                     {
-                        propid = id;
-                        s.props[id].Apply(game.GetProp(id));
+                        s.props.TryGetValue(kvp.Key, out var status);
+                        s.ApplyStatus(kvp.Value, status);
                     }
                 }
-                catch (Exception e)
-                {
-                    game.GetLogger.LogError($"Error occurred when importing Prop with id {propid}" + e.ToString());
-                    SceneFolders.LoadTrackedActorsAndProps();
-                    Instance.game.GetLogger.LogMessage($"Error occurred when importing Prop with id {propid}");
-                }           
+            }
+            catch (Exception e)
+            {
+                game.GetLogger.LogError($"Error occurred when importing Prop with id {propid}" + e.ToString());
+                SceneFolders.LoadTrackedActorsAndProps();
+                Instance.game.GetLogger.LogMessage($"Error occurred when importing Prop with id {propid}");
+            }           
         }
 
         protected override void OnSceneSave()

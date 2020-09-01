@@ -23,6 +23,85 @@ namespace VNEngine
             return ar;
         }
 
+        public static void AddToTrack<T>(T objctrl) where T: ObjectCtrlInfo
+        {
+            if (objctrl is OCIItem i) AddToTrack(i);
+            else if (objctrl is OCIChar c) AddToTrack(c);
+            else if (objctrl is OCIFolder f) AddToTrack(f);
+            else if (objctrl is OCILight l) AddToTrack(l);
+            else if (objctrl is OCIRoute r) AddToTrack(r);
+        }
+
+        public static void AddToTrack(OCIChar objctrl)
+        {
+            string id = ResolveID("act", new VNActor.Actor(objctrl), AllActors);
+            if (id != null)
+            {
+                var tagfld = Folder.add(actor_folder_prefix + id);
+                tagfld.set_parent_treenodeobject(objctrl.treeNodeObject.child[0].child[0]);
+            }
+        }
+
+        public static void AddToTrack(OCIItem objctrl)
+        {
+            var newid = ResolveID("item", new Item(objctrl), AllProps);
+            if (newid != null)
+            {
+                var tagfld = Folder.add(SceneFolders.prop_folder_prefix + newid);
+                tagfld.set_parent_treenodeobject(objctrl.treeNodeObject);
+            }
+        }
+        public static void AddToTrack(OCILight objctrl)
+        {
+            var l = new Light(objctrl);
+            var newid = ResolveID("light", l, AllProps);
+            if (newid != null)
+            {
+                var tagfld = Folder.add(SceneFolders.light_folder_prefix + newid);
+                l.set_parent(tagfld);
+            }
+        }
+
+        public static void AddToTrack(OCIFolder objctrl)
+        {
+            var newid = ResolveID("folder", new Folder(objctrl), AllProps);
+            if (newid != null)
+            {
+                var tagfld = Folder.add(SceneFolders.prop_folder_prefix + newid);
+                tagfld.set_parent_treenodeobject(objctrl.treeNodeObject);
+            }
+        }
+
+        public static void AddToTrack(OCIRoute objctrl)
+        {
+            var newid = ResolveID("route", new Route(objctrl), AllProps);
+            if (newid != null)
+            {
+                var tagfld = Folder.add("-propgrandpa:" + newid);
+                tagfld.set_parent_treenodeobject(objctrl.treeNodeObject.child[0]);
+            }
+        }
+
+        private static string ResolveID<T>(string baseid, T obj, Dictionary<string, T> dict) where T: NeoOCI
+        {
+            foreach (Prop p in AllProps.Values)
+            {
+                if (p.objctrl == obj.objctrl)
+                {
+                    return null;
+                }
+            }
+            foreach (var i in Enumerable.Range(0, 1000 - 0))
+            {
+                var id = baseid + i;
+                if (!dict.ContainsKey(id))
+                {
+                    return id;
+                }
+            }
+            return null;
+        }
+
         public static void LoadTrackedActorsAndProps()
         {
             List<OCIFolder> folders = scene_get_all_folders_raw();
