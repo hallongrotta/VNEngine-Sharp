@@ -112,8 +112,9 @@ namespace SceneSaveState
                 {
                     Instance.block.move_scene_down();
                 }
-            }
-            GUILayout.EndVertical();
+                DrawNextPrevButtons();
+            }           
+            GUILayout.EndVertical();           
         }
 
         public static void DrawCamSelect()
@@ -259,18 +260,18 @@ namespace SceneSaveState
                     Instance.removeScene();
                 }
             }
-            GUILayout.EndHorizontal();
+            GUILayout.EndHorizontal();           
             GUILayout.EndVertical();
         }
 
         public static void DrawNextPrevButtons()
         {
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Load prev scene", GUILayout.Height(30)))
+            if (GUILayout.Button("Prev scene", GUILayout.Height(25), GUILayout.Width(ColumnWidth / 2)))
             {
                 Instance.goto_prev_sc();
             }
-            if (GUILayout.Button("Load next scene", GUILayout.Height(30)))
+            if (GUILayout.Button("Next scene", GUILayout.Height(25), GUILayout.Width(ColumnWidth / 2)))
             {
                 Instance.goto_next_sc();
             }
