@@ -43,7 +43,6 @@ using System.VNCamera;
 using ExtensibleSaveFormat;
 using KKAPI.Studio.SaveLoad;
 using KKAPI.Utilities;
-using MessagePack;
 using Studio;
 using System;
 using System.Collections.Generic;
@@ -896,28 +895,23 @@ internal Vector2 vnss_wizard_ui_scroll;
                 {
                     if (objectCtrl is OCIItem item)
                     {
-                        var prop = NeoOCI.create_from(item);
-                        addSelectedToTrack(prop);
+                        addSelectedToTrack(new Item(item));
                     }
                     else if (objectCtrl is OCIChar chara)
                     {
-                        var actor = NeoOCI.create_from(chara);
-                        addSelectedToTrack(actor);
+                        addSelectedToTrack(new VNActor.Actor(chara));
                     }
                     else if (objectCtrl is OCILight oLight)
                     {
-                        var light = NeoOCI.create_from(oLight);
-                        addSelectedToTrack(light);
+                        addSelectedToTrack(new VNActor.Light(oLight));
                     }
                     else if (objectCtrl is OCIRoute oRoute)
                     {
-                        var route = NeoOCI.create_from(oRoute);
-                        addSelectedToTrack(route);
+                        addSelectedToTrack(new Route(oRoute));
                     }
                     else if (objectCtrl is OCIFolder oFolder)
                     {
-                        var fld = NeoOCI.create_from(oFolder);
-                        addSelectedToTrack(fld);
+                        addSelectedToTrack(new Folder(oFolder));
                     }
                     else
                     {
