@@ -24,12 +24,13 @@ namespace VNActor
 
             public ActorData(Actor a) : base(a)
             {
-
-                tuya = a.SkinGloss;
-                wetness = a.SkinWetness;
-                tearLevel = a.TearLevel;
-                coordinate = a.ClothCoordinate;
-
+                if (visible)
+                {
+                    tuya = a.SkinGloss;
+                    wetness = a.SkinWetness;
+                    tearLevel = a.TearLevel;
+                    coordinate = a.ClothCoordinate;
+                }
 
                 /*
                 // ext data, enable by ini setting
@@ -68,12 +69,13 @@ namespace VNActor
             override public void Apply(Actor a)
             {
                 base.Apply(a);
-                a.SkinGloss = tuya;
-                a.SkinWetness = wetness;
-                a.TearLevel = tearLevel;
-                a.ClothCoordinate = coordinate;
-               
-
+                if (visible)
+                {
+                    a.SkinGloss = tuya;
+                    a.SkinWetness = wetness;
+                    a.TearLevel = tearLevel;
+                    a.ClothCoordinate = coordinate;
+                }            
             }
         }
 

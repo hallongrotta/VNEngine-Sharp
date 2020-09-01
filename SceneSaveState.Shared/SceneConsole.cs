@@ -1647,7 +1647,7 @@ internal Vector2 vnss_wizard_ui_scroll;
                 var actor = game.GetActor(actid);
                 try
                 {
-                    actor?.import_status(char_status);
+                        char_status.Apply(actor);
                 }
                 catch (Exception e)
                 {

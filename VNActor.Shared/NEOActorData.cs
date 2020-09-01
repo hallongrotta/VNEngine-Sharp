@@ -141,6 +141,8 @@ After:
         public NEOActorData(Actor a)
         {
             visible = a.Visible;
+            if (visible)
+            {
             position = a.Position;
             rotation = a.Rotation;
             scale = a.Scale;
@@ -195,92 +197,95 @@ After:
 
             voiceList = a.VoiceList;
             voiceRepeat = a.VoiceRepeat;
+            }           
         }
 
         virtual public void Apply(Actor a)
         {
-
-
-            //if (this.kinematicType != KinematicMode.IK)
-            //{
-            if (a.Position != position || a.Animation.no != anim.no)
-            {
-                a.BreastDBEnable = false;
-            }
-            //} 
-
-
             a.Visible = visible;
-            a.Position = position;
-            a.Rotation = rotation;
-            a.Scale = scale;
-            a.AnimeSpeed = animeSpeed;
-            a.AnimePattern = animePattern;
-            a.AnimationForceLoop = forceLoop;
-            a.Accessories = accessoryStatus;
-            a.FaceRedness = faceRedness;
-            son = a.Son;
-
-            if (anim.normalizedTime is float time)
+            if (visible)
             {
-                a.SetAnimate(anim.group, anim.category, anim.no, time);
-            }
-            else
-            {
-                a.SetAnimate(anim.group, anim.category, anim.no);
-            }
+
+                //if (this.kinematicType != KinematicMode.IK)
+                //{
+                if (a.Position != position || a.Animation.no != anim.no)
+                {
+                    a.BreastDBEnable = false;
+                }
+                //}
 
 
-            //(height, breast) = a.animeOption;
+                a.Position = position;
+                a.Rotation = rotation;
+                a.Scale = scale;
+                a.AnimeSpeed = animeSpeed;
+                a.AnimePattern = animePattern;
+                a.AnimationForceLoop = forceLoop;
+                a.Accessories = accessoryStatus;
+                a.FaceRedness = faceRedness;
+                son = a.Son;
 
-            a.Clothes = cloth;
+                if (anim.normalizedTime is float time)
+                {
+                    a.SetAnimate(anim.group, anim.category, anim.no, time);
+                }
+                else
+                {
+                    a.SetAnimate(anim.group, anim.category, anim.no);
+                }
 
-            a.Juice = juice;
-            a.NippleStand = nippleHardness;
 
-            a.Simple = simple;
-            a.SimpleColor = simpleColor;
+                //(height, breast) = a.animeOption;
 
-            a.Gaze = eyeLookPattern;
-            a.GazeTarget = eyeLookPos;
-            a.LookNeckPattern = neckPattern;
-                        
-            a.LookNeckFull2 = neck;
-            a.EyebrowPattern = eyebrowPattern;
-            a.EyePattern = eyePattern;
-            a.EyeAngles = eyeAngles;
-            a.EyesOpenLevel = eyesOpen;
-            a.EyesBlink = blinking;
-            a.MouthPattern = mouthPattern;
-            a.MouthOpenLevel = mouthOpen;
-            a.LipSync = lipSync;
-            a.HandPattern = handMotions;
-            a.set_kinematic(kinematicType);
+                a.Clothes = cloth;
 
-            if (kinematicType == KinematicMode.IK)
-            {
-                a.set_IK_active(ikActive);
-                a.import_ik_target_info(ik);
-            }
-            else if (kinematicType == KinematicMode.FK)
-            {
-                a.set_FK_active(fkActive);
-                a.import_fk_bone_info(fk);
-            }
-            else if (kinematicType == KinematicMode.IKFK)
-            {
-                a.set_IK_active(ikActive);
-                a.set_FK_active(fkActive);
-                a.import_ik_target_info(ik);
-                a.import_fk_bone_info(fk);
-            }
+                a.Juice = juice;
+                a.NippleStand = nippleHardness;
 
-            //voice_lst = voiceList;
-            a.VoiceRepeat = voiceRepeat;
+                a.Simple = simple;
+                a.SimpleColor = simpleColor;
 
-            if (a.Position != position || a.Animation.no != anim.no)
-            {
-                a.BreastDBEnable = true;
+                a.Gaze = eyeLookPattern;
+                a.GazeTarget = eyeLookPos;
+                a.LookNeckPattern = neckPattern;
+
+                a.LookNeckFull2 = neck;
+                a.EyebrowPattern = eyebrowPattern;
+                a.EyePattern = eyePattern;
+                a.EyeAngles = eyeAngles;
+                a.EyesOpenLevel = eyesOpen;
+                a.EyesBlink = blinking;
+                a.MouthPattern = mouthPattern;
+                a.MouthOpenLevel = mouthOpen;
+                a.LipSync = lipSync;
+                a.HandPattern = handMotions;
+                a.set_kinematic(kinematicType);
+
+                if (kinematicType == KinematicMode.IK)
+                {
+                    a.set_IK_active(ikActive);
+                    a.import_ik_target_info(ik);
+                }
+                else if (kinematicType == KinematicMode.FK)
+                {
+                    a.set_FK_active(fkActive);
+                    a.import_fk_bone_info(fk);
+                }
+                else if (kinematicType == KinematicMode.IKFK)
+                {
+                    a.set_IK_active(ikActive);
+                    a.set_FK_active(fkActive);
+                    a.import_ik_target_info(ik);
+                    a.import_fk_bone_info(fk);
+                }
+
+                //voice_lst = voiceList;
+                a.VoiceRepeat = voiceRepeat;
+
+                if (a.Position != position || a.Animation.no != anim.no)
+                {
+                    a.BreastDBEnable = true;
+                }
             }
         }
     }

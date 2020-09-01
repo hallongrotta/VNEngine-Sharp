@@ -31,9 +31,12 @@ namespace VNActor
 
             override public void Apply(Actor a)
             {
-                a.TearLevel = tearLevel;
-                a.CoordinateType = coordinateType;
-                a.ShoesType = shoesType;
+                if (visible)
+                {
+                    a.TearLevel = tearLevel;
+                    a.CoordinateType = coordinateType;
+                    a.ShoesType = shoesType;
+                }
                 base.Apply(a);
             }
 
@@ -51,11 +54,13 @@ namespace VNActor
 
             public ActorData(Actor a) : base(a)
             {
-
-                tearLevel = a.TearLevel;
-                coordinateType = a.CoordinateType;
-                shoesType = a.ShoesType;
-                eyeAngles = a.EyeAngles;
+                if (visible)
+                {
+                    tearLevel = a.TearLevel;
+                    coordinateType = a.CoordinateType;
+                    shoesType = a.ShoesType;
+                    eyeAngles = a.EyeAngles;
+                }
 
                 /* TODO implement KKPE
 
