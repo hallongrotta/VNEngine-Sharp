@@ -71,13 +71,24 @@ namespace VNEngine
             game.studio_scene.mapInfo.light = param;
         }
 
-        public struct ColorCorrection
+        public struct ColorCorrection : IEquatable<ColorCorrection>
         {
             public int no;
             public float blend;
             public int saturation;
             public int brightness;
             public int contrast;
+
+            public bool Equals(ColorCorrection other)
+            {
+                bool equal = true;
+                equal &= no == other.no;
+                equal &= (blend - other.blend) < 0.001;
+                equal &= saturation == other.saturation;
+                equal &= brightness == other.brightness;
+                equal &= contrast == other.contrast;
+                return equal;
+            }
         }
 
         private static ColorCorrection colorCorrection
@@ -94,6 +105,7 @@ namespace VNEngine
                 StudioController.Instance.studio_scene.cgBrightness = value.brightness;
                 StudioController.Instance.studio_scene.cgContrast = value.contrast;
                 StudioController.Instance.studio_scene.cgSaturation = value.saturation;
+                Studio.Studio.Instance.systemButtonCtrl.UpdateInfo();
             }
         }
 
@@ -134,8 +146,10 @@ namespace VNEngine
                 sys_bg_png(game, this);
                 sys_fm_png(game, this.fm_png);
                 sys_char_light(game, this);
-                System.colorCorrection = this.colorCorrection;
-                Studio.Studio.Instance.systemButtonCtrl.UpdateInfo();
+                if (!System.colorCorrection.Equals(colorCorrection))
+                {
+                    System.colorCorrection = this.colorCorrection;
+                }            
             }
 
             public SystemData()

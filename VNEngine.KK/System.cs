@@ -11,10 +11,18 @@ namespace VNEngine
     public static partial class System
     {
 
-        public struct Ace
+        public struct Ace : IEquatable<Ace>
         {
             public float blend;
             public int no;
+
+            public bool Equals(Ace other)
+            {
+                bool equal = true;
+                equal &= no == other.no;
+                equal &= (blend - other.blend) < 0.001;
+                return equal;
+            }
         }
 
 
@@ -108,8 +116,10 @@ namespace VNEngine
                 sys_bg_png(game, this);
                 sys_fm_png(game, this);
                 sys_char_light(game, this);
-                System.ace = this.ace;
-                Studio.Studio.Instance.systemButtonCtrl.UpdateInfo();
+                if (!System.ace.Equals(ace))
+                {
+                    System.ace = this.ace;
+                }             
             }
         }
 
@@ -123,6 +133,7 @@ namespace VNEngine
             {
                 StudioController.Instance.studio_scene.aceNo = value.no;
                 StudioController.Instance.studio_scene.aceBlend = value.blend;
+                Studio.Studio.Instance.systemButtonCtrl.UpdateInfo();
             }
         }
 
