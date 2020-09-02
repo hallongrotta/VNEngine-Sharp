@@ -12,11 +12,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)AdvancedUI.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EditUI.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MinistatesUI.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SaveLoadController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SaveLoadUI.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SceneConsole.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SceneManager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SSS.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TrackingUI.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utils.cs" />

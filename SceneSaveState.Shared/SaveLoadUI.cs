@@ -23,18 +23,19 @@ namespace SceneSaveState
             GUILayout.Label($"Storing <b>{Instance.saveDataSize:N} Kb</b> of saved scene data.");
             GUILayout.EndHorizontal();
             GUILayout.Space(5);
+            /*
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
             if (GUILayout.Button("Reload Scene Data.", GUILayout.Height(btnBigHeight), GUILayout.Width(210)))
             {
                 if (Instance.block.Count > 0)
                 {
-                    warning_action = Instance.LoadPluginData;
-                    warning_param = new WarningParam_s("Reload scene data from card? This will overwrite current scenes.", false);
+                    //warning_action = SaveLoadController.LoadPluginData;
+                    //warning_param = new WarningParam_s("Reload scene data from card? This will overwrite current scenes.", false);
                 }
                 else
                 {
-                    Instance.LoadPluginData();
+                    //SaveLoadController.LoadPluginData();
                 }
             }
             GUILayout.FlexibleSpace();
@@ -49,11 +50,12 @@ namespace SceneSaveState
                 {
                     msg = "Delete saved scene data?";
                 }
-                warning_action = Instance.deleteSaveData;
-                warning_param = new WarningParam_s(msg, false);
+                //warning_action = SaveLoadController.deleteSaveData;
+                //warning_param = new WarningParam_s(msg, false);
             }
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
+            */
             GUILayout.Space(20);
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();

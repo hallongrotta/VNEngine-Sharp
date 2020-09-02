@@ -1,88 +1,14 @@
-﻿
-/* Unmerged change from project 'SceneSaveState.AI'
-Before:
-using System;
-using System.Collections.Generic;
-using UnityEngine;
-using VNEngine;
-using VNActor;
-using System.Linq;
-using MessagePack;
-using static VNEngine.VNCamera;
-After:
+﻿using BepInEx;
+using BepInEx.Configuration;
 using BepInEx.Logging;
 using ExtensibleSaveFormat;
+using KKAPI;
 using KKAPI.Studio.SaveLoad;
-using KKAPI.Utilities;
-using MessagePack;
-using Studio;
-using System;
-using System.VNCamera;
-*/
-
-/* Unmerged change from project 'SceneSaveState.HS2'
-Before:
-using System;
-using System.Collections.Generic;
-using UnityEngine;
-using VNEngine;
-using VNActor;
-using System.Linq;
-using MessagePack;
-using static VNEngine.VNCamera;
-After:
-using BepInEx.Logging;
-using ExtensibleSaveFormat;
-using KKAPI.Studio.SaveLoad;
-using KKAPI.Utilities;
-using MessagePack;
-using Studio;
-using System;
-using System.VNCamera;
-*/
-using ExtensibleSaveFormat;
-using KKAPI.Studio.SaveLoad;
-using KKAPI.Utilities;
 using Studio;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
-
-/* Unmerged change from project 'SceneSaveState.AI'
-Before:
-using static VNActor.Actor;
-using static VNActor.Item;
-using System.Text;
-using KKAPI.Studio.SaveLoad;
-using KKAPI.Utilities;
-using ExtensibleSaveFormat;
-After:
-using System.Text;
-using UnityEngine;
-using VNActor;
-using VNEngine;
-using KKAPI.Actor;
-using static VNActor.Item;
-*/
-
-/* Unmerged change from project 'SceneSaveState.HS2'
-Before:
-using static VNActor.Actor;
-using static VNActor.Item;
-using System.Text;
-using KKAPI.Studio.SaveLoad;
-using KKAPI.Utilities;
-using ExtensibleSaveFormat;
-After:
-using System.Text;
-using UnityEngine;
-using VNActor;
-using VNEngine;
-using KKAPI.Actor;
-using static VNActor.Item;
-*/
 using UnityEngine;
 using VNActor;
 using VNEngine;
@@ -96,8 +22,23 @@ using static VNEngine.VNCamera.VNData;
 namespace SceneSaveState
 {
 
-    internal class SceneConsole : SceneCustomFunctionController
+    [BepInProcess(Constants.StudioProcessName)]
+    [BepInPlugin(GUID, PluginName, Version)]
+    [BepInDependency(ExtendedSave.GUID)]
+    [BepInDependency(KoikatuAPI.GUID)]
+    internal class SceneConsole : BaseUnityPlugin
     {
+
+        public const string PluginName = "SceneConsole";
+        public const string GUID = "com.kasanari.bepinex.sceneconsole";
+        public const string Version = "1.0";
+        internal new static ManualLogSource Logger;
+
+        private Rect windowRect;
+        private GUI.WindowFunction windowCallback;
+
+        public static ConfigEntry<BepInEx.Configuration.KeyboardShortcut> SSSHotkey { get; private set; }
+
         public const string backup_folder_name = "sssdata";
         public const string defaultSpeakerAlias = "s";
         public const string defaultSaveName = "SSS.dat";
@@ -177,6 +118,8 @@ namespace SceneSaveState
 
         public string sel_font_col;
 
+        public double saveDataSize { get; private set; }
+
         //public Dictionary<string, KeyValuePair<string, string>> shortcuts;
 
         public SkinDefault skinDefault;
@@ -194,20 +137,6 @@ namespace SceneSaveState
         public bool vnFastIsRunImmediately;
         internal float consoleWidth;
         internal float consoleHeight;
-        internal List<string> fset;
-        internal List<string> mset;
-
-
-        public double saveDataSize { get; private set; }
-
-        /*
-internal int wiz_step;
-internal Dictionary<string, string> wiz_data;
-internal string wiz_error;
-internal string wiz_view_mode;
-internal Vector2 vnss_wizard_ui_scroll;
-*/
-
 
         public VNNeoController game
         {
@@ -218,6 +147,12 @@ internal Vector2 vnss_wizard_ui_scroll;
         }
 
         public static SceneConsole Instance { get; private set; }
+        internal ManualLogSource GetLogger 
+        {
+            get {
+                return Logger;
+            }           
+        }
 
         public SceneConsole()
         {
@@ -302,6 +237,111 @@ internal Vector2 vnss_wizard_ui_scroll;
             };
             skinDefault_sideApp = "";
             Instance = this;
+        }
+
+        public void Awake()
+        {
+            StudioSaveLoadApi.RegisterExtraBehaviour<SaveLoadController>(GUID);
+        }
+
+        internal void Start()
+        {
+            Logger = base.Logger;
+            SSSHotkey = Config.Bind("Keyboard Shortcuts", "Toggle VN Controller Window", new BepInEx.Configuration.KeyboardShortcut(KeyCode.B), "Show or hide the VN Controller window in Studio");         
+            sceneConsoleSkinSetup();
+        }
+
+        public void sceneConsoleSkinSetup()
+        {
+            this.windowCallback = UI.sceneConsoleWindowFunc;
+            UI.setWindowName(UI.windowindex);
+            var x = UI.defaultWindowX;
+            var y = UI.defaultWindowY;
+            var w = UI.WindowWidth;
+            var h = UI.WindowHeight;
+            this.windowRect = new Rect(x, y, w, h);
+        }
+
+        public void OnGUI()
+        {
+            if (SceneConsole.Instance.guiOnShow)
+            {
+                windowRect = GUILayout.Window(34652, this.windowRect, this.windowCallback, "Scene Console");
+            }
+        }
+
+        internal void Update()
+        {
+
+            if (SSSHotkey.Value.IsDown())
+            {
+                //UI.sceneConsoleGUIStart(game);
+                SceneConsole.Instance.guiOnShow = !SceneConsole.Instance.guiOnShow;
+            }
+        }
+
+        public double CalculateSaveDataSize(byte[] bytes)
+        {
+            return (double)bytes.Length / 1000;
+        }
+
+        internal PluginData GetPluginData()
+        {
+            var pluginData = new PluginData();
+            if (block.Count > 0)
+            {
+                try
+                {
+                    byte[] sceneData = Utils.SerializeData(block.ExportScenes());
+                    pluginData.data["scenes"] = sceneData;
+                    var saveDataSizeKb = CalculateSaveDataSize(sceneData);
+                    Logger.LogMessage($"Saved {(saveDataSizeKb):N} Kb of scene state data.");
+                    saveDataSize = saveDataSizeKb;
+                    return pluginData;
+                }
+                catch (Exception e)
+                {
+                    Logger.LogError("Error occurred while saving scene data: " + e.ToString());
+                    Logger.LogMessage("Failed to save scene data, check debug log for more info.");
+                    return null;
+                }
+            }
+            else
+            {
+                saveDataSize = 0;
+                return null;
+            }
+        }
+
+        internal void LoadPluginData(PluginData pluginData)
+        {
+
+            if (pluginData == null || pluginData?.data == null)
+            {
+                block = new SceneManager();
+                saveDataSize = 0;
+            }
+            else
+            {
+                byte[] sceneData = pluginData.data["scenes"] as byte[];
+                if (sceneData != null && sceneData.Length > 0)
+                {
+                    try
+                    {
+                        var scenes = Utils.DeserializeData<Scene[]>(sceneData);
+                        block = new SceneManager(scenes);
+                        var saveDataSizeKb = CalculateSaveDataSize(sceneData);
+                        Logger.LogMessage($"Loaded {(saveDataSizeKb):N} Kb of scene state data.");
+                        saveDataSize = saveDataSizeKb;
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.LogError("Error occurred while loading scene data: " + e.ToString());
+                        Logger.LogMessage("Failed to load scene data, check debug log for more info.");
+                    }
+                }
+            }
+            SceneFolders.LoadTrackedActorsAndProps();
         }
 
 
@@ -1490,19 +1530,6 @@ internal Vector2 vnss_wizard_ui_scroll;
             }
         }
 
-        public double CalculateSaveDataSize(byte[] bytes)
-        {
-            return (double)bytes.Length / 1000;
-        }
-
-        public void deleteSaveData()
-        {
-            SetExtendedData(new PluginData() { data = null });
-            block = new SceneManager();
-            SceneFolders.LoadTrackedActorsAndProps();
-            this.saveDataSize = 0;
-        }
-
         // Set scene chars with state data from dictionary
 
         public void SetSceneState(Scene s)
@@ -1567,65 +1594,6 @@ internal Vector2 vnss_wizard_ui_scroll;
                 SceneFolders.LoadTrackedActorsAndProps();
                 Instance.game.GetLogger.LogMessage($"Error occurred when importing Prop with id {propid}");
             }           
-        }
-
-        protected override void OnSceneSave()
-        {
-            var logger = game.GetLogger;
-            var pluginData = new PluginData();
-            if (block.Count > 0)
-            {
-                try
-                {
-                    byte[] sceneData = Utils.SerializeData(block.ExportScenes());
-                    pluginData.data["scenes"] = sceneData;
-                    SetExtendedData(pluginData);
-                    var saveDataSizeKb = CalculateSaveDataSize(sceneData);
-                    logger.LogMessage($"Saved {(saveDataSizeKb):N} Kb of scene state data.");
-                    this.saveDataSize = saveDataSizeKb;
-                }
-                catch (Exception e)
-                {
-                    logger.LogError("Error occurred while saving scene data: " + e.ToString());
-                    logger.LogMessage("Failed to save scene data, check debug log for more info.");
-                }
-            }
-        }
-
-        internal void LoadPluginData()
-        {
-            var pluginData = GetExtendedData();
-            if (pluginData == null || pluginData?.data == null)
-            {
-                block = new SceneManager();
-            }
-            else
-            {
-                byte[] sceneData = pluginData.data["scenes"] as byte[];
-                if (sceneData != null && sceneData.Length > 0)
-                {
-                    var logger = game.GetLogger;
-                    try
-                    {
-                        var scenes = Utils.DeserializeData<Scene[]>(sceneData);
-                        block = new SceneManager(scenes);
-                        var saveDataSizeKb = CalculateSaveDataSize(sceneData);
-                        logger.LogMessage($"Loaded {(saveDataSizeKb):N} Kb of scene state data.");
-                        this.saveDataSize = saveDataSizeKb;
-                    }
-                    catch (Exception e)
-                    {
-                        logger.LogError("Error occurred while loading scene data: " + e.ToString());
-                        logger.LogMessage("Failed to load scene data, check debug log for more info.");
-                    }
-                }
-            }
-            SceneFolders.LoadTrackedActorsAndProps();
-        }
-
-        protected override void OnSceneLoad(SceneOperationKind operation, ReadOnlyDictionary<int, ObjectCtrlInfo> loadedItems)
-        {
-            LoadPluginData();
-        }
+        }        
     }
 }

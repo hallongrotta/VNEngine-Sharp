@@ -280,9 +280,6 @@ namespace SceneSaveState
 
         public static void sceneConsoleEditUI()
         {
-
-            List<string> fset = Instance.fset;
-            List<string> mset = Instance.mset;
             GUILayout.BeginHorizontal();
             // Column 1
             GUILayout.BeginVertical(GUILayout.Width(ColumnWidth));
