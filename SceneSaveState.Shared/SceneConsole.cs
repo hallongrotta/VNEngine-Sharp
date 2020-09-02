@@ -361,147 +361,7 @@ namespace SceneSaveState
         {
             show_blocking_message(text);
             game.set_timer(duration, hide_blocking_message);
-        }
-
-        // ---------- ministates ------------
-        public void addSelectedAutoShow(string param)
-        {
-            // get list of sel objs
-            var arSel = get_selected_objs();
-            if (arSel.Count == 0)
-            {
-                show_blocking_message_time_sc("No selection!");
-                return;
-            }
-            foreach (var actprop in arSel)
-            {
-                //print actprop
-                //if hasattr(actprop, 'as_prop'):
-                if (actprop is VNActor.Actor chara)
-                {
-                    //id = self.find_item_in_objlist(actprop.objctrl)
-                }
-                else
-                {
-                    var txtname = autoshownewid;
-                    if (txtname == "")
-                    {
-                        txtname = actprop.text_name;
-                    }
-                    var fld = Folder.add("-msauto:" + param + ":" + txtname);
-                    //objSave["__id{0}"%(str(id))] = actprop.export_full_status()
-                    fld.set_parent(actprop);
-                }
-            }
-            Utils.recalc_autostates();
-            autoshownewid = "";
-        }
-
-        public void delSelectedAutoShow()
-        {
-            // get list of sel objs
-            var arSel = get_selected_objs();
-            if (arSel.Count == 0)
-            {
-                show_blocking_message_time_sc("No selection!");
-                return;
-            }
-            var arSel0 = arSel[0];
-            var folders = Folder.find_all_startswith("-msauto:");
-            foreach (var folder in folders)
-            {
-                if (folder.treeNodeObject.parent == arSel0.treeNodeObject)
-                {
-                    folder.delete();
-                }
-            }
-            Utils.recalc_autostates();
-        }
-
-        /*
-        public void addSelectedMini()
-        {
-            // find mini
-            var fld = Folder.find_single("-ministates:1.0");
-            if (fld == null)
-            {
-                fld = Folder.add("-ministates:1.0");
-            }
-            // calc name
-            var name = mininewid;
-            if (name == "")
-            {
-                name = "state";
-            }
-            // get list of sel objs
-            var arSel = get_selected_objs();
-            if (arSel.Count == 0)
-            {
-                show_blocking_message_time_sc("No selection!");
-                return;
-            }
-            var objSave = new Dictionary<string, IDataClass>
-            {
-            };
-            foreach (VNActor.Actor actprop in arSel)
-            {
-                //if isinstance(actprop, Actor):
-                var id = find_item_in_objlist(actprop.objctrl);
-                objSave[String.Format("__id{0}", id.ToString())] = actprop.export_full_status();
-                //elif isinstance(actprop, Actor):
-                //print objSave
-            }
-            var fldName = Utils.folder_add_child(fld, name);
-            foreach (var k in objSave.Values)
-            {
-                //fldObj = folder_add_child(fldName,MessagePackSerializer.Serialize(objSave))
-                Utils.folder_add_child(fldName, MessagePackSerializer.Serialize<IDataClass>(k).ToString());
-            }
-            // fldName = HSNeoOCIFolder.add(name)
-            // fldName.set_parent(fld)
-            //
-            // fldObj = HSNeoOCIFolder.add(MessagePackSerializer.Serialize(objSave))
-            // fldObj.set_parent(fldName)
-            mininewid = "";
-        }
-        */
-
-        public int find_item_in_objlist(ObjectCtrlInfo obj)
-        {
-            var dobjctrl = game.studio.dicObjectCtrl;
-            foreach (var key in dobjctrl.Keys)
-            {
-                var objctrl = dobjctrl[key];
-                if (objctrl == obj)
-                {
-                    return key;
-                }
-            }
-            throw new Exception("Item does not exist");
-        }
-
-        public List<NeoOCI> get_selected_objs()
-        {
-            var mtreeman = game.studio.treeNodeCtrl;
-            var ar = new List<NeoOCI>();
-            foreach (var node in mtreeman.selectNodes)
-            {
-                var ochar = NeoOCI.create_from_treenode(node);
-                if (ochar is VNActor.Actor chara)
-                {
-                    ar.Add(chara);
-                }
-                else if (ochar is Prop prop)
-                {
-                    ar.Add(prop);
-                }
-                else
-                {
-                    throw new Exception("Invalid object");
-                }
-            }
-            return ar;
-        }
+        }       
 
         public void getSceneCamString()
         {
@@ -1594,6 +1454,61 @@ namespace SceneSaveState
                 SceneFolders.LoadTrackedActorsAndProps();
                 Instance.game.GetLogger.LogMessage($"Error occurred when importing Prop with id {propid}");
             }           
-        }        
+        }
+
+        public void addSelectedAutoShow(string param)
+        {
+            // get list of sel objs
+            var arSel = Ministates.get_selected_objs();
+            if (arSel.Count == 0)
+            {
+                show_blocking_message_time_sc("No selection!");
+                return;
+            }
+            foreach (var actprop in arSel)
+            {
+                //print actprop
+                //if hasattr(actprop, 'as_prop'):
+                if (actprop is VNActor.Actor chara)
+                {
+                    //id = self.find_item_in_objlist(actprop.objctrl)
+                }
+                else
+                {
+                    var txtname = autoshownewid;
+                    if (txtname == "")
+                    {
+                        txtname = actprop.text_name;
+                    }
+                    var fld = Folder.add("-msauto:" + param + ":" + txtname);
+                    //objSave["__id{0}"%(str(id))] = actprop.export_full_status()
+                    fld.set_parent(actprop);
+                }
+            }
+            Utils.recalc_autostates();
+            autoshownewid = "";
+        }
+
+        // Ministates
+        public void delSelectedAutoShow()
+        {
+            // get list of sel objs
+            var arSel = Ministates.get_selected_objs();
+            if (arSel.Count == 0)
+            {
+                show_blocking_message_time_sc("No selection!");
+                return;
+            }
+            var arSel0 = arSel[0];
+            var folders = Folder.find_all_startswith("-msauto:");
+            foreach (var folder in folders)
+            {
+                if (folder.treeNodeObject.parent == arSel0.treeNodeObject)
+                {
+                    folder.delete();
+                }
+            }
+            Utils.recalc_autostates();
+        }
     }
 }
