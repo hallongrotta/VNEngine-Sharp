@@ -1,4 +1,5 @@
 ﻿using Studio;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using VNActor;
@@ -245,5 +246,73 @@ namespace VNEngine
         {
             AllProps[id] = prop;
         }
+
+        public static Folder createFld(string txt, NeoOCI parent = null, bool ret = true)
+        {
+            var fld = Folder.add(txt);
+            if (parent is Folder)
+            {
+                fld.set_parent(parent);
+            }
+            if (ret == true)
+            {
+                return fld;
+            }
+            else
+            {
+                throw new Exception("create folder failed");
+            }
+        }
+
+        public static Folder createFldIfNo(string txt, Folder parent, int childNum)
+        {
+            Folder fld;
+
+            if (parent.treeNodeObject.child.Count <= childNum)
+            {
+                //print "create folder! %s" % txt
+                fld = Folder.add(txt);
+                fld.set_parent(parent);
+                return fld;
+            }
+            else
+            {
+                var chld = parent.treeNodeObject.child[childNum];
+                fld = NeoOCI.create_from_treenode(chld) as Folder;
+                if (chld.textName != txt)
+                {
+                    //print "hit! upd folder! %s" % txt
+                    fld.name = txt;
+                    //return fld
+                }
+                else
+                {
+                    //print "hit!! no creation! %s" % txt
+                }
+                return fld;
+            }
+        }
+
+        public static void restrict_to_child(Folder fld, int numchilds)
+        {
+            if (fld.treeNodeObject.child.Count > numchilds)
+            {
+                var ar = fld.treeNodeObject.child;
+                var ar2 = new List<NeoOCI>();
+                foreach (var treeobj in ar)
+                {
+                    ar2.Add(NeoOCI.create_from_treenode(treeobj));
+                }
+                foreach (var i in Enumerable.Range(0, ar2.Count))
+                {
+                    if (i >= numchilds)
+                    {
+                        Console.WriteLine(String.Format("deleted! {0}", i.ToString()));
+                        ar2[i].delete();
+                    }
+                }
+            }
+        }
+
     }
 }

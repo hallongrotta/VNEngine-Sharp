@@ -29,116 +29,99 @@ namespace SceneSaveState
     internal class SceneConsole : BaseUnityPlugin
     {
 
-        public const string PluginName = "SceneConsole";
-        public const string GUID = "com.kasanari.bepinex.sceneconsole";
-        public const string Version = "1.0";
+        internal const string PluginName = "SceneConsole";
+        internal const string GUID = "com.kasanari.bepinex.sceneconsole";
+        internal const string Version = "1.0";
         internal new static ManualLogSource Logger;
 
         private Rect windowRect;
         private GUI.WindowFunction windowCallback;
 
-        public static ConfigEntry<BepInEx.Configuration.KeyboardShortcut> SSSHotkey { get; private set; }
+        internal static ConfigEntry<BepInEx.Configuration.KeyboardShortcut> SSSHotkey { get; private set; }
 
-        public const string backup_folder_name = "sssdata";
-        public const string defaultSpeakerAlias = "s";
-        public const string defaultSaveName = "SSS.dat";
-        public const string defaultBackupName = "SSS.dat.backup";
+        internal const string backup_folder_name = "sssdata";
+        internal const string defaultSpeakerAlias = "s";
+        internal const string defaultSaveName = "SSS.dat";
+        internal const string defaultBackupName = "SSS.dat.backup";
 
-        public bool isSysTracking = true;
+        internal bool isSysTracking = true;
 
-        public List<Folder> arAutoStatesItemsChoice;
+        internal List<Folder> arAutoStatesItemsChoice;
 
-        public List<Folder> arAutoStatesItemsVis;
+        internal List<Folder> arAutoStatesItemsVis;
 
-        public bool autoAddCam;
+        internal bool autoAddCam;
 
-        public bool autoLoad;
+        internal bool autoLoad;
 
-        public string autoshownewid;
+        internal string autoshownewid;
 
-        public double backupTimeCur;
+        internal double backupTimeCur;
 
-        public double backupTimeDuration;
+        internal double backupTimeDuration;
 
-        public SceneManager block;
+        internal SceneManager block;
 
-        public VNData currentVNData;
+        internal VNData currentVNData;
 
-        public List<CamData> camset;
+        internal List<CamData> camset;
 
-        public string charname;
+        internal string charname;
 
-        public IDataClass<IVNObject<object>> clipboard_status;
+        internal IDataClass<IVNObject<object>> clipboard_status;
 
-        public IDataClass<IVNObject<object>> clipboard_status2;
+        internal IDataClass<IVNObject<object>> clipboard_status2;
 
-        //public int cur_cam;
+        //internal int cur_cam;
 
-        public int fset_index;
+        internal string funcLockedText;
 
-        public string funcLockedText;
+        //internal VNNeoController game;
 
-        //public VNNeoController game;
+        internal bool guiOnShow;
 
-        public bool guiOnShow;
+        internal bool isFuncLocked;
 
-        public bool isFuncLocked;
+        internal bool isUseMsAuto;
 
-        public bool isSaveCompact;
+        internal int last_acc_id;
 
-        public bool isSaveOld;
+        internal string mininewid;
 
-        public bool isSaveVerify;
+        internal string newid;
 
-        public bool isUseMsAuto;
+        internal string nor_font_col;
 
-        public int last_acc_id;
+        internal float paramAnimCamDuration;
 
-        public string ldname;
+        internal bool paramAnimCamIfPossible;
 
-        public string mininewid;
+        internal string paramAnimCamStyle;
 
-        public int mset_index;
+        internal float paramAnimCamZoomOut;
 
-        public List<List<string>> nameset;
+        internal bool promptOnDelete;
 
-        public string newid;
+        internal string sel_font_col;
 
-        public string nor_font_col;
+        internal double saveDataSize { get; private set; }
 
-        public float paramAnimCamDuration;
+        //internal Dictionary<string, KeyValuePair<string, string>> shortcuts;
 
-        public bool paramAnimCamIfPossible;
+        internal SkinDefault skinDefault;
 
-        public string paramAnimCamStyle;
+        internal string skinDefault_sideApp;
 
-        public float paramAnimCamZoomOut;
+        internal bool skipClothesChanges;
 
-        public bool promptOnDelete;
+        internal string svname = "";
 
-        public string sel_font_col;
+        internal int updAutoStatesTimer;
 
-        public double saveDataSize { get; private set; }
-
-        //public Dictionary<string, KeyValuePair<string, string>> shortcuts;
-
-        public SkinDefault skinDefault;
-
-        public string skinDefault_sideApp;
-
-        public bool skipClothesChanges;
-
-        public string svname = "";
-
-        public int updAutoStatesTimer;
-
-        public string versionSceneDataParsing;
-
-        public bool vnFastIsRunImmediately;
         internal float consoleWidth;
         internal float consoleHeight;
 
-        public VNNeoController game
+        internal VNNeoController game
         {
             get
             {
@@ -146,7 +129,7 @@ namespace SceneSaveState
             }
         }
 
-        public static SceneConsole Instance { get; private set; }
+        internal static SceneConsole Instance { get; private set; }
         internal ManualLogSource GetLogger 
         {
             get {
@@ -154,14 +137,13 @@ namespace SceneSaveState
             }           
         }
 
-        public SceneConsole()
+        internal SceneConsole()
         {
             // init dict
             // initWordDict()
             // --- Some constants ---
             guiOnShow = false;
             // --- Essential Data ---
-            versionSceneDataParsing = "7.0";
             last_acc_id = 0;
             block = new SceneManager();
             // self.basechars = self.getAllBaseChars()
@@ -172,9 +154,6 @@ namespace SceneSaveState
             // -- Main --
             sel_font_col = "#f24115";
             nor_font_col = "#f9f9f9";
-
-            fset_index = 0;
-            mset_index = 0;
 
             // self.char_name = ""
 
@@ -194,12 +173,8 @@ namespace SceneSaveState
             mininewid = "";
             autoshownewid = "";
             isUseMsAuto = false;
-            // -- Load/Save --
-            svname = "";
-            ldname = "";
-            // self.optionint = 0
-            // -- Advanced --
 
+            // -- Advanced --
             charname = "";
             autoLoad = true;
             autoAddCam = true;
@@ -212,21 +187,12 @@ namespace SceneSaveState
             paramAnimCamIfPossible = Utils.is_ini_value_true("AnimateCamIfPossible");
             // self.nwindowRect = None
             // -- Edit window --
-            // Common data
-            nameset = new List<List<string>> {
-                new List<string>(),
-                new List<string>()
-            };
             camset = new List<CamData>();
-            isSaveCompact = true;
-            isSaveVerify = true;
-            isSaveOld = false;
             updAutoStatesTimer = 0;
             arAutoStatesItemsVis = new List<Folder>();
             arAutoStatesItemsChoice = new List<Folder>();
             backupTimeDuration = Utils.get_ini_value_def_int("AutoBackupTimeInSeconds", 600);
             backupTimeCur = backupTimeDuration;
-            vnFastIsRunImmediately = false;
             // blocking message
             funcLockedText = "...";
             isFuncLocked = false;
@@ -239,7 +205,7 @@ namespace SceneSaveState
             Instance = this;
         }
 
-        public void Awake()
+        internal void Awake()
         {
             StudioSaveLoadApi.RegisterExtraBehaviour<SaveLoadController>(GUID);
         }
@@ -251,7 +217,7 @@ namespace SceneSaveState
             sceneConsoleSkinSetup();
         }
 
-        public void sceneConsoleSkinSetup()
+        internal void sceneConsoleSkinSetup()
         {
             this.windowCallback = UI.sceneConsoleWindowFunc;
             UI.setWindowName(UI.windowindex);
@@ -262,7 +228,7 @@ namespace SceneSaveState
             this.windowRect = new Rect(x, y, w, h);
         }
 
-        public void OnGUI()
+        internal void OnGUI()
         {
             if (SceneConsole.Instance.guiOnShow)
             {
@@ -280,7 +246,7 @@ namespace SceneSaveState
             }
         }
 
-        public double CalculateSaveDataSize(byte[] bytes)
+        internal double CalculateSaveDataSize(byte[] bytes)
         {
             return (double)bytes.Length / 1000;
         }
@@ -346,46 +312,46 @@ namespace SceneSaveState
 
 
         // Blocking message functions
-        public void show_blocking_message(string text = "...")
+        internal void show_blocking_message(string text = "...")
         {
             funcLockedText = text;
             isFuncLocked = true;
         }
 
-        public void hide_blocking_message(object game = null)
+        internal void hide_blocking_message(object game = null)
         {
             isFuncLocked = false;
         }
 
-        public void show_blocking_message_time_sc(string text = "...", float duration = 3f)
+        internal void show_blocking_message_time_sc(string text = "...", float duration = 3f)
         {
             show_blocking_message(text);
             game.set_timer(duration, hide_blocking_message);
         }       
 
-        public void getSceneCamString()
+        internal void getSceneCamString()
         {
 
         }
 
-        public void deleteSceneCam()
+        internal void deleteSceneCam()
         {
             changeSceneCam(CamTask.DELETE);
         }
 
-        public void changeSceneCam()
+        internal void changeSceneCam()
         {
             changeSceneCam(task: CamTask.ADD);
         }
 
-        public enum CamTask
+        internal enum CamTask
         {
             UPDATE,
             DELETE,
             ADD
         }
 
-        public void changeSceneCam(CamTask task)
+        internal void changeSceneCam(CamTask task)
         {
             var cdata = VNNeoController.cameraData;
             var addata = currentVNData;
@@ -412,12 +378,12 @@ namespace SceneSaveState
             }
         }
 
-        public void setCamera()
+        internal void setCamera()
         {
             setCamera(paramAnimCamIfPossible);
         }
 
-        public void setCamera(bool isAnimated)
+        internal void setCamera(bool isAnimated)
         {
             VNCamera.CamData camera_data = block.CurrentCam;
             // check and run adv command
@@ -478,13 +444,13 @@ namespace SceneSaveState
             }
         }
 
-        public void addAutoWithMsg()
+        internal void addAutoWithMsg()
         {
             addAuto();
             show_blocking_message_time_sc("Scene added!", 2.0f);
         }
 
-        public void UpdateScene()
+        internal void UpdateScene()
         {
             if (block.HasScenes)
             {
@@ -493,7 +459,7 @@ namespace SceneSaveState
             }
         }
 
-        public void addAuto(bool insert = false, bool addsc = true, bool allbase = true)
+        internal void addAuto(bool insert = false, bool addsc = true, bool allbase = true)
         {
             Scene scene = new Scene(game, isSysTracking);
             if (insert)
@@ -514,12 +480,11 @@ namespace SceneSaveState
         }
 
         // Remove stuff
-
-        public void removeScene(object param)
+        internal void removeScene(object param)
         {
             removeScene();
         }
-        public void removeScene()
+        internal void removeScene()
         {
             if (block.HasScenes)
             {
@@ -529,7 +494,7 @@ namespace SceneSaveState
 
         // Load scene
 
-        public void loadCurrentScene()
+        internal void loadCurrentScene()
         {
             SetSceneState(block.CurrentScene);
             if (block.Count > 0 && block.currentCamCount > 0)
@@ -539,7 +504,7 @@ namespace SceneSaveState
             }
         }
 
-        public void copySelectedStatusToTracking(List<string> exclude)
+        internal void copySelectedStatusToTracking(List<string> exclude)
         {
             var elem = NeoOCI.create_from_selected();
             if (elem is VNActor.Actor chara)
@@ -569,7 +534,7 @@ namespace SceneSaveState
             }
         }
 
-        public void copySelectedStatus()
+        internal void copySelectedStatus()
         {
             var elem = NeoOCI.create_from_selected();
             if (elem is VNActor.Actor chara)
@@ -586,7 +551,7 @@ namespace SceneSaveState
             }
         }
 
-        public void pasteSelectedStatus()
+        internal void pasteSelectedStatus()
         {
             var elem = NeoOCI.create_from_selected();
             if (elem is VNActor.Actor chara)
@@ -614,7 +579,7 @@ namespace SceneSaveState
             }
         }
 
-        public void copySelectedStatus2()
+        internal void copySelectedStatus2()
         {
             var elem = NeoOCI.create_from_selected();
             if (elem is VNActor.Actor chara)
@@ -631,7 +596,7 @@ namespace SceneSaveState
             }
         }
 
-        public void pasteSelectedStatus2()
+        internal void pasteSelectedStatus2()
         {
             var elem = NeoOCI.create_from_selected();
             if (elem is VNActor.Actor chara)
@@ -659,7 +624,7 @@ namespace SceneSaveState
             }
         }
 
-        public void addSysTracking()
+        internal void addSysTracking()
         {
             if (block.Count > 0)
             {
@@ -678,12 +643,12 @@ namespace SceneSaveState
             }
         }
 
-        public void delSysTracking()
+        internal void delSysTracking()
         {
             isSysTracking = false;
         }
       
-        public void addSelectedToTrack()
+        internal void addSelectedToTrack()
         {
             var objects = KKAPI.Studio.StudioAPI.GetSelectedObjects();
 
@@ -709,7 +674,7 @@ namespace SceneSaveState
             }
         }
 
-        public void changeSelTrackID(string toId)
+        internal void changeSelTrackID(string toId)
         {
             if (toId == "")
             {
@@ -748,13 +713,13 @@ namespace SceneSaveState
             SceneFolders.LoadTrackedActorsAndProps();
         }
 
-        public void delSelectedFromTrack(object o)
+        internal void delSelectedFromTrack(object o)
         {
             delSelectedFromTrack();
         }
 
 
-        public void delSelectedFromTrack()
+        internal void delSelectedFromTrack()
         {
             var elem = NeoOCI.create_from_selected();
             if (elem == null)
@@ -800,7 +765,7 @@ namespace SceneSaveState
             SceneFolders.LoadTrackedActorsAndProps();
         }
 
-        public void delActorFromTrack(string actid)
+        internal void delActorFromTrack(string actid)
         {
             if (actid != "")
             {
@@ -823,7 +788,7 @@ namespace SceneSaveState
             }
         }
 
-        public void changeActorTrackId(string actid, string toid)
+        internal void changeActorTrackId(string actid, string toid)
         {
             if (actid != "")
             {
@@ -858,7 +823,7 @@ namespace SceneSaveState
             }
         }
 
-        public void delPropFromTrack(string propid)
+        internal void delPropFromTrack(string propid)
         {
             if (propid != "")
             {
@@ -877,179 +842,17 @@ namespace SceneSaveState
             }
         }
 
-        public static Folder createFld(string txt, NeoOCI parent = null, bool ret = true)
-        {
-            var fld = Folder.add(txt);
-            if (parent is Folder)
-            {
-                fld.set_parent(parent);
-            }
-            if (ret == true)
-            {
-                return fld;
-            }
-            else
-            {
-                throw new Exception("create folder failed");
-            }
-        }
-
-        public static Folder createFldIfNo(string txt, Folder parent, int childNum)
-        {
-            Folder fld;
-
-            if (parent.treeNodeObject.child.Count <= childNum)
-            {
-                //print "create folder! %s" % txt
-                fld = Folder.add(txt);
-                fld.set_parent(parent);
-                return fld;
-            }
-            else
-            {
-                var chld = parent.treeNodeObject.child[childNum];
-                fld = NeoOCI.create_from_treenode(chld) as Folder;
-                if (chld.textName != txt)
-                {
-                    //print "hit! upd folder! %s" % txt
-                    fld.name = txt;
-                    //return fld
-                }
-                else
-                {
-                    //print "hit!! no creation! %s" % txt
-                }
-                return fld;
-            }
-
-        }
-
-        public void restrict_to_child(Folder fld, int numchilds)
-        {
-            if (fld.treeNodeObject.child.Count > numchilds)
-            {
-                var ar = fld.treeNodeObject.child;
-                var ar2 = new List<NeoOCI>();
-                foreach (var treeobj in ar)
-                {
-                    ar2.Add(NeoOCI.create_from_treenode(treeobj));
-                }
-                foreach (var i in Enumerable.Range(0, ar2.Count))
-                {
-                    if (i >= numchilds)
-                    {
-                        Console.WriteLine(String.Format("deleted! {0}", i.ToString()));
-                        ar2[i].delete();
-                    }
-                }
-            }
-        }
-
-        public void saveSceneData(object param)
+        internal void saveSceneData(object param)
         {
             saveSceneData((bool)param);
         }
-        /*
-        public int verify_load()
-        {
-            try
-            {
-                var blockold = block;
-                List<Scene> blocknew;
-                try
-                {
-                    loadSceneData(setToFirst: false);
-                    blocknew = block;
-                    block = blockold;
-                }
-                catch (Exception e)
-                {
-                    block = blockold;
-                    Console.WriteLine(String.Format("Error verify loading data - {0}", e.ToString()));
-                    return -100000;
-                }
-                var diffs = 0;
-                if (blocknew.Count == blockold.Count)
-                {
-                    foreach (var i in Enumerable.Range(0, blocknew.Count))
-                    {
-                        // diff = get_status_diff_optimized(blocknew[i],blockold[i])
-                        // if len(diff) > 0:
-                        //     diffs += 1
-                        if (!blocknew[i].isEqual(blockold[i]))
-                        {
-                            Console.WriteLine(String.Format("Verify: Non-eq scene: {0}", (i + 1).ToString()));
-                            diffs += 1;
-                        }
-                    }
-                }
-                else
-                {
-                    diffs = blocknew.Count - blockold.Count;
-                    Console.WriteLine(String.Format("Diff scene length: {0}", diffs.ToString()));
-                }
-                if (diffs == 0)
-                {
-                    // self.show_blocking_message_time_sc("Data saved! (Verify error: %s differences!)" % (str(len(diff))))
-                    //self.show_blocking_message_time_sc("Data saved! (Verify: OK)")
-                    return 0;
-                }
-                else
-                {
-                    // self.show_blocking_message_time_sc(
-                    //     "Data saved! (Verify: %s potential problems, see Console!)" % (str(diffs)))
-                    return diffs;
-                }
-            }
-            catch (Exception e)
-            {
-                //self.show_blocking_message_time_sc("Data saved! (Verify: INTERNAL ERROR!)")
-                Console.WriteLine(String.Format("Error verify {0}", e.ToString()));
-                return -100000;
-            }
-        }
-        */
 
-        /*
-
-        public void onDataSaved(VNController game)
-        {
-            //dt = Time.deltaTime
-            //self.show_blocking_message_time_sc("Data saved in %.1f s!" % (dt))
-            if (!isSaveVerify)
-            {
-                show_blocking_message_time_sc("Data saved!");
-            }
-            else
-            {
-                //diff = get_status_diff_optimized(blockold,blocknew)
-                var diffs = verify_load();
-                if (diffs == 0)
-                {
-                    show_blocking_message_time_sc("Data saved! (Verify: OK)");
-                }
-                else if (diffs == -100000)
-                {
-                    show_blocking_message_time_sc("Data saved! (Verify: INTERNAL ERROR!)");
-                }
-                else if (isSaveOld)
-                {
-                    show_blocking_message_time_sc(String.Format("Data saved! (Verify: OK)\n(some {0} potential misequals, seems be ok)", diffs.ToString()));
-                }
-                else
-                {
-                    show_blocking_message_time_sc(String.Format("Data saved! (Verify: {0} potential problems, see Console!)", diffs.ToString()));
-                }
-            }
-        }
-        */
-
-        public void Reset()
+        internal void Reset()
         {
             block = new SceneManager();
         }
 
-        public void SaveToFile()
+        internal void SaveToFile()
         {
             if (svname == "")
             {
@@ -1057,7 +860,7 @@ namespace SceneSaveState
             }
         }
 
-        public void SaveToFile(string filename)
+        internal void SaveToFile(string filename)
         {
             var app_dir = Path.GetDirectoryName(Application.dataPath);
 
@@ -1072,7 +875,7 @@ namespace SceneSaveState
             File.WriteAllBytes(abs_file_path, data);
         }
 
-        public void LoadFromFile(string filename)
+        internal void LoadFromFile(string filename)
         {
             var script_dir = Path.GetDirectoryName(Application.dataPath);
             var file_path = Path.Combine(backup_folder_name, filename);
@@ -1085,22 +888,22 @@ namespace SceneSaveState
             }
         }        
 
-        public void loadSceneDataBackupTimer(object param)
+        internal void loadSceneDataBackupTimer(object param)
         {
             loadSceneDataBackupTimer();
         }
 
-        public void loadSceneDataBackupTimer()
+        internal void loadSceneDataBackupTimer()
         {
             LoadFromFile("_backuptimer");
         }
 
-        public void loadSceneData()
+        internal void loadSceneData()
         {
             loadSceneData(false, true);
         }
 
-        public void loadSceneData(bool backup = false, bool setToFirst = true)
+        internal void loadSceneData(bool backup = false, bool setToFirst = true)
         {
             string filename;
             SceneFolders.LoadTrackedActorsAndProps();
@@ -1147,7 +950,7 @@ namespace SceneSaveState
         }
 
         // Change name
-        public static void changeCharName(VNNeoController game, string name)
+        internal static void changeCharName(VNNeoController game, string name)
         {
             var chara = Utils.getSelectedChar(game);
             var old_name = chara.text_name;
@@ -1159,7 +962,7 @@ namespace SceneSaveState
             // Duplicate scene
         }
 
-        public void dupScene()
+        internal void dupScene()
         {
             if (block.Count > 0)
             {
@@ -1171,7 +974,7 @@ namespace SceneSaveState
         }
 
         // Copy/paste cam set
-        public void copyCamSet()
+        internal void copyCamSet()
         {
             if (block.HasScenes)
             {
@@ -1183,7 +986,7 @@ namespace SceneSaveState
             }
         }
 
-        public void pasteCamSet()
+        internal void pasteCamSet()
         {
             if (block.HasScenes)
             {
@@ -1194,18 +997,18 @@ namespace SceneSaveState
 
 
         // Goto next/prev
-        public void goto_first()
+        internal void goto_first()
         {
             block.First();
             loadCurrentScene();
         }
 
-        public void goto_next(VNController game, int i)
+        internal void goto_next(VNController game, int i)
         {
             goto_next();
         }
 
-        public void goto_next()
+        internal void goto_next()
         {
             if (block.Count > 0)
             {
@@ -1223,7 +1026,7 @@ namespace SceneSaveState
             }
         }
 
-        public void goto_prev()
+        internal void goto_prev()
         {
             if (block.HasPrev)
             {
@@ -1241,7 +1044,7 @@ namespace SceneSaveState
             }
         }
 
-        public void goto_next_sc()
+        internal void goto_next_sc()
         {
             if (block.HasNext)
             {
@@ -1250,12 +1053,12 @@ namespace SceneSaveState
             }
         }
 
-        public void goto_prev_sc()
+        internal void goto_prev_sc()
         {
             goto_prev_sc(false);
         }
 
-        public void goto_prev_sc(bool lastcam = false)
+        internal void goto_prev_sc(bool lastcam = false)
         {
             if (block.HasPrev)
             {
@@ -1269,7 +1072,7 @@ namespace SceneSaveState
             }
         }     
 
-        public void camSetAll(bool state)
+        internal void camSetAll(bool state)
         {
             foreach (var i in Enumerable.Range(0, block.Count))
             {
@@ -1285,17 +1088,7 @@ namespace SceneSaveState
             show_blocking_message_time_sc("Cams changed!");
         }
 
-        // export to VNSceneScript
-        public void exportToVNSS()
-        {
-            //VNExt.exportToVNSS(this, new Dictionary<object, object>()); TODO
-            if (vnFastIsRunImmediately)
-            {
-                runVNSS("cam");
-            }
-        }
-
-        public void runVNSS(string starfrom = "begin")
+        internal void runVNSS(string starfrom = "begin")
         {
             //this.game.gdata.vnbupskin = this.game.skin;
             //self.game.skin_set_byname("skin_renpy")
@@ -1328,19 +1121,19 @@ namespace SceneSaveState
             game.vnscenescript_run_current(onEndVNSS, calcPos.ToString());
         }
 
-        public void endVNSSbtn(VNNeoController game)
+        internal void endVNSSbtn(VNNeoController game)
         {
             this.game.visible = false;
             //VNSceneScript.run_state(this.game, this.game.scenedata.scMaxState + 1, true); TODO
         }
 
-        public void onEndVNSS(VNController game = null)
+        internal void onEndVNSS(VNController game = null)
         {
             this.game.skin_set(this.game.skin_default);
         }
 
         //def _exportAddBlock(self,fld_acode,):
-        public string get_next_speaker(string curSpeakAlias, bool next)
+        internal string get_next_speaker(string curSpeakAlias, bool next)
         {
             // next from unknown speaker
             var all_actors = game.AllActors;
@@ -1392,7 +1185,7 @@ namespace SceneSaveState
 
         // Set scene chars with state data from dictionary
 
-        public void SetSceneState(Scene s)
+        internal void SetSceneState(Scene s)
         {
             if (isSysTracking)
             {
@@ -1456,7 +1249,7 @@ namespace SceneSaveState
             }           
         }
 
-        public void addSelectedAutoShow(string param)
+        internal void addSelectedAutoShow(string param)
         {
             // get list of sel objs
             var arSel = Ministates.get_selected_objs();
@@ -1490,7 +1283,7 @@ namespace SceneSaveState
         }
 
         // Ministates
-        public void delSelectedAutoShow()
+        internal void delSelectedAutoShow()
         {
             // get list of sel objs
             var arSel = Ministates.get_selected_objs();
