@@ -179,11 +179,11 @@ namespace VNActor
         {
             get
             {
-                return (EyeLookState)this.objctrl.charInfo.GetLookEyesPtn();
+                return (EyeLookState)objctrl.charInfo.GetLookEyesPtn();
             }
             set
             {
-                this.objctrl.charInfo.ChangeLookEyesPtn((int)value);
+                this.objctrl.ChangeLookEyesPtn((int)value);
             }
         }
 
@@ -1054,11 +1054,11 @@ namespace VNActor
         {
             set
             {
-                this.objctrl.lookAtInfo.target.localPosition = value;
+                objctrl.lookAtInfo.target.localPosition = value;
             }
             get
             {
-                return this.objctrl.lookAtInfo.target.localPosition;
+                return objctrl.lookAtInfo.target.localPosition;
             }
         }
 
