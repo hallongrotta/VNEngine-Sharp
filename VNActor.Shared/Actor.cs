@@ -174,6 +174,43 @@ namespace VNActor
             Fixed,
             Target
         }
+        public byte[] EyeAngles
+        {
+            get
+            {
+                if (Gaze == EyeLookState.Fixed)
+                {
+                    using (MemoryStream memoryStream = new MemoryStream())
+                    {
+                        using (BinaryWriter binaryWriter = new BinaryWriter(memoryStream))
+                        {
+                            CharInfo.eyeLookCtrl.eyeLookScript.SaveAngle(binaryWriter);
+                            return memoryStream.ToArray();
+                        }
+                    }
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            set
+            {
+                if (value != null)
+                {
+                    if (Gaze == EyeLookState.Fixed)
+                    {
+                        using (MemoryStream memoryStream = new MemoryStream(value))
+                        {
+                            using (BinaryReader binaryReader = new BinaryReader(memoryStream))
+                            {
+                                LoadEyeAngle(binaryReader);
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         public EyeLookState Gaze
         {

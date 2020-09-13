@@ -218,30 +218,10 @@ namespace VNActor
                 breastR.enabled = value;
             }
         }
-
-        public byte[] EyeAngles
+     
+        private void LoadEyeAngle(BinaryReader reader)
         {
-            get
-            {
-                using (MemoryStream memoryStream = new MemoryStream())
-                {
-                    using (BinaryWriter binaryWriter = new BinaryWriter(memoryStream))
-                    {
-                        CharInfo.eyeLookCtrl.eyeLookScript.SaveAngle(binaryWriter);
-                        return memoryStream.ToArray();
-                    }
-                }
-            }
-            set
-            {
-                using (MemoryStream memoryStream = new MemoryStream(value))
-                {
-                    using (BinaryReader binaryReader = new BinaryReader(memoryStream))
-                    {
-                        CharInfo.eyeLookCtrl.eyeLookScript.LoadAngle(binaryReader, new Version(0, 0, 8)); //Don't ask me why the version has to be this, it just is.
-                    }
-                }
-            }
+            CharInfo.eyeLookCtrl.eyeLookScript.LoadAngle(reader, new Version(0, 0, 8)); //Don't ask me why the version has to be this, it just is.
         }
 
 

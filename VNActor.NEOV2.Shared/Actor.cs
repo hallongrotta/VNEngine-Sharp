@@ -89,40 +89,11 @@ namespace VNActor
         }
 
         
-        public byte[] EyeAngles
+        
+        private void LoadEyeAngle(BinaryReader reader)
         {
-            get
-            {
-                if (Gaze == EyeLookState.Fixed)
-                {
-                    using (MemoryStream memoryStream = new MemoryStream())
-                    {
-                        using (BinaryWriter binaryWriter = new BinaryWriter(memoryStream))
-                        {
-                            CharInfo.eyeLookCtrl.eyeLookScript.SaveAngle(binaryWriter);
-                            return memoryStream.ToArray();
-                        }
-                    }
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            set
-            {
-                if (Gaze == EyeLookState.Fixed)
-                {
-                    using (MemoryStream memoryStream = new MemoryStream(value))
-                    {
-                        using (BinaryReader binaryReader = new BinaryReader(memoryStream))
-                        {
-                            CharInfo.eyeLookCtrl.eyeLookScript.LoadAngle(binaryReader);
-                        }
-                    }
-                }
-            }
-        }       
+            CharInfo.eyeLookCtrl.eyeLookScript.LoadAngle(reader);
+        }
 
         public void set_accessory(int accIndex, bool accShow)
         {
