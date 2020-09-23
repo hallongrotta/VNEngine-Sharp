@@ -65,15 +65,15 @@ namespace SceneSaveState
             }
             GUILayout.EndHorizontal();
             GUILayout.Space(20);
-            Instance.autoLoad = GUILayout.Toggle(Instance.autoLoad, "Load scene on select");
+            Instance.autoLoad.Value = GUILayout.Toggle(Instance.autoLoad.Value, "Load scene on select");
             GUILayout.Space(10);
-            Instance.autoAddCam = GUILayout.Toggle(Instance.autoAddCam, "Auto add cam for new scenes");
+            Instance.autoAddCam.Value = GUILayout.Toggle(Instance.autoAddCam.Value, "Auto add cam for new scenes");
             GUILayout.Space(10);
-            Instance.promptOnDelete = GUILayout.Toggle(Instance.promptOnDelete, "Prompt before delete (scene/cam/chars)");
+            Instance.promptOnDelete.Value = GUILayout.Toggle(Instance.promptOnDelete.Value, "Prompt before delete (scene/cam/chars)");
             GUILayout.Space(10);
-            Instance.skipClothesChanges = GUILayout.Toggle(Instance.skipClothesChanges, "Don't process clothes changes on scene change");
+            Instance.skipClothesChanges.Value = GUILayout.Toggle(Instance.skipClothesChanges.Value, "Don't process clothes changes on scene change");
             GUILayout.Space(10);
-            Instance.paramAnimCamIfPossible = GUILayout.Toggle(Instance.paramAnimCamIfPossible, "Animate cam if possible");
+            Instance.paramAnimCamIfPossible.Value = GUILayout.Toggle(Instance.paramAnimCamIfPossible.Value, "Animate cam if possible");
             GUILayout.Space(10);
             GUILayout.BeginHorizontal();
             GUILayout.Label("Camera anim params: duration ");

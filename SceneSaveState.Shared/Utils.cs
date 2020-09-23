@@ -133,8 +133,8 @@ namespace SceneSaveState
             }
         }
 
-        public static void loadConfig()
-        {
+        //public static void loadConfig()
+        //{
             // Shortcuts
             /* TODO
             SceneConsole.Instance.game.gdata.sc_shortcuts = new Dictionary<string, (Action, string)> {
@@ -215,73 +215,7 @@ namespace SceneSaveState
                     }
                 }
             } */
-        }
-
-        public static void saveConfig()
-        {
-            var cfpath = "scenesavestate.ini";
-            var content = "[Shortcuts]\n";
-            File.WriteAllText(cfpath, content);
-            // reinit config
-            SceneConsole.Instance.game.event_unreg_listener("update", hook_update);
-            loadConfig();
-            SceneConsole.Instance.game.event_reg_listener("update", hook_update);
-        }
-
-        public static void hook_update(VNController game)
-        {
-            var dt = Time.deltaTime;
-            if (SceneConsole.Instance.game.visible)
-            {
-                // count only time when SSS is visible
-                SceneConsole.Instance.backupTimeCur -= dt;
-                //print sc.backupTimeCur
-                if (SceneConsole.Instance.backupTimeCur <= 0)
-                {
-                    SceneConsole.Instance.backupTimeCur = SceneConsole.Instance.backupTimeDuration;
-                    if (SceneConsole.Instance.block.Count > 0)
-                    {
-                        //print len(sc.block)
-                        Console.WriteLine(String.Format("VNGE SSS: try backup by timer (every {0} seconds)... ({1} scenes)", SceneConsole.Instance.backupTimeDuration.ToString(), SceneConsole.Instance.block.Count.ToString()));
-                        try
-                        {
-                            SceneConsole.Instance.SaveToFile("backup.dat");
-                            Console.WriteLine("VNGE SSS: made backup by timer!");
-                        }
-                        catch
-                        {
-                            Console.WriteLine("VNGE SSS: timer backup FAILED!... ");
-                        }
-                    }
-                }
-            }
-            // param = sc.game.gdata.sc_shortcuts["loadnext"]
-            /* foreach (var _tup_1 in SceneConsole.Instance.game.gdata.sc_shortcuts.Values) //TODO look into this
-             {
-                 var commands = _tup_1.Item1;
-                 var param = _tup_1.Item2;
-                 (_, icode, ictrl, ialt, ishift) = param[1];
-                 if (Input.GetKeyDown(icode))
-                 {
-                     // unity sucks for checking meta keys
-                     var _tup_2 = unity_util.metakey_state();
-                     var ctrl = _tup_2.Item1;
-                     var alt = _tup_2.Item2;
-                     var shift = _tup_2.Item3;
-                     // print "detected key down:"
-                     // print "tgt:", game.gdata.startShortcut
-                     // print "cur: ctrl=%s, alt=%s, shift=%s"%(str(ctrl), str(alt), str(shift))
-                     if (ctrl == ictrl && alt == ialt && shift == ishift)
-                     {
-                         // need to stop processing for about 0.5 seconds - avoid duplicate key proc
-                         game.gdata.hook_update_allowed = false;
-                         game.set_timer(0.3f, hook_upd_restore);
-                         param[0]();
-                         break;
-                     }
-                 }
-             } */
-        }
+        //}
 
         public static void sceneConsoleGUIClose(object param)
         {

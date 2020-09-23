@@ -39,7 +39,7 @@ namespace SceneSaveState
             }
             if (GUILayout.Button("Untrack selected", GUILayout.Height(25), GUILayout.Width(ColumnWidth)))
             {
-                if (Instance.promptOnDelete)
+                if (Instance.promptOnDelete.Value)
                 {
                     warning_action = Instance.delSelectedFromTrack;
                     warning_param = new WarningParam_s("Untrack and delete selected from scenes?", false);

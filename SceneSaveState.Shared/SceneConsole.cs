@@ -50,15 +50,11 @@ namespace SceneSaveState
 
         internal List<Folder> arAutoStatesItemsVis;
 
-        internal bool autoAddCam;
+        internal ConfigEntry<bool> autoAddCam;
 
-        internal bool autoLoad;
+        internal ConfigEntry<bool> autoLoad;
 
         internal string autoshownewid;
-
-        internal double backupTimeCur;
-
-        internal double backupTimeDuration;
 
         internal SceneManager block;
 
@@ -94,13 +90,13 @@ namespace SceneSaveState
 
         internal float paramAnimCamDuration;
 
-        internal bool paramAnimCamIfPossible;
+        internal ConfigEntry<bool> paramAnimCamIfPossible;
 
         internal string paramAnimCamStyle;
 
         internal float paramAnimCamZoomOut;
 
-        internal bool promptOnDelete;
+        internal ConfigEntry<bool> promptOnDelete;
 
         internal string sel_font_col;
 
@@ -112,7 +108,7 @@ namespace SceneSaveState
 
         internal string skinDefault_sideApp;
 
-        internal bool skipClothesChanges;
+        internal ConfigEntry<bool> skipClothesChanges;
 
         internal string svname = "";
 
@@ -176,23 +172,16 @@ namespace SceneSaveState
 
             // -- Advanced --
             charname = "";
-            autoLoad = true;
-            autoAddCam = true;
-            promptOnDelete = true;
-            skipClothesChanges = false;
             //this.shortcuts = new Dictionary<string, (string, string)>();
             paramAnimCamDuration = 1.5f;
             paramAnimCamStyle = "fast-slow";
             paramAnimCamZoomOut = 0.0f;
-            paramAnimCamIfPossible = Utils.is_ini_value_true("AnimateCamIfPossible");
             // self.nwindowRect = None
             // -- Edit window --
             camset = new List<CamData>();
             updAutoStatesTimer = 0;
             arAutoStatesItemsVis = new List<Folder>();
             arAutoStatesItemsChoice = new List<Folder>();
-            backupTimeDuration = Utils.get_ini_value_def_int("AutoBackupTimeInSeconds", 600);
-            backupTimeCur = backupTimeDuration;
             // blocking message
             funcLockedText = "...";
             isFuncLocked = false;
@@ -213,8 +202,21 @@ namespace SceneSaveState
         internal void Start()
         {
             Logger = base.Logger;
-            SSSHotkey = Config.Bind("Keyboard Shortcuts", "Toggle VN Controller Window", new BepInEx.Configuration.KeyboardShortcut(KeyCode.B), "Show or hide the VN Controller window in Studio");         
+            loadConfig();            
             sceneConsoleSkinSetup();
+        }
+
+        public void loadConfig()
+        {
+            // Keyboard shortcuts
+            SSSHotkey = Config.Bind("Keyboard Shortcuts", "Toggle VN Controller Window", new BepInEx.Configuration.KeyboardShortcut(KeyCode.B), "Show or hide the VN Controller window in Studio");
+
+            // Settings
+            autoLoad = Config.Bind("Scene Console Settings", "AutoLoadScene", true, "Load scenes when selected.");
+            autoAddCam = Config.Bind("Scene Console Settings", "AutoAddCamera", true, "Auto add cam for new scenes");          
+            promptOnDelete = Config.Bind("Scene Console Settings", "AutoAddCamera", true, "Prompt before delete (scene/cam/chars)");
+            skipClothesChanges = Config.Bind("Scene Console Settings", "SkipClothesChange", false, "Don't process clothes changes on scene change");
+            paramAnimCamIfPossible = Config.Bind("Scene Console Settings", "AnimateCamsIfPossible", false, "Animate cam if possible");
         }
 
         internal void sceneConsoleSkinSetup()
@@ -380,7 +382,7 @@ namespace SceneSaveState
 
         internal void setCamera()
         {
-            setCamera(paramAnimCamIfPossible);
+            setCamera(paramAnimCamIfPossible.Value);
         }
 
         internal void setCamera(bool isAnimated)
@@ -472,7 +474,7 @@ namespace SceneSaveState
             }
             if (addsc == true)
             {
-                if (autoAddCam == true)
+                if (autoAddCam.Value)
                 {
                     changeSceneCam(CamTask.ADD);
                 }

@@ -98,8 +98,7 @@ public struct WarningParam_s
             //
             // game.windowRect = Rect(Screen.width / 2 - game.wwidth * 1.5, Screen.height - game.wheight - 500,
             //                        game.wwidth + 50, game.wheight + 400)
-            Utils.loadConfig();
-            game.event_reg_listener("update", Utils.hook_update);
+            //Utils.loadConfig();
             // game.windowCallback = GUI.WindowFunction(sceneConsoleWindowFunc)
         }
 

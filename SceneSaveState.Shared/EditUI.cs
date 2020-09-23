@@ -92,7 +92,7 @@ namespace SceneSaveState
                     if (GUILayout.Button(String.Format("<color={0}>{1}</color>", col, scn_name)))
                     {
                         Instance.block.SetCurrent(i);
-                        if (Instance.autoLoad == true)
+                        if (Instance.autoLoad.Value)
                         {
                             Instance.loadCurrentScene();
                             // sc.cur_index = GUILayout.SelectionGrid(sc.cur_index,sc.scene_str_array,1)
@@ -171,7 +171,7 @@ namespace SceneSaveState
             {
                 if (GUILayout.Button("Del", GUILayout.Width(camviewwidth * 0.3f)))
                 {
-                    if (Instance.promptOnDelete)
+                    if (Instance.promptOnDelete.Value)
                     {
                         warning_action = Instance.deleteSceneCam;
                         warning_param = new WarningParam_s("Delete selected cam?", false);
@@ -250,7 +250,7 @@ namespace SceneSaveState
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Delete scene"))
             {
-                if (Instance.promptOnDelete == true)
+                if (Instance.promptOnDelete.Value)
                 {
                     warning_action = Instance.removeScene;
                     warning_param = new WarningParam_s("Delete selected scene?", false);
@@ -309,7 +309,7 @@ namespace SceneSaveState
             GUILayout.Label("Scene Controls");
             // Add scene, Load scene
             DrawEditButtons();
-            if (!(Instance.autoLoad == true))
+            if (!Instance.autoLoad.Value)
             {
                 GUILayout.Space(10);
                 if (GUILayout.Button("Load Scene", GUILayout.Height(35)))
