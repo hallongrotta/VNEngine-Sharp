@@ -5,9 +5,7 @@ SceneConsole window is opened with 'B' by default.
 
 Ported from VNEngine 16.0.
 
-# Why should I use this?
-
-## Pros
+## Pros compared to Python SceneSaveState
 * Scene data persists even if UI is closed.
 * 100% less Python related bugs.
 
