@@ -8,7 +8,30 @@ namespace SceneSaveState
     {
         public static void sceneConsoleTrackable()
         {      
-            GUILayout.BeginHorizontal();
+            GUILayout.BeginHorizontal();          
+            GUILayout.BeginVertical(GUILayout.Width(ColumnWidth));
+            GUILayout.Label("Actors:");
+            tracking_actors_scroll = GUILayout.BeginScrollView(tracking_actors_scroll);
+            var actors = Instance.game.AllActors;
+            foreach (var actorid in actors.Keys)
+            {
+                VNActor.Actor actor = actors[actorid];
+                render_ui_for_tracking(actorid, actor);
+            }
+            GUILayout.EndScrollView();
+            GUILayout.EndVertical();
+
+            GUILayout.BeginVertical(GUILayout.Width(ColumnWidth));
+            GUILayout.Label("Props:");
+            tracking_props_scroll = GUILayout.BeginScrollView(tracking_props_scroll);
+            var props = Instance.game.AllProps;
+            foreach (var propid in props.Keys)
+            {
+                render_ui_for_tracking(propid, props[propid]);
+            }
+            GUILayout.EndScrollView();
+
+            GUILayout.EndVertical();
             GUILayout.BeginVertical(GUILayout.Width(ColumnWidth));
             if (GUILayout.Button("Track selected", GUILayout.Height(50), GUILayout.Width(ColumnWidth)))
             {
@@ -44,30 +67,6 @@ namespace SceneSaveState
                     Instance.delSysTracking();
                 }
             }
-            GUILayout.EndVertical();
-
-            GUILayout.BeginVertical(GUILayout.Width(ColumnWidth));
-            GUILayout.Label("Actors:");
-            tracking_actors_scroll = GUILayout.BeginScrollView(tracking_actors_scroll);
-            var actors = Instance.game.AllActors;
-            foreach (var actorid in actors.Keys)
-            {
-                VNActor.Actor actor = actors[actorid];
-                render_ui_for_tracking(actorid, actor);
-            }
-            GUILayout.EndScrollView();
-            GUILayout.EndVertical();
-
-            GUILayout.BeginVertical(GUILayout.Width(ColumnWidth));
-            GUILayout.Label("Props:");
-            tracking_props_scroll = GUILayout.BeginScrollView(tracking_props_scroll);
-            var props = Instance.game.AllProps;
-            foreach (var propid in props.Keys)
-            {
-                render_ui_for_tracking(propid, props[propid]);
-            }
-            GUILayout.EndScrollView();
-
             GUILayout.EndVertical();
             GUILayout.EndHorizontal();
             GUILayout.FlexibleSpace();

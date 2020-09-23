@@ -64,26 +64,6 @@ namespace SceneSaveState
                 Instance.camSetAll(false);
             }
             GUILayout.EndHorizontal();
-            GUILayout.BeginHorizontal();
-            if (GUILayout.Button("VN: add Fake Lip Sync Ext, if no"))
-            {
-                /* TODO
-                //var header = VNSceneScript.get_headerfolder(SceneConsole.Instance.game); 
-                if (!(header is null))
-                {
-                    // vnscenescript.addaction_to_headerfolder(sc.game, ":useext:flipsync10")
-                    // vnscenescript.addaction_to_headerfolder(sc.game, ":a:i:initflipsync:v10")
-                    Utils.add_folder_if_not_exists(":useext:flipsync10", ":useext:flipsync", header);
-                    Utils.add_folder_if_not_exists(":a:i:initflipsync:v10", ":a:i:initflipsync:", header);
-                    SceneConsole.Instance.show_blocking_message_time_sc("Done!");
-                }
-                else
-                {
-                    SceneConsole.Instance.show_blocking_message_time_sc("Please, export VN at least one time before add Fake Lip Sync");
-                }
-                */
-            }
-            GUILayout.EndHorizontal();
             GUILayout.Space(20);
             Instance.autoLoad = GUILayout.Toggle(Instance.autoLoad, "Load scene on select");
             GUILayout.Space(10);
