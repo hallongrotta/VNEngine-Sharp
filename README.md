@@ -8,10 +8,11 @@ Ported from VNEngine 16.0.
 ## Pros compared to Python SceneSaveState
 * Scene data persists even if UI is closed.
 * 100% less Python related bugs.
+* BepInEx plugin.
 
 ## Cons
 * Larger file sizes
-* Less features and flexibility
+* Less features and flexibility.
 * 100% more C# related bugs.
 
 # Attributions
