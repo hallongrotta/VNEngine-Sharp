@@ -4,7 +4,7 @@ A C# port of VNEngine and SceneSaveState (but mostly SceneSaveState).
 SceneConsole window is opened with 'B' by default. Scene data stored with the scene card upon save.
 Ported from VNEngine 16.0. This plugin can be used in conjunction with the Python version.
 
-# Quick Start
+## Quick Start
 1. Open the studio of whichever game you want to make scenes in.
 2. Press 'B' to bring up the Scene Console.
 3. Go to the 'Tracking' tab.
@@ -15,19 +15,19 @@ Ported from VNEngine 16.0. This plugin can be used in conjunction with the Pytho
 7. Save scene card to store your work.
 
 
-# Pros and Cons Compared With Python SceneSaveState
+## Pros and Cons Compared With Python SceneSaveState
 
-## Pros 
+### Pros 
 * 100% less Python related bugs.
 * BepInEx plugin.
 * Scene data persists even if UI is closed.
 
-## Cons
+### Cons
 * Larger file sizes
 * Less features and flexibility.
 * 100% more C# related bugs.
 
-# Attributions
+## Attributions
 
 VNEngine and SceneSaveState by @keitaro.
 Original SceneConsole code by chickenManX.
