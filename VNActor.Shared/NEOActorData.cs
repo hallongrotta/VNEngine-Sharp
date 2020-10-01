@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using static VNActor.Actor;
+using MessagePack;
 
 namespace VNActor
 {
@@ -133,6 +134,9 @@ After:
 
         public byte[] neck;
 
+        [Key("AdvIKData")]
+        public AdvIKData advIKData;
+
         public NEOActorData()
         {
 
@@ -197,7 +201,22 @@ After:
 
             voiceList = a.VoiceList;
             voiceRepeat = a.VoiceRepeat;
-            }           
+
+            // External plugin data
+            try
+            {
+                if (kinematicType == KinematicMode.IK)
+                {
+                    advIKData = new AdvIKData(a);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+
+            }
+
         }
 
         virtual public void Apply(Actor a)
@@ -286,6 +305,21 @@ After:
                 {
                     a.BreastDBEnable = true;
                 }
+
+                //External plugin data
+
+                try
+                {
+                    if (kinematicType == KinematicMode.IK)
+                    {
+                        advIKData.Apply(a);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
+
             }
         }
     }

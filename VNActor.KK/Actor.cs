@@ -22,8 +22,6 @@ namespace VNActor
             public int coordinateType;
             [Key("TearLevel")]
             public int tearLevel;
-            [Key("AdvIKData")]
-            public AdvIKData advIKData;
 
             public ActorData() : base()
             {
@@ -37,14 +35,7 @@ namespace VNActor
                     a.TearLevel = tearLevel;
                     a.CoordinateType = coordinateType;
                     a.ShoesType = shoesType;
-                    try
-                    {
-                        advIKData.Apply(a);
-                    }
-                    catch (Exception e)
-                    {
 
-                    }
                 }
                 base.Apply(a);
             }
@@ -72,14 +63,7 @@ namespace VNActor
                     shoesType = a.ShoesType;
                     eyeAngles = a.EyeAngles;
 
-                    try
-                    {
-                        advIKData = new AdvIKData(a);
-                    }
-                    catch(Exception e)
-                    {
 
-                    }
                 }
 
                 /* TODO implement KKPE
