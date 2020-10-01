@@ -46,6 +46,9 @@
     <Reference Include="KKAPI">
       <HintPath>B:\Koikatu_Debug\BepInEx\plugins\KKAPI.dll</HintPath>
     </Reference>
+    <Reference Include="KK_AdvIKPlugin">
+      <HintPath>B:\Koikatu_Debug\BepInEx\plugins\KK_AdvIKPlugin.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -61,6 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Actor.cs" />
+    <Compile Include="AdvIK.cs" />
     <Compile Include="Item.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

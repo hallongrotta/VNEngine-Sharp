@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-
 namespace VNActor
 {
     // Koikatsu Actor
@@ -23,6 +22,8 @@ namespace VNActor
             public int coordinateType;
             [Key("TearLevel")]
             public int tearLevel;
+            [Key("AdvIKData")]
+            public AdvIKData advIKData;
 
             public ActorData() : base()
             {
@@ -36,6 +37,14 @@ namespace VNActor
                     a.TearLevel = tearLevel;
                     a.CoordinateType = coordinateType;
                     a.ShoesType = shoesType;
+                    try
+                    {
+                        advIKData.Apply(a);
+                    }
+                    catch (Exception e)
+                    {
+
+                    }
                 }
                 base.Apply(a);
             }
@@ -52,6 +61,8 @@ namespace VNActor
                 }
             }
 
+
+
             public ActorData(Actor a) : base(a)
             {
                 if (visible)
@@ -60,6 +71,15 @@ namespace VNActor
                     coordinateType = a.CoordinateType;
                     shoesType = a.ShoesType;
                     eyeAngles = a.EyeAngles;
+
+                    try
+                    {
+                        advIKData = new AdvIKData(a);
+                    }
+                    catch(Exception e)
+                    {
+
+                    }
                 }
 
                 /* TODO implement KKPE
