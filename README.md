@@ -1,4 +1,4 @@
-# VNEngine Sharp
+# VNEngine/SceneSaveState Sharp
 
 ![Promo Image](https://github.com/hallongrotta/VNEngine-Sharp/blob/master/promo.png)
 
