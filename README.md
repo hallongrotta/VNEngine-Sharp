@@ -1,4 +1,7 @@
 # VNEngine Sharp
+
+![Promo Image](https://github.com/hallongrotta/VNEngine-Sharp/blob/master/promo.png)
+
 A C# port of VNEngine and SceneSaveState (but mostly SceneSaveState).
 
 SceneConsole window is opened with 'B' by default. Scene data stored with the scene card upon save.
