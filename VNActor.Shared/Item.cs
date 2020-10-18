@@ -279,15 +279,7 @@ namespace VNActor
         {
             get
             {
-                if (this.isItem)
-                {
-                    OCIItem item = (OCIItem)this.objctrl;
-                    return item.isFK;
-                }
-                else
-                {
-                    return false;
-                }
+                    return objctrl.isFK;
             }
         }
 

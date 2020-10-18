@@ -1226,20 +1226,20 @@ namespace SceneSaveState
                 foreach (var kvp in game.AllProps)
                 {
                     propid = kvp.Key;
-                    if (kvp.Value is Item)
+                    if (kvp.Value is Item i)
                     {
                         s.items.TryGetValue(kvp.Key, out var status);
-                        s.ApplyStatus(kvp.Value, status);
+                        s.ApplyStatus(i, status);
                     }
-                    else if (kvp.Value is VNActor.Light)
+                    else if (kvp.Value is VNActor.Light l)
                     {
                         s.lights.TryGetValue(kvp.Key, out var status);
-                        s.ApplyStatus(kvp.Value, status);
+                        s.ApplyStatus(l, status);
                     }
-                    else if (kvp.Value is Prop)
+                    else if (kvp.Value is Prop p)
                     {
                         s.props.TryGetValue(kvp.Key, out var status);
-                        s.ApplyStatus(kvp.Value, status);
+                        s.ApplyStatus(p, status);
                     }
                 }
             }
