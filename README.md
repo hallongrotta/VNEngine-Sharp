@@ -7,6 +7,8 @@ A C# port of VNEngine and SceneSaveState (but mostly SceneSaveState).
 SceneConsole window is opened with 'B' by default. Scene data stored with the scene card upon save.
 Ported from VNEngine 16.0. This plugin can be used in conjunction with the Python version.
 
+Post any bug reports to the issue tab.
+
 ## Quick Start
 1. Open the studio of whichever game you want to make scenes in.
 2. Press 'B' to bring up the Scene Console.
