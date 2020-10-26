@@ -25,8 +25,8 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <OutputPath>bin\Release\BepInEx\plugins\</OutputPath>
+    <DefineConstants>TRACE;NEOV2</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -34,6 +34,9 @@
     <Reference Include="AIAPI, Version=1.13.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\IllusionModdingAPI.AIAPI.1.13.2\lib\net46\AIAPI.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="AIPE">
+      <HintPath>B:\AI_DEBUG\BepInEx\plugins\AIPE.dll</HintPath>
     </Reference>
     <Reference Include="AI_AdvIKPlugin">
       <HintPath>B:\AI_DEBUG\BepInEx\plugins\AI_AdvIKPlugin.dll</HintPath>

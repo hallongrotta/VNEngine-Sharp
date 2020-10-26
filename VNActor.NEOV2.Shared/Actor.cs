@@ -19,6 +19,8 @@ namespace VNActor
             public float tuya;
             public float wetness;
 
+            public string aipedata;
+            public Dictionary<string, Dictionary<string, float>> aipeblendshapes;
 
             public ActorData() : base() { }
 
@@ -30,6 +32,17 @@ namespace VNActor
                     wetness = a.SkinWetness;
                     tearLevel = a.TearLevel;
                     coordinate = a.ClothCoordinate;
+
+                    try
+                    {
+                        //aipedata = a.aipedata;
+                        aipeblendshapes = a.xxpeblendshapes;
+                    }
+                    catch (Exception)
+                    {
+                        Console.WriteLine("Error during get aipedata");
+                    }
+
                 }
 
                 /*
@@ -75,6 +88,17 @@ namespace VNActor
                     a.SkinWetness = wetness;
                     a.TearLevel = tearLevel;
                     a.ClothCoordinate = coordinate;
+
+                    try
+                    {
+                        //a.aipedata = aipedata;
+                        a.xxpeblendshapes = aipeblendshapes;
+                    }
+                    catch (Exception)
+                    {
+                        Console.WriteLine("Error during set aipedata");
+                    }
+
                 }            
             }
         }
@@ -271,24 +295,37 @@ namespace VNActor
         }
                 */
 
-        /* TODO
+        
 
-        public string get_aipedata()
+        public string aipedata
         {
-            return AIPE.GetCharaSettingsText(this.objctrl);
-        }
-
-        public void set_aipedata(object aipedata)
-        {
-            if (aipedata != "")
+            get
             {
+                return AIPEUtils.GetCharaSettingsText(this.objctrl);
+            }
+            set
+            {
+                if (aipedata != "")
+                {
 
-                AIPE.SetCharaSettingsText(this.objctrl, aipedata);
+                    AIPEUtils.SetCharaSettingsText(this.objctrl, aipedata);
 
+                }
             }
         }
-        */
 
+       public Dictionary<string, Dictionary<string, float>> xxpeblendshapes
+        {
+            get
+            {
+                return AIPEUtils.GetBlendShapesObj(this.objctrl);
+            }
+            set
+            {
+                AIPEUtils.SetBlendShapesObj(this.objctrl, value);
+            }
+        }              
+      
         public static void char_tuya(Actor chara, ActorData param)
         {
             // param = skin tuya 0~1
