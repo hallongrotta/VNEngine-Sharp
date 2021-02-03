@@ -420,8 +420,8 @@ namespace SceneSaveState
             if (camera_data.addata is VNData addata)
             {
                 currentVNData.enabled = addata.enabled;
-                currentVNData.whosay = addata.whosay;
-                currentVNData.whatsay = addata.whatsay;
+                currentVNData.whosay = addata.whosay is null ? "" : addata.whosay;
+                currentVNData.whatsay = addata.whatsay is null ? "" : addata.whatsay;
                 if (addata.addvncmds != null)
                 {
                     currentVNData.addvncmds = addata.addvncmds;
@@ -433,7 +433,7 @@ namespace SceneSaveState
 
                 currentVNData.addprops = addata.addprops;
 
-                game.set_text(camera_data.addata.whosay, camera_data.addata.whatsay);
+                game.set_text(currentVNData.whosay, currentVNData.whatsay);
             }
             else
             {

@@ -209,6 +209,10 @@ public struct WarningParam_s
                             warning_param = new WarningParam_s("Delete current scene data? This will not delete scene data saved to the card.", false);
                         }
                         GUILayout.FlexibleSpace();
+                        if (GUILayout.Button("Start VN from scene.", GUILayout.Width(100)))
+                        {
+                            Instance.runVNSS("scene");
+                        }
                         if (GUILayout.Button("About v" + mod_version, GUILayout.Width(100)))
                         {
                             //resetConsole(sc.game)
