@@ -492,5 +492,13 @@ namespace SceneSaveState
             }
         }
 
+        internal void SetCurrentMapForAllScenes()
+        {
+            int map = CurrentScene.sys.map;
+            foreach (Scene scene in scenes)
+            {
+                scene.sys.map = map;
+            }
+        }
     }
 }

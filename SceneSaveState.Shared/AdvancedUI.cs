@@ -50,6 +50,10 @@ namespace SceneSaveState
             {
                 Instance.copySelectedStatusToTracking(null);
             }
+            if (GUILayout.Button("Set current map to all scenes."))
+            {
+                Instance.block.SetCurrentMapForAllScenes();
+            }
             // if GUILayout.Button("(without Pos)"):
             //     sc.copySelectedStatusToTracking(["pos"])
             GUILayout.EndHorizontal();

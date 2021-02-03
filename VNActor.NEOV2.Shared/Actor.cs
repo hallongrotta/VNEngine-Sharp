@@ -92,7 +92,10 @@ namespace VNActor
                     try
                     {
                         //a.aipedata = aipedata;
-                        a.xxpeblendshapes = aipeblendshapes;
+                        if (aipeblendshapes != null)
+                        {
+                            a.xxpeblendshapes = aipeblendshapes;
+                        }
                     }
                     catch (Exception)
                     {
