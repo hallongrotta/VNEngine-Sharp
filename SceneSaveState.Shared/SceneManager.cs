@@ -494,10 +494,11 @@ namespace SceneSaveState
 
         internal void SetCurrentMapForAllScenes()
         {
-            int map = CurrentScene.sys.map;
             foreach (Scene scene in scenes)
             {
-                scene.sys.map = map;
+                scene.sys.map = CurrentScene.sys.map;
+                scene.sys.map_pos = CurrentScene.sys.map_pos;
+                scene.sys.map_rot = CurrentScene.sys.map_rot;
             }
         }
     }
