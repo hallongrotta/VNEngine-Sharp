@@ -36,11 +36,15 @@ namespace VNActor
                     try
                     {
                         //aipedata = a.aipedata;
-                        aipeblendshapes = a.xxpeblendshapes;
+                        if (!(a.xxpeblendshapes is null))
+                        {
+                            aipeblendshapes = a.xxpeblendshapes;
+                        }                 
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
                         Console.WriteLine("Error during get aipedata");
+                        Console.WriteLine(e.Message);
                     }
 
                 }
@@ -92,14 +96,15 @@ namespace VNActor
                     try
                     {
                         //a.aipedata = aipedata;
-                        if (aipeblendshapes != null)
+                        if (!(aipeblendshapes is null))
                         {
                             a.xxpeblendshapes = aipeblendshapes;
                         }
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
                         Console.WriteLine("Error during set aipedata");
+                        Console.WriteLine(e.Message);
                     }
 
                 }            
