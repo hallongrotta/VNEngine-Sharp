@@ -106,11 +106,8 @@ namespace VNActor
                 return accessories;
             }
             set
-            {
-                for (int i = 0; i < value.Length; i++)
-                {
-                    this.objctrl.ShowAccessory(i, value[i]);
-                }
+            { 
+                Array.Copy(value, objctrl.charFileStatus.showAccessory, objctrl.charFileStatus.showAccessory.Length);
             }
         }
 
