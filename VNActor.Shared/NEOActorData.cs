@@ -278,7 +278,11 @@ After:
                 a.MouthOpenLevel = mouthOpen;
                 a.LipSync = lipSync;
                 a.HandPattern = handMotions;
-                a.set_kinematic(kinematicType);
+
+                if (a.Kinematic != kinematicType)
+                {
+                    a.set_kinematic(kinematicType);
+                }
 
                 if (kinematicType == KinematicMode.IK)
                 {
@@ -297,6 +301,7 @@ After:
                     a.import_ik_target_info(ik);
                     a.import_fk_bone_info(fk);
                 }
+                           
 
                 //voice_lst = voiceList;
                 a.VoiceRepeat = voiceRepeat;
@@ -319,6 +324,7 @@ After:
                 {
                     Console.WriteLine(e);
                 }
+                
 
             }
         }
