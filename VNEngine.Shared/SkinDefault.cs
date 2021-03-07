@@ -207,10 +207,6 @@ namespace VNEngine
             {
                 this.controller.dump_camera();
             }
-            if (GUILayout.Button("Dump scene", customButton, GUILayout.Width(fullw / 2 - 2), GUILayout.Height(this.buttonHeight)))
-            {
-                this.controller.dump_scene();
-            }
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("List chars > console ", customButton, GUILayout.Width(fullw), GUILayout.Height(this.buttonHeight)))
@@ -231,10 +227,6 @@ namespace VNEngine
             {
                 //this.controller.dump_scene_vnframe(controller);
                 // self.show_blocking_message_time("VNFrame scene dumped!")
-            }
-            if (GUILayout.Button("VNFActor select dump", customButton, GUILayout.Width(fullw / 2 - 2), GUILayout.Height(this.buttonHeight)))
-            {
-                this.controller.dump_selected_vnframe(controller);
             }
             GUILayout.EndHorizontal();
 

@@ -441,10 +441,6 @@ namespace VNEngine
             {
                 this.dump_camera();
             }
-            if (checkKeyCode("dumpscene"))
-            {
-                this.dump_scene();
-            }
             if (checkKeyCode("reloadvnengine"))
             {
                 // reload engine
@@ -891,8 +887,6 @@ After:
         public abstract string get_scene_dir();
 
         public abstract void dump_camera();
-
-        public abstract void dump_scene();
 
         public CamData get_camera_num(int camnum)
         {

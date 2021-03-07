@@ -149,108 +149,7 @@ namespace VNEngine
         public VNActor.Actor GetActor(string id)
         {
             return SceneFolders.scenef_get_actor(id);
-        }
-        /*
-        public void dump_scene_vnframe(VNController game)
-        {
-            IDataClass status;
-            var output = "";
-            SceneFolders.LoadTrackedActorsAndProps();
-            Dictionary<string, VNActor.Actor> actors = this.AllActors;
-            string id_global = "";
-            try
-            {
-                foreach (var id in actors.Keys)
-                {
-                    id_global = id;
-                    VNActor.Actor actor = (VNActor.Actor)this.GetActor(id);
-                    status = actor.export_full_status();
-                    //output += String.Format("'%s': ", id) + VNFrame.script2string(status) + ",\n"; TODO
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Error in status: ", e);
-                game.show_blocking_message_time(String.Format("Error during dump actor %s!", id_global));
-                return;
-            }
-            var props = this.AllProps;
-            try
-            {
-                foreach (var id in props.Keys)
-                {
-                    id_global = id;
-                    Prop prop = this.GetProp(id);
-                    status = prop.export_full_status();
-                    //output += String.Format("'%s': ", id) + VNFrame.script2string(status) + ",\n"; TODO
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Error in status: ", e);
-                game.show_blocking_message_time(String.Format("Error during dump prop %s!", id_global));
-                return;
-            }
-            //output += "'sys': " + VNFrame.script2string(System.export_sys_status(this)) + ",\n"; TODO add vnframe
-            var c = this.studio.cameraCtrl;
-            var cdata = cameraData;
-            output += String.Format("'cam': {{'goto_pos': (({0:F3}, {1:F3}, {2:F3}), ({3:F3}, {4:F3}, {5:F3}), ({6:F3}, {7:F3}, {8:F3}))}}\n", cdata.pos.x, cdata.pos.y, cdata.pos.z, cdata.distance.x, cdata.distance.y, cdata.distance.z, cdata.rotate.x, cdata.rotate.y, cdata.rotate.z);
-            output = "{\n" + output + "}\n";
-            try
-            {
-                using (StreamWriter file =
-                    new StreamWriter(@"dumppython.txt", true))
-                {
-                    file.Write(output);
-                    file.Write('\n');
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
-            this.show_blocking_message_time("VNFrame Scene dumped!");
-        }
-        */
-
-        public void dump_selected_vnframe(VNController game)
-        {
-            var output = "";
-            string id = "";
-            try
-            {
-                VNActor.Actor fem = (VNActor.Actor)NeoOCI.create_from_selected();
-                var actor = (VNActor.Actor)fem;
-                id = actor.text_name;
-                var status = actor.export_full_status();
-                /* TODO
-                output += VNFrame.script2string(new Dictionary<object, object> {
-                    {
-                        "selected",
-                        status}}) + "\n";
-                */
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Error in status: ", e);
-                game.show_blocking_message_time(String.Format("Error during dump actor!", id));
-                return;
-            }
-            try
-            {
-                using (StreamWriter file =
-                    new StreamWriter(@"dumppython.txt", true))
-                {
-                    file.Write(output);
-                    file.Write('\n');
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
-            this.show_blocking_message_time("VNFrame selected dumped!");
-        }
+        }       
 
         new public VNCamera.CamData get_camera_num(int camnum)
         {
@@ -293,62 +192,6 @@ namespace VNEngine
             get
             {
                 return this.studio.sceneInfo;
-            }
-        }
-
-        public void hsneo_dump_scene()
-        {
-
-            using (StreamWriter file =
-                new StreamWriter(@"dumppython.txt", true))
-            {
-                file.WriteLine("---DUMP! Scene----");
-                this.hsneo_dump_scene2(file);
-                file.WriteLine("");
-            }
-        }
-
-        public void hsneo_dump_scene2(StreamWriter file)
-        {
-            //print("Dumping scene 1!")
-            //si = self.studio_scene
-            var dobjctrl = this.studio.dicObjectCtrl;
-            //print("Dumping scene 2!")
-            file.WriteLine("# we are not dumping objects because of number... but you can enable it in code of hsneo_dump_scene2");
-            foreach (var key in dobjctrl.Keys)
-            {
-                var objctrl = dobjctrl[key];
-                //print(key)
-                if (objctrl is OCIChar chara)
-                {
-                    file.WriteLine(String.Format("objctrlchar = game.get_objctrl_num_tochar(%s) # char name %s, animid=%s", key, Utils.to_roman_file(objctrl.treeNodeObject.textName), Utils.to_roman_file(chara.charAnimeCtrl.name)));
-                    //print("objctrlchar = game.get_objctrl_num_tochar(%s) # char name" % (key))
-                    // objctrl.charAnimeCtrl.name
-                    var pctrl = new VNActor.Actor(chara);
-                    pctrl.dump_obj();
-                }
-                else
-                {
-                    //uncomment here to dump not only chars in scene
-                    //print("objctrl = game.get_objctrl_num(%s)"%(key))
-                    //objctrl = objctrl;
-                    //print key
-                    //print("Dumping scene End!")
-                }
-            }
-            this.show_blocking_message_time("Scene dumped!");
-        }
-
-
-        public override void dump_scene()
-        {
-            if (this.onDumpSceneOverride != null)
-            {
-                this.onDumpSceneOverride(this);
-            }
-            else
-            {
-                this.hsneo_dump_scene();
             }
         }
 
@@ -444,8 +287,6 @@ namespace VNEngine
             }
             return ar;
         }
-
-
 
         public void vnscenescript_run_current(GameFunc onEnd, string startState = "0")
         {
