@@ -80,30 +80,10 @@ namespace VNEngine
 
         }
 
-        override public void move_camera_direct(Vector3? pos = null, Vector3? distance = null, Vector3? rotate = null, float? fov = null)
+        override public void move_camera_direct(Vector3 pos, Vector3 distance, Vector3 rotate, float fov)
         {
-            Studio.CameraControl.CameraData cdata = cameraData;
-            Studio.CameraControl c = studio.cameraCtrl;
-
-            if (pos != null)
-            {
-                cdata.pos = (Vector3)pos;
-            }
-            if (distance != null)
-            {
-                cdata.distance = (Vector3)distance;
-            }
-            if (rotate != null)
-            {
-                cdata.rotate = (Vector3)rotate;
-            }
-            if (fov != null)
-            {
-                if (c.fieldOfView != fov)
-                {
-                    c.fieldOfView = (float)fov;
-                }
-            }
+            CamData cd = new CamData(pos, rotate, distance, fov);
+            move_camera_direct(cd);
         }
 
         public override void dump_camera()
@@ -288,7 +268,7 @@ namespace VNEngine
             {
                 cdata = cdatas[camnum - 1];
             }
-            var camobj = this.camparams2vec(cdata.pos, cdata.distance, cdata.rotate, cdata.parse);
+            var camobj = new CamData(cdata.pos, cdata.rotate, cdata.distance, cdata.parse);
             //print camobj
             return camobj;
         }

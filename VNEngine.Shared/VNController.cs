@@ -897,7 +897,7 @@ After:
         public CamData get_camera_num(int camnum)
         {
             this.show_blocking_message_time("ERROR: get_camera_num was not implemented");
-            return this.camparams2vec(new Vector3(), new Vector3(), new Vector3());
+            return new CamData();
         }
 
         // 
@@ -971,57 +971,32 @@ After:
             this.move_camera_direct(cam);
         }
 
-        public void move_camera(Vector3? pos = null, Vector3? distance = null, Vector3? rotate = null, float fov = 23.0f)
+        public void move_camera(Vector3 pos, Vector3 distance, Vector3 rotate, float fov = 23.0f)
         {
             //self.show_blocking_message_time("ERROR: move_camera was not implemented")
-            CamData camobj = this.camparams2vec(pos, distance, rotate, fov);
+            CamData camobj = new CamData(pos, rotate, distance, fov);
             this.move_camera_obj(camobj);
         }
 
         public abstract void move_camera_direct(CamData cam);
 
-        public abstract void move_camera_direct(Vector3? pos = null, Vector3? distance = null, Vector3? rotate = null, float? fov = null);
+        public abstract void move_camera_direct(Vector3 pos, Vector3 distance, Vector3 rotate, float fov);
 
         public void move_camera_obj(CamData camobj)
         {
-            var camv = this.cam2vec(camobj);
-            this.move_camera_direct(camv.position, camv.distance, camv.rotation, camv.fov);
-        }
-
-        public CamData camparams2vec(Vector3? pos, Vector3? distance, Vector3? rotate, float fov = 23.0f)
-        {
-            var obj = new CamData();
-            if (pos is Vector3 pos_vec)
-            {
-                obj.position = pos_vec;
-            }
-            if (distance is Vector3 dist_vec)
-            {
-                obj.distance = dist_vec;
-            }
-            if (rotate is Vector3 rot_vec)
-            {
-                obj.rotation = rot_vec;
-            }
-            obj.fov = fov;
-            return obj;
-        }
-
-        public CamData cam2vec(CamData camobj)
-        {
-            return this.camparams2vec(camobj.position, camobj.distance, camobj.rotation, camobj.fov);
+            this.move_camera_direct(camobj);
         }
 
         public void anim_to_camera(
             float duration,
-            Vector3? pos = null,
-            Vector3? distance = null,
-            Vector3? rotate = null,
+            Vector3 pos = new Vector3(),
+            Vector3 distance = new Vector3(),
+            Vector3 rotate = new Vector3(),
             float fov = 23.0f,
             string style = "linear",
             GameFunc onCameraEnd = null)
         {
-            var camobj = this.camparams2vec(pos, distance, rotate, fov);
+            var camobj = new CamData(pos, rotate, distance, fov);
             this.anim_to_camera_obj(duration, camobj, style, onCameraEnd);
         }
 
@@ -1030,7 +1005,7 @@ After:
             this._anim_to_camera_savecurrentpos();
             // print "Anim to cam 1"
             // print "Anim to cam 2"
-            var camobjv = this.cam2vec(camobj);
+            var camobjv = camobj;
             this.camTPos = camobjv.position;
             this.camTDir = camobjv.distance;
             this.camTAngle = camobjv.rotation;
