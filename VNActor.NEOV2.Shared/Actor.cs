@@ -8,14 +8,16 @@ using System.Linq;
 namespace VNActor
 {
 
-    // AI Actor
+    // AI/HS2 Actor
     public partial class Actor : IVNObject<Actor>
     {
 
         public class ActorData : NEOActorData, IDataClass<Actor>
         {
-            public float tearLevel;
-            public byte[] coordinate;
+            public float tearLevel; 
+            public byte[] coordinate; // To maintain compatability
+            public ChaFileClothes clothesCoordinate;
+            public ChaFileAccessory accessoryCoordinate;
             public float tuya;
             public float wetness;
 
@@ -31,7 +33,10 @@ namespace VNActor
                     tuya = a.SkinGloss;
                     wetness = a.SkinWetness;
                     tearLevel = a.TearLevel;
-                    coordinate = a.ClothCoordinate;
+
+                    clothesCoordinate = a.ClothCoordinate;
+                    accessoryCoordinate = a.AccessoryCoordinate;
+                    
 
                     try
                     {
@@ -46,7 +51,7 @@ namespace VNActor
                         Console.WriteLine("Error during get aipedata");
                         Console.WriteLine(e.Message);
                     }
-
+                    
                 }
 
                 /*
@@ -82,6 +87,7 @@ namespace VNActor
                 return fs;
                 */
             }
+   
 
             override public void Apply(Actor a)
             {
@@ -91,7 +97,8 @@ namespace VNActor
                     a.SkinGloss = tuya;
                     a.SkinWetness = wetness;
                     a.TearLevel = tearLevel;
-                    a.ClothCoordinate = coordinate;
+                    a.ClothCoordinate = clothesCoordinate;
+                    a.AccessoryCoordinate = accessoryCoordinate;
 
                     try
                     {
@@ -106,7 +113,7 @@ namespace VNActor
                         Console.WriteLine("Error during set aipedata");
                         Console.WriteLine(e.Message);
                     }
-
+                    
                 }            
             }
         }
@@ -239,25 +246,66 @@ namespace VNActor
         /// Full clothing data for character. Can be used to change outfits. 
         /// Will only reload character if clothing is different than what is currently being worn. 
         /// </summary>
-        public byte[] ClothCoordinate
+        public ChaFileClothes ClothCoordinate
         {
             get
             {
-                return this.objctrl.charInfo.nowCoordinate.SaveBytes();
+                return this.objctrl.charInfo.nowCoordinate.clothes;
             }
             set
             {
                 try
                 {
-                    if (!value.SequenceEqual(ClothCoordinate))
+                    if (value is null)
                     {
-                        this.objctrl.charInfo.nowCoordinate.LoadBytes(value, ChaFileDefine.ChaFileCoordinateVersion);
-                        this.objctrl.charInfo.Reload(false, true, true);
+                        return;
                     }
+
+                    for (int i = 0; i < value.parts.Length; i++)
+                    {                    
+                        if (value.parts[i].id != ClothCoordinate.parts[i].id)
+                        {
+                            this.objctrl.charInfo.nowCoordinate.clothes = value;
+                            this.objctrl.charInfo.Reload(false, true, true, true);
+                            return;
+                        }
+                    }                                     
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine(String.Format("Exception in set_curcloth_coordinate, {0}", e.ToString()));
+                }
+            }
+        }
+
+        public ChaFileAccessory AccessoryCoordinate
+        {
+            get
+            {
+                return this.objctrl.charInfo.nowCoordinate.accessory;
+            }
+            set
+            {
+                try
+                {
+                    if (value is null)
+                    {
+                        return;
+                    }
+
+                    for (int i = 0; i < value.parts.Length; i++)
+                    {
+                        if (value.parts[i].id != AccessoryCoordinate.parts[i].id)
+                        {
+                            this.objctrl.charInfo.nowCoordinate.accessory = value;
+                            this.objctrl.charInfo.Reload(false, true, true, true);
+                            return;
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(String.Format("Exception in accessory setting, {0}", e.ToString()));
                 }
             }
         }

@@ -54,6 +54,24 @@ namespace SceneSaveState
             {
                 Instance.block.SetCurrentMapForAllScenes();
             }
+#if HS2
+            if (GUILayout.Button("Set current actor's clothes to all scenes."))
+            {
+                string id = Instance.GetIDOfSelectedObject();
+                if (!(id is null))
+                {
+                    Instance.block.SetCurrentClothesForAllScenes(id);
+                }
+            }
+            if (GUILayout.Button("Set current actor's accessories to all scenes."))
+            {
+                string id = Instance.GetIDOfSelectedObject();
+                if (!(id is null))
+                {
+                    Instance.block.SetCurrentAccessoriesForAllScenes(id);
+                }
+            }
+#endif
             // if GUILayout.Button("(without Pos)"):
             //     sc.copySelectedStatusToTracking(["pos"])
             GUILayout.EndHorizontal();

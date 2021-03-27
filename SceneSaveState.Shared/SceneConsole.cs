@@ -1284,6 +1284,35 @@ namespace SceneSaveState
             autoshownewid = "";
         }
 
+        internal string GetIDOfSelectedObject()
+        {
+            var objects = KKAPI.Studio.StudioAPI.GetSelectedObjects();
+
+            if (objects.Count() == 0)
+            {
+                return null;
+            }
+            else
+            {
+                foreach (var objectCtrl in objects)
+                {
+                    try
+                    {
+                        if (objectCtrl is OCIChar c)
+                        {
+                            return SceneFolders.GetActorID(c);
+                        }
+                        
+                    }
+                    catch
+                    {
+                        continue;
+                    }
+                }
+            }
+            return null;
+        }
+
         // Ministates
         internal void delSelectedAutoShow()
         {

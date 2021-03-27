@@ -1,4 +1,7 @@
-﻿using System;
+﻿#if NEOV2
+using AIChara;
+#endif
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -501,5 +504,25 @@ namespace SceneSaveState
                 scene.sys.map_rot = CurrentScene.sys.map_rot;
             }
         }
+
+#if HS2
+        internal void SetCurrentAccessoriesForAllScenes(string id)
+        {
+            var acc = CurrentScene.actors[id].accessoryCoordinate;
+            foreach (Scene scene in scenes)
+            {
+                scene.actors[id].accessoryCoordinate = acc;
+            }
+        }
+
+        internal void SetCurrentClothesForAllScenes(string id)
+        {
+            var clothes = CurrentScene.actors[id].clothesCoordinate;
+            foreach (Scene scene in scenes)
+            {
+                scene.actors[id].clothesCoordinate = clothes;
+            }
+        }
+#endif
     }
 }

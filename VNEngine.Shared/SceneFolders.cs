@@ -85,7 +85,7 @@ namespace VNEngine
 
         private static string ResolveID<T>(string baseid, T obj, Dictionary<string, T> dict) where T: NeoOCI
         {
-            foreach (Prop p in AllProps.Values)
+            foreach (T p in dict.Values)
             {
                 if (p.objctrl == obj.objctrl)
                 {
@@ -101,6 +101,23 @@ namespace VNEngine
                 }
             }
             return null;
+        }
+
+        public static string GetID<T>(T obj, Dictionary<string, T> dict) where T: NeoOCI
+        {
+            foreach (KeyValuePair<string, T> kv in dict)
+            {
+                if (kv.Value.objctrl == obj.objctrl)
+                {
+                    return kv.Key;
+                }
+            }
+            return null;
+        }
+
+        public static string GetActorID(OCIChar chara)
+        {
+            return GetID(new VNActor.Actor(chara), AllActors);
         }
 
         public static void LoadTrackedActorsAndProps()
