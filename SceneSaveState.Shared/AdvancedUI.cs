@@ -17,15 +17,13 @@ namespace SceneSaveState
             GUILayout.Label("<b>Advanced controls</b>");
             GUILayout.Space(10);
             GUILayout.Label("Change character name:");
-            GUILayout.BeginHorizontal();
+            GUILayout.BeginVertical();
             Instance.charname = GUILayout.TextField(Instance.charname);
             if (GUILayout.Button("Change selected", GUILayout.Width(110)))
             {
                 changeCharName(Instance.game, Instance.charname);
             }
-            GUILayout.EndHorizontal();
             GUILayout.Label("Status operations:");
-            GUILayout.BeginHorizontal();
             if (GUILayout.Button("Copy selected status"))
             {
                 Instance.copySelectedStatus();
@@ -34,8 +32,6 @@ namespace SceneSaveState
             {
                 Instance.pasteSelectedStatus();
             }
-            GUILayout.EndHorizontal();
-            GUILayout.BeginHorizontal();
             if (GUILayout.Button("Copy selected status 2"))
             {
                 Instance.copySelectedStatus2();
@@ -44,8 +40,6 @@ namespace SceneSaveState
             {
                 Instance.pasteSelectedStatus2();
             }
-            GUILayout.EndHorizontal();
-            GUILayout.BeginHorizontal();
             if (GUILayout.Button("Copy selected status to tracking chara with same name"))
             {
                 Instance.copySelectedStatusToTracking(null);
@@ -74,7 +68,7 @@ namespace SceneSaveState
 #endif
             // if GUILayout.Button("(without Pos)"):
             //     sc.copySelectedStatusToTracking(["pos"])
-            GUILayout.EndHorizontal();
+            GUILayout.EndVertical();
             //GUILayout.Space(15)
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("VN: all cameras on"))
