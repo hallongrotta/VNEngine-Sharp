@@ -91,7 +91,7 @@ namespace VNActor
 
             override public void Apply(Actor a)
             {
-                base.Apply(a);
+                a.Visible = visible;          
                 if (visible)
                 {
                     a.SkinGloss = tuya;
@@ -112,9 +112,10 @@ namespace VNActor
                     {
                         Console.WriteLine("Error during set aipedata");
                         Console.WriteLine(e.Message);
-                    }
+                    }     
                     
-                }            
+                }
+                base.Apply(a);
             }
         }
 

@@ -624,7 +624,10 @@ namespace VNActor
             {
                 for (int i = 0; i < value.Length; i++)
                 {
-                    this.objctrl.SetClothesState(i, value[i]);
+                    if (this.objctrl.charFileStatus.clothesState[i] != value[i])
+                    {
+                        this.objctrl.SetClothesState(i, value[i]);
+                    }              
                 }
             }
         }

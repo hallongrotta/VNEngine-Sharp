@@ -30,6 +30,7 @@ namespace VNActor
 
             override public void Apply(Actor a)
             {
+                a.Visible = visible;
                 if (visible)
                 {
                     a.TearLevel = tearLevel;
