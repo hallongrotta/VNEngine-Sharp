@@ -59,7 +59,8 @@ namespace SceneSaveState
 
         public int sceneIndex;
 
-        public int currentSceneIndex { 
+        public int currentSceneIndex
+        { 
             get 
             { 
                 return sceneIndex; 
@@ -128,11 +129,11 @@ namespace SceneSaveState
             currentCamIndex = -1;
         }
 
-        public SceneManager(Scene[] scenes)
+        public SceneManager(Scene[] scenes, int currentSceneIndex = 0, int currentCamIndex = 0)
         {
             this.scenes = scenes.ToList();
-            currentSceneIndex = 0;
-            currentCamIndex = 0;
+            this.currentSceneIndex = currentSceneIndex;
+            this.currentCamIndex = currentCamIndex;
         }
 
         public bool HasScenes { get { return currentSceneIndex > -1; } }
