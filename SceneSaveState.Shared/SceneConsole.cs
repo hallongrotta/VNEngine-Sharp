@@ -263,6 +263,7 @@ namespace SceneSaveState
                     byte[] sceneData = Utils.SerializeData(block.ExportScenes());
                     pluginData.data["scenes"] = sceneData;
                     pluginData.data["currentScene"] = block.currentSceneIndex;
+                    pluginData.data["sceneNames"] = block.ExportSceneStrings();               
                     var saveDataSizeKb = CalculateSaveDataSize(sceneData);
                     Logger.LogMessage($"Saved {(saveDataSizeKb):N} Kb of scene state data.");
                     saveDataSize = saveDataSizeKb;
@@ -301,9 +302,18 @@ namespace SceneSaveState
 
                         int sceneIndex;
                         object temp;
+                        object sceneNames_temp;
                         pluginData.data.TryGetValue("currentScene", out temp);
-                        sceneIndex = (temp as int?) ?? 0;                 
-                        block = new SceneManager(scenes, sceneIndex);
+                        pluginData.data.TryGetValue("sceneNames", out sceneNames_temp);
+
+                        sceneIndex = (temp as int?) ?? 0;
+                        
+                        string sceneNames = sceneNames_temp as string;
+
+                        string[] sceneStrings = SceneManager.DeserializeSceneStrings(sceneNames);
+
+                        block = new SceneManager(scenes, currentSceneIndex: sceneIndex, sceneStrings: sceneStrings);
+
                         var saveDataSizeKb = CalculateSaveDataSize(sceneData);
                         Logger.LogMessage($"Loaded {(saveDataSizeKb):N} Kb of scene state data.");
                         saveDataSize = saveDataSizeKb;

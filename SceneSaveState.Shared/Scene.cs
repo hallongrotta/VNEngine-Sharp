@@ -14,6 +14,7 @@ namespace SceneSaveState
     public class Scene
     {
 
+        public string name; // Explcitly set scene name
         public List<CamData> cams;
         public Dictionary<string, ActorData> actors;
         public Dictionary<string, NEOItemData> items;

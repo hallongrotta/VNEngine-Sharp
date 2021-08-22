@@ -20,11 +20,7 @@ namespace SceneSaveState
             {
                 if ((scene_str_array == null) || scene_str_array.Length != scenes.Count)
                 {
-                    scene_str_array = new string[scenes.Count];
-                    for (int id = 0; id < scenes.Count; id++)
-                    {
-                        scene_str_array[id] = $"Scene {id + 1}";
-                    }
+                    RebuildSceneStrings();
                     return scene_str_array;
                 }
                 else
@@ -136,6 +132,14 @@ namespace SceneSaveState
             this.currentCamIndex = currentCamIndex;
         }
 
+        public SceneManager(Scene[] scenes, string[] sceneStrings, int currentSceneIndex = 0, int currentCamIndex = 0)
+        {
+            this.scenes = scenes.ToList();
+            this.currentSceneIndex = currentSceneIndex;
+            this.currentCamIndex = currentCamIndex;
+            this.scene_str_array = sceneStrings;
+        }
+
         public bool HasScenes { get { return currentSceneIndex > -1; } }
 
         public Scene this[int index]
@@ -148,6 +152,25 @@ namespace SceneSaveState
             {
                 scenes[index] = value;
             }
+        }
+
+        internal void RebuildSceneStrings()
+        {
+            var new_scene_str_array = new string[scenes.Count];
+            int id;
+            for (id = 0; id < scenes.Count; id++)
+            {
+                if (scenes[id].name is null)
+                {
+                    new_scene_str_array[id] = $"Scene {id + 1}";
+                }
+                else
+                {
+                    new_scene_str_array[id] = scenes[id].name;
+                }
+
+            }
+            this.scene_str_array = new_scene_str_array;
         }
 
         public void Add(Scene s)
@@ -208,13 +231,14 @@ namespace SceneSaveState
         // Move scene(up/down)
         public void move_scene_up()
         {
-            if (scenes.Count > 1)
+            if (scenes.Count > 1 && this.currentSceneIndex != 0)
             {
                 var cursc = CurrentScene;
                 CurrentScene = scenes[currentSceneIndex - 1];
                 currentSceneIndex -= 1;
                 CurrentScene = cursc;
-            }
+                RebuildSceneStrings();
+            }        
         }
 
         public void move_scene_down()
@@ -225,7 +249,8 @@ namespace SceneSaveState
                 CurrentScene = scenes[currentSceneIndex + 1];
                 currentSceneIndex += 1;
                 CurrentScene = cursc;
-            }
+                RebuildSceneStrings();
+            }    
         }
 
         // Move cam (up/down)
@@ -504,6 +529,37 @@ namespace SceneSaveState
                 scene.sys.map_pos = CurrentScene.sys.map_pos;
                 scene.sys.map_rot = CurrentScene.sys.map_rot;
             }
+        }
+
+        internal string ExportSceneStrings()
+        {
+            string s = "";
+
+            for (int i = 0; i < SceneStrings.Length; i++)
+            {
+                string sceneString = SceneStrings[i];
+                if (sceneString is null)
+                {
+                    s += '\n';
+                }
+                else
+                {
+                    s += (i == SceneStrings.Length - 1) ? sceneString : sceneString + "\n";
+                }
+            }        
+            return s;
+        }
+
+        static internal string[] DeserializeSceneStrings(string s)
+        {
+            if (s is null)
+            {
+                return null;
+            }
+
+            string[] list = s.Split('\n');
+
+            return list;
         }
 
 #if HS2

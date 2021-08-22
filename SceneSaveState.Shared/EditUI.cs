@@ -57,7 +57,9 @@ namespace SceneSaveState
                 GUILayout.EndHorizontal();
                 */
             }
-        } 
+        }
+
+        static string scene_name = null;
 
         public static void DrawSceneTab()
         {
@@ -66,6 +68,27 @@ namespace SceneSaveState
             scene_scroll = GUILayout.BeginScrollView(scene_scroll, GUILayout.Width(ColumnWidth));
             if (Instance.block.Count > 0)
             {
+
+                if (scene_name is null) {
+                    scene_name = Instance.block.SceneStrings[Instance.block.currentSceneIndex];
+                }
+
+                scene_name = GUILayout.TextField(scene_name);
+                
+                if (Event.current.isKey && Event.current.keyCode == KeyCode.Return)
+                {
+                    if (scene_name == "")
+                    {
+                        Instance.block.CurrentScene.name = null;                    
+                    }
+                    else
+                    {
+                        Instance.block.CurrentScene.name = scene_name;
+                        scene_name = null;
+                    }
+                    Instance.block.RebuildSceneStrings();
+                }
+              
                 for (int i = 0; i < Instance.block.Count; i++)
                 {
                     if (i == Instance.block.currentSceneIndex)
@@ -75,6 +98,10 @@ namespace SceneSaveState
                     else
                     {
                         col = Instance.nor_font_col;
+                    }
+                    if (Instance.block.SceneStrings[i] is null)
+                    {
+                        Instance.block.SceneStrings[i] = $"Scene {i + 1}";
                     }
                     string scn_name = Instance.block.SceneStrings[i];
                     if (Instance.block[i].cams.Count > 0 && Instance.block[i].cams[0].addata.enabled)
@@ -91,6 +118,7 @@ namespace SceneSaveState
                     }
                     if (GUILayout.Button(String.Format("<color={0}>{1}</color>", col, scn_name)))
                     {
+                        scene_name = scn_name;
                         Instance.block.SetCurrent(i);
                         if (Instance.autoLoad.Value)
                         {
