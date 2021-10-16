@@ -65,16 +65,17 @@ namespace SceneSaveState
         {
             GUILayout.BeginVertical();
             string col;
-            scene_scroll = GUILayout.BeginScrollView(scene_scroll, GUILayout.Width(ColumnWidth));
+            
             if (Instance.block.Count > 0)
             {
-
                 if (scene_name is null) {
                     scene_name = Instance.block.SceneStrings[Instance.block.currentSceneIndex];
                 }
 
-                scene_name = GUILayout.TextField(scene_name);
-                
+                scene_name = GUILayout.TextField(scene_name, GUILayout.Width(ColumnWidth));
+
+                scene_scroll = GUILayout.BeginScrollView(scene_scroll, GUILayout.Width(ColumnWidth));
+
                 if (Event.current.isKey && Event.current.keyCode == KeyCode.Return)
                 {
                     if (scene_name == "")
@@ -127,8 +128,9 @@ namespace SceneSaveState
                         }
                     }
                 }
+                GUILayout.EndScrollView();
             }
-            GUILayout.EndScrollView();
+            
             if (Instance.block.HasScenes)
             {
                 GUILayout.FlexibleSpace();
