@@ -193,7 +193,7 @@ public struct WarningParam_s
                         else if (subwinindex == 4)
                         {
                             // Ministates window
-                            sceneConsoleMinistates();
+                            //sceneConsoleMinistates();
                         }
                         else if (subwinindex == 100)
                         {
