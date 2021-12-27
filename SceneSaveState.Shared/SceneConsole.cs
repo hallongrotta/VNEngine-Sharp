@@ -116,6 +116,7 @@ namespace SceneSaveState
 
         internal float consoleWidth;
         internal float consoleHeight;
+        internal bool track_map = true;
 
         internal VNNeoController game
         {
@@ -263,7 +264,8 @@ namespace SceneSaveState
                     byte[] sceneData = Utils.SerializeData(block.ExportScenes());
                     pluginData.data["scenes"] = sceneData;
                     pluginData.data["currentScene"] = block.currentSceneIndex;
-                    pluginData.data["sceneNames"] = block.ExportSceneStrings();               
+                    pluginData.data["sceneNames"] = block.ExportSceneStrings();
+                    pluginData.data["trackMap"] = this.track_map;
                     var saveDataSizeKb = CalculateSaveDataSize(sceneData);
                     Logger.LogMessage($"Saved {(saveDataSizeKb):N} Kb of scene state data.");
                     saveDataSize = saveDataSizeKb;
@@ -300,15 +302,16 @@ namespace SceneSaveState
                     {
                         var scenes = Utils.DeserializeData<Scene[]>(sceneData);
 
-                        int sceneIndex;
                         object temp;
-                        object sceneNames_temp;
-                        pluginData.data.TryGetValue("currentScene", out temp);
-                        pluginData.data.TryGetValue("sceneNames", out sceneNames_temp);
 
-                        sceneIndex = (temp as int?) ?? 0;
+                        pluginData.data.TryGetValue("currentScene", out temp);                      
+                        int sceneIndex = (temp as int?) ?? 0;
                         
-                        string sceneNames = sceneNames_temp as string;
+                        pluginData.data.TryGetValue("sceneNames", out temp);                     
+                        string sceneNames = temp as string;
+
+                        pluginData.data.TryGetValue("trackMap", out temp);
+                        track_map = (temp as bool?) ?? true;
 
                         string[] sceneStrings = SceneManager.DeserializeSceneStrings(sceneNames);
 
@@ -1208,7 +1211,7 @@ namespace SceneSaveState
         {
             if (isSysTracking)
             {
-                VNEngine.System.import_status(s.sys);
+                VNEngine.System.import_status(s.sys, track_map);
             }
             foreach (var actid in s.actors.Keys)
             {
@@ -1268,39 +1271,6 @@ namespace SceneSaveState
             }           
         }
 
-        internal void addSelectedAutoShow(string param)
-        {
-            // get list of sel objs
-            var arSel = Ministates.get_selected_objs();
-            if (arSel.Count == 0)
-            {
-                show_blocking_message_time_sc("No selection!");
-                return;
-            }
-            foreach (var actprop in arSel)
-            {
-                //print actprop
-                //if hasattr(actprop, 'as_prop'):
-                if (actprop is VNActor.Actor chara)
-                {
-                    //id = self.find_item_in_objlist(actprop.objctrl)
-                }
-                else
-                {
-                    var txtname = autoshownewid;
-                    if (txtname == "")
-                    {
-                        txtname = actprop.text_name;
-                    }
-                    var fld = Folder.add("-msauto:" + param + ":" + txtname);
-                    //objSave["__id{0}"%(str(id))] = actprop.export_full_status()
-                    fld.set_parent(actprop);
-                }
-            }
-            Utils.recalc_autostates();
-            autoshownewid = "";
-        }
-
         internal string GetIDOfSelectedObject()
         {
             var objects = KKAPI.Studio.StudioAPI.GetSelectedObjects();
@@ -1328,28 +1298,6 @@ namespace SceneSaveState
                 }
             }
             return null;
-        }
-
-        // Ministates
-        internal void delSelectedAutoShow()
-        {
-            // get list of sel objs
-            var arSel = Ministates.get_selected_objs();
-            if (arSel.Count == 0)
-            {
-                show_blocking_message_time_sc("No selection!");
-                return;
-            }
-            var arSel0 = arSel[0];
-            var folders = Folder.find_all_startswith("-msauto:");
-            foreach (var folder in folders)
-            {
-                if (folder.treeNodeObject.parent == arSel0.treeNodeObject)
-                {
-                    folder.delete();
-                }
-            }
-            Utils.recalc_autostates();
-        }
+        }   
     }
 }

@@ -51,9 +51,9 @@ namespace VNEngine
             return new SystemData(StudioController.Instance);
         }
 
-        public static void import_status(SystemData s)
+        public static void import_status(SystemData s, bool change_map = true)
         {
-            s.Apply(StudioController.Instance);
+            s.Apply(StudioController.Instance, change_map);
         }
 
         //===============================================================================================

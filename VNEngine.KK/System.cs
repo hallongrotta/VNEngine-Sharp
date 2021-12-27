@@ -104,11 +104,16 @@ namespace VNEngine
                 */
             }
 
-            internal void Apply(StudioController game)
+            internal void Apply(StudioController game, bool change_map = true)
             {
                 sys_bgm(game, this);
                 sys_wav(game, this);
-                sys_map(game, this);
+
+                if (change_map)
+                {
+                    sys_map(game, this);
+                }
+
                 sys_map_pos(game, this);
                 sys_map_rot(game, this);
                 map_sun(game, this);

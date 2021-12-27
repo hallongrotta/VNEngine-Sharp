@@ -67,6 +67,20 @@ namespace SceneSaveState
                     Instance.delSysTracking();
                 }
             }
+            if (Instance.track_map)
+            {
+                if (GUILayout.Button("Stop tracking map selection", GUILayout.Height(25), GUILayout.Width(ColumnWidth))) 
+                {
+                    Instance.track_map = false;
+                }
+            }
+            else
+            {
+                if (GUILayout.Button("Track map selection", GUILayout.Height(25), GUILayout.Width(ColumnWidth)))
+                {
+                    Instance.track_map = true;
+                }
+            }
             GUILayout.EndVertical();
             GUILayout.EndHorizontal();
             GUILayout.FlexibleSpace();
