@@ -50,11 +50,26 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AI", "AI", "{17CC9A57-CD2D-
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "HS2", "HS2", "{AC102585-0546-49AA-AE53-7686FCD31528}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VNActor.KKS", "VNActor.KKS\VNActor.KKS.csproj", "{F3EC12DF-8A81-4300-8AB9-3FC1B8264031}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SceneSaveState.KKS", "SceneSaveState.KKS\SceneSaveState.KKS.csproj", "{1BC360A1-43FE-4353-AF5D-21B20F446C67}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VNEngine.KKS", "VNEngine.KKS\VNEngine.KKS.csproj", "{011B95DB-673A-4696-B499-940B76735028}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "VNActor.CharaStudio.Shared", "VNActor.CharaStudio.Shared\VNActor.CharaStudio.Shared.shproj", "{B9C8BC9B-5993-41B1-A721-A1A8C86A7D67}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "VNEngine.CharaStudio.Shared", "VNEngine.CharaStudio.Shared\VNEngine.CharaStudio.Shared.shproj", "{034C0467-AA8D-455C-A514-07D5F68B0ADA}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		VNEngine.CharaStudio.Shared\VNEngine.CharaStudio.Shared.projitems*{011b95db-673a-4696-b499-940b76735028}*SharedItemsImports = 4
+		VNEngine.Shared\VNEngine.Shared.projitems*{011b95db-673a-4696-b499-940b76735028}*SharedItemsImports = 4
+		VNEngine.CharaStudio.Shared\VNEngine.CharaStudio.Shared.projitems*{034c0467-aa8d-455c-a514-07d5f68b0ada}*SharedItemsImports = 13
 		VNEngine.Shared\VNEngine.Shared.projitems*{062d595d-8e9b-4149-a5a0-16e45773f9d6}*SharedItemsImports = 13
 		VNEngine.NEOV2.Shared\VNEngine.NEOV2.Shared.projitems*{14b84207-c19a-41b4-930d-028499912193}*SharedItemsImports = 4
 		VNEngine.Shared\VNEngine.Shared.projitems*{14b84207-c19a-41b4-930d-028499912193}*SharedItemsImports = 4
+		SceneSaveState.Shared\SceneSaveState.Shared.projitems*{1bc360a1-43fe-4353-af5d-21b20f446c67}*SharedItemsImports = 4
+		VNEngine.CharaStudio.Shared\VNEngine.CharaStudio.Shared.projitems*{1fb1b473-387f-425b-8eaa-421b1869a4bd}*SharedItemsImports = 4
 		VNEngine.Shared\VNEngine.Shared.projitems*{1fb1b473-387f-425b-8eaa-421b1869a4bd}*SharedItemsImports = 4
 		VNActor.Shared\VNActor.Shared.projitems*{37792876-cc1b-4033-8ab7-4d3cca4715a4}*SharedItemsImports = 13
 		VNActor.NEOV2.Shared\VNActor.NEOV2.Shared.projitems*{4592781a-5b7e-472c-a3a2-4e559c4c9a74}*SharedItemsImports = 4
@@ -65,11 +80,15 @@ Global
 		VNEngine.NEOV2.Shared\VNEngine.NEOV2.Shared.projitems*{9521bdcc-076f-42dc-bd06-77bfa0e961e3}*SharedItemsImports = 13
 		VNActor.NEOV2.Shared\VNActor.NEOV2.Shared.projitems*{95bf9f7c-5f40-43c3-8191-6034fccc5cb3}*SharedItemsImports = 4
 		VNActor.Shared\VNActor.Shared.projitems*{95bf9f7c-5f40-43c3-8191-6034fccc5cb3}*SharedItemsImports = 4
+		VNActor.CharaStudio.Shared\VNActor.CharaStudio.Shared.projitems*{b9c8bc9b-5993-41b1-a721-a1a8c86a7d67}*SharedItemsImports = 13
 		VNEngine.NEOV2.Shared\VNEngine.NEOV2.Shared.projitems*{e1c9e23e-b127-4fcd-8200-e5c75648a27f}*SharedItemsImports = 4
 		VNEngine.Shared\VNEngine.Shared.projitems*{e1c9e23e-b127-4fcd-8200-e5c75648a27f}*SharedItemsImports = 4
 		SceneSaveState.Shared\SceneSaveState.Shared.projitems*{e31d9b1e-bb35-473d-8f8c-12fb2740d2e9}*SharedItemsImports = 4
+		VNActor.CharaStudio.Shared\VNActor.CharaStudio.Shared.projitems*{e687512c-010e-4f55-ac98-3e02bc89d60c}*SharedItemsImports = 4
 		VNActor.Shared\VNActor.Shared.projitems*{e687512c-010e-4f55-ac98-3e02bc89d60c}*SharedItemsImports = 4
 		SceneSaveState.Shared\SceneSaveState.Shared.projitems*{f04a21fc-c895-4f4d-a83d-9aec3b921d25}*SharedItemsImports = 4
+		VNActor.CharaStudio.Shared\VNActor.CharaStudio.Shared.projitems*{f3ec12df-8a81-4300-8ab9-3fc1b8264031}*SharedItemsImports = 4
+		VNActor.Shared\VNActor.Shared.projitems*{f3ec12df-8a81-4300-8ab9-3fc1b8264031}*SharedItemsImports = 4
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -124,6 +143,18 @@ Global
 		{4592781A-5B7E-472C-A3A2-4E559C4C9A74}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4592781A-5B7E-472C-A3A2-4E559C4C9A74}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4592781A-5B7E-472C-A3A2-4E559C4C9A74}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3EC12DF-8A81-4300-8AB9-3FC1B8264031}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3EC12DF-8A81-4300-8AB9-3FC1B8264031}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3EC12DF-8A81-4300-8AB9-3FC1B8264031}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3EC12DF-8A81-4300-8AB9-3FC1B8264031}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1BC360A1-43FE-4353-AF5D-21B20F446C67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1BC360A1-43FE-4353-AF5D-21B20F446C67}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1BC360A1-43FE-4353-AF5D-21B20F446C67}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1BC360A1-43FE-4353-AF5D-21B20F446C67}.Release|Any CPU.Build.0 = Release|Any CPU
+		{011B95DB-673A-4696-B499-940B76735028}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{011B95DB-673A-4696-B499-940B76735028}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{011B95DB-673A-4696-B499-940B76735028}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{011B95DB-673A-4696-B499-940B76735028}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -142,6 +173,11 @@ Global
 		{4592781A-5B7E-472C-A3A2-4E559C4C9A74} = {AC102585-0546-49AA-AE53-7686FCD31528}
 		{17CC9A57-CD2D-4293-B39D-38A537897783} = {55D2C741-6B3E-47F8-AE4E-208E8F2DFA76}
 		{AC102585-0546-49AA-AE53-7686FCD31528} = {55D2C741-6B3E-47F8-AE4E-208E8F2DFA76}
+		{F3EC12DF-8A81-4300-8AB9-3FC1B8264031} = {2DEBF99A-EBB2-4B55-97BA-A752702CB0AE}
+		{1BC360A1-43FE-4353-AF5D-21B20F446C67} = {2DEBF99A-EBB2-4B55-97BA-A752702CB0AE}
+		{011B95DB-673A-4696-B499-940B76735028} = {2DEBF99A-EBB2-4B55-97BA-A752702CB0AE}
+		{B9C8BC9B-5993-41B1-A721-A1A8C86A7D67} = {2DEBF99A-EBB2-4B55-97BA-A752702CB0AE}
+		{034C0467-AA8D-455C-A514-07D5F68B0ADA} = {2DEBF99A-EBB2-4B55-97BA-A752702CB0AE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {19B0272D-3305-4C60-8DD9-E15889B2FF54}

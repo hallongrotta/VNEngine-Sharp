@@ -123,40 +123,6 @@ namespace VNActor
             }
         }
 
-        public ChaFileDefine.CoordinateType coordinate_type_int_to_enum(int type) // TODO
-        {
-            ChaFileDefine.CoordinateType coordinateType;
-            if (type == 0)
-            {
-                coordinateType = ChaFileDefine.CoordinateType.School01;
-            }
-            else if (type == 1)
-            {
-                coordinateType = ChaFileDefine.CoordinateType.School02;
-            }
-            else if (type == 2)
-            {
-                coordinateType = ChaFileDefine.CoordinateType.Gym;
-            }
-            else if (type == 3)
-            {
-                coordinateType = ChaFileDefine.CoordinateType.Swim;
-            }
-            else if (type == 4)
-            {
-                coordinateType = ChaFileDefine.CoordinateType.Club;
-            }
-            else if (type == 5)
-            {
-                coordinateType = ChaFileDefine.CoordinateType.Plain;
-            }
-            else
-            {
-                coordinateType = ChaFileDefine.CoordinateType.Pajamas;
-            }
-            return coordinateType;
-        }
-
         public int CoordinateType
         {
             set
@@ -164,7 +130,7 @@ namespace VNActor
                 // type: 0-School01, 1-School02, 2-Gym, 3-Swim, 4-Club, 5-Plain, 6-Pajamas
                 if (CoordinateType != value)
                 {
-                    ChaFileDefine.CoordinateType coordinateType = this.coordinate_type_int_to_enum(value);
+                    ChaFileDefine.CoordinateType coordinateType = (ChaFileDefine.CoordinateType)value;
                     this.objctrl.charInfo.ChangeCoordinateTypeAndReload(coordinateType);
                 }
             }
@@ -273,7 +239,7 @@ namespace VNActor
                 try
                 {
                     this.objctrl.charInfo.nowCoordinate.LoadBytes(value, ChaFileDefine.ChaFileCoordinateVersion);
-                    this.objctrl.charInfo.AssignCoordinate(this.coordinate_type_int_to_enum(this.objctrl.charInfo.fileStatus.coordinateType));
+                    this.objctrl.charInfo.AssignCoordinate((ChaFileDefine.CoordinateType)this.objctrl.charInfo.fileStatus.coordinateType);
                     this.objctrl.charInfo.Reload(false, true, true, true);
                 }
                 catch (Exception e)
@@ -295,7 +261,7 @@ namespace VNActor
                 //self.objctrl.charInfo.Reload()
                 //self.objctrl.charInfo.AssignCoordinate(ChaFileDefine.CoordinateType[self.objctrl.charInfo.fileStatus.coordinateType])
                 nowCoord.accessory = MessagePackSerializer.Deserialize<ChaFileAccessory>(array2);
-                this.objctrl.charInfo.AssignCoordinate(this.coordinate_type_int_to_enum(this.objctrl.charInfo.fileStatus.coordinateType));
+                this.objctrl.charInfo.AssignCoordinate((ChaFileDefine.CoordinateType)this.objctrl.charInfo.fileStatus.coordinateType);
                 //self.objctrl.charInfo.AssignCoordinate(0)
                 this.objctrl.charInfo.Reload(false, true, true, true);
             }
