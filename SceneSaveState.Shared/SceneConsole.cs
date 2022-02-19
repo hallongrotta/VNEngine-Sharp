@@ -1115,6 +1115,12 @@ namespace SceneSaveState
             //this.game.gdata.vnbupskin = this.game.skin;
             //self.game.skin_set_byname("skin_renpy")
             //from skin_renpy import SkinRenPy
+               
+            if (block.Count == 0)
+            {
+                return;
+            }      
+
             var rpySkin = new SkinRenPyMini();
             int calcPos;
             rpySkin.isEndButton = true;

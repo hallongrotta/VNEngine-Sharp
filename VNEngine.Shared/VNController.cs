@@ -26,7 +26,7 @@ namespace VNEngine
 
         public GameFunc _onCameraEnd;
 
-        public List<Button_s> _vnButtons;
+        public List<Button_s> _vnButtons = new List<Button_s>();
 
         public string _vnStText;
 
@@ -266,11 +266,6 @@ namespace VNEngine
             this._eventListenerDic = new Dictionary<string, List<GameFunc>>();
             this.windowStyle = this.windowStyleDefault;
             this.skin_set(this.skin_default);
-        }
-
-        public void _sup_hide_window()
-        {
-            this.hide_window();
         }
 
         public void FuncWindowGUI(int windowid)
@@ -743,16 +738,6 @@ After:
         }
         */
 
-        public void show_window()
-        {
-            this.visible = true;
-        }
-
-        public void hide_window()
-        {
-            this.visible = false;
-        }
-
         public void show_blocking_message(string text = "...")
         {
             this.funcLockedText = text;
@@ -1044,7 +1029,7 @@ After:
             this._onCameraEnd = onCameraEnd;
             if (this.isHideWindowDuringCameraAnimation)
             {
-                this.hide_window();
+                this.visible = false;
             }
         }
 
@@ -1122,7 +1107,7 @@ After:
             // print "Anim camera end!"
             if (this.isHideWindowDuringCameraAnimation)
             {
-                this.show_window();
+                this.visible = false;
             }
             this.camAnimeTID = -1;
             if (this._onCameraEnd != null)
@@ -1566,7 +1551,6 @@ After:
         {
             this.skin = skin;
             this.skin.setup(this);
-            this.visible = true;
         }
 
         public void skin_set_byname(string skinname)
