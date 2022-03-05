@@ -1,8 +1,9 @@
-﻿using MessagePack;
-using Studio;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
+using MessagePack;
+using Studio;
 using UnityEngine;
+using VNActor;
 using static VNEngine.Utils;
 using static VNEngine.VNCamera;
 
@@ -10,42 +11,6 @@ namespace VNEngine
 {
     public static partial class System
     {
-
-        [MessagePackObject]
-        public struct Wav_s
-        {
-            [Key(0)]
-            public string fileName;
-            [Key(1)]
-            public bool play;
-            [Key(2)]
-            public bool repeat;
-        }
-
-        [MessagePackObject]
-        public struct BGM_s
-        {
-            [Key(0)]
-            public int no;
-            [Key(1)]
-            public bool play;
-        }
-
-        [MessagePackObject]
-        public struct CharLight_s
-        {
-            [Key(0)]
-            public Color rgbDiffuse;
-            [Key(2)]
-            public float cameraLightIntensity;
-            [Key(3)]
-            public float rot_y;
-            [Key(4)]
-            public float rot_x;
-            [Key(5)]
-            public bool cameraLightShadow;
-        }
-
         public static SystemData export_full_status()
         {
             return new SystemData(StudioController.Instance);
@@ -62,12 +27,10 @@ namespace VNEngine
         public static void sys_idle(VNNeoController game, object param)
         {
             // as name says, do nothing, using in anime to wait, param ignored
-            return;
         }
 
         public static void sys_idle(VNNeoController game, SystemData param)
         {
-            return;
         }
 
         public static void sys_next(VNNeoController game, object param)
@@ -75,14 +38,13 @@ namespace VNEngine
             // the same as click next, param ignored
             game.NextText(game);
         }
+
         public static void sys_next(VNNeoController game, SystemData param)
         {
-            return;
         }
 
         public static void sys_skip(VNNeoController game, SystemData param)
         {
-            return;
         }
 
         public static void sys_skip(VNNeoController game, int param)
@@ -97,12 +59,10 @@ namespace VNEngine
 
         public static void sys_branch_skip(VNNeoController game, SystemData param)
         {
-            return;
         }
 
         public static void sys_branch(VNNeoController game, SystemData param)
         {
-            return;
         }
 
         /* TODO
@@ -161,7 +121,6 @@ namespace VNEngine
 
         public static void sys_set_variable(VNNeoController game, SystemData param)
         {
-            return;
         }
 
         /* TODO
@@ -201,7 +160,6 @@ namespace VNEngine
 
         public static void sys_visible(VNNeoController game, SystemData param)
         {
-            return;
             //sys_visible(game, param.visible);
         }
 
@@ -213,7 +171,6 @@ namespace VNEngine
 
         public static void sys_lock(VNNeoController game, SystemData param)
         {
-            return;
         }
 
         public static void sys_lock(VNNeoController game, bool param)
@@ -224,7 +181,6 @@ namespace VNEngine
 
         public static void sys_text(VNNeoController game, SystemData param)
         {
-            return;
         }
 
         public static void sys_text(VNNeoController game, VNData param)
@@ -235,7 +191,6 @@ namespace VNEngine
 
         public static void sys_lipsync(VNNeoController game, SystemData param)
         {
-            return;
         }
 
         public static void sys_lipsync(VNNeoController game, bool param)
@@ -246,7 +201,6 @@ namespace VNEngine
 
         public static void sys_btn_next(VNNeoController game, SystemData param)
         {
-            return;
         }
 
         public static void sys_btn_next(VNNeoController game, string param = "Next >>")
@@ -265,42 +219,30 @@ namespace VNEngine
 
         public static void sys_wait_anime(VNNeoController game, SystemData param)
         {
-            return;
         }
 
         public static bool sys_wait_anime(VNNeoController game, string param)
         {
-            // wait anime of actor play once: param = actorID
-            // return True if anime is over or actor not found
-            VNActor.Actor actor = game.GetActor(param);
-            if (actor is VNActor.Actor act)
-            {
+            // wait anime of character play once: param = actorID
+            // return True if anime is over or character not found
+            var character = game.GetActor(param);
+            if (character is Character act)
                 return act.IsAnimeOver;
-            }
-            else
-            {
-                return true;
-            }
+            return true;
         }
 
         public static void sys_wait_voice(VNNeoController game, SystemData param)
         {
-            return;
         }
 
         public static bool sys_wait_voice(VNNeoController game, string param)
         {
-            // wait voice of actor over: param = actorID
-            // return True if voice is over or actor not found
-            VNActor.Actor actor = game.GetActor(param);
-            if (actor is VNActor.Actor act)
-            {
+            // wait voice of character over: param = actorID
+            // return True if voice is over or character not found
+            var character = game.GetActor(param);
+            if (character is Character act)
                 return !act.IsVoicePlay;
-            }
-            else
-            {
-                return true;
-            }
+            return true;
         }
 
         public static void sys_bgm(VNNeoController game, SystemData param)
@@ -311,20 +253,13 @@ namespace VNEngine
         public static void sys_bgm(VNNeoController game, BGM_s param)
         {
             // set bgm, param = (bgm no, play)
-            if (game.studio.bgmCtrl.no != param.no)
-            {
-                game.studio.bgmCtrl.Play(param.no);
-            }
+            if (game.studio.bgmCtrl.no != param.no) game.studio.bgmCtrl.Play(param.no);
             if (game.studio.bgmCtrl.play != param.play)
             {
                 if (param.play)
-                {
                     game.studio.bgmCtrl.Play();
-                }
                 else
-                {
                     game.studio.bgmCtrl.Stop();
-                }
             }
         }
 
@@ -365,14 +300,8 @@ namespace VNEngine
 
         public static void sys_wav(VNNeoController game, SystemData param)
         {
-            if (param.wav is Wav_s wav)
-            {
-                sys_wav(game, wav);
-            }
+            if (param.wav is Wav_s wav) sys_wav(game, wav);
         }
-
-
-
 
 
         public static void sys_wav(VNNeoController game, Wav_s param)
@@ -382,54 +311,39 @@ namespace VNEngine
             var wavName = param.fileName.Trim();
             if (wavName != "")
             {
-                if (!wavName.ToLower().EndsWith(".wav"))
-                {
-                    wavName += ".wav";
-                }
+                if (!wavName.ToLower().EndsWith(".wav")) wavName += ".wav";
                 // load wav in game scene folder if existed
                 var wavInScene = combine_path(game.SceneDir(), game.sceneDir, wavName);
                 if (File.Exists(wavInScene))
                 {
-
                     wavRevPath = combine_path("..", "studio", "scene", game.sceneDir, wavName);
 
                     if (game.studio.outsideSoundCtrl.fileName != wavRevPath)
-                    {
                         game.studio.outsideSoundCtrl.Play(wavRevPath);
-                    }
                 }
                 else
                 {
                     // load wav in game default audio folder if existed
-                    var wavInDefault = Path.GetFullPath(combine_path(Application.dataPath, "..", "UserData", "audio", wavName));
+                    var wavInDefault =
+                        Path.GetFullPath(combine_path(Application.dataPath, "..", "UserData", "audio", wavName));
                     if (File.Exists(wavInDefault))
-                    {
                         if (game.studio.outsideSoundCtrl.fileName != wavName)
-                        {
                             game.studio.outsideSoundCtrl.Play(wavName);
-                        }
-                    }
                 }
             }
+
             if (game.studio.outsideSoundCtrl.play != param.play || wavName == "")
             {
                 if (param.play)
-                {
                     game.studio.outsideSoundCtrl.Play();
-                }
                 else
-                {
                     game.studio.outsideSoundCtrl.Stop();
-                }
             }
+
             if (param.repeat)
-            {
                 game.studio.outsideSoundCtrl.repeat = BGMCtrl.Repeat.All;
-            }
             else
-            {
                 game.studio.outsideSoundCtrl.repeat = BGMCtrl.Repeat.None;
-            }
         }
 
         public static void sys_map(VNNeoController game, SystemData param)
@@ -466,20 +380,20 @@ namespace VNEngine
         {
             sys_bg_png(game, param.bg_png);
         }
+
         public static void sys_bg_png(VNNeoController game, string pngName)
         {
             if (pngName is null)
             {
                 pngName = "";
             }
-            else    
+            else
             {
-                var pngInDefault = Path.GetFullPath(combine_path(Application.dataPath, "..", "UserData", "bg", pngName));
-                if (!File.Exists(pngInDefault))
-                {
-                    pngName = "";
-                }
+                var pngInDefault =
+                    Path.GetFullPath(combine_path(Application.dataPath, "..", "UserData", "bg", pngName));
+                if (!File.Exists(pngInDefault)) pngName = "";
             }
+
             game.scene_set_bg_png_orig(pngName);
         }
 
@@ -523,7 +437,31 @@ namespace VNEngine
             cl.rot[1] = param.rot_x;
             cl.shadow = param.cameraLightShadow;
             game.studio.cameraLightCtrl.Reflect();
+        }
 
+        [MessagePackObject]
+        public struct Wav_s
+        {
+            [Key(0)] public string fileName;
+            [Key(1)] public bool play;
+            [Key(2)] public bool repeat;
+        }
+
+        [MessagePackObject]
+        public struct BGM_s
+        {
+            [Key(0)] public int no;
+            [Key(1)] public bool play;
+        }
+
+        [MessagePackObject]
+        public struct CharLight_s
+        {
+            [Key(0)] public Color rgbDiffuse;
+            [Key(2)] public float cameraLightIntensity;
+            [Key(3)] public float rot_y;
+            [Key(4)] public float rot_x;
+            [Key(5)] public bool cameraLightShadow;
         }
         /*
                 public static void sys_pl_neoextsave(VNNeoController game, int[] param)
@@ -659,8 +597,5 @@ namespace VNEngine
             return fs;
         }
         */
-
-
-
     }
 }

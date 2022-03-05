@@ -1,50 +1,44 @@
-﻿using BepInEx;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using ExtensibleSaveFormat;
 using KKAPI;
+using KKAPI.Studio;
 using KKAPI.Studio.SaveLoad;
 using Studio;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using UnityEngine;
 using VNActor;
 using VNEngine;
-using static VNActor.Actor;
+using static VNActor.Character;
 using static VNActor.Item;
 using static VNActor.Light;
 using static VNEngine.Utils;
 using static VNEngine.VNCamera;
 using static VNEngine.VNCamera.VNData;
+using KeyboardShortcut = BepInEx.Configuration.KeyboardShortcut;
+using Light = VNActor.Light;
 
 namespace SceneSaveState
 {
-
     [BepInProcess(Constants.StudioProcessName)]
     [BepInPlugin(GUID, PluginName, Version)]
     [BepInDependency(ExtendedSave.GUID)]
     [BepInDependency(KoikatuAPI.GUID)]
     internal class SceneConsole : BaseUnityPlugin
     {
-
         internal const string PluginName = "SceneConsole";
         internal const string GUID = "com.kasanari.bepinex.sceneconsole";
         internal const string Version = "1.0";
-        internal new static ManualLogSource Logger;
-
-        private Rect windowRect;
-        private GUI.WindowFunction windowCallback;
-
-        internal static ConfigEntry<BepInEx.Configuration.KeyboardShortcut> SSSHotkey { get; private set; }
 
         internal const string backup_folder_name = "sssdata";
         internal const string defaultSpeakerAlias = "s";
         internal const string defaultSaveName = "SSS.dat";
         internal const string defaultBackupName = "SSS.dat.backup";
-
-        internal bool isSysTracking = true;
+        internal new static ManualLogSource Logger;
 
         internal List<Folder> arAutoStatesItemsChoice;
 
@@ -58,8 +52,6 @@ namespace SceneSaveState
 
         internal SceneManager block;
 
-        internal VNData currentVNData;
-
         internal List<CamData> camset;
 
         internal string charname;
@@ -67,6 +59,11 @@ namespace SceneSaveState
         internal IDataClass<IVNObject<object>> clipboard_status;
 
         internal IDataClass<IVNObject<object>> clipboard_status2;
+        internal float consoleHeight;
+
+        internal float consoleWidth;
+
+        internal VNData currentVNData;
 
         //internal int cur_cam;
 
@@ -77,6 +74,8 @@ namespace SceneSaveState
         internal bool guiOnShow;
 
         internal bool isFuncLocked;
+
+        internal bool isSysTracking = true;
 
         internal bool isUseMsAuto;
 
@@ -100,8 +99,6 @@ namespace SceneSaveState
 
         internal string sel_font_col;
 
-        internal double saveDataSize { get; private set; }
-
         //internal Dictionary<string, KeyValuePair<string, string>> shortcuts;
 
         internal SkinDefault skinDefault;
@@ -111,28 +108,12 @@ namespace SceneSaveState
         internal ConfigEntry<bool> skipClothesChanges;
 
         internal string svname = "";
-
-        internal int updAutoStatesTimer;
-
-        internal float consoleWidth;
-        internal float consoleHeight;
         internal bool track_map = true;
 
-        internal VNNeoController game
-        {
-            get
-            {
-                return VNNeoController.Instance;
-            }
-        }
+        internal int updAutoStatesTimer;
+        private GUI.WindowFunction windowCallback;
 
-        internal static SceneConsole Instance { get; private set; }
-        internal ManualLogSource GetLogger 
-        {
-            get {
-                return Logger;
-            }           
-        }
+        private Rect windowRect;
 
         internal SceneConsole()
         {
@@ -154,7 +135,7 @@ namespace SceneSaveState
 
             // self.char_name = ""
 
-            currentVNData = new VNData()
+            currentVNData = new VNData
             {
                 enabled = false,
                 whosay = "",
@@ -195,6 +176,16 @@ namespace SceneSaveState
             Instance = this;
         }
 
+        internal static ConfigEntry<KeyboardShortcut> SSSHotkey { get; private set; }
+
+        internal double saveDataSize { get; private set; }
+
+        internal VNNeoController game => VNNeoController.Instance;
+
+        internal static SceneConsole Instance { get; private set; }
+
+        internal ManualLogSource GetLogger => Logger;
+
         internal void Awake()
         {
             StudioSaveLoadApi.RegisterExtraBehaviour<SaveLoadController>(GUID);
@@ -203,91 +194,84 @@ namespace SceneSaveState
         internal void Start()
         {
             Logger = base.Logger;
-            loadConfig();            
+            loadConfig();
             sceneConsoleSkinSetup();
         }
 
         public void loadConfig()
         {
             // Keyboard shortcuts
-            SSSHotkey = Config.Bind("Keyboard Shortcuts", "Toggle VN Controller Window", new BepInEx.Configuration.KeyboardShortcut(KeyCode.B), "Show or hide the VN Controller window in Studio");
+            SSSHotkey = Config.Bind("Keyboard Shortcuts", "Toggle VN Controller Window",
+                new KeyboardShortcut(KeyCode.B), "Show or hide the VN Controller window in Studio");
 
             // Settings
             autoLoad = Config.Bind("Scene Console Settings", "AutoLoadScene", true, "Load scenes when selected.");
-            autoAddCam = Config.Bind("Scene Console Settings", "AutoAddCamera", true, "Auto add cam for new scenes");          
-            promptOnDelete = Config.Bind("Scene Console Settings", "AutoAddCamera", true, "Prompt before delete (scene/cam/chars)");
-            skipClothesChanges = Config.Bind("Scene Console Settings", "SkipClothesChange", false, "Don't process clothes changes on scene change");
-            paramAnimCamIfPossible = Config.Bind("Scene Console Settings", "AnimateCamsIfPossible", false, "Animate cam if possible");
+            autoAddCam = Config.Bind("Scene Console Settings", "AutoAddCamera", true, "Auto add cam for new scenes");
+            promptOnDelete = Config.Bind("Scene Console Settings", "AutoAddCamera", true,
+                "Prompt before delete (scene/cam/chars)");
+            skipClothesChanges = Config.Bind("Scene Console Settings", "SkipClothesChange", false,
+                "Don't process clothes changes on scene change");
+            paramAnimCamIfPossible = Config.Bind("Scene Console Settings", "AnimateCamsIfPossible", false,
+                "Animate cam if possible");
         }
 
         internal void sceneConsoleSkinSetup()
         {
-            this.windowCallback = UI.sceneConsoleWindowFunc;
+            windowCallback = UI.sceneConsoleWindowFunc;
             UI.setWindowName(UI.windowindex);
             var x = UI.defaultWindowX;
             var y = UI.defaultWindowY;
             var w = UI.WindowWidth;
             var h = UI.WindowHeight;
-            this.windowRect = new Rect(x, y, w, h);
+            windowRect = new Rect(x, y, w, h);
         }
 
         internal void OnGUI()
         {
-            if (SceneConsole.Instance.guiOnShow)
-            {
-                windowRect = GUILayout.Window(34652, this.windowRect, this.windowCallback, "Scene Console");
-            }
+            if (Instance.guiOnShow) windowRect = GUILayout.Window(34652, windowRect, windowCallback, "Scene Console");
         }
 
         internal void Update()
         {
-
             if (SSSHotkey.Value.IsDown())
-            {
                 //UI.sceneConsoleGUIStart(game);
-                SceneConsole.Instance.guiOnShow = !SceneConsole.Instance.guiOnShow;
-            }
+                Instance.guiOnShow = !Instance.guiOnShow;
         }
 
         internal double CalculateSaveDataSize(byte[] bytes)
         {
-            return (double)bytes.Length / 1000;
+            return (double) bytes.Length / 1000;
         }
 
         internal PluginData GetPluginData()
         {
             var pluginData = new PluginData();
             if (block.Count > 0)
-            {
                 try
                 {
-                    byte[] sceneData = Utils.SerializeData(block.ExportScenes());
+                    var sceneData = Utils.SerializeData(block.ExportScenes());
                     pluginData.data["scenes"] = sceneData;
                     pluginData.data["currentScene"] = block.currentSceneIndex;
                     pluginData.data["sceneNames"] = block.ExportSceneStrings();
-                    pluginData.data["trackMap"] = this.track_map;
+                    pluginData.data["trackMap"] = track_map;
                     var saveDataSizeKb = CalculateSaveDataSize(sceneData);
-                    Logger.LogMessage($"Saved {(saveDataSizeKb):N} Kb of scene state data.");
+                    Logger.LogMessage($"Saved {saveDataSizeKb:N} Kb of scene state data.");
                     saveDataSize = saveDataSizeKb;
                     return pluginData;
                 }
                 catch (Exception e)
                 {
-                    Logger.LogError("Error occurred while saving scene data: " + e.ToString());
+                    Logger.LogError("Error occurred while saving scene data: " + e);
                     Logger.LogMessage("Failed to save scene data, check debug log for more info.");
                     return null;
                 }
-            }
-            else
-            {
-                saveDataSize = 0;
-                return null;
-            }
+
+            saveDataSize = 0;
+            return null;
         }
 
         internal void LoadPluginData(PluginData pluginData)
         {
-
             if (pluginData == null || pluginData?.data == null)
             {
                 block = new SceneManager();
@@ -295,39 +279,38 @@ namespace SceneSaveState
             }
             else
             {
-                byte[] sceneData = pluginData.data["scenes"] as byte[];
+                var sceneData = pluginData.data["scenes"] as byte[];
                 if (sceneData != null && sceneData.Length > 0)
-                {
                     try
                     {
                         var scenes = Utils.DeserializeData<Scene[]>(sceneData);
 
                         object temp;
 
-                        pluginData.data.TryGetValue("currentScene", out temp);                      
-                        int sceneIndex = (temp as int?) ?? 0;
-                        
-                        pluginData.data.TryGetValue("sceneNames", out temp);                     
-                        string sceneNames = temp as string;
+                        pluginData.data.TryGetValue("currentScene", out temp);
+                        var sceneIndex = temp as int? ?? 0;
+
+                        pluginData.data.TryGetValue("sceneNames", out temp);
+                        var sceneNames = temp as string;
 
                         pluginData.data.TryGetValue("trackMap", out temp);
-                        track_map = (temp as bool?) ?? true;
+                        track_map = temp as bool? ?? true;
 
-                        string[] sceneStrings = SceneManager.DeserializeSceneStrings(sceneNames);
+                        var sceneStrings = SceneManager.DeserializeSceneStrings(sceneNames);
 
                         block = new SceneManager(scenes, currentSceneIndex: sceneIndex, sceneStrings: sceneStrings);
 
                         var saveDataSizeKb = CalculateSaveDataSize(sceneData);
-                        Logger.LogMessage($"Loaded {(saveDataSizeKb):N} Kb of scene state data.");
+                        Logger.LogMessage($"Loaded {saveDataSizeKb:N} Kb of scene state data.");
                         saveDataSize = saveDataSizeKb;
                     }
                     catch (Exception e)
                     {
-                        Logger.LogError("Error occurred while loading scene data: " + e.ToString());
+                        Logger.LogError("Error occurred while loading scene data: " + e);
                         Logger.LogMessage("Failed to load scene data, check debug log for more info.");
                     }
-                }
             }
+
             SceneFolders.LoadTrackedActorsAndProps();
             loadCurrentScene();
         }
@@ -349,11 +332,10 @@ namespace SceneSaveState
         {
             show_blocking_message(text);
             game.set_timer(duration, hide_blocking_message);
-        }       
+        }
 
         internal void getSceneCamString()
         {
-
         }
 
         internal void deleteSceneCam()
@@ -363,14 +345,7 @@ namespace SceneSaveState
 
         internal void changeSceneCam()
         {
-            changeSceneCam(task: CamTask.ADD);
-        }
-
-        internal enum CamTask
-        {
-            UPDATE,
-            DELETE,
-            ADD
+            changeSceneCam(CamTask.ADD);
         }
 
         internal void changeSceneCam(CamTask task)
@@ -389,15 +364,10 @@ namespace SceneSaveState
             else if (task == CamTask.DELETE)
             {
                 var cur_cam = block.DeleteCam();
-                if (cur_cam > -1)
-                {
-                    setCamera();
-                }
+                if (cur_cam > -1) setCamera();
             }
-            if (!(task == CamTask.UPDATE))
-            {
-                getSceneCamString();
-            }
+
+            if (!(task == CamTask.UPDATE)) getSceneCamString();
         }
 
         internal void setCamera()
@@ -407,13 +377,14 @@ namespace SceneSaveState
 
         internal void setCamera(bool isAnimated)
         {
-            VNCamera.CamData camera_data = block.CurrentCam;
+            var camera_data = block.CurrentCam;
             // check and run adv command
             var keepCamera = false;
             if (camera_data.addata.enabled)
             {
                 //keepCamera = VNExt.runAdvVNSS(this, camera_data.addata); TODO
             }
+
             // actual set
             if (keepCamera)
             {
@@ -430,26 +401,24 @@ namespace SceneSaveState
                     style["target_camera_zooming_in"] = this.paramAnimCamZoomOut;
                 } */ //TODO fix this
                 var style = "linear";
-                game.anim_to_camera(paramAnimCamDuration, pos: camera_data.position, distance: camera_data.distance, rotate: camera_data.rotation, fov: camera_data.fov, style: style);
+                game.anim_to_camera(paramAnimCamDuration, camera_data.position, camera_data.distance,
+                    camera_data.rotation, camera_data.fov, style);
             }
             else
             {
                 game.move_camera(camera_data);
                 //this.game.move_camera(pos: camera_data.position, distance: camera_data.distance, rotate: camera_data.rotation, fov: camera_data.fov);
             }
+
             if (camera_data.addata is VNData addata)
             {
                 currentVNData.enabled = addata.enabled;
                 currentVNData.whosay = addata.whosay is null ? "" : addata.whosay;
                 currentVNData.whatsay = addata.whatsay is null ? "" : addata.whatsay;
                 if (addata.addvncmds != null)
-                {
                     currentVNData.addvncmds = addata.addvncmds;
-                }
                 else
-                {
                     currentVNData.addvncmds = "";
-                }
 
                 currentVNData.addprops = addata.addprops;
 
@@ -476,29 +445,21 @@ namespace SceneSaveState
         {
             if (block.HasScenes)
             {
-                Scene scene = new Scene(game, isSysTracking);
+                var scene = new Scene(game, isSysTracking);
                 block.Update(scene);
             }
         }
 
         internal void addAuto(bool insert = false, bool addsc = true, bool allbase = true)
         {
-            Scene scene = new Scene(game, isSysTracking);
+            var scene = new Scene(game, isSysTracking);
             if (insert)
-            {
                 block.Insert(scene);
-            }
             else
-            {
                 block.Add(scene);
-            }
-            if (addsc == true)
-            {
+            if (addsc)
                 if (autoAddCam.Value)
-                {
                     changeSceneCam(CamTask.ADD);
-                }
-            }
         }
 
         // Remove stuff
@@ -506,12 +467,10 @@ namespace SceneSaveState
         {
             removeScene();
         }
+
         internal void removeScene()
         {
-            if (block.HasScenes)
-            {
-                block.RemoveScene();
-            }
+            if (block.HasScenes) block.RemoveScene();
         }
 
         // Load scene
@@ -529,14 +488,14 @@ namespace SceneSaveState
         internal void copySelectedStatusToTracking(List<string> exclude)
         {
             var elem = NeoOCI.create_from_selected();
-            if (elem is VNActor.Actor chara)
+            if (elem is Character chara)
             {
                 var tmp_status = chara.export_full_status();
                 var actors = game.AllActors;
                 foreach (var key in actors.Keys)
                 {
-                    VNActor.Actor actor = (VNActor.Actor)actors[key];
-                    if (actor.text_name == chara.text_name)
+                    var character = actors[key];
+                    if (character.text_name == chara.text_name)
                     {
                         /* TODO
                         foreach (var keyEx in exclude)
@@ -544,10 +503,11 @@ namespace SceneSaveState
                             tmp_status.Remove(keyEx);
                         }
                         */
-                        actor.import_status(tmp_status);
+                        character.import_status(tmp_status);
                         return;
                     }
                 }
+
                 show_blocking_message_time_sc("Can't find tracking char with same name");
             }
             else
@@ -559,41 +519,29 @@ namespace SceneSaveState
         internal void copySelectedStatus()
         {
             var elem = NeoOCI.create_from_selected();
-            if (elem is VNActor.Actor chara)
-            {
-                clipboard_status = (IDataClass<IVNObject<object>>)((VNActor.Actor)chara).export_full_status();
-            }
+            if (elem is Character chara)
+                clipboard_status = (IDataClass<IVNObject<object>>) chara.export_full_status();
             else if (elem is Prop prop)
-            {
-                clipboard_status = (IDataClass<IVNObject<object>>)prop.export_full_status();
-            }
+                clipboard_status = (IDataClass<IVNObject<object>>) prop.export_full_status();
             else
-            {
                 show_blocking_message_time_sc("Can't copy status");
-            }
         }
 
         internal void pasteSelectedStatus()
         {
             var elem = NeoOCI.create_from_selected();
-            if (elem is VNActor.Actor chara)
+            if (elem is Character chara)
             {
-                chara.import_status((ActorData)clipboard_status);
+                chara.import_status((ActorData) clipboard_status);
             }
             else if (elem is Prop prop)
             {
                 if (elem is Item i)
-                {
-                    i.import_status((ItemData)clipboard_status2);
-                }
-                else if (elem is VNActor.Light l)
-                {
-                    prop.import_status((LightData)clipboard_status2);
-                }
+                    i.import_status((ItemData) clipboard_status2);
+                else if (elem is Light l)
+                    prop.import_status((LightData) clipboard_status2);
                 else
-                {
-                    prop.import_status((NEOPropData)clipboard_status2);
-                }
+                    prop.import_status((NEOPropData) clipboard_status2);
             }
             else
             {
@@ -604,41 +552,29 @@ namespace SceneSaveState
         internal void copySelectedStatus2()
         {
             var elem = NeoOCI.create_from_selected();
-            if (elem is VNActor.Actor chara)
-            {
-                clipboard_status2 = (IDataClass<IVNObject<object>>)chara.export_full_status();
-            }
+            if (elem is Character chara)
+                clipboard_status2 = (IDataClass<IVNObject<object>>) chara.export_full_status();
             else if (elem is Prop prop)
-            {
-                clipboard_status2 = (IDataClass<IVNObject<object>>)prop.export_full_status();
-            }
+                clipboard_status2 = (IDataClass<IVNObject<object>>) prop.export_full_status();
             else
-            {
                 show_blocking_message_time_sc("Can't copy status 2");
-            }
         }
 
         internal void pasteSelectedStatus2()
         {
             var elem = NeoOCI.create_from_selected();
-            if (elem is VNActor.Actor chara)
+            if (elem is Character chara)
             {
-                chara.import_status((ActorData)clipboard_status2);
+                chara.import_status((ActorData) clipboard_status2);
             }
             else if (elem is Prop prop)
             {
                 if (elem is Item i)
-                {
-                    i.import_status((ItemData)clipboard_status2);
-                }
-                else if (elem is VNActor.Light l)
-                {
-                    prop.import_status((LightData)clipboard_status2);
-                }
+                    i.import_status((ItemData) clipboard_status2);
+                else if (elem is Light l)
+                    prop.import_status((LightData) clipboard_status2);
                 else
-                {
-                    prop.import_status((NEOPropData)clipboard_status2);
-                }             
+                    prop.import_status((NEOPropData) clipboard_status2);
             }
             else
             {
@@ -653,10 +589,11 @@ namespace SceneSaveState
                 var curstatus = VNEngine.System.export_full_status();
                 foreach (var i in Enumerable.Range(0, block.Count))
                 {
-                    Scene scene = block[i];
+                    var scene = block[i];
                     //scene.actors["sys"] = curstatus;
-                    scene.sys = (VNEngine.System.SystemData)curstatus;
+                    scene.sys = curstatus;
                 }
+
                 isSysTracking = true;
             }
             else
@@ -669,31 +606,27 @@ namespace SceneSaveState
         {
             isSysTracking = false;
         }
-      
+
         internal void addSelectedToTrack()
         {
-            var objects = KKAPI.Studio.StudioAPI.GetSelectedObjects();
+            var objects = StudioAPI.GetSelectedObjects();
 
             if (objects.Count() == 0)
             {
                 show_blocking_message_time_sc("Nothing selected");
                 return;
             }
-            else
-            {
-                foreach (var objectCtrl in objects)
+
+            foreach (var objectCtrl in objects)
+                try
                 {
-                    try
-                    {
-                        SceneFolders.AddToTrack(objectCtrl);
-                    }
-                    catch
-                    {
-                        continue;
-                    }
+                    SceneFolders.AddToTrack(objectCtrl);
                 }
-                SceneFolders.LoadTrackedActorsAndProps();
-            }
+                catch
+                {
+                }
+
+            SceneFolders.LoadTrackedActorsAndProps();
         }
 
         internal void changeSelTrackID(string toId)
@@ -703,34 +636,37 @@ namespace SceneSaveState
                 show_blocking_message_time_sc("Please, set ID to change to first");
                 return;
             }
+
             var elem = NeoOCI.create_from_selected();
             if (elem == null)
             {
                 show_blocking_message_time_sc("Nothing selected");
                 return;
             }
-            if (elem is VNActor.Actor chara)
+
+            if (elem is Character chara)
             {
                 var actors = game.AllActors;
-                string id = "";
+                var id = "";
                 foreach (var actid in actors.Keys)
-                {
                     if (actors[actid].objctrl == elem.objctrl)
                     {
                         // found
                         id = actid;
                         break;
                     }
-                }
+
                 //self.delActorFromTrack(actid)
                 if (id == "")
                 {
                     show_blocking_message_time_sc("Can't find actor to change ID");
                     return;
                 }
+
                 // actually changing ID
                 changeActorTrackId(id, toId);
             }
+
             // updating set
             SceneFolders.LoadTrackedActorsAndProps();
         }
@@ -749,24 +685,25 @@ namespace SceneSaveState
                 show_blocking_message_time_sc("Nothing selected");
                 return;
             }
-            if (elem is VNActor.Actor chara)
+
+            if (elem is Character chara)
             {
                 var actors = game.AllActors;
                 var id = "";
                 foreach (var actid in actors.Keys)
-                {
                     if (actors[actid].objctrl == elem.objctrl)
                     {
                         // found
                         id = actid;
                         break;
                     }
-                }
+
                 if (id == "")
                 {
                     show_blocking_message_time_sc("Can't delete; seems this actor is not tracking yet");
                     return;
                 }
+
                 delActorFromTrack(id);
             }
             else if (elem is Prop)
@@ -774,15 +711,15 @@ namespace SceneSaveState
                 var props = game.AllProps;
                 var id = "";
                 foreach (var propid in props.Keys)
-                {
                     if (props[propid].objctrl == elem.objctrl)
                     {
                         id = propid; // found
                         break;
                     }
-                }
+
                 delPropFromTrack(id);
             }
+
             // updating set
             SceneFolders.LoadTrackedActorsAndProps();
         }
@@ -793,15 +730,9 @@ namespace SceneSaveState
             {
                 // we found this char
                 var fld = Folder.find_single(SceneFolders.actor_folder_prefix + actid);
-                if (fld == null)
-                {
-                    fld = Folder.find_single_startswith(SceneFolders.actor_folder_prefix + actid + ":");
-                }
+                if (fld == null) fld = Folder.find_single_startswith(SceneFolders.actor_folder_prefix + actid + ":");
                 // found
-                if (fld != null)
-                {
-                    fld.delete();
-                }
+                if (fld != null) fld.delete();
                 foreach (var i in Enumerable.Range(0, block.Count))
                 {
                     var scene = block[i];
@@ -816,19 +747,16 @@ namespace SceneSaveState
             {
                 // we found this char
                 var fld = Folder.find_single(SceneFolders.actor_folder_prefix + actid);
-                if (fld == null)
-                {
-                    fld = Folder.find_single_startswith(SceneFolders.actor_folder_prefix + actid + ":");
-                }
+                if (fld == null) fld = Folder.find_single_startswith(SceneFolders.actor_folder_prefix + actid + ":");
                 // found
                 //if fld != None:
                 //    fld.delete()
-                string fldoldname = fld.name;
-                string lastelems = fldoldname.Substring((SceneFolders.actor_folder_prefix + actid).Length);
+                var fldoldname = fld.name;
+                var lastelems = fldoldname.Substring((SceneFolders.actor_folder_prefix + actid).Length);
                 //print lastelems
                 fld.name = SceneFolders.actor_folder_prefix + toid + lastelems;
                 //
-                for (int i = 0; i < block.Count; i++)
+                for (var i = 0; i < block.Count; i++)
                 {
                     var scene = block[i];
                     scene.actors[toid] = scene.actors[actid];
@@ -836,10 +764,7 @@ namespace SceneSaveState
                     foreach (var cam in scene.cams)
                     {
                         var info = cam.addata;
-                        if (info.whosay == actid)
-                        {
-                            info.whosay = toid;
-                        }
+                        if (info.whosay == actid) info.whosay = toid;
                     }
                 }
             }
@@ -852,10 +777,7 @@ namespace SceneSaveState
                 // we found this prop
                 var fld = Folder.find_single(SceneFolders.prop_folder_prefix + propid);
                 // found
-                if (fld != null)
-                {
-                    fld.delete();
-                }
+                if (fld != null) fld.delete();
                 foreach (var i in Enumerable.Range(0, block.Count))
                 {
                     var scene = block[i];
@@ -866,7 +788,7 @@ namespace SceneSaveState
 
         internal void saveSceneData(object param)
         {
-            saveSceneData((bool)param);
+            saveSceneData((bool) param);
         }
 
         internal void Reset()
@@ -876,24 +798,18 @@ namespace SceneSaveState
 
         internal void SaveToFile()
         {
-            if (svname == "")
-            {
-                SaveToFile(defaultSaveName);
-            }
+            if (svname == "") SaveToFile(defaultSaveName);
         }
 
         internal void SaveToFile(string filename)
         {
             var app_dir = Path.GetDirectoryName(Application.dataPath);
 
-            if (!Directory.Exists(backup_folder_name))
-            {
-                Directory.CreateDirectory(backup_folder_name);
-            }
+            if (!Directory.Exists(backup_folder_name)) Directory.CreateDirectory(backup_folder_name);
 
             var file_path = Path.Combine(backup_folder_name, filename);
             var abs_file_path = Path.Combine(app_dir, file_path);
-            var data = Utils.SerializeData(this.block.ExportScenes());
+            var data = Utils.SerializeData(block.ExportScenes());
             File.WriteAllBytes(abs_file_path, data);
         }
 
@@ -904,11 +820,11 @@ namespace SceneSaveState
             var abs_file_path = Path.Combine(script_dir, file_path);
             if (File.Exists(abs_file_path))
             {
-                byte[] data = File.ReadAllBytes(abs_file_path);
+                var data = File.ReadAllBytes(abs_file_path);
                 var scenes = Utils.DeserializeData<Scene[]>(data);
                 block = new SceneManager(scenes);
             }
-        }        
+        }
 
         internal void loadSceneDataBackupTimer(object param)
         {
@@ -922,7 +838,7 @@ namespace SceneSaveState
 
         internal void loadSceneData()
         {
-            loadSceneData(false, true);
+            loadSceneData(false);
         }
 
         internal void loadSceneData(bool backup = false, bool setToFirst = true)
@@ -933,24 +849,16 @@ namespace SceneSaveState
             if (backup)
             {
                 if (svname == "")
-                {
                     filename = defaultBackupName;
-                }
                 else
-                {
                     filename = svname + ".backup";
-                }
             }
             else
             {
                 if (svname == "")
-                {
                     filename = defaultSaveName;
-                }
                 else
-                {
                     filename = svname;
-                }
             }
 
             // abs_file_path = os.Path.Combine(script_dir, file_path)
@@ -959,16 +867,14 @@ namespace SceneSaveState
             //     block_dict = Utils.DeserializeData(f.read(), object_hook=sceneDecoder)  # , indent = 4, separators = (","," : ")))
             //     f.close()
             LoadFromFile(filename);
-            
+
             // loading
             if (setToFirst)
-            {
                 if (block.HasScenes)
                 {
                     block.First();
                     block.FirstCam();
                 }
-            }
         }
 
         // Change name
@@ -987,12 +893,10 @@ namespace SceneSaveState
         internal void dupScene()
         {
             if (block.Count > 0)
-            {
                 //import copy
                 // we have a problem with copy, so... just serialize and back it
                 //objstr = MessagePackSerializer.Serialize(self.block[self.cur_index])
                 block.Insert(block.CurrentScene.copy());
-            }
         }
 
         // Copy/paste cam set
@@ -1000,22 +904,15 @@ namespace SceneSaveState
         {
             if (block.HasScenes)
             {
-                if (camset is null)
-                {
-                    camset = new List<CamData>();
-                }
+                if (camset is null) camset = new List<CamData>();
                 camset = block.CurrentScene.cams;
             }
         }
 
         internal void pasteCamSet()
         {
-            if (block.HasScenes)
-            {
-                block.CurrentScene.cams.AddRange(camset);
-            }
+            if (block.HasScenes) block.CurrentScene.cams.AddRange(camset);
         }
-
 
 
         // Goto next/prev
@@ -1061,7 +958,7 @@ namespace SceneSaveState
                 {
                     // elif self.cur_index > 0:
                     // self.cur_index -= 1
-                    goto_prev_sc(lastcam: true);
+                    goto_prev_sc(true);
                 }
             }
         }
@@ -1086,13 +983,13 @@ namespace SceneSaveState
             {
                 block.Back();
                 loadCurrentScene();
-                if (lastcam == true && block.currentCamCount > 0)
+                if (lastcam && block.currentCamCount > 0)
                 {
                     block.LastCam();
                     setCamera();
                 }
             }
-        }     
+        }
 
         internal void camSetAll(bool state)
         {
@@ -1103,10 +1000,11 @@ namespace SceneSaveState
                 // cam = scene.cams[0]
                 foreach (var j in Enumerable.Range(0, scene.cams.Count))
                 {
-                    CamData cam = scene.cams[j];
+                    var cam = scene.cams[j];
                     cam.addata.enabled = state;
                 }
             }
+
             show_blocking_message_time_sc("Cams changed!");
         }
 
@@ -1115,11 +1013,8 @@ namespace SceneSaveState
             //this.game.gdata.vnbupskin = this.game.skin;
             //self.game.skin_set_byname("skin_renpy")
             //from skin_renpy import SkinRenPy
-               
-            if (block.Count == 0)
-            {
-                return;
-            }      
+
+            if (block.Count == 0) return;
 
             var rpySkin = new SkinRenPyMini();
             int calcPos;
@@ -1127,25 +1022,19 @@ namespace SceneSaveState
             rpySkin.endButtonTxt = "X";
             rpySkin.endButtonCall = endVNSSbtn;
             game.set_text_s("...");
-            game.set_buttons(new List<Button_s>() { new Button_s(">>", goto_next, 1) });
+            game.set_buttons(new List<Button_s> {new Button_s(">>", goto_next, 1)});
             game.skin_set(rpySkin);
             game.visible = true;
             if (starfrom == "cam")
-            {
                 //print self.cur_index, self.cur_cam
                 calcPos = (block.currentSceneIndex + 1) * 100 + block.currentCamIndex;
-            }
             else if (starfrom == "scene")
-            {
                 calcPos = (block.currentSceneIndex + 1) * 100;
-            }
             else
-            {
                 calcPos = 0;
-            }
             block.SetCurrent(calcPos);
             loadCurrentScene();
-            Console.WriteLine(String.Format("Run VNSS from state {0}", calcPos.ToString()));
+            Console.WriteLine("Run VNSS from state {0}", calcPos.ToString());
             game.vnscenescript_run_current(onEndVNSS, calcPos.ToString());
         }
 
@@ -1167,86 +1056,62 @@ namespace SceneSaveState
             var all_actors = game.AllActors;
             var keylist = all_actors.Keys.ToList();
             if (curSpeakAlias != defaultSpeakerAlias && !all_actors.ContainsKey(curSpeakAlias))
-            {
                 return defaultSpeakerAlias;
-            }
             // next from s or actor
             if (curSpeakAlias == defaultSpeakerAlias)
             {
                 if (all_actors.Count > 0)
                 {
                     if (next)
-                    {
                         return keylist[0];
-                    }
-                    else
-                    {
-                        return keylist.Last();
-                    }
+                    return keylist.Last();
                 }
-                else
-                {
-                    return defaultSpeakerAlias;
-                }
+
+                return defaultSpeakerAlias;
             }
+
+            var nextIndex = keylist.IndexOf(curSpeakAlias);
+            if (next)
+                nextIndex += 1;
             else
-            {
-                var nextIndex = keylist.IndexOf(curSpeakAlias);
-                if (next)
-                {
-                    nextIndex += 1;
-                }
-                else
-                {
-                    nextIndex -= 1;
-                }
-                if (Enumerable.Range(0, all_actors.Count).Contains(nextIndex))
-                {
-                    return keylist[nextIndex];
-                }
-                else
-                {
-                    return defaultSpeakerAlias;
-                }
-            }
+                nextIndex -= 1;
+            if (Enumerable.Range(0, all_actors.Count).Contains(nextIndex))
+                return keylist[nextIndex];
+            return defaultSpeakerAlias;
         }
 
         // Set scene chars with state data from dictionary
 
         internal void SetSceneState(Scene s)
         {
-            if (isSysTracking)
-            {
-                VNEngine.System.import_status(s.sys, track_map);
-            }
+            if (isSysTracking) VNEngine.System.import_status(s.sys, track_map);
             foreach (var actid in s.actors.Keys)
             {
                 var actors = game.AllActors;
 
                 foreach (var kvp in actors)
                 {
-                    s.actors.TryGetValue(kvp.Key, out ActorData char_status);
+                    s.actors.TryGetValue(kvp.Key, out var char_status);
 
                     if (char_status is null)
-                    {
                         kvp.Value.Visible = false;
-                    }
                     else
-                    {
                         try
                         {
                             char_status.Apply(kvp.Value);
                         }
                         catch (Exception e)
                         {
-                            SceneConsole.Instance.game.GetLogger.LogError($"Error occurred when importing Actor with id {actid}" + e.ToString());
-                            SceneConsole.Instance.game.GetLogger.LogMessage($"Error occurred when importing Actor with id {actid}");
+                            Instance.game.GetLogger.LogError(
+                                $"Error occurred when importing Character with id {actid}" + e);
+                            Instance.game.GetLogger.LogMessage(
+                                $"Error occurred when importing Character with id {actid}");
                             SceneFolders.LoadTrackedActorsAndProps();
                         }
-                    }
-                }               
+                }
             }
-            string propid = "";
+
+            var propid = "";
             try
             {
                 foreach (var kvp in game.AllProps)
@@ -1257,7 +1122,7 @@ namespace SceneSaveState
                         s.items.TryGetValue(kvp.Key, out var status);
                         s.ApplyStatus(i, status);
                     }
-                    else if (kvp.Value is VNActor.Light l)
+                    else if (kvp.Value is Light l)
                     {
                         s.lights.TryGetValue(kvp.Key, out var status);
                         s.ApplyStatus(l, status);
@@ -1271,39 +1136,35 @@ namespace SceneSaveState
             }
             catch (Exception e)
             {
-                game.GetLogger.LogError($"Error occurred when importing Prop with id {propid}" + e.ToString());
+                game.GetLogger.LogError($"Error occurred when importing Prop with id {propid}" + e);
                 SceneFolders.LoadTrackedActorsAndProps();
                 Instance.game.GetLogger.LogMessage($"Error occurred when importing Prop with id {propid}");
-            }           
+            }
         }
 
         internal string GetIDOfSelectedObject()
         {
-            var objects = KKAPI.Studio.StudioAPI.GetSelectedObjects();
+            var objects = StudioAPI.GetSelectedObjects();
 
             if (objects.Count() == 0)
-            {
                 return null;
-            }
-            else
-            {
-                foreach (var objectCtrl in objects)
+            foreach (var objectCtrl in objects)
+                try
                 {
-                    try
-                    {
-                        if (objectCtrl is OCIChar c)
-                        {
-                            return SceneFolders.GetActorID(c);
-                        }
-                        
-                    }
-                    catch
-                    {
-                        continue;
-                    }
+                    if (objectCtrl is OCIChar c) return SceneFolders.GetActorID(c);
                 }
-            }
+                catch
+                {
+                }
+
             return null;
-        }   
+        }
+
+        internal enum CamTask
+        {
+            UPDATE,
+            DELETE,
+            ADD
+        }
     }
 }

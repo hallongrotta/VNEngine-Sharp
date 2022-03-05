@@ -8,9 +8,9 @@ namespace VNActor
     //===============================================================================================
     // character action wrapper functions list
     // All scripts: func(char, param)
-    public partial class Actor
+    public partial class Character
     {
-        public static void char_anime(Actor chara, ActorData param)
+        public static void char_anime(Character chara, ActorData param)
         {
             if (param.anim.normalizedTime is float n)
                 chara.SetAnimate(param.anim.@group, param.anim.category, param.anim.no, n);
@@ -19,7 +19,7 @@ namespace VNActor
         }
 
         /*
-        public static void char_anime(Actor chara, ActorData param)
+        public static void char_anime(Character chara, ActorData param)
         {
             if (param.Length == 3)
             {
@@ -43,37 +43,37 @@ namespace VNActor
         }
         */
 
-        public static void char_anime_speed(Actor chara, ActorData param)
+        public static void char_anime_speed(Character chara, ActorData param)
         {
             // param = speed (0~3)
             chara.AnimeSpeed = param.animeSpeed;
         }
 
-        public static void char_anime_pattern(Actor chara, ActorData param)
+        public static void char_anime_pattern(Character chara, ActorData param)
         {
             // param = pattern (0~1)
             chara.AnimePattern = param.animePattern;
         }
 
-        public static void char_anime_forceloop(Actor chara, ActorData param)
+        public static void char_anime_forceloop(Character chara, ActorData param)
         {
             // param = force loop (0/1)
             chara.AnimationForceLoop = param.forceLoop;
         }
 
-        public static void char_anime_optionparam(Actor chara, ActorData param)
+        public static void char_anime_optionparam(Character chara, ActorData param)
         {
             // param = (aux value 1, aux value 2)
             chara.AnimationOption = param.animeOption;
         }
 
-        public static void char_anime_restart(Actor chara, ActorData param)
+        public static void char_anime_restart(Character chara, ActorData param)
         {
             // param ignore
             chara.restart_anime();
         }
 
-        public static void char_load_cloth(Actor chara, ActorData param)
+        public static void char_load_cloth(Character chara, ActorData param)
         {
             // load cloth
 
@@ -81,14 +81,14 @@ namespace VNActor
         }
 
         /* TODO
-        public static void char_cloth(Actor chara, ActorData param)
+        public static void char_cloth(Character chara, ActorData param)
         {
             // param = (clothIndex, clothState)
             chara.setCloth(param.cloth);
         }
         */
 
-        public static void char_all_clothes(Actor chara, ActorData param)
+        public static void char_all_clothes(Character chara, ActorData param)
         {
             // param = 0(all), 1(half), 2(nude)
             // or
@@ -96,72 +96,72 @@ namespace VNActor
             chara.Clothes = param.cloth;
         }
 
-        public static void char_juice(Actor chara, ActorData param)
+        public static void char_juice(Character chara, ActorData param)
         {
             // param = juice level on (face, FrontUp, BackUp, FrontDown, BackDown) where 0-none, 1-few, 2-lots, or just on int to set all
             chara.Juice = param.juice;
         }
 
-        public static void char_face_red(Actor chara, ActorData param)
+        public static void char_face_red(Character chara, ActorData param)
         {
             // param = hohoAka level(0~1)
             chara.FaceRedness = param.faceRedness;
         }
 
-        public static void char_nip_stand(Actor chara, ActorData param)
+        public static void char_nip_stand(Character chara, ActorData param)
         {
             // param = nipple stand level (0~1)
             chara.NippleStand = param.nippleHardness;
         }
 
-        public static void char_face_option(Actor chara, ActorData param)
+        public static void char_face_option(Character chara, ActorData param)
         {
             // param = 0-none, 1-ball, 2-tape
             // chara.set_face_option(param);
         }
 
-        public static void char_son(Actor chara, ActorData param)
+        public static void char_son(Character chara, ActorData param)
         {
             // param = visible or (visible(0/1), length(0~3))
             chara.Son = param.son;
         }
 
-        public static void char_simple(Actor chara, ActorData param)
+        public static void char_simple(Character chara, ActorData param)
         {
             // param = simple visible
             chara.Simple = param.simple;
         }
 
-        public static void char_simple_color(Actor chara, ActorData param)
+        public static void char_simple_color(Character chara, ActorData param)
         {
             // param = simple color
             chara.SimpleColor = param.simpleColor;
         }
 
-        public static void char_eyes_look(Actor chara, ActorData param)
+        public static void char_eyes_look(Character chara, ActorData param)
         {
             chara.set_look_eye(param.eyeLookPattern, param.eyeLookPos);
         }
 
-        public static void char_eyes_look_ptn(Actor chara, ActorData param)
+        public static void char_eyes_look_ptn(Character chara, ActorData param)
         {
             // param = 0, 1, 2, 3, 4
             chara.Gaze = param.eyeLookPattern;
         }
 
-        public static void char_eyes_look_pos(Actor chara, ActorData param)
+        public static void char_eyes_look_pos(Character chara, ActorData param)
         {
             // param = Vector3 or (x, y, z)
             chara.GazeTarget = param.eyeLookPos;
         }
 
-        public static void char_neck_look(Actor chara, ActorData param)
+        public static void char_neck_look(Character chara, ActorData param)
         {
             // param = 0, 1, 2, 3, 4
             chara.LookNeckPattern = param.neckPattern;
         }
 
-        public static void char_neck_look_full2(Actor chara, ActorData param)
+        public static void char_neck_look_full2(Character chara, ActorData param)
         {
             // param = array of bytes, use dump to get it
             try
@@ -175,7 +175,7 @@ namespace VNActor
             }
         }
 
-        public static void char_neck_look_full(Actor chara, ActorData param)
+        public static void char_neck_look_full(Character chara, ActorData param)
         {
             // param = array of bytes, use dump to get it
             try
@@ -189,55 +189,55 @@ namespace VNActor
             }
         }
 
-        public static void char_eyebrow(Actor chara, ActorData param)
+        public static void char_eyebrow(Character chara, ActorData param)
         {
             // param = eyebrow pattern
             chara.EyebrowPattern = param.eyebrowPattern;
         }
 
-        public static void char_eyes(Actor chara, ActorData param)
+        public static void char_eyes(Character chara, ActorData param)
         {
             // param = eye pattern
             chara.EyePattern = param.eyePattern;
         }
 
-        public static void char_eyes_open(Actor chara, ActorData param)
+        public static void char_eyes_open(Character chara, ActorData param)
         {
             // param = 0~1
             chara.EyesOpenLevel = param.eyesOpen;
         }
 
-        public static void char_eyes_blink(Actor chara, ActorData param)
+        public static void char_eyes_blink(Character chara, ActorData param)
         {
             // param = 0(False)/1(True)
             chara.EyesBlink = param.blinking;
         }
 
-        public static void char_mouth(Actor chara, ActorData param)
+        public static void char_mouth(Character chara, ActorData param)
         {
             // param = mouth pattern
             chara.MouthPattern = param.mouthPattern;
         }
 
-        public static void char_mouth_open(Actor chara, ActorData param)
+        public static void char_mouth_open(Character chara, ActorData param)
         {
             // param = 0~1
             chara.MouthOpenLevel = param.mouthOpen;
         }
 
-        public static void char_lip_sync(Actor chara, ActorData param)
+        public static void char_lip_sync(Character chara, ActorData param)
         {
             // param = 0/1
             chara.LipSync = param.lipSync;
         }
 
-        public static void char_hands(Actor chara, ActorData param)
+        public static void char_hands(Character chara, ActorData param)
         {
             // param = (left hand ptn, right hand ptn)
             chara.HandPattern = param.handMotions;
         }
 
-        public static void char_move(Actor chara, ActorData param)
+        public static void char_move(Character chara, ActorData param)
         {
             // param = (pos_delta_x, pos_delta_y, pos_delta_z)
             var cp = chara.Position;
@@ -245,14 +245,14 @@ namespace VNActor
             chara.Position = ncp;
         }
 
-        public static void char_move_to(Actor chara, ActorData param)
+        public static void char_move_to(Character chara, ActorData param)
         {
             // param = (pos_dst_x, pos_dst_y, pos_dst_z)
             chara.Position = param.position;
         }
 
         /* TODO
-        public static void char_turn(Actor chara, ActorData param)
+        public static void char_turn(Character chara, ActorData param)
         {
             // param = rot_delta_y
             Vector3 rt = chara.rot;
@@ -260,7 +260,7 @@ namespace VNActor
             chara.rot = nrt;
         }
 
-        public static void char_turn_to(Actor chara, ActorData param)
+        public static void char_turn_to(Character chara, ActorData param)
         {
             // param = rot_dst_y
             Vector3 rt = chara.rot;
@@ -269,25 +269,25 @@ namespace VNActor
         }
         */
 
-        public static void char_rotate_to(Actor chara, ActorData param)
+        public static void char_rotate_to(Character chara, ActorData param)
         {
             // param = (rot_x, rot_y, rot_z)
             // for rotate x and z
             chara.Rotation = param.rotation;
         }
 
-        public static void char_scale_to(Actor chara, ActorData param)
+        public static void char_scale_to(Character chara, ActorData param)
         {
             chara.Scale = param.scale;
         }
 
-        public static void char_kinematic(Actor chara, ActorData param)
+        public static void char_kinematic(Character chara, ActorData param)
         {
             // param = 0-none, 1-IK, 2-FK
             chara.set_kinematic(param.kinematicType);
         }
 
-        public static void char_fk_active(Actor chara, ActorData param)
+        public static void char_fk_active(Character chara, ActorData param)
         {
             // param = 0/1 flag in tuple (hair, neck, Breast, body, right hand, left hand, skirt)
             var curFk = chara.get_FK_active();
@@ -296,13 +296,13 @@ namespace VNActor
                     chara.set_FK_active(i, param.fkActive[i]);
         }
 
-        public static void char_fk_set(Actor chara, ActorData param)
+        public static void char_fk_set(Character chara, ActorData param)
         {
             // param = fk bones info dict
             chara.import_fk_bone_info(param.fk);
         }
 
-        public static void char_ik_active(Actor chara, ActorData param)
+        public static void char_ik_active(Character chara, ActorData param)
         {
             // param = 0/1 flag in tuple (body, right leg, left leg, right arm, left arm)
             var curIk = chara.get_IK_active();
@@ -311,32 +311,32 @@ namespace VNActor
                     chara.set_IK_active(i, param.ikActive[i]);
         }
 
-        public static void char_ik_set(Actor chara, ActorData param)
+        public static void char_ik_set(Character chara, ActorData param)
         {
             // param = ik target info dict
             chara.import_ik_target_info(param.ik);
         }
 
-        public static void char_voice_lst(Actor chara, ActorData param)
+        public static void char_voice_lst(Character chara, ActorData param)
         {
             // param = voice list
             // always play the voice
             chara.set_voice_lst(param.voiceList);
         }
 
-        public static void char_voice_rpt(Actor chara, ActorData param)
+        public static void char_voice_rpt(Character chara, ActorData param)
         {
             // param = voice repeat flag
             chara.VoiceRepeat = param.voiceRepeat;
         }
 
-        public static void char_visible(Actor chara, ActorData param)
+        public static void char_visible(Character chara, ActorData param)
         {
             // param = 0 or 1
             chara.Visible = param.visible;
         }
 
-        public static void char_ext_bodyshapes(Actor chara, List<float> param)
+        public static void char_ext_bodyshapes(Character chara, List<float> param)
         {
             // param = body shape array
             try
@@ -349,7 +349,7 @@ namespace VNActor
             }
         }
 
-        public static void char_ext_faceshapes(Actor chara, float[] param)
+        public static void char_ext_faceshapes(Character chara, float[] param)
         {
             // param = face shape array
             try
@@ -362,7 +362,7 @@ namespace VNActor
             }
         }
 
-        public static void char_pl_hspedata(Actor chara, int[] param)
+        public static void char_pl_hspedata(Character chara, int[] param)
         {
             // param = hspe data
             try
@@ -375,7 +375,7 @@ namespace VNActor
             }
         }
 
-        public static void char_pl_aipedata(Actor chara, int[] param)
+        public static void char_pl_aipedata(Character chara, int[] param)
         {
             // param = aipe data
             try
@@ -389,7 +389,7 @@ namespace VNActor
         }
 
         /*
-        private static bool char_act_funcs(string key, Actor actor, ActorData param)
+        private static bool char_act_funcs(string key, Character actor, ActorData param)
         {
 
             CharaActFunction func;

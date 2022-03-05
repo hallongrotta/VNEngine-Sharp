@@ -12,10 +12,10 @@ using UnityEngine;
 
 namespace VNActor
 {
-    // Shared Actor code
-    public partial class Actor : NeoOCI, IVNObject<Actor>
+    // Shared Character code
+    public partial class Character : NeoOCI, IVNObject<Character>
     {
-        public delegate void CharaActFunction(Actor chara, ActorData param);
+        public delegate void CharaActFunction(Character chara, ActorData param);
 
         public enum EyeLookState
         {
@@ -46,7 +46,7 @@ namespace VNActor
         public new OCIChar objctrl;
 
 
-        public Actor(OCIChar objctrl) : base(objctrl)
+        public Character(OCIChar objctrl) : base(objctrl)
         {
             this.objctrl = objctrl;
         }
@@ -528,26 +528,26 @@ namespace VNActor
             }
         }
 
-        public void import_status(IDataClass<Actor> tmp_status)
+        public void import_status(IDataClass<Character> tmp_status)
         {
             if (tmp_status is ActorData data) import_status(data);
         }
 
-        public IDataClass<Actor> export_full_status()
+        public IDataClass<Character> export_full_status()
         {
             return new ActorData(this);
         }
 
-        public static Actor add_female(string path)
+        public static Character add_female(string path)
         {
             var objctrl = AddObjectFemale.Add(path);
-            return new Actor(objctrl);
+            return new Character(objctrl);
         }
 
-        public static Actor add_male(string path)
+        public static Character add_male(string path)
         {
             var objctrl = AddObjectMale.Add(path);
-            return new Actor(objctrl);
+            return new Character(objctrl);
         }
 
         public void SetAccessory(int accIndex, bool accShow)

@@ -8,11 +8,11 @@ using System.Linq;
 namespace VNActor
 {
 
-    // AI/HS2 Actor
-    public partial class Actor : IVNObject<Actor>
+    // AI/HS2 Character
+    public partial class Character : IVNObject<Character>
     {
 
-        public class ActorData : NEOActorData, IDataClass<Actor>
+        public class ActorData : NEOActorData, IDataClass<Character>
         {
             public float tearLevel; 
             public byte[] coordinate; // To maintain compatability
@@ -26,7 +26,7 @@ namespace VNActor
 
             public ActorData() : base() { }
 
-            public ActorData(Actor a) : base(a)
+            public ActorData(Character a) : base(a)
             {
                 if (visible)
                 {
@@ -89,7 +89,7 @@ namespace VNActor
             }
    
 
-            override public void Apply(Actor a)
+            override public void Apply(Character a)
             {
                 a.Visible = visible;          
                 if (visible)
@@ -383,13 +383,13 @@ namespace VNActor
             }
         }              
       
-        public static void char_tuya(Actor chara, ActorData param)
+        public static void char_tuya(Character chara, ActorData param)
         {
             // param = skin tuya 0~1
             chara.SkinGloss = param.tuya;
         }
 
-        public static void char_wet(Actor chara, ActorData param)
+        public static void char_wet(Character chara, ActorData param)
         {
             // param = skin wet 0~1
             chara.SkinWetness = param.wetness;
@@ -403,14 +403,14 @@ namespace VNActor
         }
 
         public void h_with(
-            Actor partner,
+            Character partner,
             int hType = 0,
             int hPosition = 0,
             int hStage = 0,
-            List<Actor> extActors = null)
+            List<Character> extActors = null)
         {
-            Actor factor;
-            Actor mactor;
+            Character factor;
+            Character mactor;
             List<int> validCategoryKey;
             List<int> validNoKey;
             // partner: another actor as sex partner
@@ -613,7 +613,7 @@ namespace VNActor
             return nName;
         }
 
-        public static void char_tear(Actor chara, ActorData param)
+        public static void char_tear(Character chara, ActorData param)
         {
             // param = tear level(0,1,2,3) or (0~1 for PH)
             chara.TearLevel = param.tearLevel;
@@ -622,16 +622,16 @@ namespace VNActor
        
 
         /* TODO
-        public static void char_accessory(Actor chara, ActorData param)
+        public static void char_accessory(Character chara, ActorData param)
         {
             // param = (accIndex, accShow)
-            if (chara is Actor aiChara)
+            if (chara is Character aiChara)
             {
                 aiChara.set_accessory(param.accessory.accIndex, param.accessory.accShow);
             }
         }
 
-        public static void char_accessory(Actor chara, ActorData param)
+        public static void char_accessory(Character chara, ActorData param)
         {
             // param = (accIndex, accShow)
             chara.set_accessory(param.accessory.accIndex, param.accessory.accShow);
@@ -639,7 +639,7 @@ namespace VNActor
         */
 
         /*
-        public static void char_all_accessories(Actor chara, ActorData param)
+        public static void char_all_accessories(Character chara, ActorData param)
         {
             // param = 0(hide all)/1(show all)
             // or
@@ -649,7 +649,7 @@ namespace VNActor
         */
 
         /*
-        public static void char_neck_look_full2(Actor chara, ActorData param)
+        public static void char_neck_look_full2(Character chara, ActorData param)
         {
             // param = array of bytes, use dump to get it
             try

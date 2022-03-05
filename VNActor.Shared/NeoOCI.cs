@@ -43,9 +43,9 @@ namespace VNActor
 
         public string text_name => objctrl.treeNodeObject.textName;
 
-        public static Actor create_from(OCIChar objctrl)
+        public static Character create_from(OCIChar objctrl)
         {
-            return new Actor(objctrl);
+            return new Character(objctrl);
         }
 
         public static Item create_from(OCIItem objctrl)

@@ -13,7 +13,7 @@ namespace VNActor
         public float ShoulderRightOffset;
         public float SpineStiffness;
 
-        public void Apply(Actor a)
+        public void Apply(Character a)
         {
             var advIKcontroller = a.objctrl?.charInfo?.gameObject?.GetComponent<AdvIKCharaController>();
             if (advIKcontroller != null)
@@ -28,7 +28,7 @@ namespace VNActor
             }
         }
 
-        public AdvIKData(Actor a)
+        public AdvIKData(Character a)
         {
             var advIKcontroller = a.objctrl.charInfo?.gameObject?.GetComponent<AdvIKCharaController>();
             if (advIKcontroller != null)

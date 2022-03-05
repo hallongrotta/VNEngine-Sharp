@@ -892,14 +892,14 @@ After:
             this.anim_to_camera_obj(duration, this.get_camera_num(camnum), style, onCameraEnd);
         }
 
-        public List<VNActor.Actor> scene_get_all_females()
+        public List<VNActor.Character> scene_get_all_females()
         {
-            return new List<VNActor.Actor>();
+            return new List<VNActor.Character>();
         }
 
-        public List<VNActor.Actor> scene_get_all_males()
+        public List<VNActor.Character> scene_get_all_males()
         {
-            return new List<VNActor.Actor>();
+            return new List<VNActor.Character>();
         }
 
         public void debug_print_all_chars()

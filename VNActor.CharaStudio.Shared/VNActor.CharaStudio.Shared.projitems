@@ -9,7 +9,7 @@
     <Import_RootNamespace>VNActor.CharaStudio.Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Actor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Character.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Item.cs" />
   </ItemGroup>
 </Project>

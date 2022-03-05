@@ -7,13 +7,13 @@ using System.Linq;
 
 namespace VNActor
 {
-    // Koikatsu Actor
-    public partial class Actor
-        : NeoOCI, IVNObject<Actor>
+    // Koikatsu Character
+    public partial class Character
+        : NeoOCI, IVNObject<Character>
     {
 
         [MessagePackObject(keyAsPropertyName: true)]
-        public class ActorData : NEOActorData, IDataClass<Actor>
+        public class ActorData : NEOActorData, IDataClass<Character>
         {
 
             [Key("ShoesType")]
@@ -28,7 +28,7 @@ namespace VNActor
 
             }
 
-            override public void Apply(Actor a)
+            override public void Apply(Character a)
             {
                 a.Visible = visible;
                 if (visible)
@@ -41,7 +41,7 @@ namespace VNActor
                 base.Apply(a);
             }
 
-            public ActorData(Actor a, ActorData prevStatus) : this(a)
+            public ActorData(Character a, ActorData prevStatus) : this(a)
             {
                 if (Utils.FKDictionariesEqual(fk, prevStatus.fk))
                 {
@@ -55,7 +55,7 @@ namespace VNActor
 
 
 
-            public ActorData(Actor a) : base(a)
+            public ActorData(Character a) : base(a)
             {
                 if (visible)
                 {
@@ -294,14 +294,14 @@ namespace VNActor
         }
 
         public void h_with(
-            Actor partner,
+            Character partner,
             int hType = 0,
             int hPosition = 0,
             int hStage = 0,
-            List<Actor> extActors = null)
+            List<Character> extActors = null)
         {
-            Actor factor;
-            Actor mactor;
+            Character factor;
+            Character mactor;
             List<int> validCategoryKey;
             List<int> validNoKey;
             // partner: another actor as sex partner
@@ -472,9 +472,9 @@ namespace VNActor
             return nName;
         }
 
-        public static void char_cloth_type(Actor chara, ActorData param)
+        public static void char_cloth_type(Character chara, ActorData param)
         {
-            if (chara is Actor kkChara)
+            if (chara is Character kkChara)
             {
                 kkChara.CoordinateType = param.coordinateType;
             }
@@ -494,20 +494,20 @@ namespace VNActor
             }
         }
 
-        public static void char_tear(Actor chara, ActorData param)
+        public static void char_tear(Character chara, ActorData param)
         {
             // param = tear level(0,1,2,3) or (0~1 for PH)
             chara.TearLevel = param.tearLevel;
         }
 
-        public static void char_shoes(Actor chara, ActorData param)
+        public static void char_shoes(Character chara, ActorData param)
         {
             // param = 0 or 1
             chara.ShoesType = param.shoesType;
         }
 
         /* TODO check if used
-        public static void char_ext_curclothcoordnoacc(Actor chara, ActorData param)
+        public static void char_ext_curclothcoordnoacc(Character chara, ActorData param)
         {
             // param = voice repeat flag
             try
@@ -523,7 +523,7 @@ namespace VNActor
 
         /* TODO KKPE stuff
 
-        public static void char_pl_kkpedata(Actor chara, int[] param)
+        public static void char_pl_kkpedata(Character chara, int[] param)
         {
             // param = kkpe data
             try
@@ -538,13 +538,13 @@ namespace VNActor
 
         */
 
-        public static void char_accessory(Actor chara, ActorData param)
+        public static void char_accessory(Character chara, ActorData param)
         {
             chara.Accessories = param.accessoryStatus;
         }
 
         /* TODO add this back
-        public static void char_all_accessories(Actor chara, ActorData param)
+        public static void char_all_accessories(Character chara, ActorData param)
         {
             // param = 0(hide all)/1(show all)
             // or

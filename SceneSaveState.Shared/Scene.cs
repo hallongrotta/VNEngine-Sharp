@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using VNActor;
 using VNEngine;
-using static VNActor.Actor;
+using static VNActor.Character;
 using static VNActor.Item;
 using static VNActor.Light;
 using static VNEngine.System;
@@ -38,7 +38,7 @@ namespace SceneSaveState
         public Scene(VNNeoController game, bool importSys) : this(new Dictionary<string, ActorData>(), new Dictionary<string, NEOItemData>(), new Dictionary<string, LightData>(), new Dictionary<string, NEOPropData>(), new List<CamData>())
         {
             SceneFolders.LoadTrackedActorsAndProps();
-            Dictionary<string, VNActor.Actor> actors = game.AllActors;
+            Dictionary<string, VNActor.Character> actors = game.AllActors;
             Dictionary<string, Prop> props = game.AllProps;
             foreach (string actid in actors.Keys)
             {

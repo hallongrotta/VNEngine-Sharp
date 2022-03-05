@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using MessagePack;
 using UnityEngine;
-using static VNActor.Actor;
+using static VNActor.Character;
 
 namespace VNActor
 {
@@ -139,7 +139,7 @@ After:
         {
         }
 
-        public NEOActorData(Actor a)
+        public NEOActorData(Character a)
         {
             visible = a.Visible;
             if (visible)
@@ -207,7 +207,7 @@ After:
             }
         }
 
-        public virtual void Apply(Actor a)
+        public virtual void Apply(Character a)
         {
             a.Visible = visible;
             if (visible)

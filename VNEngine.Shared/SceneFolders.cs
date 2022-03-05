@@ -1,30 +1,30 @@
-﻿using Studio;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Studio;
 using VNActor;
 
 namespace VNEngine
 {
     public static class SceneFolders
     {
-
         public static string actor_folder_prefix = "vnactor:";
         public static string prop_folder_prefix = "vnprop:";
         public static string light_folder_prefix = "vnlight:";
+
+        public static Dictionary<string, Character> AllActors { get; } = new Dictionary<string, Character>();
+
+        public static Dictionary<string, Prop> AllProps { get; } = new Dictionary<string, Prop>();
 
         public static List<OCIFolder> scene_get_all_folders_raw()
         {
             var ar = new List<OCIFolder>();
             var dobjctrl = Studio.Studio.Instance.dicObjectCtrl;
-            foreach (OCIFolder folder in dobjctrl.Values.OfType<OCIFolder>())
-            {
-                ar.Add(folder);
-            }
+            foreach (var folder in dobjctrl.Values.OfType<OCIFolder>()) ar.Add(folder);
             return ar;
         }
 
-        public static void AddToTrack<T>(T objctrl) where T: ObjectCtrlInfo
+        public static void AddToTrack<T>(T objctrl) where T : ObjectCtrlInfo
         {
             if (objctrl is OCIItem i) AddToTrack(i);
             else if (objctrl is OCIChar c) AddToTrack(c);
@@ -35,7 +35,7 @@ namespace VNEngine
 
         public static void AddToTrack(OCIChar objctrl)
         {
-            string id = ResolveID("act", new VNActor.Actor(objctrl), AllActors);
+            var id = ResolveID("act", new Character(objctrl), AllActors);
             if (id != null)
             {
                 var tagfld = Folder.add(actor_folder_prefix + id);
@@ -48,17 +48,18 @@ namespace VNEngine
             var newid = ResolveID("item", new Item(objctrl), AllProps);
             if (newid != null)
             {
-                var tagfld = Folder.add(SceneFolders.prop_folder_prefix + newid);
+                var tagfld = Folder.add(prop_folder_prefix + newid);
                 tagfld.set_parent_treenodeobject(objctrl.treeNodeObject);
             }
         }
+
         public static void AddToTrack(OCILight objctrl)
         {
             var l = new Light(objctrl);
             var newid = ResolveID("light", l, AllProps);
             if (newid != null)
             {
-                var tagfld = Folder.add(SceneFolders.light_folder_prefix + newid);
+                var tagfld = Folder.add(light_folder_prefix + newid);
                 l.set_parent(tagfld);
             }
         }
@@ -68,7 +69,7 @@ namespace VNEngine
             var newid = ResolveID("folder", new Folder(objctrl), AllProps);
             if (newid != null)
             {
-                var tagfld = Folder.add(SceneFolders.prop_folder_prefix + newid);
+                var tagfld = Folder.add(prop_folder_prefix + newid);
                 tagfld.set_parent_treenodeobject(objctrl.treeNodeObject);
             }
         }
@@ -83,60 +84,49 @@ namespace VNEngine
             }
         }
 
-        private static string ResolveID<T>(string baseid, T obj, Dictionary<string, T> dict) where T: NeoOCI
+        private static string ResolveID<T>(string baseid, T obj, Dictionary<string, T> dict) where T : NeoOCI
         {
-            foreach (T p in dict.Values)
-            {
+            foreach (var p in dict.Values)
                 if (p.objctrl == obj.objctrl)
-                {
                     return null;
-                }
-            }
             foreach (var i in Enumerable.Range(0, 1000 - 0))
             {
                 var id = baseid + i;
-                if (!dict.ContainsKey(id))
-                {
-                    return id;
-                }
+                if (!dict.ContainsKey(id)) return id;
             }
+
             return null;
         }
 
-        public static string GetID<T>(T obj, Dictionary<string, T> dict) where T: NeoOCI
+        public static string GetID<T>(T obj, Dictionary<string, T> dict) where T : NeoOCI
         {
-            foreach (KeyValuePair<string, T> kv in dict)
-            {
+            foreach (var kv in dict)
                 if (kv.Value.objctrl == obj.objctrl)
-                {
                     return kv.Key;
-                }
-            }
             return null;
         }
 
         public static string GetActorID(OCIChar chara)
         {
-            return GetID(new VNActor.Actor(chara), AllActors);
+            return GetID(new Character(chara), AllActors);
         }
 
         public static void LoadTrackedActorsAndProps()
         {
-            List<OCIFolder> folders = scene_get_all_folders_raw();
+            var folders = scene_get_all_folders_raw();
             AllActors.Clear();
             AllProps.Clear();
 
-            foreach (OCIFolder fld in folders)
+            foreach (var fld in folders)
             {
-                string fldName = fld.name;
+                var fldName = fld.name;
                 if (fldName.StartsWith(actor_folder_prefix))
                 {
-
                     string actorAlias;
-                    string actorColor = "ffffff";
+                    var actorColor = "ffffff";
                     string actorTitle = null;
 
-                    // analysis actor tag
+                    // analysis character tag
                     var tagElements = fldName.Split(':');
                     if (tagElements.Length == 2)
                     {
@@ -158,18 +148,17 @@ namespace VNEngine
                     {
                         var hsociChar = NeoOCI.create_from_treenode(fld.treeNodeObject.parent.parent.parent);
 
-                        if (hsociChar is VNActor.Actor chara)
+                        if (hsociChar is Character chara)
                         {
-                            if (actorTitle is null)
-                            {
-                                actorTitle = hsociChar.text_name;
-                            }
+                            if (actorTitle is null) actorTitle = hsociChar.text_name;
 
                             AllActors[actorAlias] = chara;
 
                             //register_char(actorAlias, actorColor, actorTitle);
 
-                            StudioController.Instance.GetLogger.LogDebug("Registered actor: '" + actorAlias + "' as " + actorTitle + " (#" + actorColor + ")");
+                            StudioController.Instance.GetLogger.LogDebug("Registered character: '" + actorAlias +
+                                                                         "' as " + actorTitle + " (#" + actorColor +
+                                                                         ")");
                         }
                     }
                 }
@@ -177,42 +166,42 @@ namespace VNEngine
                 {
                     // analysis props tag
 
-                    string propAlias = fldName.Substring(prop_folder_prefix.Length).Trim();
+                    var propAlias = fldName.Substring(prop_folder_prefix.Length).Trim();
                     // register props
 
                     if (!AllProps.ContainsKey(propAlias))
                     {
-                        NeoOCI oci = NeoOCI.create_from_treenode(fld.treeNodeObject.parent);
+                        var oci = NeoOCI.create_from_treenode(fld.treeNodeObject.parent);
 
                         if (oci is Prop propOci)
                         {
                             AllProps[propAlias] = propOci;
-                            StudioController.Instance.GetLogger.LogDebug("Registered prop: '" + Utils.to_roman(propAlias) + "' as " + Utils.to_roman(oci.text_name));
+                            StudioController.Instance.GetLogger.LogDebug("Registered prop: '" +
+                                                                         Utils.to_roman(propAlias) + "' as " +
+                                                                         Utils.to_roman(oci.text_name));
                         }
                     }
                 }
                 else if (fldName.StartsWith(light_folder_prefix))
                 {
-                    string propAlias = fldName.Substring(light_folder_prefix.Length).Trim();
+                    var propAlias = fldName.Substring(light_folder_prefix.Length).Trim();
                     // register props
 
                     if (!AllProps.ContainsKey(propAlias))
                     {
-                        NeoOCI oci = NeoOCI.create_from_treenode(fld.treeNodeObject.child[0]);
+                        var oci = NeoOCI.create_from_treenode(fld.treeNodeObject.child[0]);
 
-                        if (oci is VNActor.Light propOci)
+                        if (oci is Light propOci)
                         {
                             AllProps[propAlias] = propOci;
-                            StudioController.Instance.GetLogger.LogDebug("Registered light: '" + Utils.to_roman(propAlias) + "' as " + Utils.to_roman(oci.text_name));
+                            StudioController.Instance.GetLogger.LogDebug("Registered light: '" +
+                                                                         Utils.to_roman(propAlias) + "' as " +
+                                                                         Utils.to_roman(oci.text_name));
                         }
                     }
                 }
             }
         }
-
-        public static Dictionary<string, VNActor.Actor> AllActors { get; } = new Dictionary<string, VNActor.Actor>();
-
-        public static Dictionary<string, Prop> AllProps { get; private set; } = new Dictionary<string, VNActor.Prop>();
 
         public static NeoOCI scenef_get_prop(string id)
         {
@@ -221,6 +210,7 @@ namespace VNEngine
                 NeoOCI obj = AllProps[id];
                 return obj;
             }
+
             return null;
         }
 
@@ -228,35 +218,38 @@ namespace VNEngine
         {
             if (AllProps.ContainsKey(id))
             {
-                Prop obj = AllProps[id];
+                var obj = AllProps[id];
                 return obj;
             }
+
             return null;
         }
 
-        public static VNActor.Light scenef_get_light(string id)
+        public static Light scenef_get_light(string id)
         {
             if (AllProps.ContainsKey(id))
             {
-                Prop obj = AllProps[id];
-                return (VNActor.Light)obj;
+                var obj = AllProps[id];
+                return (Light) obj;
             }
+
             return null;
         }
 
-        public static VNActor.Actor scenef_get_actor(string id)
+        public static Character scenef_get_actor(string id)
         {
             if (AllActors.ContainsKey(id))
             {
-                VNActor.Actor obj = AllActors[id];
+                var obj = AllActors[id];
                 return obj;
             }
+
             return null;
         }
 
-        public static void scenef_reg_actor(string id, VNActor.Actor actor)
+        public static void scenef_reg_actor(string id, Character character)
         {
-            AllActors[id] = actor;
+            AllActors[id] = character;
         }
 
         public static void scenef_reg_prop(string id, Item prop)
@@ -267,18 +260,10 @@ namespace VNEngine
         public static Folder createFld(string txt, NeoOCI parent = null, bool ret = true)
         {
             var fld = Folder.add(txt);
-            if (parent is Folder)
-            {
-                fld.set_parent(parent);
-            }
-            if (ret == true)
-            {
+            if (parent is Folder) fld.set_parent(parent);
+            if (ret)
                 return fld;
-            }
-            else
-            {
-                throw new Exception("create folder failed");
-            }
+            throw new Exception("create folder failed");
         }
 
         public static Folder createFldIfNo(string txt, Folder parent, int childNum)
@@ -292,22 +277,15 @@ namespace VNEngine
                 fld.set_parent(parent);
                 return fld;
             }
-            else
-            {
-                var chld = parent.treeNodeObject.child[childNum];
-                fld = NeoOCI.create_from_treenode(chld) as Folder;
-                if (chld.textName != txt)
-                {
-                    //print "hit! upd folder! %s" % txt
-                    fld.name = txt;
-                    //return fld
-                }
-                else
-                {
-                    //print "hit!! no creation! %s" % txt
-                }
-                return fld;
-            }
+
+            var chld = parent.treeNodeObject.child[childNum];
+            fld = NeoOCI.create_from_treenode(chld) as Folder;
+            if (chld.textName != txt)
+                //print "hit! upd folder! %s" % txt
+                fld.name = txt;
+            //return fld
+
+            return fld;
         }
 
         public static void restrict_to_child(Folder fld, int numchilds)
@@ -316,20 +294,14 @@ namespace VNEngine
             {
                 var ar = fld.treeNodeObject.child;
                 var ar2 = new List<NeoOCI>();
-                foreach (var treeobj in ar)
-                {
-                    ar2.Add(NeoOCI.create_from_treenode(treeobj));
-                }
+                foreach (var treeobj in ar) ar2.Add(NeoOCI.create_from_treenode(treeobj));
                 foreach (var i in Enumerable.Range(0, ar2.Count))
-                {
                     if (i >= numchilds)
                     {
-                        Console.WriteLine(String.Format("deleted! {0}", i.ToString()));
+                        Console.WriteLine("deleted! {0}", i.ToString());
                         ar2[i].delete();
                     }
-                }
             }
         }
-
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using static VNActor.Actor;
+using static VNActor.Character;
 
 namespace VNActor
 {

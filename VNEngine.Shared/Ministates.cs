@@ -71,7 +71,7 @@ namespace VNEngine
                     var elId = Convert.ToInt32(key[4]);
                     var objctrl = game.studio.dicObjectCtrl[elId];
                     var actprop = HSNeoOCI.create_from(objctrl);
-                    if (actprop is Actor chara)
+                    if (actprop is Character chara)
                     {
                         chara.as_actor.import_status_diff_optimized(elDataObj[key]);
                     }
@@ -141,7 +141,7 @@ namespace VNEngine
             foreach (var node in mtreeman.selectNodes)
             {
                 var ochar = NeoOCI.create_from_treenode(node);
-                if (ochar is VNActor.Actor chara)
+                if (ochar is VNActor.Character chara)
                 {
                     ar.Add(chara);
                 }

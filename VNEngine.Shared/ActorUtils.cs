@@ -12,7 +12,7 @@ namespace VNEngine
         {
             if (game.isStudioNEO)
             {
-                return Actor.hanime_group_names;
+                return Character.hanime_group_names;
             }
             else if (game.isPlayHomeStudio)
             {

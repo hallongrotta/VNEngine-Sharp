@@ -9,7 +9,7 @@
     <Import_RootNamespace>VNActor.Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Actor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Character.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ActorFuncs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AdvIK.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NeoOCI.cs" />

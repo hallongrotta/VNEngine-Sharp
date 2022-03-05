@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using static VNEngine.Utils;
@@ -13,7 +12,6 @@ namespace VNEngine
     public class SkinRenPy
         : SkinBase
     {
-
         public int buttonFontSize;
 
         public int buttonHeight;
@@ -37,38 +35,41 @@ namespace VNEngine
         public int wheight;
 
         public int wwidth;
+
+        public SkinRenPy()
+        {
+            name = "skin_renpy";
+            contentHeight = 0.2;
+            //self.wheight = Screen.height / 4
+            contentWidthProp = 0.7;
+            calcWindowProp = Screen.width / 1920;
+            labelFontSize = 28;
+            buttonFontSize = 20;
+            buttonHeight = 36;
+            maxButtonsNormal = 3;
+            maxButtonsCompact = 6;
+            //boxstyle = GUIStyle("box");
+            //boxstyle.
+            isEndButton = false;
+            endButtonTxt = ">>";
+        }
+
         public static SkinRenPy get_skin()
         {
             return new SkinRenPy();
         }
-        public SkinRenPy()
-        {
-            this.name = "skin_renpy";
-            this.contentHeight = 0.2;
-            //self.wheight = Screen.height / 4
-            this.contentWidthProp = 0.7;
-            this.calcWindowProp = Screen.width / 1920;
-            this.labelFontSize = 28;
-            this.buttonFontSize = 20;
-            this.buttonHeight = 36;
-            this.maxButtonsNormal = 3;
-            this.maxButtonsCompact = 6;
-            //boxstyle = GUIStyle("box");
-            //boxstyle.
-            this.isEndButton = false;
-            this.endButtonTxt = ">>";
-        }
 
-        override public void setup(VNController controller)
+        public override void setup(VNController controller)
         {
             //super(SkinDefault, self).setup(controller)
             this.controller = controller;
-            this.wwidth = Screen.width;
-            this.wheight = (int)(Screen.height * this.contentHeight);
-            controller.wwidth = this.wwidth;
-            controller.wheight = this.wheight;
+            wwidth = Screen.width;
+            wheight = (int) (Screen.height * contentHeight);
+            controller.wwidth = wwidth;
+            controller.wheight = wheight;
             controller.windowName = "";
-            controller.windowRect = new Rect(Screen.width / 2 - controller.wwidth / 2, Screen.height - controller.wheight, controller.wwidth, controller.wheight);
+            controller.windowRect = new Rect(Screen.width / 2 - controller.wwidth / 2,
+                Screen.height - controller.wheight, controller.wwidth, controller.wheight);
             //GUI.skin.panel.onActive.textColor
             var style = new GUIStyle("label");
             this.controller.windowStyle = style;
@@ -80,18 +81,18 @@ namespace VNEngine
         public void ren_start()
         {
             // this is an ugly way to draw gray alpha background
-            GUI.Box(new Rect(-10, 0, this.wwidth + 10, this.wheight + 5), "");
-            GUI.Box(new Rect(-10, 0, this.wwidth + 10, this.wheight + 5), "");
-            GUI.Box(new Rect(-10, 0, this.wwidth + 10, this.wheight + 5), "");
-            GUILayout.BeginHorizontal("", GUILayout.Width(this.wwidth));
-            GUILayout.Space((float)(this.wwidth * (1 - this.contentWidthProp) / 2));
+            GUI.Box(new Rect(-10, 0, wwidth + 10, wheight + 5), "");
+            GUI.Box(new Rect(-10, 0, wwidth + 10, wheight + 5), "");
+            GUI.Box(new Rect(-10, 0, wwidth + 10, wheight + 5), "");
+            GUILayout.BeginHorizontal("", GUILayout.Width(wwidth));
+            GUILayout.Space((float) (wwidth * (1 - contentWidthProp) / 2));
         }
 
         public void ren_end()
         {
-            if (!this.isEndButton)
+            if (!isEndButton)
             {
-                GUILayout.Space((float)(this.wwidth * (1 - this.contentWidthProp) / 2));
+                GUILayout.Space((float) (wwidth * (1 - contentWidthProp) / 2));
             }
             else
             {
@@ -100,21 +101,20 @@ namespace VNEngine
                 GUILayout.Space(20);
                 GUILayout.BeginHorizontal();
                 GUILayout.FlexibleSpace();
-                if (GUILayout.Button(this.endButtonTxt))
-                {
+                if (GUILayout.Button(endButtonTxt))
                     //print "AAAA!"
-                    this.controller.call_game_func(this.endButtonCall);
-                }
+                    controller.call_game_func(endButtonCall);
                 GUILayout.Space(20);
                 GUILayout.EndHorizontal();
                 GUILayout.Space(20);
                 GUILayout.EndVertical();
             }
+
             GUILayout.EndHorizontal();
             GUI.DragWindow();
         }
 
-        override public void render_main(
+        public override void render_main(
             string text_author,
             string text,
             List<Button_s> btnsActions,
@@ -124,30 +124,26 @@ namespace VNEngine
             //stylebox = GUIStyle("box")
             //stylebox.border = 0
             //GUI.Box(Rect(0, 0, Screen.width / 7, Screen.height / 1), "");
-            this.ren_start();
+            ren_start();
             // --------- calculate actual author ------------
             var char0 = text_author.Split('/')[0];
-            if (this.controller.registeredChars.ContainsKey(char0))
-            {
-                charinfo = this.controller.registeredChars[char0];
-            }
+            if (controller.registeredChars.ContainsKey(char0))
+                charinfo = controller.registeredChars[char0];
             else
-            {
                 charinfo = new RegisteredChar_s("ffffff", char0);
-            }
             // --------- render ---------------
-            var fullw = (int)(this.wwidth * this.contentWidthProp);
+            var fullw = (int) (wwidth * contentWidthProp);
             //GUILayout.BeginVertical("box1", GUILayout.Width(fullw), GUILayout.Height(self.wheight))
             //GUILayout.BeginVertical("box1", GUILayout.Width(fullw), GUILayout.Height(self.wheight))
-            GUILayout.BeginVertical(GUILayout.Width(fullw), GUILayout.Height(this.wheight));
+            GUILayout.BeginVertical(GUILayout.Width(fullw), GUILayout.Height(wheight));
             GUILayout.Space(12);
             // ---- preparing styles ----------
             var style = new GUIStyle("label");
             style.richText = true;
-            style.fontSize = this.labelFontSize;
+            style.fontSize = labelFontSize;
             style.wordWrap = true;
             var customButton = new GUIStyle("button");
-            customButton.fontSize = this.buttonFontSize;
+            customButton.fontSize = buttonFontSize;
             // ----------- render ---------
             /*
             if (btnStyle is List<string>)
@@ -184,7 +180,8 @@ namespace VNEngine
             //GUILayout.BeginHorizontal()
             if (charinfo.showname != "")
             {
-                GUILayout.Label(String.Format("<color=#%sff><b>%s</b></color>", charinfo.color, charinfo.showname), style, GUILayout.Width(fullw));
+                GUILayout.Label(string.Format("<color=#%sff><b>%s</b></color>", charinfo.color, charinfo.showname),
+                    style, GUILayout.Width(fullw));
                 GUILayout.Space(2);
             }
             /*
@@ -199,12 +196,9 @@ namespace VNEngine
 
             GUILayout.FlexibleSpace();
             // ---- show buttons ---
-            if (!this.controller.isHideGameButtons)
+            if (!controller.isHideGameButtons)
             {
-                if (btnStyle == "compact")
-                {
-                    GUILayout.BeginHorizontal();
-                }
+                if (btnStyle == "compact") GUILayout.BeginHorizontal();
                 foreach (var i in Enumerable.Range(0, btnsActions.Count))
                 {
                     // preparing button texts
@@ -216,42 +210,33 @@ namespace VNEngine
                     }
                     */
                     var fintext = restext;
-                    if (this.controller.GetConfigEntry("Skins", "usekeysforbuttons"))
-                    {
-                        if (this.controller.arKeyKodes.Length > i)
-                        {
-                            fintext = this.controller.arKeyKodes[i].ToUpper() + ": " + fintext;
-                        }
-                    }
+                    if (controller.GetConfigEntry("Skins", "usekeysforbuttons"))
+                        if (controller.arKeyKodes.Length > i)
+                            fintext = controller.arKeyKodes[i].ToUpper() + ": " + fintext;
                     // render button
                     if (btnStyle == "normal")
                     {
                         if (btnsActions.Count > 1)
                         {
-                            if (GUILayout.Button(fintext, customButton, GUILayout.Width(fullw), GUILayout.Height(this.buttonHeight)))
-                            {
-                                this.controller.call_game_func(btnsActions[i]);
-                            }
+                            if (GUILayout.Button(fintext, customButton, GUILayout.Width(fullw),
+                                    GUILayout.Height(buttonHeight))) controller.call_game_func(btnsActions[i]);
                         }
                         else
                         {
                             // special case for 1 button
                             GUILayout.BeginHorizontal();
                             GUILayout.FlexibleSpace();
-                            customButton.fontSize = (int)(customButton.fontSize * 1.2);
-                            if (GUILayout.Button(fintext, customButton, GUILayout.Width(fullw * 0.25f), GUILayout.Height(this.buttonHeight * 1.5f)))
-                            {
-                                this.controller.call_game_func(btnsActions[i]);
-                            }
+                            customButton.fontSize = (int) (customButton.fontSize * 1.2);
+                            if (GUILayout.Button(fintext, customButton, GUILayout.Width(fullw * 0.25f),
+                                    GUILayout.Height(buttonHeight * 1.5f))) controller.call_game_func(btnsActions[i]);
                             GUILayout.EndHorizontal();
                         }
                     }
+
                     if (btnStyle == "compact")
                     {
-                        if (GUILayout.Button(fintext, customButton, GUILayout.Width(fullw / 2 - 2), GUILayout.Height(this.buttonHeight)))
-                        {
-                            this.controller.call_game_func(btnsActions[i]);
-                        }
+                        if (GUILayout.Button(fintext, customButton, GUILayout.Width(fullw / 2 - 2),
+                                GUILayout.Height(buttonHeight))) controller.call_game_func(btnsActions[i]);
                         if (i % 2 == 1)
                         {
                             GUILayout.EndHorizontal();
@@ -260,31 +245,27 @@ namespace VNEngine
                         }
                     }
                 }
-                if (btnStyle == "compact")
-                {
-                    GUILayout.EndHorizontal();
-                }
+
+                if (btnStyle == "compact") GUILayout.EndHorizontal();
             }
 
             GUILayout.Space(16);
             GUILayout.EndVertical();
-            this.ren_end();
+            ren_end();
         }
 
-        override public void render_system(string sys_text)
+        public override void render_system(string sys_text)
         {
-            this.ren_start();
-            var fullw = (int)(this.wwidth * this.contentWidthProp);
+            ren_start();
+            var fullw = (int) (wwidth * contentWidthProp);
             GUILayout.BeginVertical(GUILayout.Width(fullw));
             var style = new GUIStyle("label");
             style.richText = true;
-            style.fontSize = this.labelFontSize;
+            style.fontSize = labelFontSize;
             style.wordWrap = true;
             GUILayout.Label(sys_text, style, GUILayout.Width(fullw));
             GUILayout.EndVertical();
-            this.ren_end();
+            ren_end();
         }
-
-
     }
 }

@@ -15,8 +15,8 @@ namespace SceneSaveState
             var actors = Instance.game.AllActors;
             foreach (var actorid in actors.Keys)
             {
-                VNActor.Actor actor = actors[actorid];
-                render_ui_for_tracking(actorid, actor);
+                VNActor.Character character = actors[actorid];
+                render_ui_for_tracking(actorid, character);
             }
             GUILayout.EndScrollView();
             GUILayout.EndVertical();
