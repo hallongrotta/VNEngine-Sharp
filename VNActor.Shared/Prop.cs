@@ -2,7 +2,7 @@
 
 namespace VNActor
 {
-    abstract public class Prop
+    public abstract class Prop
         : NeoOCI, IVNObject<Prop>
     {
         public Prop(ObjectCtrlInfo objctrl) : base(objctrl)

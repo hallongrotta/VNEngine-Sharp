@@ -5,101 +5,30 @@ namespace VNActor
 {
     public abstract class NeoOCI
     {
-
         public ObjectCtrlInfo objctrl;
 
         public NeoOCI(ObjectCtrlInfo objctrl)
         {
             this.objctrl = objctrl;
-            return;
         }
 
         public virtual bool Visible
         {
-            get
-            {
+            get =>
                 // get visible status
-                return this.objctrl.treeNodeObject.visible;
-            }
-            set
-            {
-                this.objctrl.treeNodeObject.visible = value;
-            }
+                objctrl.treeNodeObject.visible;
+            set => objctrl.treeNodeObject.visible = value;
         }
 
         public abstract Vector3 Position { get; set; }
         public abstract Vector3 Rotation { get; set; }
 
-        public static Actor create_from(OCIChar objctrl) { return new Actor(objctrl); }
-
-        public static Item create_from(OCIItem objctrl) { return new Item(objctrl); }
-
-        public static Light create_from(OCILight objctrl) { return new Light(objctrl); }
-
-        public static Route create_from(OCIRoute objctrl) { return new Route(objctrl); }
-
-        public static Folder create_from(OCIFolder objctrl) { return new Folder(objctrl); }
-
-        //public static HSNeoOCI create_from(ObjectCtrlInfo objctrl) { return new HSNeoOCI(objctrl); }
-
-        public static NeoOCI create_from_treenode(TreeNodeObject treenode)
-        {
-            if (treenode == null)
-            {
-                return null;
-            }
-            Studio.Studio studio = Studio.Studio.Instance;
-            var dobjctrl = studio.dicInfo;
-            ObjectCtrlInfo obj = dobjctrl[treenode];
-            if (obj != null)
-            {
-                if (obj is OCIItem item)
-                {
-                    return create_from(item);
-                }
-                else if (obj is OCIFolder fld)
-                {
-                    return create_from(fld);
-                }
-                else if (obj is OCIChar chara)
-                {
-                    return create_from(chara);
-                }
-                else if (obj is OCIRoute route)
-                {
-                    return create_from(route);
-                }
-                else if (obj is OCILight light)
-                {
-                    return create_from(light);
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            return null;
-        }
-
-
-        public static NeoOCI create_from_selected()
-        {
-            Studio.Studio studio = Studio.Studio.Instance;
-            return NeoOCI.create_from_treenode(studio.treeNodeCtrl.selectNode);
-        }
-
         public bool visible_treenode
         {
-            get
-            {
-                return this.objctrl.treeNodeObject.visible;
-            }
+            get => objctrl.treeNodeObject.visible;
             set
             {
-                if (this.objctrl.treeNodeObject.visible != value)
-                {
-                    this.objctrl.treeNodeObject.SetVisible(value);
-                }
+                if (objctrl.treeNodeObject.visible != value) objctrl.treeNodeObject.SetVisible(value);
             }
         }
 
@@ -107,34 +36,86 @@ namespace VNActor
         {
             get
             {
-                TreeNodeObject obj = this.objctrl.treeNodeObject;
+                var obj = objctrl.treeNodeObject;
                 return obj;
             }
         }
 
+        public string text_name => objctrl.treeNodeObject.textName;
+
+        public static Actor create_from(OCIChar objctrl)
+        {
+            return new Actor(objctrl);
+        }
+
+        public static Item create_from(OCIItem objctrl)
+        {
+            return new Item(objctrl);
+        }
+
+        public static Light create_from(OCILight objctrl)
+        {
+            return new Light(objctrl);
+        }
+
+        public static Route create_from(OCIRoute objctrl)
+        {
+            return new Route(objctrl);
+        }
+
+        public static Folder create_from(OCIFolder objctrl)
+        {
+            return new Folder(objctrl);
+        }
+
+        //public static HSNeoOCI create_from(ObjectCtrlInfo objctrl) { return new HSNeoOCI(objctrl); }
+
+        public static NeoOCI create_from_treenode(TreeNodeObject treenode)
+        {
+            if (treenode == null) return null;
+            var studio = Studio.Studio.Instance;
+            var dobjctrl = studio.dicInfo;
+            var obj = dobjctrl[treenode];
+            if (obj != null)
+            {
+                if (obj is OCIItem item)
+                    return create_from(item);
+                if (obj is OCIFolder fld)
+                    return create_from(fld);
+                if (obj is OCIChar chara)
+                    return create_from(chara);
+                if (obj is OCIRoute route)
+                    return create_from(route);
+                if (obj is OCILight light)
+                    return create_from(light);
+                return null;
+            }
+
+            return null;
+        }
+
+
+        public static NeoOCI create_from_selected()
+        {
+            var studio = Studio.Studio.Instance;
+            return create_from_treenode(studio.treeNodeCtrl.selectNode);
+        }
+
         public void set_parent_treenodeobject(TreeNodeObject parentTreeNode)
         {
-            Studio.Studio studio = Studio.Studio.Instance;
-            studio.treeNodeCtrl.SetParent(this.treeNodeObject, parentTreeNode);
+            var studio = Studio.Studio.Instance;
+            studio.treeNodeCtrl.SetParent(treeNodeObject, parentTreeNode);
         }
 
         public void set_parent(NeoOCI parent)
         {
-            this.set_parent_treenodeobject(parent.treeNodeObject);
+            set_parent_treenodeobject(parent.treeNodeObject);
         }
 
         public void delete()
         {
-            Studio.Studio studio = Studio.Studio.Instance;
-            studio.treeNodeCtrl.DeleteNode(this.treeNodeObject);
-        }
-
-        public string text_name
-        {
-            get
-            {
-                return this.objctrl.treeNodeObject.textName;
-            }
+            var studio = Studio.Studio.Instance;
+            studio.treeNodeCtrl.DeleteNode(treeNodeObject);
         }
     }
 }

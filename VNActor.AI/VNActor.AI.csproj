@@ -84,6 +84,6 @@
   <Import Project="..\VNActor.NEOV2.Shared\VNActor.NEOV2.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy "$(TargetDir)VNActor.AI.dll" "B:\AI_DEBUG\BepInEx\plugins"</PostBuildEvent>
+    <PostBuildEvent>copy "$(TargetDir)VNActor.AI.dll" "T:\illusion\DEBUG\AI_DEBUG\BepInEx\plugins"</PostBuildEvent>
   </PropertyGroup>
 </Project>

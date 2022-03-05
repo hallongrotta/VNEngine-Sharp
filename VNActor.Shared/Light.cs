@@ -4,52 +4,75 @@ using UnityEngine;
 
 namespace VNActor
 {
-    public partial class Light : Prop, IVNObject<Light>
+    public class Light : Prop, IVNObject<Light>
     {
-
-        [MessagePackObject(keyAsPropertyName:true)]
-        public class LightData : NEOPropData, IDataClass<Light>
-        {
-            [Key(0)]
-            public Color color;
-            [Key(1)]
-            public float intensity;
-            [Key(2)]
-            public bool shadow;
-            [Key(3)]
-            public float range;
-            [Key(4)]
-            public float angle;
-
-            public LightData() : base()
-            {
-
-            }
-
-            public LightData(Light l) : base(l)
-            {
-                color = l.color;
-                shadow = l.shadow;
-                range = l.range;
-                angle = l.angle;
-            }
-
-            public void Apply(Light l)
-            {
-                base.Apply(l);
-                color = l.color;
-                intensity = l.intensity;
-                shadow = l.shadow;
-                range = l.range;
-                angle = l.angle;
-            }
-        }
-
-        new protected OCILight objctrl;
+        protected new OCILight objctrl;
 
         public Light(OCILight objctrl) : base(objctrl)
         {
             this.objctrl = objctrl;
+        }
+
+        public float range
+        {
+            get => objctrl.lightInfo.range;
+            set => objctrl.SetRange(value);
+        }
+
+        public bool shadow
+        {
+            get => objctrl.lightInfo.shadow;
+            set => objctrl.SetShadow(value);
+        }
+
+        public float angle
+        {
+            get => objctrl.lightInfo.spotAngle;
+            set => objctrl.SetSpotAngle(value);
+        }
+
+        public Color color
+        {
+            get => objctrl.lightInfo.color;
+            set => objctrl.SetColor(value);
+        }
+
+        public float intensity
+        {
+            get => objctrl.lightInfo.intensity;
+            set => objctrl.SetIntensity(value);
+        }
+
+        public override bool Visible
+        {
+            get => objctrl.lightInfo.enable;
+            set => objctrl.SetEnable(value);
+        }
+
+        public LightType type => objctrl.lightType;
+
+        public int no => objctrl.lightInfo.no;
+
+        public override Vector3 Position
+        {
+            get => objctrl.objectInfo.changeAmount.pos;
+            set => objctrl.objectInfo.changeAmount.pos = value;
+        }
+
+        public override Vector3 Rotation
+        {
+            get => objctrl.objectInfo.changeAmount.rot;
+            set => objctrl.objectInfo.changeAmount.rot = value;
+        }
+
+        public new IDataClass<Light> export_full_status()
+        {
+            return new LightData(this);
+        }
+
+        public void import_status(IDataClass<Light> status)
+        {
+            if (status is LightData) import_status(status);
         }
 
         public static Light add_light(int no)
@@ -62,130 +85,17 @@ namespace VNActor
         public void pos_add(Vector3 param)
         {
             // param = (pos_delta_x, pos_delta_y, pos_delta_z)
-            Vector3 cp = this.objctrl.objectInfo.changeAmount.pos;
-            Vector3 ncp = new Vector3(cp.x + param[0], cp.y + param[1], cp.z + param[2]);
-            this.objctrl.objectInfo.changeAmount.pos = ncp;
+            var cp = objctrl.objectInfo.changeAmount.pos;
+            var ncp = new Vector3(cp.x + param[0], cp.y + param[1], cp.z + param[2]);
+            objctrl.objectInfo.changeAmount.pos = ncp;
         }
 
         public void rot_add(Vector3 param)
         {
             // param = (rot_delta_x, rot_delta_y, rot_delta_z)
-            Vector3 rt = this.objctrl.objectInfo.changeAmount.rot;
-            Vector3 nrt = new Vector3(rt.x + param[0], rt.y + param[1], rt.z + param[2]);
-            this.objctrl.objectInfo.changeAmount.rot = nrt;
-        }
-
-        public float range
-        {
-            get
-            {
-                return objctrl.lightInfo.range;
-            }
-            set
-            {
-                objctrl.SetRange(value);
-            }
-        }
-
-        public bool shadow
-        {
-            get
-            {
-                return objctrl.lightInfo.shadow;
-            }
-            set
-            {
-                objctrl.SetShadow(value);
-            }
-        }
-
-        public float angle
-        {
-            get
-            {
-                return objctrl.lightInfo.spotAngle;
-            }
-            set
-            {
-                objctrl.SetSpotAngle(value);
-            }
-        }
-
-        public Color color
-        {
-            get
-            {
-                return objctrl.lightInfo.color;
-            }
-            set
-            {
-                objctrl.SetColor(value);
-            }
-        }
-
-        public float intensity
-        {
-            get
-            {
-
-                return objctrl.lightInfo.intensity;
-            }
-            set
-            {
-                objctrl.SetIntensity(value);
-            }
-        }
-
-        override public bool Visible
-        {
-            get
-            {
-                return objctrl.lightInfo.enable;
-            }
-            set
-            {
-                objctrl.SetEnable(value);
-            }
-        }
-
-        public LightType type
-        {
-            get
-            {
-                return objctrl.lightType;
-            }
-        }
-
-        public int no
-        {
-            get
-            {
-                return objctrl.lightInfo.no;
-            }
-        }
-
-        override public Vector3 Position
-        {
-            get
-            {
-                return this.objctrl.objectInfo.changeAmount.pos;
-            }
-            set
-            {
-                this.objctrl.objectInfo.changeAmount.pos = value;
-            }
-        }
-
-        override public Vector3 Rotation
-        {
-            get
-            {
-                return this.objctrl.objectInfo.changeAmount.rot;
-            }
-            set
-            {
-                this.objctrl.objectInfo.changeAmount.rot = value;
-            }
+            var rt = objctrl.objectInfo.changeAmount.rot;
+            var nrt = new Vector3(rt.x + param[0], rt.y + param[1], rt.z + param[2]);
+            objctrl.objectInfo.changeAmount.rot = nrt;
         }
 
         public static void prop_enable(Light prop, LightData param)
@@ -214,21 +124,44 @@ namespace VNActor
             prop.range = param.range;
         }
 
-        new public IDataClass<Light> export_full_status()
-        {
-            return new LightData(this);
-        }
-
         public void import_status(LightData l)
         {
             l.Apply(this);
         }
 
-        public void import_status(IDataClass<Light> status)
+        [MessagePackObject(true)]
+        public class LightData : NEOPropData, IDataClass<Light>
         {
-            if (status is LightData)
+            [Key(4)] public float angle;
+
+            [Key(0)] public Color color;
+
+            [Key(1)] public float intensity;
+
+            [Key(3)] public float range;
+
+            [Key(2)] public bool shadow;
+
+            public LightData()
             {
-                import_status(status);
+            }
+
+            public LightData(Light l) : base(l)
+            {
+                color = l.color;
+                shadow = l.shadow;
+                range = l.range;
+                angle = l.angle;
+            }
+
+            public void Apply(Light l)
+            {
+                base.Apply(l);
+                color = l.color;
+                intensity = l.intensity;
+                shadow = l.shadow;
+                range = l.range;
+                angle = l.angle;
             }
         }
     }

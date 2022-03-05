@@ -2,59 +2,28 @@
 using AIChara;
 #endif
 
-using MessagePack;
-using Studio;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using MessagePack;
+using Studio;
 using UnityEngine;
-
 
 namespace VNActor
 {
     // Shared Actor code
     public partial class Actor : NeoOCI, IVNObject<Actor>
     {
+        public delegate void CharaActFunction(Actor chara, ActorData param);
 
-        [Serializable]
-        [MessagePackObject]
-        public struct Hands_s
+        public enum EyeLookState
         {
-            [Key(0)]
-            public int leftMotion;
-            [Key(1)]
-            public int rightMotion;
-        }
-
-        [Serializable]
-        [MessagePackObject]
-        public struct Son_s
-        {
-            [Key(0)]
-            public bool visible;
-            [Key(1)]
-            public float length;
-        }
-
-        [Serializable]
-        [MessagePackObject]
-        public struct Animation_s
-        {
-            [Key(0)]
-            public int group;
-            [Key(1)]
-            public int category;
-            [Key(2)]
-            public int no;
-            [Key(3)]
-            public float? normalizedTime;
-        }
-
-        public struct IK_node_s
-        {
-            public Vector3 pos;
-            public Vector3? rot;
+            Front,
+            Follow,
+            Avert,
+            Fixed,
+            Target
         }
 
         public enum KinematicMode
@@ -65,18 +34,508 @@ namespace VNActor
             IKFK
         }
 
-        new public OCIChar objctrl;
-
-        public struct AnimeOption_s
+        public enum NeckPattern
         {
-            public float height;
-            public float breast;
+            Front,
+            Camera,
+            Avert,
+            Anime,
+            Fixed
         }
+
+        public new OCIChar objctrl;
 
 
         public Actor(OCIChar objctrl) : base(objctrl)
         {
             this.objctrl = objctrl;
+        }
+
+        public bool[] Accessories
+        {
+            get
+            {
+                // return accessory state on/off in tuple(20)
+                var accessories = new bool[objctrl.charFileStatus.showAccessory.Length];
+                Array.Copy(objctrl.charFileStatus.showAccessory, accessories,
+                    objctrl.charFileStatus.showAccessory.Length);
+                return accessories;
+            }
+            set => Array.Copy(value, objctrl.charFileStatus.showAccessory, objctrl.charFileStatus.showAccessory.Length);
+        }
+
+        public ChaControl CharInfo => objctrl.charInfo;
+
+        public OICharInfo OICharInfo => objctrl.oiCharInfo;
+
+        public override Vector3 Position
+        {
+            get => CharInfo.transform.localPosition;
+            set => CharInfo.transform.localPosition = value;
+        }
+
+        public override Vector3 Rotation
+        {
+            get => CharInfo.transform.localRotation.eulerAngles;
+            set => CharInfo.transform.localRotation = Quaternion.Euler(value.x, value.y, value.z);
+        }
+
+        public Vector3 Scale
+        {
+            get => CharInfo.transform.localScale;
+            set { }
+        }
+
+        public byte[] EyeAngles
+        {
+            get
+            {
+                if (Gaze == EyeLookState.Fixed)
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        using (var binaryWriter = new BinaryWriter(memoryStream))
+                        {
+                            CharInfo.eyeLookCtrl.eyeLookScript.SaveAngle(binaryWriter);
+                            return memoryStream.ToArray();
+                        }
+                    }
+
+                return null;
+            }
+            set
+            {
+                if (value != null)
+                    if (Gaze == EyeLookState.Fixed)
+                        using (var memoryStream = new MemoryStream(value))
+                        {
+                            using (var binaryReader = new BinaryReader(memoryStream))
+                            {
+                                LoadEyeAngle(binaryReader);
+                            }
+                        }
+            }
+        }
+
+        public EyeLookState Gaze
+        {
+            get => (EyeLookState) objctrl.charInfo.GetLookEyesPtn();
+            set => objctrl.ChangeLookEyesPtn((int) value);
+        }
+
+        public int MouthPattern
+        {
+            set =>
+                // ptn: 0 to x (depend on engine)
+                objctrl.charInfo.ChangeMouthPtn(value);
+            get =>
+                // return mouth pattern
+                objctrl.charInfo.GetMouthPtn();
+        }
+
+        public float MouthOpenMax
+        {
+            get => objctrl.charInfo.GetMouthOpenMax();
+            set => objctrl.charInfo.ChangeMouthOpenMax(value);
+        }
+
+        public int EyePattern
+        {
+            set => objctrl.charInfo.ChangeEyesPtn(value);
+            get => objctrl.charInfo.GetEyesPtn();
+        }
+
+        public float EyesOpenMax
+        {
+            get => objctrl.charInfo.GetEyesOpenMax();
+            set => objctrl.charInfo.ChangeEyesOpenMax(value);
+        }
+
+
+        public int EyebrowPattern
+        {
+            get => objctrl.charInfo.GetEyebrowPtn();
+            set => objctrl.charInfo.ChangeEyebrowPtn(value);
+        }
+
+        public byte[] LookNeckFull2
+        {
+            get
+            {
+                // needed only to save Fixed state
+                if (LookNeckPattern == NeckPattern.Fixed)
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        using (var binaryWriter = new BinaryWriter(memoryStream))
+                        {
+                            objctrl.neckLookCtrl.SaveNeckLookCtrl(binaryWriter);
+                            return memoryStream.ToArray();
+                        }
+                    }
+
+                return null;
+            }
+            set
+            {
+                if (LookNeckPattern == NeckPattern.Fixed)
+                    // print lst
+                    // print arrstate
+                    using (var memoryStream = new MemoryStream(value))
+                    {
+                        using (var binaryReader = new BinaryReader(memoryStream))
+                        {
+                            objctrl.neckLookCtrl.LoadNeckLookCtrl(binaryReader);
+                        }
+                    }
+            }
+        }
+
+        public int FaceShapesCount => FaceShapesAll.Length;
+
+        public string[] FaceShapesNames => ChaFileDefine.cf_headshapename;
+
+        public float[] FaceShapesAll
+        {
+            get
+            {
+                var ct = FaceShapesCount;
+                var res = new float[ct];
+                for (var i = 0; i < ct; i++) res[i] = get_face_shape(i);
+                return res;
+            }
+            set
+            {
+                for (var i = 0; i < value.Length; i++) set_face_shape(i, value[i]);
+            }
+        }
+
+        public float[] BodyShapesAll => objctrl.oiCharInfo.charFile.custom.body.shapeValueBody;
+
+        public int BodyShapesCount => BodyShapesAll.Length;
+
+        public string[] BodyShapesNames => ChaFileDefine.cf_bodyshapename;
+
+        public float Height =>
+            // get height:
+            objctrl.oiCharInfo.charFile.custom.body.shapeValueBody[0];
+
+        public byte[] Clothes
+        {
+            get
+            {
+                // return state index of (top, bottom, bra, shorts, grove, panst, sock, shoes) in tuple
+                var cloth = new byte[objctrl.charFileStatus.clothesState.Length];
+
+                for (var i = 0; i < objctrl.charFileStatus.clothesState.Length; i++)
+                    cloth[i] = objctrl.charFileStatus.clothesState[i];
+
+                return cloth;
+            }
+            set
+            {
+                for (var i = 0; i < value.Length; i++)
+                    if (objctrl.charFileStatus.clothesState[i] != value[i])
+                        objctrl.SetClothesState(i, value[i]);
+            }
+        }
+        //private Dictionary<string, (ActorData, bool)> char_act_funcs;
+
+        public int Sex =>
+            // get sex: 0-male, 1-female
+            objctrl.sex;
+
+        public bool IsVoicePlay =>
+            // get voice play status
+            objctrl.voiceCtrl.isPlay;
+
+        public bool IsAnimeOver =>
+            // get if anime played once. 
+            // note, anime may still playing because of it is looping anime or force-loop sets true
+            // for those non-looping anime, it may be stopped after played once if force-loop not set.
+            objctrl.charAnimeCtrl.normalizedTime >= 1;
+
+        public bool IsHAnime =>
+            // get isHAnime status, use by anime option param
+            objctrl.isHAnime;
+
+        public Animation_s Animation
+        {
+            get
+            {
+                // return (group, category, no) in tuple         
+                if (AnimeSpeed == 0.0)
+                    return new Animation_s
+                    {
+                        group = objctrl.oiCharInfo.animeInfo.group, category = objctrl.oiCharInfo.animeInfo.category,
+                        no = objctrl.oiCharInfo.animeInfo.no, normalizedTime = objctrl.charAnimeCtrl.normalizedTime
+                    };
+                return new Animation_s
+                {
+                    group = objctrl.oiCharInfo.animeInfo.group, category = objctrl.oiCharInfo.animeInfo.category,
+                    no = objctrl.oiCharInfo.animeInfo.no
+                };
+            }
+        }
+
+        public float AnimeSpeed
+        {
+            get => objctrl.animeSpeed;
+            set =>
+                // speed: 0~3
+                objctrl.animeSpeed = value;
+        }
+
+        public float AnimePattern
+        {
+            get => objctrl.animePattern;
+            set =>
+                // pattern: 0~1
+                objctrl.animePattern = value;
+        }
+
+        public AnimeOption_s AnimationOption
+        {
+            set
+            {
+                // option: (param1, param2)
+                objctrl.animeOptionParam1 = value.height;
+                objctrl.animeOptionParam2 = value.breast;
+            }
+            get =>
+                // return anime option param
+                new AnimeOption_s {height = objctrl.animeOptionParam1, breast = objctrl.animeOptionParam2};
+        }
+
+        public bool AnimationItemVisible
+        {
+            set =>
+                // visible: true/false
+                objctrl.optionItemCtrl.visible = value;
+            get =>
+                // return anime option visible
+                objctrl.optionItemCtrl.visible;
+        }
+
+        public bool AnimationForceLoop
+        {
+            get => objctrl.charAnimeCtrl.isForceLoop;
+            set =>
+                // loop: 0(false)/1(true)
+                objctrl.charAnimeCtrl.isForceLoop = value;
+        }
+
+        public float FaceRedness
+        {
+            get =>
+                // return face red level
+                objctrl.GetHohoAkaRate();
+            set =>
+                // level: face red level 0~1
+                objctrl.SetHohoAkaRate(value);
+        }
+
+        public float NippleStand
+        {
+            get =>
+                // return nipple stand level
+                objctrl.oiCharInfo.nipple;
+            set =>
+                // level: nipple stand level 0~1
+                objctrl.SetNipStand(value);
+        }
+
+        public Son_s Son
+        {
+            get =>
+                new Son_s
+                {
+                    visible = objctrl.oiCharInfo.visibleSon,
+                    length = objctrl.oiCharInfo.sonLength
+                };
+            set
+            {
+                objctrl.SetVisibleSon(value.visible);
+                objctrl.SetSonLength(value.length);
+            }
+        }
+
+        public bool Simple
+        {
+            get =>
+                // return simple state, simple color) in tuple
+                objctrl.oiCharInfo.visibleSimple;
+            set
+            {
+                // simple = one color, for male only: 1(true)/0(false)
+                if (Sex == 0) objctrl.SetVisibleSimple(value);
+            }
+        }
+
+        public Color SimpleColor
+        {
+            set
+            {
+                // simple color, for male only
+                if (Sex == 0) objctrl.SetSimpleColor(value);
+            }
+            get =>
+                // get simple color
+                objctrl.oiCharInfo.simpleColor;
+        }
+
+        /*
+        public Vector3 get_look_eye()
+        {
+            // return look eye ptn or look eye pos when ptn == 4
+            var ptn = this.look_eye_ptn;
+
+            if (ptn is int)
+            {
+                return ptn;
+            }
+            else
+            {
+                return this.look_eye_pos;
+            }
+        }
+        */
+
+
+        public Vector3 GazeTarget
+        {
+            set => objctrl.lookAtInfo.target.localPosition = value;
+            get => objctrl.lookAtInfo.target.localPosition;
+        }
+
+        public NeckPattern LookNeckPattern
+        {
+            set =>
+                // ptn for CharaStudio: 0: front, 1: camera, 2: hide from camera, 3: by anime, 4: fix
+                objctrl.ChangeLookNeckPtn((int) value);
+            get =>
+                // return neck look pattern: 0: front, 1: camera, 2: hide from camera, 3: by anime, 4: fix
+                (NeckPattern) objctrl.charInfo.GetLookNeckPtn();
+        }
+
+        public float EyesOpenLevel
+        {
+            set =>
+                // open: 0~1
+                objctrl.ChangeEyesOpen(value);
+            get =>
+                // return eyes open
+                objctrl.charInfo.fileStatus.eyesOpenMax;
+        }
+
+        public bool EyesBlink
+        {
+            set =>
+                // flag: 0(false)/1(True)
+                objctrl.ChangeBlink(value);
+            get =>
+                // return eyes blink flag
+                objctrl.charInfo.GetEyesBlinkFlag();
+        }
+
+        public float MouthOpenLevel
+        {
+            set =>
+                // open: 0~1
+                objctrl.ChangeMouthOpen(value);
+            get =>
+                // return mouth open
+                objctrl.oiCharInfo.mouthOpen;
+        }
+
+        public bool LipSync
+        {
+            set =>
+                // flag: 0/1. 
+                // this is the lip sync option for voice play, not for VNGameEngine
+                objctrl.ChangeLipSync(value);
+            get =>
+                // return lip sync status
+                OICharInfo.lipSync;
+        }
+
+        public Hands_s HandPattern
+        {
+            set
+            {
+                // ptn: (left hand ptn, right hand ptn)
+                objctrl.ChangeHandAnime(0, value.leftMotion);
+                objctrl.ChangeHandAnime(1, value.rightMotion);
+            }
+            get =>
+                // return (lptn, rptn) in tuple
+                new Hands_s {leftMotion = objctrl.oiCharInfo.handPtn[0], rightMotion = objctrl.oiCharInfo.handPtn[1]};
+        }
+
+        public List<int[]> VoiceList
+        {
+            get
+            {
+                // return a tuple of current loaded voice: ((group, category, no), (group, category, no), ...)
+                var vlist = new List<int[]>();
+                foreach (var v in objctrl.voiceCtrl.list)
+                {
+                    int[] vi = {v.group, v.category, v.no};
+                    vlist.Add(vi);
+                }
+
+                return vlist;
+            }
+        }
+
+
+        public int VoiceRepeat
+        {
+            set
+            {
+                // set voice repeat: 0: no repeat, 1: repeat selected one, 2: repeat all
+                if (value == 2)
+                    objctrl.voiceCtrl.repeat = VoiceCtrl.Repeat.All;
+                else if (value == 1)
+                    objctrl.voiceCtrl.repeat = VoiceCtrl.Repeat.Select;
+                else
+                    objctrl.voiceCtrl.repeat = VoiceCtrl.Repeat.None;
+            }
+            get
+            {
+                // return the status of voice repeat setting: 0: no repeat, 1: repeat selected one, 2: repeat all
+                if (objctrl.voiceCtrl.repeat == VoiceCtrl.Repeat.All)
+                    return 2;
+                if (objctrl.voiceCtrl.repeat == VoiceCtrl.Repeat.Select)
+                    return 1;
+                return 0;
+            }
+        }
+
+        public KinematicMode Kinematic
+        {
+            get
+            {
+                // return current kinematice mode: 0-none, 1-IK, 2-FK, 3-IK&FK
+                KinematicMode kmode;
+                if (objctrl.oiCharInfo.enableIK && objctrl.oiCharInfo.enableFK)
+                    kmode = KinematicMode.IKFK;
+                else if (objctrl.oiCharInfo.enableIK)
+                    kmode = KinematicMode.IK;
+                else if (objctrl.oiCharInfo.enableFK)
+                    kmode = KinematicMode.FK;
+                else
+                    kmode = KinematicMode.None;
+                return kmode;
+            }
+        }
+
+        public void import_status(IDataClass<Actor> tmp_status)
+        {
+            if (tmp_status is ActorData data) import_status(data);
+        }
+
+        public IDataClass<Actor> export_full_status()
+        {
+            return new ActorData(this);
         }
 
         public static Actor add_female(string path)
@@ -93,236 +552,38 @@ namespace VNActor
 
         public void SetAccessory(int accIndex, bool accShow)
         {
-            this.objctrl.ShowAccessory(accIndex, accShow);
-        }
-
-        public bool[] Accessories
-        {
-            get
-            {
-                // return accessory state on/off in tuple(20)
-                var accessories = new bool[objctrl.charFileStatus.showAccessory.Length];
-                Array.Copy(objctrl.charFileStatus.showAccessory, accessories, objctrl.charFileStatus.showAccessory.Length);
-                return accessories;
-            }
-            set
-            { 
-                Array.Copy(value, objctrl.charFileStatus.showAccessory, objctrl.charFileStatus.showAccessory.Length);
-            }
-        }
-
-        public ChaControl CharInfo
-        {
-            get
-            {
-                return this.objctrl.charInfo;
-            }
-        }
-
-        public OICharInfo OICharInfo
-        {
-            get
-            {
-                return this.objctrl.oiCharInfo;
-            }
-        }
-
-        override public Vector3 Position
-        {
-            get
-            {
-                return this.CharInfo.transform.localPosition;
-            }
-            set
-            {
-                this.CharInfo.transform.localPosition = value;
-            }
-        }
-
-        override public Vector3 Rotation
-        {
-            get
-            {
-                return this.CharInfo.transform.localRotation.eulerAngles;
-            }
-            set
-            {
-                this.CharInfo.transform.localRotation = Quaternion.Euler(value.x, value.y, value.z);
-            }
-        }
-
-        public Vector3 Scale
-        {
-            get
-            {
-                return this.CharInfo.transform.localScale;
-            }
-            set
-            {
-
-            }
-        }
-
-        public enum EyeLookState
-        {
-            Front,
-            Follow,
-            Avert,
-            Fixed,
-            Target
-        }
-        public byte[] EyeAngles
-        {
-            get
-            {
-                if (Gaze == EyeLookState.Fixed)
-                {
-                    using (MemoryStream memoryStream = new MemoryStream())
-                    {
-                        using (BinaryWriter binaryWriter = new BinaryWriter(memoryStream))
-                        {
-                            CharInfo.eyeLookCtrl.eyeLookScript.SaveAngle(binaryWriter);
-                            return memoryStream.ToArray();
-                        }
-                    }
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            set
-            {
-                if (value != null)
-                {
-                    if (Gaze == EyeLookState.Fixed)
-                    {
-                        using (MemoryStream memoryStream = new MemoryStream(value))
-                        {
-                            using (BinaryReader binaryReader = new BinaryReader(memoryStream))
-                            {
-                                LoadEyeAngle(binaryReader);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        public EyeLookState Gaze
-        {
-            get
-            {
-                return (EyeLookState)objctrl.charInfo.GetLookEyesPtn();
-            }
-            set
-            {
-                this.objctrl.ChangeLookEyesPtn((int)value);
-            }
-        }
-
-        public int MouthPattern
-        {
-            set
-            {
-                // ptn: 0 to x (depend on engine)
-                this.objctrl.charInfo.ChangeMouthPtn(value);
-            }
-            get
-            {
-                // return mouth pattern
-                return this.objctrl.charInfo.GetMouthPtn();
-            }
-        }
-
-        public float MouthOpenMax
-        {
-            get
-            {
-                return this.objctrl.charInfo.GetMouthOpenMax();
-            }
-            set
-            {
-                this.objctrl.charInfo.ChangeMouthOpenMax(value);
-            }
-        }
-
-        public int EyePattern
-        {
-            set
-            {
-                this.objctrl.charInfo.ChangeEyesPtn(value);
-            }
-            get
-            {
-                return this.objctrl.charInfo.GetEyesPtn();
-            }
-        }
-
-        public float EyesOpenMax
-        {
-            get
-            {
-                return this.objctrl.charInfo.GetEyesOpenMax();
-
-            }
-            set
-            {
-                this.objctrl.charInfo.ChangeEyesOpenMax(value);
-            }
-        }
-
-
-        public int EyebrowPattern
-        {
-            get
-            {
-
-                return this.objctrl.charInfo.GetEyebrowPtn();
-
-            }
-            set
-            {
-                this.objctrl.charInfo.ChangeEyebrowPtn(value);
-            }
+            objctrl.ShowAccessory(accIndex, accShow);
         }
 
         public void import_fk_bone_info(Dictionary<int, Vector3> biDic)
         {
             // import fk bone info from dic
-            foreach (var binfo in this.objctrl.listBones)
-            {
+            foreach (var binfo in objctrl.listBones)
                 if (biDic.ContainsKey(binfo.boneID))
-                {
                     binfo.boneInfo.changeAmount.rot = biDic[binfo.boneID];
-                }
-            }
         }
 
         public void reset_fk_bone_info()
         {
             // import fk bone info from dic
-            foreach (var binfo in this.objctrl.listBones)
-            {
-                    binfo.boneInfo.changeAmount.rot = Vector3.zero;
-            }
+            foreach (var binfo in objctrl.listBones) binfo.boneInfo.changeAmount.rot = Vector3.zero;
         }
 
         public Dictionary<int, Vector3> export_fk_bone_info(bool activedOnly = true)
         {
             // export a dic contents FK bone info
             var biDic = new Dictionary<int, Vector3>();
-            foreach (var binfo in this.objctrl.listBones)
-            {
+            foreach (var binfo in objctrl.listBones)
                 if (!activedOnly || binfo.active)
                 {
                     // posClone = Vector3(binfo.posision.x, binfo.posision.y, binfo.posision.z)
                     var rot = binfo.boneInfo.changeAmount.rot;
-                    var rotClone = new Vector3(rot.x <= 180 ? rot.x : rot.x - 360, rot.y <= 180 ? rot.y : rot.y - 360, rot.z <= 180 ? rot.z : rot.z - 360);
+                    var rotClone = new Vector3(rot.x <= 180 ? rot.x : rot.x - 360, rot.y <= 180 ? rot.y : rot.y - 360,
+                        rot.z <= 180 ? rot.z : rot.z - 360);
                     // abDic[binfo.boneID] = (posClone, rotClone)
                     biDic[binfo.boneID] = rotClone;
                 }
-            }
+
             // print "exported", len(biDic), "bones"
             return biDic;
         }
@@ -330,21 +591,16 @@ namespace VNActor
         public void import_ik_target_info(Dictionary<string, IK_node_s> itDic)
         {
             // import IK target info from dic 
-            foreach (var ikTgt in this.objctrl.listIKTarget)
+            foreach (var ikTgt in objctrl.listIKTarget)
             {
                 var ikTgName = ikTgt.boneObject.name;
                 if (itDic.ContainsKey(ikTgName))
                 {
-
                     ikTgt.targetInfo.changeAmount.pos = itDic[ikTgName].pos;
 
                     if (IsRotatableIK(ikTgName))
-                    {
                         if (itDic[ikTgName].rot is Vector3 ik_rot)
-                        {
                             ikTgt.targetInfo.changeAmount.rot = ik_rot;
-                        }
-                    }
                 }
             }
         }
@@ -352,11 +608,8 @@ namespace VNActor
         public Dictionary<string, IK_node_s> export_ik_target_info(bool activedOnly = true)
         {
             // export a dic contents IK target info
-            var itDic = new Dictionary<string, IK_node_s>
-            {
-            };
-            foreach (var itInfo in this.objctrl.listIKTarget)
-            {
+            var itDic = new Dictionary<string, IK_node_s>();
+            foreach (var itInfo in objctrl.listIKTarget)
                 if (!activedOnly || itInfo.active)
                 {
                     var tgtName = itInfo.boneObject.name;
@@ -367,14 +620,14 @@ namespace VNActor
                         var rot = itInfo.targetInfo.changeAmount.rot;
                         var rotClone = new Vector3(rot.x, rot.y, rot.z);
                         //rotClone = Vector3(rot.x if rot.x <= 180 else rot.x - 360, rot.y if rot.y <= 180 else rot.y - 360, rot.z if rot.z <= 180 else rot.z - 360)
-                        itDic[tgtName] = new IK_node_s { pos = posClone, rot = rotClone };
+                        itDic[tgtName] = new IK_node_s {pos = posClone, rot = rotClone};
                     }
                     else
                     {
-                        itDic[tgtName] = new IK_node_s { pos = posClone, rot = null };
+                        itDic[tgtName] = new IK_node_s {pos = posClone, rot = null};
                     }
                 }
-            }
+
             //print "exported", len(itDic), "IK Targets"
             return itDic;
         }
@@ -385,264 +638,107 @@ namespace VNActor
             if (mode == KinematicMode.IKFK)
             {
                 // enable IK
-                this.objctrl.finalIK.enabled = true;
-                this.objctrl.oiCharInfo.enableIK = true;
-                this.objctrl.ActiveIK(OIBoneInfo.BoneGroup.Body, this.objctrl.oiCharInfo.activeIK[0], true);
-                this.objctrl.ActiveIK(OIBoneInfo.BoneGroup.RightLeg, this.objctrl.oiCharInfo.activeIK[1], true);
-                this.objctrl.ActiveIK(OIBoneInfo.BoneGroup.LeftLeg, this.objctrl.oiCharInfo.activeIK[2], true);
-                this.objctrl.ActiveIK(OIBoneInfo.BoneGroup.RightArm, this.objctrl.oiCharInfo.activeIK[3], true);
-                this.objctrl.ActiveIK(OIBoneInfo.BoneGroup.LeftArm, this.objctrl.oiCharInfo.activeIK[4], true);
+                objctrl.finalIK.enabled = true;
+                objctrl.oiCharInfo.enableIK = true;
+                objctrl.ActiveIK(OIBoneInfo.BoneGroup.Body, objctrl.oiCharInfo.activeIK[0], true);
+                objctrl.ActiveIK(OIBoneInfo.BoneGroup.RightLeg, objctrl.oiCharInfo.activeIK[1], true);
+                objctrl.ActiveIK(OIBoneInfo.BoneGroup.LeftLeg, objctrl.oiCharInfo.activeIK[2], true);
+                objctrl.ActiveIK(OIBoneInfo.BoneGroup.RightArm, objctrl.oiCharInfo.activeIK[3], true);
+                objctrl.ActiveIK(OIBoneInfo.BoneGroup.LeftArm, objctrl.oiCharInfo.activeIK[4], true);
                 // enable FK, disable "body" because it should be controlled by IK
-                this.objctrl.oiCharInfo.activeFK[3] = false;
-                this.objctrl.fkCtrl.enabled = true;
-                this.objctrl.oiCharInfo.enableFK = true;
+                objctrl.oiCharInfo.activeFK[3] = false;
+                objctrl.fkCtrl.enabled = true;
+                objctrl.oiCharInfo.enableFK = true;
                 foreach (var i in Enumerable.Range(0, FKCtrl.parts.Length))
-                {
                     try
                     {
-                        this.objctrl.ActiveFK(FKCtrl.parts[i], this.objctrl.oiCharInfo.activeFK[i], true);
+                        objctrl.ActiveFK(FKCtrl.parts[i], objctrl.oiCharInfo.activeFK[i], true);
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine(String.Format($"Error set kinematic to 3(IK&FK), when ActiveFK[{i}: {FKCtrl.parts[i]}]. Error message = {e}"));
+                        Console.WriteLine(string.Format(
+                            $"Error set kinematic to 3(IK&FK), when ActiveFK[{i}: {FKCtrl.parts[i]}]. Error message = {e}"));
                     }
-                }
+
                 // call ActiveKinematicMode to set pvCopy?
-                this.objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.IK, true, false);
+                objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.IK, true, false);
             }
             else if (mode == KinematicMode.FK)
             {
-                if (this.objctrl.oiCharInfo.enableIK)
-                {
+                if (objctrl.oiCharInfo.enableIK)
                     try
                     {
-                        this.objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.IK, false, force);
+                        objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.IK, false, force);
                     }
                     catch (Exception e)
                     {
                         Console.WriteLine($"Error set kinematic to 2(FK), when clear IK. Error message = {e}");
                     }
-                }
-                if (!this.objctrl.oiCharInfo.enableFK)
-                {
+
+                if (!objctrl.oiCharInfo.enableFK)
                     try
                     {
-                        this.objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.FK, true, force);
+                        objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.FK, true, force);
                     }
                     catch (Exception e)
                     {
                         Console.WriteLine($"Error set kinematic to 2(FK), when set FK. Error message = {e}");
                     }
-                }
             }
             else if (mode == KinematicMode.IK)
             {
-                if (this.objctrl.oiCharInfo.enableFK)
-                {
+                if (objctrl.oiCharInfo.enableFK)
                     try
                     {
-                        this.objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.FK, false, force);
+                        objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.FK, false, force);
                     }
                     catch (Exception e)
                     {
                         Console.WriteLine($"Error set kinematic to 1(IK), when clear FK. Error message = {e}");
                     }
-                }
-                if (!this.objctrl.oiCharInfo.enableIK)
-                {
+
+                if (!objctrl.oiCharInfo.enableIK)
                     try
                     {
-                        this.objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.IK, true, force);
+                        objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.IK, true, force);
                     }
                     catch (Exception e)
                     {
                         Console.WriteLine($"Error set kinematic to 1(IK), when set IK. Error message = {e}");
                     }
-                }
             }
             else
             {
-                if (this.objctrl.oiCharInfo.enableIK)
-                {
+                if (objctrl.oiCharInfo.enableIK)
                     try
                     {
-                        this.objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.IK, false, force);
+                        objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.IK, false, force);
                     }
                     catch (Exception e)
                     {
                         Console.WriteLine($"Error set kinematic to 0(None), when clear IK. Error message = {e}");
                     }
-                }
-                if (this.objctrl.oiCharInfo.enableFK)
-                {
+
+                if (objctrl.oiCharInfo.enableFK)
                     try
                     {
-                        this.objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.FK, false, force);
+                        objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.FK, false, force);
                     }
                     catch (Exception e)
                     {
                         Console.WriteLine($"Error set kinematic to 0(None), when clear FK. Error message = {e}");
                     }
-                }
-            }
-        }
-
-        public byte[] LookNeckFull2
-        {
-            get
-            {
-                // needed only to save Fixed state
-                if (this.LookNeckPattern == NeckPattern.Fixed)
-                {
-
-                    using (MemoryStream memoryStream = new MemoryStream())
-                    {
-                        using (BinaryWriter binaryWriter = new BinaryWriter(memoryStream))
-                        {
-                            this.objctrl.neckLookCtrl.SaveNeckLookCtrl(binaryWriter);
-                            return memoryStream.ToArray();
-                        }
-                    }                   
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            set
-            {
-                if (this.LookNeckPattern == NeckPattern.Fixed)
-                {
-                    // print lst
-                    // print arrstate
-                    using (MemoryStream memoryStream = new MemoryStream(value))
-                    {
-                        using (BinaryReader binaryReader = new BinaryReader(memoryStream))
-                        {
-                            this.objctrl.neckLookCtrl.LoadNeckLookCtrl(binaryReader);
-                        }
-                    }                  
-                }
             }
         }
 
         public float get_face_shape(int p1)
         {
-            return this.CharInfo.GetShapeFaceValue(p1);
+            return CharInfo.GetShapeFaceValue(p1);
         }
 
         public void set_face_shape(int p1, float p2)
         {
-            this.CharInfo.SetShapeFaceValue(p1, p2);
-        }
-
-        public int FaceShapesCount
-        {
-            get
-            {
-                return this.FaceShapesAll.Length;
-            }
-        }
-
-        public string[] FaceShapesNames
-        {
-            get
-            {
-                return ChaFileDefine.cf_headshapename;
-            }
-        }
-
-        public float[] FaceShapesAll
-        {
-            get
-            {
-                var ct = this.FaceShapesCount;
-                var res = new float[ct];
-                for (int i = 0; i < ct; i++)
-                {
-                    res[i] = this.get_face_shape(i);
-                }
-                return res;
-            }
-            set
-            {
-                for (int i = 0; i < value.Length; i++)
-                {
-                    this.set_face_shape(i, value[i]);
-                }
-            }
-        }
-
-        public float[] BodyShapesAll
-        {
-            get
-            {
-                return this.objctrl.oiCharInfo.charFile.custom.body.shapeValueBody;
-            }
-        }
-
-        public int BodyShapesCount
-        {
-            get
-            {
-                return this.BodyShapesAll.Length;
-            }
-        }
-
-        public string[] BodyShapesNames
-        {
-            get
-            {
-                return ChaFileDefine.cf_bodyshapename;
-            }
-        }
-
-        public float Height
-        {
-            get
-            {
-                // get height:
-                return this.objctrl.oiCharInfo.charFile.custom.body.shapeValueBody[0];
-            }
-        }
-
-        public byte[] Clothes
-        {
-            get
-            {
-                // return state index of (top, bottom, bra, shorts, grove, panst, sock, shoes) in tuple
-                byte[] cloth = new byte[this.objctrl.charFileStatus.clothesState.Length];
-
-                for (int i = 0; i < this.objctrl.charFileStatus.clothesState.Length; i++)
-                {
-                    cloth[i] = this.objctrl.charFileStatus.clothesState[i];
-                }
-
-                return cloth;
-            }
-            set
-            {
-                for (int i = 0; i < value.Length; i++)
-                {
-                    if (this.objctrl.charFileStatus.clothesState[i] != value[i])
-                    {
-                        this.objctrl.SetClothesState(i, value[i]);
-                    }              
-                }
-            }
-        }
-
-        public void import_status(IDataClass<Actor> tmp_status)
-        {
-            if (tmp_status is ActorData data)
-            {
-                import_status(data);
-            }
-        }
-
-        public IDataClass<Actor> export_full_status()
-        {
-            return new ActorData(this);
+            CharInfo.SetShapeFaceValue(p1, p2);
         }
 
         public void import_status(ActorData a)
@@ -706,7 +802,7 @@ namespace VNActor
 
         public void restart_anime()
         {
-            this.objctrl.RestartAnime();
+            objctrl.RestartAnime();
         }
 
         //def animate2(self,category,group,no,animePattern,animeSpeed):
@@ -723,22 +819,19 @@ namespace VNActor
             Console.WriteLine("21");
             //print str(Info.Instance.dicFemaleAnimeLoadInfo)
             var dic0 = Info.Instance.dicAnimeLoadInfo;
-            foreach (var key in dic0.Keys)
-            {
-                Console.WriteLine(key);
-            }
+            foreach (var key in dic0.Keys) Console.WriteLine(key);
             var d1 = dic0[category];
             Console.WriteLine(d1.ToString());
             var d2 = d1[group];
             Console.WriteLine(d2.ToString());
             var animeLoadInfo = d2[no];
             Console.WriteLine(animeLoadInfo.ToString());
-            Console.WriteLine(String.Format("%s %s %s", animeLoadInfo.bundlePath, animeLoadInfo.fileName, animeLoadInfo.clip));
+            Console.WriteLine("%s %s %s", animeLoadInfo.bundlePath, animeLoadInfo.fileName, animeLoadInfo.clip);
         }
 
         public void female_all_clothes_state(int state)
         {
-            this.objctrl.SetClothesStateAll(state);
+            objctrl.SetClothesStateAll(state);
         }
 
         public void dump_obj()
@@ -746,55 +839,17 @@ namespace VNActor
             //print "objctrlchar.move(pos=%s, rot=%s)"%(str(self.charInfo.GetPosition()), str(self.charInfo.GetRotation()))
             try
             {
-                Console.WriteLine(String.Format("objctrlchar.move(pos=%s, rot=%s, scale=%s)", this.CharInfo.transform.localPosition.ToString(), this.CharInfo.transform.localRotation.eulerAngles.ToString(), this.CharInfo.transform.localScale.ToString()));
-                Console.WriteLine(String.Format("objctrlchar.animate(%s, %s, %s, %s, %s)", this.OICharInfo.animeInfo.group.ToString(), this.OICharInfo.animeInfo.category.ToString(), this.OICharInfo.animeInfo.no.ToString(), this.OICharInfo.animePattern.ToString(), this.OICharInfo.animeSpeed.ToString()));
+                Console.WriteLine("objctrlchar.move(pos=%s, rot=%s, scale=%s)",
+                    CharInfo.transform.localPosition.ToString(),
+                    CharInfo.transform.localRotation.eulerAngles.ToString(), CharInfo.transform.localScale.ToString());
+                Console.WriteLine("objctrlchar.animate(%s, %s, %s, %s, %s)", OICharInfo.animeInfo.group.ToString(),
+                    OICharInfo.animeInfo.category.ToString(), OICharInfo.animeInfo.no.ToString(),
+                    OICharInfo.animePattern.ToString(), OICharInfo.animeSpeed.ToString());
                 //print "objctrlchar.tears_level = %s" % (str(self.tears_level))
             }
             catch (Exception e)
             {
-                Console.WriteLine(String.Format("# oops, error happened %s", e.ToString()));
-            }
-            return;
-        }
-
-        public delegate void CharaActFunction(Actor chara, ActorData param);
-        //private Dictionary<string, (ActorData, bool)> char_act_funcs;
-
-        public int Sex
-        {
-            get
-            {
-                // get sex: 0-male, 1-female
-                return this.objctrl.sex;
-            }
-        }
-
-        public bool IsVoicePlay
-        {
-            get
-            {
-                // get voice play status
-                return this.objctrl.voiceCtrl.isPlay;
-            }
-        }
-
-        public bool IsAnimeOver
-        {
-            get
-            {
-                // get if anime played once. 
-                // note, anime may still playing because of it is looping anime or force-loop sets true
-                // for those non-looping anime, it may be stopped after played once if force-loop not set.
-                return this.objctrl.charAnimeCtrl.normalizedTime >= 1;
-            }
-        }
-
-        public bool IsHAnime
-        {
-            get
-            {
-                // get isHAnime status, use by anime option param
-                return this.objctrl.isHAnime;
+                Console.WriteLine("# oops, error happened %s", e);
             }
         }
 
@@ -852,18 +907,9 @@ namespace VNActor
 
         public void move(Vector3 pos, Vector3 rot, Vector3 scale)
         {
-            if (pos != null)
-            {
-                this.objctrl.oiCharInfo.changeAmount.pos = pos;
-            }
-            if (rot != null)
-            {
-                this.objctrl.oiCharInfo.changeAmount.rot = rot;
-            }
-            if (scale != null)
-            {
-                this.objctrl.oiCharInfo.changeAmount.scale = scale;
-            }
+            if (pos != null) objctrl.oiCharInfo.changeAmount.pos = pos;
+            if (rot != null) objctrl.oiCharInfo.changeAmount.rot = rot;
+            if (scale != null) objctrl.oiCharInfo.changeAmount.scale = scale;
         }
 
         public void SetAnimate(
@@ -878,343 +924,45 @@ namespace VNActor
             // force reload: true/false
             // check if no normalized time passed to function
             var noNormalizedTime = normalizedTime == -1;
-            if (noNormalizedTime)
-            {
-                normalizedTime = 0;
-            }
-            var curAnime = this.Animation;
-            if (force || curAnime.group != group || curAnime.category != category || curAnime.no != no || this.AnimeSpeed == 0.0 && !noNormalizedTime && this.objctrl.charAnimeCtrl.normalizedTime != normalizedTime)
-            {
-                this.objctrl.LoadAnime(group, category, no, normalizedTime);
-            }
-        }
-
-        public Animation_s Animation
-        {
-            get
-            {
-                // return (group, category, no) in tuple         
-                if (this.AnimeSpeed == 0.0)
-                {
-                    return new Animation_s { group = this.objctrl.oiCharInfo.animeInfo.group, category = this.objctrl.oiCharInfo.animeInfo.category, no = this.objctrl.oiCharInfo.animeInfo.no, normalizedTime = this.objctrl.charAnimeCtrl.normalizedTime };
-                }
-                else
-                {
-                    return new Animation_s { group = this.objctrl.oiCharInfo.animeInfo.group, category = this.objctrl.oiCharInfo.animeInfo.category, no = this.objctrl.oiCharInfo.animeInfo.no };
-                }
-            }
-        }
-
-        public float AnimeSpeed
-        {
-            get
-            {
-                return this.objctrl.animeSpeed;
-            }
-            set
-            {
-                // speed: 0~3
-                this.objctrl.animeSpeed = value;
-            }
-        }
-
-        public float AnimePattern
-        {
-            get
-            {
-
-                return this.objctrl.animePattern;
-            }
-            set
-            {
-                // pattern: 0~1
-                this.objctrl.animePattern = value;
-            }
-        }
-
-        public AnimeOption_s AnimationOption
-        {
-            set
-            {
-                // option: (param1, param2)
-                this.objctrl.animeOptionParam1 = value.height;
-                this.objctrl.animeOptionParam2 = value.breast;
-            }
-            get
-            {
-                // return anime option param
-                return new AnimeOption_s { height = this.objctrl.animeOptionParam1, breast = this.objctrl.animeOptionParam2 };
-            }
-        }
-
-        public bool AnimationItemVisible
-        {
-            set
-            {
-                // visible: true/false
-                this.objctrl.optionItemCtrl.visible = value;
-            }
-            get
-            {
-                // return anime option visible
-                return this.objctrl.optionItemCtrl.visible;
-            }
-        }
-
-        public bool AnimationForceLoop
-        {
-            get
-            {
-                return this.objctrl.charAnimeCtrl.isForceLoop;
-            }
-            set
-            {
-                // loop: 0(false)/1(true)
-                this.objctrl.charAnimeCtrl.isForceLoop = value;
-            }
-        }
-        public float FaceRedness
-        {
-            get
-            {
-                // return face red level
-                return this.objctrl.GetHohoAkaRate();
-            }
-            set
-            {
-                // level: face red level 0~1
-                this.objctrl.SetHohoAkaRate(value);
-            }
-        }
-
-        public float NippleStand
-        {
-            get
-            {
-                // return nipple stand level
-                return this.objctrl.oiCharInfo.nipple;
-            }
-            set
-            {
-                // level: nipple stand level 0~1
-                this.objctrl.SetNipStand(value);
-            }
-        }
-
-        public Son_s Son
-        {
-            get
-            {
-                return new Son_s
-                {
-                    visible = this.objctrl.oiCharInfo.visibleSon,
-                    length = this.objctrl.oiCharInfo.sonLength
-                };
-            }
-            set
-            {
-                this.objctrl.SetVisibleSon(value.visible);
-                this.objctrl.SetSonLength(value.length);
-            }
-        }
-
-        public bool Simple
-        {
-            get
-            {
-                // return simple state, simple color) in tuple
-                return this.objctrl.oiCharInfo.visibleSimple;
-            }
-            set
-            {
-                // simple = one color, for male only: 1(true)/0(false)
-                if (this.Sex == 0)
-                {
-                    this.objctrl.SetVisibleSimple(value);
-                }
-            }
-        }
-
-        public Color SimpleColor
-        {
-            set
-            {
-                // simple color, for male only
-                if (this.Sex == 0)
-                {
-                    this.objctrl.SetSimpleColor(value);
-                }
-            }
-            get
-            {
-                // get simple color
-                return this.objctrl.oiCharInfo.simpleColor;
-            }
+            if (noNormalizedTime) normalizedTime = 0;
+            var curAnime = Animation;
+            if (force || curAnime.group != group || curAnime.category != category || curAnime.no != no ||
+                AnimeSpeed == 0.0 && !noNormalizedTime && objctrl.charAnimeCtrl.normalizedTime != normalizedTime)
+                objctrl.LoadAnime(group, category, no, normalizedTime);
         }
 
         public void set_look_eye(EyeLookState ptn_dir, Vector3 dir)
         {
-            this.Gaze = ptn_dir;
-            if (ptn_dir == EyeLookState.Target)
-            {
-                this.GazeTarget = dir;
-            }
+            Gaze = ptn_dir;
+            if (ptn_dir == EyeLookState.Target) GazeTarget = dir;
         }
 
         public void set_look_eye(Vector3 dir)
         {
             // ptn_dir: 0: front, 1: camera, 2: hide from camera, 3: fix, 4: operate, or use Vector3 or tuple(3) to set a direction
             // when ptn_dir is Vector3 or (x, y, z), +x look right, -x look left, +y look up, -y look down
-            this.objctrl.ChangeLookEyesPtn(4);
-            this.objctrl.lookAtInfo.target.localPosition = dir;
-        }
-
-        /*
-        public Vector3 get_look_eye()
-        {
-            // return look eye ptn or look eye pos when ptn == 4
-            var ptn = this.look_eye_ptn;
-
-            if (ptn is int)
-            {
-                return ptn;
-            }
-            else
-            {
-                return this.look_eye_pos;
-            }
-        }
-        */
-
-
-        public Vector3 GazeTarget
-        {
-            set
-            {
-                objctrl.lookAtInfo.target.localPosition = value;
-            }
-            get
-            {
-                return objctrl.lookAtInfo.target.localPosition;
-            }
-        }
-
-        public enum NeckPattern
-        {
-            Front,
-            Camera,
-            Avert,
-            Anime,
-            Fixed
-        }
-
-        public NeckPattern LookNeckPattern
-        {
-            set
-            {
-                // ptn for CharaStudio: 0: front, 1: camera, 2: hide from camera, 3: by anime, 4: fix
-                this.objctrl.ChangeLookNeckPtn((int)value);
-            }
-            get
-            {
-                // return neck look pattern: 0: front, 1: camera, 2: hide from camera, 3: by anime, 4: fix
-                return (NeckPattern)this.objctrl.charInfo.GetLookNeckPtn();
-            }
-        }
-
-        public float EyesOpenLevel
-        {
-            set
-            {
-                // open: 0~1
-                this.objctrl.ChangeEyesOpen(value);
-            }
-            get
-            {
-                // return eyes open
-                return this.objctrl.charInfo.fileStatus.eyesOpenMax;
-            }
-        }
-
-        public bool EyesBlink
-        {
-            set
-            {
-                // flag: 0(false)/1(True)
-                this.objctrl.ChangeBlink(value);
-            }
-            get
-            {
-                // return eyes blink flag
-                return this.objctrl.charInfo.GetEyesBlinkFlag();
-            }
-        }
-
-        public float MouthOpenLevel
-        {
-            set
-            {
-                // open: 0~1
-                this.objctrl.ChangeMouthOpen(value);
-            }
-            get
-            {
-                // return mouth open
-                return this.objctrl.oiCharInfo.mouthOpen;
-            }
-        }
-
-        public bool LipSync
-        {
-            set
-            {
-                // flag: 0/1. 
-                // this is the lip sync option for voice play, not for VNGameEngine
-                this.objctrl.ChangeLipSync(value);
-            }
-            get
-            {
-                // return lip sync status
-                return this.OICharInfo.lipSync;
-            }
-        }
-
-        public Hands_s HandPattern
-        {
-            set
-            {
-                // ptn: (left hand ptn, right hand ptn)
-                this.objctrl.ChangeHandAnime(0, value.leftMotion);
-                this.objctrl.ChangeHandAnime(1, value.rightMotion);
-            }
-            get
-            {
-                // return (lptn, rptn) in tuple
-                return new Hands_s { leftMotion = this.objctrl.oiCharInfo.handPtn[0], rightMotion = this.objctrl.oiCharInfo.handPtn[1] };
-            }
+            objctrl.ChangeLookEyesPtn(4);
+            objctrl.lookAtInfo.target.localPosition = dir;
         }
 
         public void add_voice(int group, int category, int no)
         {
             // group, category, no: index of voice
             // refer to objctrl.charInfo.charFile.parameter.personality? aggressive? diligence?
-            this.objctrl.AddVoice(group, category, no);
+            objctrl.AddVoice(group, category, no);
         }
 
         public void del_voice(int index)
         {
             // delete voice by index
-            this.objctrl.DeleteVoice(index);
+            objctrl.DeleteVoice(index);
         }
 
         public void del_all_voice()
         {
             // stop and delete all voice
-            if (this.IsVoicePlay)
-            {
-                this.stop_voice();
-            }
-            this.objctrl.DeleteAllVoice();
+            if (IsVoicePlay) stop_voice();
+            objctrl.DeleteAllVoice();
         }
 
         public void set_voice_lst(List<int[]> voiceList, bool autoplay = true)
@@ -1222,117 +970,34 @@ namespace VNActor
             // set a list of voice, load and play it
             // voiceList: tuple of voice: ((group, category, no), (group, category, no), ...)
             // autoplay: play voice
-            this.del_all_voice();
-            foreach (var v in voiceList)
-            {
-                this.add_voice(v[0], v[1], v[2]);
-            }
-            if (autoplay)
-            {
-                this.play_voice();
-            }
-        }
-
-        public List<int[]> VoiceList
-        {
-            get
-            {
-                // return a tuple of current loaded voice: ((group, category, no), (group, category, no), ...)
-                var vlist = new List<int[]>();
-                foreach (var v in this.objctrl.voiceCtrl.list)
-                {
-                    int[] vi = new int[] { v.group, v.category, v.no };
-                    vlist.Add(vi);
-                }
-                return vlist;
-            }
-        }
-
-
-        public int VoiceRepeat
-        {
-            set
-            {
-                // set voice repeat: 0: no repeat, 1: repeat selected one, 2: repeat all
-                if (value == 2)
-                {
-                    this.objctrl.voiceCtrl.repeat = VoiceCtrl.Repeat.All;
-                }
-                else if (value == 1)
-                {
-                    this.objctrl.voiceCtrl.repeat = VoiceCtrl.Repeat.Select;
-                }
-                else
-                {
-                    this.objctrl.voiceCtrl.repeat = VoiceCtrl.Repeat.None;
-                }
-            }
-            get
-            {
-                // return the status of voice repeat setting: 0: no repeat, 1: repeat selected one, 2: repeat all
-                if (this.objctrl.voiceCtrl.repeat == VoiceCtrl.Repeat.All)
-                {
-                    return 2;
-                }
-                else if (this.objctrl.voiceCtrl.repeat == VoiceCtrl.Repeat.Select)
-                {
-                    return 1;
-                }
-                else
-                {
-                    return 0;
-                }
-            }
+            del_all_voice();
+            foreach (var v in voiceList) add_voice(v[0], v[1], v[2]);
+            if (autoplay) play_voice();
         }
 
         public void play_voice(int index = 0)
         {
             // index = which voice to play
-            if (this.IsVoicePlay)
-            {
-                this.stop_voice();
-            }
-            this.objctrl.PlayVoice(index);
+            if (IsVoicePlay) stop_voice();
+            objctrl.PlayVoice(index);
         }
 
         public void stop_voice()
         {
             // stop play voice
-            this.objctrl.StopVoice();
-        }
-
-        public KinematicMode Kinematic
-        {
-            get
-            {
-                // return current kinematice mode: 0-none, 1-IK, 2-FK, 3-IK&FK
-                KinematicMode kmode;
-                if (this.objctrl.oiCharInfo.enableIK && this.objctrl.oiCharInfo.enableFK)
-                {
-                    kmode = KinematicMode.IKFK;
-                }
-                else if (this.objctrl.oiCharInfo.enableIK)
-                {
-                    kmode = KinematicMode.IK;
-                }
-                else if (this.objctrl.oiCharInfo.enableFK)
-                {
-                    kmode = KinematicMode.FK;
-                }
-                else
-                {
-                    kmode = KinematicMode.None;
-                }
-                return kmode;
-            }
+            objctrl.StopVoice();
         }
 
         public void set_FK_active(int group, bool active = false, bool force = false)
         {
-            OIBoneInfo.BoneGroup[] bis = new OIBoneInfo.BoneGroup[]
-                { OIBoneInfo.BoneGroup.Hair, OIBoneInfo.BoneGroup.Neck, OIBoneInfo.BoneGroup.Breast, OIBoneInfo.BoneGroup.Body, OIBoneInfo.BoneGroup.RightHand, OIBoneInfo.BoneGroup.LeftHand, OIBoneInfo.BoneGroup.Skirt };
+            OIBoneInfo.BoneGroup[] bis =
+            {
+                OIBoneInfo.BoneGroup.Hair, OIBoneInfo.BoneGroup.Neck, OIBoneInfo.BoneGroup.Breast,
+                OIBoneInfo.BoneGroup.Body, OIBoneInfo.BoneGroup.RightHand, OIBoneInfo.BoneGroup.LeftHand,
+                OIBoneInfo.BoneGroup.Skirt
+            };
 
-            this.objctrl.ActiveFK(bis[group], active, force);
+            objctrl.ActiveFK(bis[group], active, force);
         }
 
         public void set_FK_active(bool group, bool force = false)
@@ -1349,24 +1014,27 @@ namespace VNActor
             // group: 0/1 for all FK group
             // active: must be None
             // force: 0/1
-            OIBoneInfo.BoneGroup[] bis = new OIBoneInfo.BoneGroup[]
-                { OIBoneInfo.BoneGroup.Hair, OIBoneInfo.BoneGroup.Neck, OIBoneInfo.BoneGroup.Breast, OIBoneInfo.BoneGroup.Body, OIBoneInfo.BoneGroup.RightHand, OIBoneInfo.BoneGroup.LeftHand, OIBoneInfo.BoneGroup.Skirt };
-
-            foreach (var i in Enumerable.Range(0, 7))
+            OIBoneInfo.BoneGroup[] bis =
             {
-                this.objctrl.ActiveFK(bis[i], group, force);
-            }
+                OIBoneInfo.BoneGroup.Hair, OIBoneInfo.BoneGroup.Neck, OIBoneInfo.BoneGroup.Breast,
+                OIBoneInfo.BoneGroup.Body, OIBoneInfo.BoneGroup.RightHand, OIBoneInfo.BoneGroup.LeftHand,
+                OIBoneInfo.BoneGroup.Skirt
+            };
+
+            foreach (var i in Enumerable.Range(0, 7)) objctrl.ActiveFK(bis[i], group, force);
         }
 
         public void set_FK_active(bool[] group, bool active = false, bool force = false)
         {
-            OIBoneInfo.BoneGroup[] bis = new OIBoneInfo.BoneGroup[]
-                { OIBoneInfo.BoneGroup.Hair, OIBoneInfo.BoneGroup.Neck, OIBoneInfo.BoneGroup.Breast, OIBoneInfo.BoneGroup.Body, OIBoneInfo.BoneGroup.RightHand, OIBoneInfo.BoneGroup.LeftHand, OIBoneInfo.BoneGroup.Skirt };
+            OIBoneInfo.BoneGroup[] bis =
+            {
+                OIBoneInfo.BoneGroup.Hair, OIBoneInfo.BoneGroup.Neck, OIBoneInfo.BoneGroup.Breast,
+                OIBoneInfo.BoneGroup.Body, OIBoneInfo.BoneGroup.RightHand, OIBoneInfo.BoneGroup.LeftHand,
+                OIBoneInfo.BoneGroup.Skirt
+            };
 
             foreach (var i in Enumerable.Range(0, group.Length <= 7 ? group.Length : 7))
-            {
-                this.objctrl.ActiveFK(bis[i], group[i], force);
-            }
+                objctrl.ActiveFK(bis[i], group[i], force);
         }
 
         public bool[] get_FK_active()
@@ -1426,20 +1094,25 @@ namespace VNActor
             // group: 0/1 for all IK group
             // active: must be None
             // force: 0/1
-            OIBoneInfo.BoneGroup[] bis = new OIBoneInfo.BoneGroup[] { OIBoneInfo.BoneGroup.Body, OIBoneInfo.BoneGroup.RightLeg, OIBoneInfo.BoneGroup.LeftLeg, OIBoneInfo.BoneGroup.RightArm, OIBoneInfo.BoneGroup.LeftArm };
+            OIBoneInfo.BoneGroup[] bis =
+            {
+                OIBoneInfo.BoneGroup.Body, OIBoneInfo.BoneGroup.RightLeg, OIBoneInfo.BoneGroup.LeftLeg,
+                OIBoneInfo.BoneGroup.RightArm, OIBoneInfo.BoneGroup.LeftArm
+            };
 
             foreach (var i in Enumerable.Range(0, group.Length <= 5 ? group.Length : 5))
-            {
-                this.objctrl.ActiveIK(bis[i], group[i], force);
-            }
-
+                objctrl.ActiveIK(bis[i], group[i], force);
         }
 
         public void set_IK_active(int group, bool active = false, bool force = false)
         {
-            OIBoneInfo.BoneGroup[] bis = new OIBoneInfo.BoneGroup[] { OIBoneInfo.BoneGroup.Body, OIBoneInfo.BoneGroup.RightLeg, OIBoneInfo.BoneGroup.LeftLeg, OIBoneInfo.BoneGroup.RightArm, OIBoneInfo.BoneGroup.LeftArm };
+            OIBoneInfo.BoneGroup[] bis =
+            {
+                OIBoneInfo.BoneGroup.Body, OIBoneInfo.BoneGroup.RightLeg, OIBoneInfo.BoneGroup.LeftLeg,
+                OIBoneInfo.BoneGroup.RightArm, OIBoneInfo.BoneGroup.LeftArm
+            };
 
-            this.objctrl.ActiveIK(bis[group], active, force);
+            objctrl.ActiveIK(bis[group], active, force);
         }
 
         public void set_IK_active(bool group, bool force = false)
@@ -1456,12 +1129,13 @@ namespace VNActor
             // group: 0/1 for all IK group
             // active: must be None
             // force: 0/1
-            OIBoneInfo.BoneGroup[] bis = new OIBoneInfo.BoneGroup[] { OIBoneInfo.BoneGroup.Body, OIBoneInfo.BoneGroup.RightLeg, OIBoneInfo.BoneGroup.LeftLeg, OIBoneInfo.BoneGroup.RightArm, OIBoneInfo.BoneGroup.LeftArm };
-
-            foreach (var i in Enumerable.Range(0, 5))
+            OIBoneInfo.BoneGroup[] bis =
             {
-                this.objctrl.ActiveIK(bis[i], group, force);
-            }
+                OIBoneInfo.BoneGroup.Body, OIBoneInfo.BoneGroup.RightLeg, OIBoneInfo.BoneGroup.LeftLeg,
+                OIBoneInfo.BoneGroup.RightArm, OIBoneInfo.BoneGroup.LeftArm
+            };
+
+            foreach (var i in Enumerable.Range(0, 5)) objctrl.ActiveIK(bis[i], group, force);
         }
 
         public bool[] get_IK_active()
@@ -1566,7 +1240,6 @@ namespace VNActor
 
         public void import_status_diff_optimized<T>(Dictionary<string, IDataClass<T>> status)
         {
-            return;
         }
 
         /*
@@ -1609,30 +1282,25 @@ namespace VNActor
         public void load_clothes_file(string file)
         {
             // load a clothes file
-            this.objctrl.LoadClothesFile(file);
+            objctrl.LoadClothesFile(file);
         }
 
         // body sliders
         // see sceneutils.py for realization of this props
         public float get_body_shape(int p1)
         {
-            return this.CharInfo.GetShapeBodyValue(p1);
+            return CharInfo.GetShapeBodyValue(p1);
         }
 
         public void set_body_shape(int p1, float p2)
         {
-            this.CharInfo.SetShapeBodyValue(p1, p2);
+            CharInfo.SetShapeBodyValue(p1, p2);
         }
-
 
 
         public void set_body_shapes_all(List<float> values)
         {
-
-            foreach (var i in Enumerable.Range(0, values.Count))
-            {
-                this.set_body_shape(i, values[i]);
-            }
+            foreach (var i in Enumerable.Range(0, values.Count)) set_body_shape(i, values[i]);
         }
         /*
 get
@@ -1650,7 +1318,7 @@ get
 
         public void setCloth(int clothIndex)
         {
-            this.objctrl.SetClothesStateAll(clothIndex);
+            objctrl.SetClothesStateAll(clothIndex);
         }
 
         public void setCloth(int clothIndex, byte clothState)
@@ -1664,9 +1332,46 @@ get
             // param format 3: set all cloth to same state
             // clothIndex: state of all clothes
             // clothState: must be None
-            this.objctrl.SetClothesState(clothIndex, clothState);
+            objctrl.SetClothesState(clothIndex, clothState);
         }
 
+        [Serializable]
+        [MessagePackObject]
+        public struct Hands_s
+        {
+            [Key(0)] public int leftMotion;
+            [Key(1)] public int rightMotion;
+        }
+
+        [Serializable]
+        [MessagePackObject]
+        public struct Son_s
+        {
+            [Key(0)] public bool visible;
+            [Key(1)] public float length;
+        }
+
+        [Serializable]
+        [MessagePackObject]
+        public struct Animation_s
+        {
+            [Key(0)] public int group;
+            [Key(1)] public int category;
+            [Key(2)] public int no;
+            [Key(3)] public float? normalizedTime;
+        }
+
+        public struct IK_node_s
+        {
+            public Vector3 pos;
+            public Vector3? rot;
+        }
+
+        public struct AnimeOption_s
+        {
+            public float height;
+            public float breast;
+        }
 
 
         // face sliders

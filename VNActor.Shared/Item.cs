@@ -1,198 +1,45 @@
-﻿using MessagePack;
-using Studio;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using MessagePack;
+using Studio;
 using UnityEngine;
 
 namespace VNActor
 {
-
     // Shared Item code
     public partial class Item : Prop, IVNObject<Item>
     {
-
-        [MessagePackObject]
-        public struct Panel
-        {
-            [Key(0)]
-            public string filepath;
-            [Key(1)]
-            public bool clamp;
-        }
-
-        [MessagePackObject]
-        public struct PanelDetail_s
-        {
-            [Key(0)]
-            public Color color;
-            [Key(1)]
-            public float ut;
-            [Key(2)]
-            public float vt;
-            [Key(3)]
-            public float us;
-            [Key(4)]
-            public float vs;
-            [Key(5)]
-            public float rot;
-
-            public PanelDetail_s(Color mainColor, float ut, float vt, float us, float vs, float rot) : this()
-            {
-                this.color = mainColor;
-                this.ut = ut;
-                this.vt = vt;
-                this.us = us;
-                this.vs = vs;
-                this.rot = rot;
-            }
-        }
-
-        [MessagePackObject]
-        public struct Emission_s
-        {
-            [Key(0)]
-            public Color color;
-            [Key(1)]
-            public float power;
-        }
-
-        [MessagePackObject]
-        public struct Pattern
-        {
-            [Key(0)]
-            public int key;
-            [Key(1)]
-            public string filepath;
-            [Key(2)]
-            public bool clamp;
-
-            public Pattern(int key, string filepath, bool clamp)
-            {
-                this.key = key;
-                this.filepath = filepath;
-                this.clamp = clamp;
-            }
-        }
-
-
-        [MessagePackObject]
-        public struct PatternDetail_s
-        {
-            [Key(0)]
-            public Color color;
-            [Key(1)]
-            public float ut;
-            [Key(2)]
-            public float vt;
-            [Key(3)]
-            public float us;
-            [Key(4)]
-            public float vs;
-            [Key(5)]
-            public float rot;
-
-            public PatternDetail_s(Color color, float ut, float vt, float us, float vs, float rot)
-            {
-                this.color = color;
-                this.ut = ut;
-                this.vt = vt;
-                this.us = us;
-                this.vs = vs;
-                this.rot = rot;
-            }
-        }
-
-        [MessagePackObject]
-        public struct Line_s
-        {
-            [Key(0)]
-            public Color color;
-            [Key(1)]
-            public float lineWidth;
-        }
-
-        new public OCIItem objctrl;
+        public new OCIItem objctrl;
 
         public Item(OCIItem objctrl) : base(objctrl)
         {
             this.objctrl = objctrl;
         }
 
-        public static Item add_item(int group, int category, int no)
+        public override Vector3 Position
         {
-            var objctrl = AddObjectItem.Add(group, category, no); //TODO make this right
-            return new Item(objctrl);
+            get => objctrl.objectInfo.changeAmount.pos;
+            set => objctrl.objectInfo.changeAmount.pos = value;
         }
 
-        public void pos_add(float[] param)
+        public override Vector3 Rotation
         {
-            // param = (pos_delta_x, pos_delta_y, pos_delta_z)
-            ObjectCtrlInfo item = this.objctrl;
-            Vector3 cp = item.objectInfo.changeAmount.pos;
-            Vector3 ncp = new Vector3(cp.x + param[0], cp.y + param[1], cp.z + param[2]);
-            item.objectInfo.changeAmount.pos = ncp;
-        }
-
-        public void rot_add(float[] param)
-        {
-            // param = (rot_delta_x, rot_delta_y, rot_delta_z)
-            ObjectCtrlInfo item = this.objctrl;
-            Vector3 rt = item.objectInfo.changeAmount.rot;
-            Vector3 nrt = new Vector3(rt.x + param[0], rt.y + param[1], rt.z + param[2]);
-            item.objectInfo.changeAmount.rot = nrt;
-        }
-
-        public void scale_add(float[] param)
-        {
-            // param = (scale_x, scale_y, scale_z) or scale
-            if (this.objctrl is OCIItem item)
-            {
-                // for item only, folder can not set scale
-                Vector3 rt = item.itemInfo.changeAmount.scale;
-                Vector3 nrt = new Vector3(rt.x + param[0], rt.y + param[1], rt.z + param[2]);
-                item.itemInfo.changeAmount.scale = nrt;
-            }
-        }
-
-        override public Vector3 Position
-        {
-            get
-            {
-                return this.objctrl.objectInfo.changeAmount.pos;
-            }
-            set
-            {
-                this.objctrl.objectInfo.changeAmount.pos = value;
-            }
-        }
-
-        override public Vector3 Rotation
-        {
-            get
-            {
-                return this.objctrl.objectInfo.changeAmount.rot;
-            }
-            set
-            {
-                this.objctrl.objectInfo.changeAmount.rot = value;
-            }
+            get => objctrl.objectInfo.changeAmount.rot;
+            set => objctrl.objectInfo.changeAmount.rot = value;
         }
 
         public Vector3 scale
         {
             get
             {
-                if (this.objctrl is OCIItem item)
+                if (objctrl is OCIItem item)
                     return item.objectInfo.changeAmount.scale;
-                else
-                {
-                    throw new Exception("Can not scale this item");
-                }
+                throw new Exception("Can not scale this item");
             }
             set
             {
-                if (this.objctrl is OCIItem item)
+                if (objctrl is OCIItem item)
                     item.itemInfo.changeAmount.scale = value;
             }
         }
@@ -201,20 +48,13 @@ namespace VNActor
         {
             get
             {
-                OCIItem item = (OCIItem)this.objctrl;
+                var item = objctrl;
                 return item.itemInfo.no;
             }
         }
 
 
-
-        public string name
-        {
-            get
-            {
-                return this.objctrl.treeNodeObject.textName;
-            }
-        }
+        public string name => objctrl.treeNodeObject.textName;
         /*
         public bool isFolder
         {
@@ -225,13 +65,7 @@ namespace VNActor
         }
         */
 
-        public bool isItem
-        {
-            get
-            {
-                return this.objctrl is OCIItem;
-            }
-        }
+        public bool isItem => objctrl is OCIItem;
 
         /*
         public bool isLight
@@ -247,15 +81,13 @@ namespace VNActor
         {
             get
             {
-                if (this.isItem)
+                if (isItem)
                 {
-                    OCIItem item = (OCIItem)this.objctrl;
+                    var item = objctrl;
                     return item.isChangeColor;
                 }
-                else
-                {
-                    return false;
-                }
+
+                return false;
             }
         }
 
@@ -263,54 +95,26 @@ namespace VNActor
         {
             get
             {
-                if (this.isItem)
+                if (isItem)
                 {
-                    OCIItem item = (OCIItem)this.objctrl;
+                    var item = objctrl;
                     return item.isAnime;
                 }
-                else
-                {
-                    return false;
-                }
+
+                return false;
             }
         }
 
-        public bool isFK
-        {
-            get
-            {
-                    return objctrl.isFK;
-            }
-        }
-
-        public void move(Vector3 pos, Vector3 rot, Vector3 scale)
-        {
-            if (pos != null)
-            {
-                this.objctrl.objectInfo.changeAmount.pos = pos;
-            }
-            if (rot != null)
-            {
-                this.objctrl.objectInfo.changeAmount.rot = rot;
-            }
-            if (scale != null && this.isItem)
-            {
-                this.objctrl.objectInfo.changeAmount.scale = scale;
-            }
-        }
+        public bool isFK => objctrl.isFK;
 
         public float anime_speed
         {
-            set
-            {
+            set =>
                 // speed: 0~1
-                this.objctrl.animeSpeed = value;
-            }
-            get
-            {
+                objctrl.animeSpeed = value;
+            get =>
                 // return anime speed
-                return this.objctrl.animeSpeed;
-            }
+                objctrl.animeSpeed;
         }
 
         public Emission_s emission
@@ -318,49 +122,40 @@ namespace VNActor
             set
             {
                 // param: (color, power)
-                if (this.hasEmission)
+                if (hasEmission)
                 {
                     var eColor = value.color;
                     var ePower = value.power;
                     //this.objctrl.SetEmissionColor(eColor);
                     //this.objctrl.SetEmissionPower(ePower);
-                    this.objctrl.itemInfo.emissionColor = eColor;
-                    this.objctrl.itemInfo.emissionPower = ePower;
-                    this.objctrl.UpdateColor();
+                    objctrl.itemInfo.emissionColor = eColor;
+                    objctrl.itemInfo.emissionPower = ePower;
+                    objctrl.UpdateColor();
                 }
             }
             get
             {
-                if (this.hasEmission)
+                if (hasEmission)
                 {
-                    var eColor = this.objctrl.itemInfo.emissionColor;
-                    var ePower = this.objctrl.itemInfo.emissionPower;
-                    return new Emission_s { color = eColor, power = ePower };
+                    var eColor = objctrl.itemInfo.emissionColor;
+                    var ePower = objctrl.itemInfo.emissionPower;
+                    return new Emission_s {color = eColor, power = ePower};
                 }
-                else
-                {
-                    throw new Exception("This item has no emission");
-                }
+
+                throw new Exception("This item has no emission");
             }
         }
 
         public float alpha
         {
-            set
-            {
+            set =>
                 // param: 0~1 for alpha
-                this.objctrl.SetAlpha(value);
-            }
+                objctrl.SetAlpha(value);
             get
             {
-                if (this.hasAlpha)
-                {
-                    return this.objctrl.itemInfo.alpha;
-                }
-                else
-                {
-                    throw new Exception();
-                }
+                if (hasAlpha)
+                    return objctrl.itemInfo.alpha;
+                throw new Exception();
             }
         }
 
@@ -369,21 +164,13 @@ namespace VNActor
             set
             {
                 // param: dynamic bone (yure) enable/disable
-                if (this.isDynamicBone)
-                {
-                    this.objctrl.ActiveDynamicBone(value);
-                }
+                if (isDynamicBone) objctrl.ActiveDynamicBone(value);
             }
             get
             {
-                if (this.isDynamicBone)
-                {
-                    return this.objctrl.itemInfo.enableDynamicBone;
-                }
-                else
-                {
-                    throw new Exception();
-                }
+                if (isDynamicBone)
+                    return objctrl.itemInfo.enableDynamicBone;
+                throw new Exception();
             }
         }
 
@@ -391,28 +178,63 @@ namespace VNActor
         {
             get
             {
-                if (this.isItem)
-                {
-                    return this.objctrl.isDynamicBone;
-                }
-                else
-                {
-                    return false;
-                }
+                if (isItem)
+                    return objctrl.isDynamicBone;
+                return false;
             }
         }
 
-        new public IDataClass<Item> export_full_status()
+        public new IDataClass<Item> export_full_status()
         {
             return new ItemData(this);
         }
 
         public void import_status(IDataClass<Item> p)
         {
-            if (p is ItemData id)
+            if (p is ItemData id) import_status(id);
+        }
+
+        public static Item add_item(int group, int category, int no)
+        {
+            var objctrl = AddObjectItem.Add(group, category, no); //TODO make this right
+            return new Item(objctrl);
+        }
+
+        public void pos_add(float[] param)
+        {
+            // param = (pos_delta_x, pos_delta_y, pos_delta_z)
+            ObjectCtrlInfo item = objctrl;
+            var cp = item.objectInfo.changeAmount.pos;
+            var ncp = new Vector3(cp.x + param[0], cp.y + param[1], cp.z + param[2]);
+            item.objectInfo.changeAmount.pos = ncp;
+        }
+
+        public void rot_add(float[] param)
+        {
+            // param = (rot_delta_x, rot_delta_y, rot_delta_z)
+            ObjectCtrlInfo item = objctrl;
+            var rt = item.objectInfo.changeAmount.rot;
+            var nrt = new Vector3(rt.x + param[0], rt.y + param[1], rt.z + param[2]);
+            item.objectInfo.changeAmount.rot = nrt;
+        }
+
+        public void scale_add(float[] param)
+        {
+            // param = (scale_x, scale_y, scale_z) or scale
+            if (objctrl is OCIItem item)
             {
-                import_status(id);
+                // for item only, folder can not set scale
+                var rt = item.itemInfo.changeAmount.scale;
+                var nrt = new Vector3(rt.x + param[0], rt.y + param[1], rt.z + param[2]);
+                item.itemInfo.changeAmount.scale = nrt;
             }
+        }
+
+        public void move(Vector3 pos, Vector3 rot, Vector3 scale)
+        {
+            if (pos != null) objctrl.objectInfo.changeAmount.pos = pos;
+            if (rot != null) objctrl.objectInfo.changeAmount.rot = rot;
+            if (scale != null && isItem) objctrl.objectInfo.changeAmount.scale = scale;
         }
 
         public void import_status(ItemData p)
@@ -492,39 +314,115 @@ namespace VNActor
         public List<Vector3> export_fk_bone_info()
         {
             // return a tuple of FK bone rot
-            if (this.isFK)
+            if (isFK)
             {
                 var boneinfo = new List<Vector3>();
-                OCIItem item = objctrl;
+                var item = objctrl;
                 foreach (var bi in item.listBones)
                 {
                     var rot = bi.boneInfo.changeAmount.rot;
-                    Vector3 rotClone = new Vector3(rot.x <= 180 ? rot.x : rot.x - 360, rot.y <= 180 ? rot.y : rot.y - 360, rot.z <= 180 ? rot.z : rot.z - 360);
+                    var rotClone = new Vector3(rot.x <= 180 ? rot.x : rot.x - 360, rot.y <= 180 ? rot.y : rot.y - 360,
+                        rot.z <= 180 ? rot.z : rot.z - 360);
                     boneinfo.Add(rotClone);
                 }
+
                 return boneinfo;
             }
-            else
-            {
-                return new List<Vector3>();
-            }
+
+            return new List<Vector3>();
         }
 
         public void import_fk_bone_info(List<Vector3> biList)
         {
             // import fk bone info from dic
-            if (this.isFK)
+            if (isFK)
             {
-                OCIItem item = objctrl;
+                var item = objctrl;
                 foreach (var i in Enumerable.Range(0, item.listBones.Count))
                 {
                     var binfo = item.listBones[i];
-                    if (i < biList.Count)
-                    {
-                        binfo.boneInfo.changeAmount.rot = biList[i];
-                    }
+                    if (i < biList.Count) binfo.boneInfo.changeAmount.rot = biList[i];
                 }
             }
+        }
+
+        [MessagePackObject]
+        public struct Panel
+        {
+            [Key(0)] public string filepath;
+            [Key(1)] public bool clamp;
+        }
+
+        [MessagePackObject]
+        public struct PanelDetail_s
+        {
+            [Key(0)] public Color color;
+            [Key(1)] public float ut;
+            [Key(2)] public float vt;
+            [Key(3)] public float us;
+            [Key(4)] public float vs;
+            [Key(5)] public float rot;
+
+            public PanelDetail_s(Color mainColor, float ut, float vt, float us, float vs, float rot) : this()
+            {
+                color = mainColor;
+                this.ut = ut;
+                this.vt = vt;
+                this.us = us;
+                this.vs = vs;
+                this.rot = rot;
+            }
+        }
+
+        [MessagePackObject]
+        public struct Emission_s
+        {
+            [Key(0)] public Color color;
+            [Key(1)] public float power;
+        }
+
+        [MessagePackObject]
+        public struct Pattern
+        {
+            [Key(0)] public int key;
+            [Key(1)] public string filepath;
+            [Key(2)] public bool clamp;
+
+            public Pattern(int key, string filepath, bool clamp)
+            {
+                this.key = key;
+                this.filepath = filepath;
+                this.clamp = clamp;
+            }
+        }
+
+
+        [MessagePackObject]
+        public struct PatternDetail_s
+        {
+            [Key(0)] public Color color;
+            [Key(1)] public float ut;
+            [Key(2)] public float vt;
+            [Key(3)] public float us;
+            [Key(4)] public float vs;
+            [Key(5)] public float rot;
+
+            public PatternDetail_s(Color color, float ut, float vt, float us, float vs, float rot)
+            {
+                this.color = color;
+                this.ut = ut;
+                this.vt = vt;
+                this.us = us;
+                this.vs = vs;
+                this.rot = rot;
+            }
+        }
+
+        [MessagePackObject]
+        public struct Line_s
+        {
+            [Key(0)] public Color color;
+            [Key(1)] public float lineWidth;
         }
 
 
@@ -566,8 +464,5 @@ namespace VNActor
         }
 
       */
-
-
-
     }
 }

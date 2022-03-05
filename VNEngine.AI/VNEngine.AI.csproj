@@ -116,6 +116,6 @@
   <Import Project="..\VNEngine.NEOV2.Shared\VNEngine.NEOV2.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy "$(TargetDir)VNEngine.AI.dll" "B:\AI_DEBUG\BepInEx\plugins"</PostBuildEvent>
+    <PostBuildEvent>copy "$(TargetDir)VNEngine.AI.dll" "T:\illusion\DEBUG\AI_DEBUG\BepInEx\plugins"</PostBuildEvent>
   </PropertyGroup>
 </Project>

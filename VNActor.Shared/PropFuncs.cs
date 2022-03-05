@@ -5,7 +5,6 @@ namespace VNActor
 {
     public partial class Item
     {
-
         //===============================================================================================
         // prop action wrapper functions
         // All scripts: func(prop, param)
@@ -162,7 +161,6 @@ namespace VNActor
         }
 
         */
-
 
 
         public static void prop_fk_set(Item prop, List<Vector3> param)

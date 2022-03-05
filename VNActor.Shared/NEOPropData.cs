@@ -1,7 +1,4 @@
 ﻿using MessagePack;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
 
 namespace VNActor
@@ -9,16 +6,14 @@ namespace VNActor
     [MessagePackObject]
     public class NEOPropData : IDataClass<Prop>
     {
-        [Key("Position")]
-        public Vector3 position;
-        [Key("Rotation")]
-        public Vector3 rotation;
-        [Key("Visible")]
-        public bool visible;
+        [Key("Position")] public Vector3 position;
+
+        [Key("Rotation")] public Vector3 rotation;
+
+        [Key("Visible")] public bool visible;
 
         public NEOPropData()
         {
-
         }
 
         public NEOPropData(Prop p)
@@ -32,7 +27,7 @@ namespace VNActor
         }
 
         public void Apply(Prop p)
-        {                  
+        {
             p.Visible = visible;
             if (visible)
             {

@@ -5,15 +5,13 @@ using static VNActor.Actor;
 
 namespace VNActor
 {
-
     public interface IDataClass<T>
     {
         void Apply(T item);
     }
 
-    class Utils
+    internal class Utils
     {
-
         /*
         public static Color tuple4_2_color((float, float, float, float) param)
         {
@@ -42,13 +40,12 @@ namespace VNActor
 
         public static bool FKDictionariesEqual(Dictionary<int, Vector3> dict1, Dictionary<int, Vector3> dict2)
         {
-            bool equal = false;
+            var equal = false;
             if (dict1.Count == dict2.Count) // Require equal count.
             {
                 equal = true;
                 foreach (var pair in dict1)
-                {
-                    if (dict2.TryGetValue(pair.Key, out Vector3 value))
+                    if (dict2.TryGetValue(pair.Key, out var value))
                     {
                         // Require value be equal.
                         if (value.Equals(pair.Value))
@@ -63,20 +60,19 @@ namespace VNActor
                         equal = false;
                         break;
                     }
-                }
             }
+
             return equal;
         }
 
         public static bool IKDictionariesEqual(Dictionary<string, IK_node_s> dict1, Dictionary<string, IK_node_s> dict2)
         {
-            bool equal = false;
+            var equal = false;
             if (dict1.Count == dict2.Count) // Require equal count.
             {
                 equal = true;
                 foreach (var pair in dict1)
-                {
-                    if (dict2.TryGetValue(pair.Key, out IK_node_s value))
+                    if (dict2.TryGetValue(pair.Key, out var value))
                     {
                         if (value.Equals(pair.Value))
                         {
@@ -89,10 +85,9 @@ namespace VNActor
                         equal = false;
                         break;
                     }
-                }
             }
+
             return equal;
         }
-
     }
 }

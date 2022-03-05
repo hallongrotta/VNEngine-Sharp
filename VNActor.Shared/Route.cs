@@ -1,12 +1,159 @@
-﻿using Studio;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Studio;
 using UnityEngine;
 
 namespace VNActor
 {
-    public partial class Route : Prop
+    public class Route : Prop
     {
+        public new OCIRoute objctrl;
+
+        public Route(ObjectCtrlInfo objctrl) : base(objctrl)
+        {
+        }
+
+        public Route(OCIRoute objctrl) : base(objctrl)
+        {
+            this.objctrl = objctrl;
+        }
+
+        public bool route_play
+        {
+            set
+            {
+                // param: 1=start/0=stop
+                if (value)
+                    objctrl.Play();
+                else
+                    objctrl.Stop();
+            }
+            get => objctrl.isPlay;
+        }
+
+        public RouteInfo route_full
+        {
+            get
+            {
+                var route = objctrl;
+                var ri = route.routeInfo;
+                var pts = new List<Point>();
+                foreach (var pi in ri.route)
+                    // (pt pos, pt rot, aid pos, speed, easeType, connection, link)
+                    pts.Add(new Point(pi.changeAmount.pos, pi.changeAmount.rot, pi.aidInfo.changeAmount.pos, pi.speed,
+                        pi.easeType, pi.connection, pi.link));
+                // (orient, loop, points, active)
+                var rs = new RouteInfo(ri.orient, ri.loop, pts, ri.active);
+                return rs;
+            }
+        }
+
+        public override Vector3 Position
+        {
+            get => objctrl.objectInfo.changeAmount.pos;
+            set => objctrl.objectInfo.changeAmount.pos = value;
+        }
+
+        public override Vector3 Rotation
+        {
+            get => objctrl.objectInfo.changeAmount.rot;
+            set => objctrl.objectInfo.changeAmount.rot = value;
+        }
+
+        public void SetRouteFull(bool param)
+        {
+            route_play = param;
+        }
+
+        public void SetRouteFull(RouteInfo param)
+        {
+            // route info, ref to get_route_full
+            try
+            {
+                var route = objctrl;
+                // route_f, full route setting
+                route.Stop();
+                var cur_status = route_full;
+                for (var i = 0; i < 4; i++)
+                {
+                    if (param.pts[i].Equals(cur_status.pts[i])) continue;
+                    var ri = route.routeInfo;
+                    if (i == 0)
+                    {
+                        // orient
+                        ri.orient = param.orient;
+                    }
+                    else if (i == 1)
+                    {
+                        // loop
+                        ri.loop = param.loop;
+                        route.UpdateLine();
+                    }
+                    else if (i == 2)
+                    {
+                        // points
+                        for (var j = 0; j < cur_status.pts.Count; j++)
+                        {
+                            var pt = param.pts[j];
+                            var pt_cur = cur_status.pts[j];
+                            if (pt.Equals(pt_cur)) continue;
+                            var pi = route.routeInfo.route[j];
+                            // pt pos
+                            pi.changeAmount.pos = pt.pt_pos;
+
+                            // pt rot
+                            pi.changeAmount.rot = pt.rot;
+
+                            // aid pos
+                            pi.aidInfo.changeAmount.pos = pt.aid_pos;
+
+                            // speed
+                            pi.speed = pt.speed;
+
+                            // easeType
+                            pi.easeType = pt.easeType;
+
+                            // connection
+                            pi.connection = pt.connection;
+
+                            // link
+                            pi.link = pt.link;
+                        }
+
+                        route.UpdateLine();
+                    }
+                    else if (i == 3)
+                    {
+                        // active
+                        route_play = param.active;
+                    }
+                    else
+                    {
+                        throw new Exception("Unknown route info");
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("VNGE VNActor Error: Can not set route, ", e);
+            }
+        }
+
+        // route
+        public static void prop_route(Route prop, RouteData param)
+        {
+            prop.SetRouteFull((RouteInfo) param.route_f);
+        }
+
+        public new IDataClass<Route> export_full_status()
+        {
+            return new RouteData(this);
+        }
+
+        public void import_status(IDataClass<Route> status)
+        {
+            throw new NotImplementedException();
+        }
 
         public struct Point : IEquatable<Point>
         {
@@ -18,7 +165,8 @@ namespace VNActor
             public OIRoutePointInfo.Connection connection;
             public bool link;
 
-            public Point(Vector3 pt_pos, Vector3 rot, Vector3 aid_pos, float speed, StudioTween.EaseType easeType, OIRoutePointInfo.Connection connection, bool link)
+            public Point(Vector3 pt_pos, Vector3 rot, Vector3 aid_pos, float speed, StudioTween.EaseType easeType,
+                OIRoutePointInfo.Connection connection, bool link)
             {
                 this.pt_pos = pt_pos;
                 this.rot = rot;
@@ -47,7 +195,7 @@ namespace VNActor
 
             public override int GetHashCode()
             {
-                int hashCode = 1637020191;
+                var hashCode = 1637020191;
                 hashCode = hashCode * -1521134295 + pt_pos.GetHashCode();
                 hashCode = hashCode * -1521134295 + rot.GetHashCode();
                 hashCode = hashCode * -1521134295 + aid_pos.GetHashCode();
@@ -75,12 +223,6 @@ namespace VNActor
             }
         }
 
-        new public OCIRoute objctrl;
-
-        public Route(ObjectCtrlInfo objctrl) : base(objctrl)
-        {
-        }
-
         public struct RouteData : IDataClass<Route>
         {
             internal RouteInfo? route_f;
@@ -89,13 +231,9 @@ namespace VNActor
             public RouteData(Route r, bool route_full = false)
             {
                 if (route_full)
-                {
                     route_f = r.route_full;
-                }
                 else
-                {
                     route_f = null;
-                }
                 route_p = r.route_play;
             }
 
@@ -109,174 +247,5 @@ namespace VNActor
                 throw new NotImplementedException();
             }
         }
-
-        public Route(OCIRoute objctrl) : base(objctrl)
-        {
-            this.objctrl = objctrl;
-        }
-
-        public bool route_play
-        {
-            set
-            {
-                // param: 1=start/0=stop
-                if (value)
-                {
-                    this.objctrl.Play();
-                }
-                else
-                {
-                    this.objctrl.Stop();
-                }
-            }
-            get
-            {
-                return this.objctrl.isPlay;
-            }
-        }
-
-        public void SetRouteFull(bool param)
-        {
-            this.route_play = param;
-            return;
-        }
-
-        public void SetRouteFull(RouteInfo param)
-        {
-            // route info, ref to get_route_full
-            try
-            {
-                OCIRoute route = this.objctrl;
-                // route_f, full route setting
-                route.Stop();
-                RouteInfo cur_status = this.route_full;
-                for (int i = 0; i < 4; i++)
-                {
-                    if (param.pts[i].Equals(cur_status.pts[i]))
-                    {
-                        continue;
-                    }
-                    var ri = route.routeInfo;
-                    if (i == 0)
-                    {
-                        // orient
-                        ri.orient = param.orient;
-                    }
-                    else if (i == 1)
-                    {
-                        // loop
-                        ri.loop = param.loop;
-                        route.UpdateLine();
-                    }
-                    else if (i == 2)
-                    {
-                        // points
-                        for (int j = 0; j < cur_status.pts.Count; j++)
-                        {
-                            var pt = param.pts[j];
-                            var pt_cur = cur_status.pts[j];
-                            if (pt.Equals(pt_cur))
-                            {
-                                continue;
-                            }
-                            var pi = route.routeInfo.route[j];
-                            // pt pos
-                            pi.changeAmount.pos = pt.pt_pos;
-
-                            // pt rot
-                            pi.changeAmount.rot = pt.rot;
-
-                            // aid pos
-                            pi.aidInfo.changeAmount.pos = pt.aid_pos;
-
-                            // speed
-                            pi.speed = pt.speed;
-
-                            // easeType
-                            pi.easeType = pt.easeType;
-
-                            // connection
-                            pi.connection = pt.connection;
-
-                            // link
-                            pi.link = pt.link;
-                        }
-                        route.UpdateLine();
-                    }
-                    else if (i == 3)
-                    {
-                        // active
-                        this.route_play = param.active;
-                    }
-                    else
-                    {
-                        throw new Exception("Unknown route info");
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("VNGE VNActor Error: Can not set route, ", e);
-            }
-        }
-
-        public RouteInfo route_full
-        {
-            get
-            {
-                OCIRoute route = this.objctrl;
-                OIRouteInfo ri = route.routeInfo;
-                var pts = new List<Point>();
-                foreach (OIRoutePointInfo pi in ri.route)
-                {
-                    // (pt pos, pt rot, aid pos, speed, easeType, connection, link)
-                    pts.Add(new Point(pi.changeAmount.pos, pi.changeAmount.rot, pi.aidInfo.changeAmount.pos, pi.speed, pi.easeType, pi.connection, pi.link));
-                }
-                // (orient, loop, points, active)
-                RouteInfo rs = new RouteInfo(ri.orient, ri.loop, pts, ri.active);
-                return rs;
-            }
-        }
-
-        // route
-        public static void prop_route(Route prop, RouteData param)
-        {
-            prop.SetRouteFull((RouteInfo)param.route_f);
-        }
-
-        new public IDataClass<Route> export_full_status()
-        {
-            return new RouteData(this);
-        }
-
-        public void import_status(IDataClass<Route> status)
-        {
-            throw new NotImplementedException();
-        }
-
-        override public Vector3 Position
-        {
-            get
-            {
-                return this.objctrl.objectInfo.changeAmount.pos;
-            }
-            set
-            {
-                this.objctrl.objectInfo.changeAmount.pos = value;
-            }
-        }
-
-        override public Vector3 Rotation
-        {
-            get
-            {
-                return this.objctrl.objectInfo.changeAmount.rot;
-            }
-            set
-            {
-                this.objctrl.objectInfo.changeAmount.rot = value;
-            }
-        }
-
     }
 }

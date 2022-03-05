@@ -10,20 +10,12 @@ namespace VNActor
     // All scripts: func(char, param)
     public partial class Actor
     {
-
         public static void char_anime(Actor chara, ActorData param)
         {
-
             if (param.anim.normalizedTime is float n)
-            {
-                chara.SetAnimate(param.anim.group, param.anim.category, param.anim.no, n);
-            }
+                chara.SetAnimate(param.anim.@group, param.anim.category, param.anim.no, n);
             else
-            {
-                chara.SetAnimate(param.anim.group, param.anim.category, param.anim.no);
-            }
-
-
+                chara.SetAnimate(param.anim.@group, param.anim.category, param.anim.no);
         }
 
         /*
@@ -85,7 +77,6 @@ namespace VNActor
         {
             // load cloth
 
-            return; // TODO
             //chara.load_clothes_file(param.clothLoad);
         }
 
@@ -179,7 +170,7 @@ namespace VNActor
             }
             catch (Exception e)
             {
-                Console.WriteLine("Error in setting char neck in Fixed state (2): " + e.ToString());
+                Console.WriteLine("Error in setting char neck in Fixed state (2): " + e);
                 Console.WriteLine("Sorry, we just pass it...");
             }
         }
@@ -193,7 +184,7 @@ namespace VNActor
             }
             catch (Exception e)
             {
-                Console.WriteLine("Error in setting char neck in Fixed state: " + e.ToString());
+                Console.WriteLine("Error in setting char neck in Fixed state: " + e);
                 Console.WriteLine("Sorry, we just pass it...");
             }
         }
@@ -299,14 +290,10 @@ namespace VNActor
         public static void char_fk_active(Actor chara, ActorData param)
         {
             // param = 0/1 flag in tuple (hair, neck, Breast, body, right hand, left hand, skirt)
-            bool[] curFk = chara.get_FK_active();
+            var curFk = chara.get_FK_active();
             foreach (var i in Enumerable.Range(0, 7))
-            {
                 if (param.fkActive[i] != curFk[i])
-                {
                     chara.set_FK_active(i, param.fkActive[i]);
-                }
-            }
         }
 
         public static void char_fk_set(Actor chara, ActorData param)
@@ -320,12 +307,8 @@ namespace VNActor
             // param = 0/1 flag in tuple (body, right leg, left leg, right arm, left arm)
             var curIk = chara.get_IK_active();
             foreach (var i in Enumerable.Range(0, 5))
-            {
                 if (param.ikActive[i] != curIk[i])
-                {
                     chara.set_IK_active(i, param.ikActive[i]);
-                }
-            }
         }
 
         public static void char_ik_set(Actor chara, ActorData param)
@@ -579,5 +562,4 @@ namespace VNActor
             }
          */
     }
-
 }
