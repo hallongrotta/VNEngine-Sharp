@@ -387,7 +387,7 @@ namespace VNEngine
                     wavName += ".wav";
                 }
                 // load wav in game scene folder if existed
-                var wavInScene = combine_path(game.get_scene_dir(), game.sceneDir, wavName);
+                var wavInScene = combine_path(game.SceneDir(), game.sceneDir, wavName);
                 if (File.Exists(wavInScene))
                 {
 
@@ -466,36 +466,21 @@ namespace VNEngine
         {
             sys_bg_png(game, param.bg_png);
         }
-        public static void sys_bg_png(VNNeoController game, string param = "")
+        public static void sys_bg_png(VNNeoController game, string pngName)
         {
-            string pngInDefault;
-            // set background png, param = png file name
-            var pngName = param.Trim();
-            if (pngName != "")
+            if (pngName is null)
             {
-                if (!pngName.ToLower().EndsWith(".png"))
+                pngName = "";
+            }
+            else    
+            {
+                var pngInDefault = Path.GetFullPath(combine_path(Application.dataPath, "..", "UserData", "bg", pngName));
+                if (!File.Exists(pngInDefault))
                 {
-                    pngName += ".png";
-                }
-                // load png in game scene folder if existed
-                var pngInScene = combine_path(game.get_scene_dir(), game.sceneDir, pngName);
-                if (File.Exists(pngInScene))
-                {
-                    game.scene_set_bg_png(pngName);
-                    return;
-                }
-                // load png in game default background folder if existed
-
-                pngInDefault = Path.GetFullPath(combine_path(Application.dataPath, "..", "UserData", "bg", pngName));
-
-                if (File.Exists(pngInDefault))
-                {
-                    game.scene_set_bg_png_orig(pngName);
-                    return;
+                    pngName = "";
                 }
             }
-            // remove if param == "" or file not existed
-            game.scene_set_bg_png_orig("");
+            game.scene_set_bg_png_orig(pngName);
         }
 
         public static void sys_char_light(VNNeoController game, SystemData param)

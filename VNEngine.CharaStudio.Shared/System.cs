@@ -196,35 +196,23 @@ namespace VNEngine
             sys_fm_png(game, param.fm_png);
         }
 
-        public static void sys_fm_png(StudioController game, string param = "")
+        public static void sys_fm_png(StudioController game, string pngName)
         {
             // set frame png, param = png file name, CharaStudio only
-            var pngName = param.Trim();
-            if (pngName != "")
+            if (pngName is null)
             {
-                if (!pngName.ToLower().EndsWith(".png"))
-                {
-                    pngName += ".png";
-                }
-                // load png in game scene folder if existed
-                var pngInScene = Utils.combine_path(game.get_scene_dir(), game.sceneDir, pngName);
-                if (File.Exists(pngInScene))
-                {
-                    var pngRevPath = Utils.combine_path("..", "studio", "scene", game.sceneDir, pngName);
-                    game.scene_set_framefile(pngRevPath);
-                    return;
-                }
-                // load png in game default background folder if existed
-                var pngInDefault = Path.GetFullPath(Utils.combine_path(Application.dataPath, "..", "UserData", "frame", pngName));
-                if (File.Exists(pngInDefault))
-                {
-                    game.scene_set_framefile(pngName);
-                    return;
-                }
-
-                // remove if param == "" or file not existed
-                game.scene_set_framefile("");
+                pngName = "";
             }
+            else {
+                // try to load png in "frame" folder
+                var path = Utils.combine_path(Application.dataPath, "..", "UserData", "frame", pngName);
+                var pngInDefault = Path.GetFullPath(path);
+                if (!File.Exists(pngInDefault))
+                {
+                    pngName = "";
+                }
+            }
+            game.scene_set_framefile(pngName);
         }
 
         public static void sys_map(StudioController game, SystemData s)

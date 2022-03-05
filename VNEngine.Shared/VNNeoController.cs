@@ -334,12 +334,8 @@ namespace VNEngine
         {
             if (this.scene_get_bg_png_orig() != filepng)
             {
-                // return self.studio.sceneInfo.background
-                // print self.studio.m_BackgroundCtrl.Load(ffile)
-                // for obj in GameObject.FindObjectOfType(BackgroundCtrl):
                 BackgroundCtrl obj = (BackgroundCtrl)GameObject.FindObjectOfType(typeof(BackgroundCtrl));
                 return obj.Load(filepng);
-                // print self.studio.m_BackgroundCtrl.Load(ffile)
             }
             return true;
         }

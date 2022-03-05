@@ -78,7 +78,7 @@ namespace VNEngine
         {
             var studio = Studio.Studio.Instance;
             //return Path.Combine(get_scene_dir(),file)
-            var fpath = Path.Combine(this.get_scene_dir(), this.sceneDir + file);
+            var fpath = Path.Combine(this.SceneDir(), this.sceneDir + file);
             studio.LoadScene(fpath);
             //self.change_map_to(-1)
             //self.change_map_to(studio.sceneInfo.map)
@@ -88,7 +88,7 @@ namespace VNEngine
             this.isFuncLocked = false;
         }
 
-        public override string get_scene_dir()
+        public override string SceneDir()
         {
             return Path.GetFullPath(Path.Combine(Path.Combine(Path.Combine(Path.Combine(Application.dataPath, ".."), "UserData"), "Studio"), "scene"));
         }

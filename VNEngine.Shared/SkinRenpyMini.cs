@@ -210,7 +210,6 @@ namespace VNEngine
                 {
                     GUILayout.BeginHorizontal();
                 }
-                var isOneButton = false;
                 foreach (var i in Enumerable.Range(0, btnsActions.Count))
                 {
                     // preparing button texts
@@ -242,7 +241,6 @@ namespace VNEngine
                         else
                         {
                             // special case for 1 button
-                            isOneButton = true;
                             GUILayout.BeginHorizontal();
                             GUILayout.FlexibleSpace();
                             customButton.fontSize = (int)(customButton.fontSize * 1.2);

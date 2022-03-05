@@ -869,7 +869,7 @@ After:
         public abstract void load_scene(string file);
 
         // Return dir, where engine saves scenes
-        public abstract string get_scene_dir();
+        public abstract string SceneDir();
 
         public abstract void dump_camera();
 

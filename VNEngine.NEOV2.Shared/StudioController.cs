@@ -51,12 +51,13 @@ namespace VNEngine
         {
             var studio = Studio.Studio.Instance;
             // return Path.Combine(get_scene_dir(),file)
-            studio.LoadScene(Path.Combine(this.get_scene_dir(), this.sceneDir + file));
+            studio.LoadScene(Path.Combine(this.SceneDir(), this.sceneDir + file));
             this.isFuncLocked = false;
         }
 
-        override public string get_scene_dir()
+        override public string SceneDir()
         {
+            // return path to "scene" folder
             return Path.GetFullPath(Path.Combine(Application.dataPath, "..", "UserData", "Studio", "scene"));
         }
 

@@ -213,7 +213,7 @@ namespace VNEngine
                 return Path.Combine(paths[0], paths[1]);
             else
             {
-                return Path.Combine(paths[0], combine_path(paths.Skip(1).Take(paths.Length - 1).ToArray()));
+                return Path.Combine(paths[0], combine_path(paths.Skip(1).ToArray()));
             }
         }
 

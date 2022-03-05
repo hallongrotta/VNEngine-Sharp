@@ -28,7 +28,7 @@ namespace VNEngine
                     pngName += ".png";
                 }
                 // load png in game scene folder if existed
-                var pngInScene = Utils.combine_path(game.get_scene_dir(), game.sceneDir, pngName);
+                var pngInScene = Utils.combine_path(game.SceneDir(), game.sceneDir, pngName);
                 if (File.Exists(pngInScene))
                 {
                     var pngRevPath = Utils.combine_path("..", "studio", "scene", game.sceneDir, pngName);
