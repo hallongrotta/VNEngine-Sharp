@@ -2,6 +2,7 @@
 using BepInEx.Configuration;
 using Studio;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -55,7 +56,6 @@ namespace VNEngine
         {
             this._load_scene_before(file);
             var studio = Studio.Studio.Instance;
-            this.change_map_to(-1);
             //studio.InitScene(False) # or init scene to false
             this.updFuncParam = file;
             this.updFunc = this.load_scene2;
@@ -93,12 +93,6 @@ namespace VNEngine
             return Path.GetFullPath(Path.Combine(Path.Combine(Path.Combine(Path.Combine(Application.dataPath, ".."), "UserData"), "Studio"), "scene"));
         }
 
-        public void change_map_to(int mapnum)
-        {
-            var studio = Studio.Studio.Instance;
-            studio.AddMap(mapnum, true, false, false);
-        }
-
         // 
         //             try:
         //                 ffile = "..\\studio\\scene\\" + self.sceneDir + filepng
@@ -129,6 +123,30 @@ namespace VNEngine
             return obj.Load(ffile);
         }
 
+        private IEnumerator AddMapCoroutine(int mapNum)
+        {
+            yield return Singleton<Map>.Instance.LoadMapCoroutine(mapNum, true);
+            this.studio_scene.map = mapNum;
+            if (!(studio.onChangeMap is null))
+            {
+                studio.onChangeMap();
+            }
+            studio.m_CameraCtrl.CloerListCollider();
+            Info.MapLoadInfo mapLoadInfo = null;
+            if (Singleton<Info>.Instance.dicMapLoadInfo.TryGetValue(Singleton<Map>.Instance.no, out mapLoadInfo))
+            {
+                studio.m_CameraCtrl.LoadVanish(mapLoadInfo.vanish.bundlePath, mapLoadInfo.vanish.fileName, Singleton<Map>.Instance.mapRoot);
+            }
+            var mapctrl = MapCtrl.Instance;
+            mapctrl.Reflect();
+            yield break;
+        }
+
+        public void ChangeMap(int mapNum)
+        {
+            base.StartCoroutine(AddMapCoroutine(mapNum));
+
+        }
     }
 
 }

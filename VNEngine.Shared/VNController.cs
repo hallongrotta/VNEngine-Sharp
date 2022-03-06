@@ -873,12 +873,6 @@ After:
 
         public abstract void dump_camera();
 
-        public CamData get_camera_num(int camnum)
-        {
-            this.show_blocking_message_time("ERROR: get_camera_num was not implemented");
-            return new CamData();
-        }
-
         // 
         //         Made animation movement to camera with some number
         //         :param float duration: Duration of animation in seconds
@@ -886,38 +880,6 @@ After:
         //         :param * style: may be an object or string. String can be linear,slow-fast,fast-slow,slow-fast3,fast-slow3,slow-fast4,fast-slow4. Object may vary
         //         :param Callable onCameraEnd: function that wil called after animation end
         //         
-        public void anim_to_camera_num(float duration, int camnum, string style = "linear", GameFunc onCameraEnd = null)
-        {
-            //self.show_blocking_message_time("ERROR: anim_to_camera_num was not implemented")
-            this.anim_to_camera_obj(duration, this.get_camera_num(camnum), style, onCameraEnd);
-        }
-
-        public List<VNActor.Character> scene_get_all_females()
-        {
-            return new List<VNActor.Character>();
-        }
-
-        public List<VNActor.Character> scene_get_all_males()
-        {
-            return new List<VNActor.Character>();
-        }
-
-        public void debug_print_all_chars()
-        {
-            var fems = this.scene_get_all_females();
-            Console.WriteLine("-- Female scene chars: --");
-            foreach (var i in Enumerable.Range(0, fems.Count))
-            {
-                Console.WriteLine(String.Format("{0}: {1}", i.ToString(), fems[i].text_name));
-            }
-            fems = this.scene_get_all_males();
-            Console.WriteLine("-- Male scene chars: --");
-            foreach (var i in Enumerable.Range(0, fems.Count))
-            {
-                Console.WriteLine(String.Format("{0}: {1}", i.ToString(), fems[i].text_name));
-            }
-            this.show_blocking_message_time("Debug: list of chars printed in console!");
-        }
 
         public delegate void MenuFunc(VNController controller, Dictionary<string, string> param);
 
@@ -964,35 +926,6 @@ After:
         public void move_camera_obj(CamData camobj)
         {
             this.move_camera_direct(camobj);
-        }
-
-        public void anim_to_camera(
-            float duration,
-            Vector3 pos = new Vector3(),
-            Vector3 distance = new Vector3(),
-            Vector3 rotate = new Vector3(),
-            float fov = 23.0f,
-            string style = "linear",
-            GameFunc onCameraEnd = null)
-        {
-            var camobj = new CamData(pos, rotate, distance, fov);
-            this.anim_to_camera_obj(duration, camobj, style, onCameraEnd);
-        }
-
-        public void anim_to_camera_obj(float duration, CamData camobj, string style = "linear", GameFunc onCameraEnd = null)
-        {
-            this._anim_to_camera_savecurrentpos();
-            // print "Anim to cam 1"
-            // print "Anim to cam 2"
-            var camobjv = camobj;
-            this.camTPos = camobjv.position;
-            this.camTDir = camobjv.distance;
-            this.camTAngle = camobjv.rotation;
-            this.camTFOV = camobjv.fov;
-            this.camAnimStyle = style;
-            this.camAnimFullStyle = null;
-            // camera animation one timer only
-            animation_cam_timer(duration, onCameraEnd);
         }
 
         /* TODO
@@ -1115,15 +1048,6 @@ After:
                 this.call_game_func(this._onCameraEnd);
             }
             return;
-        }
-
-        public void _anim_to_camera_savecurrentpos()
-        {
-            CamData camobj = this.get_camera_num(0);
-            this.camSPos = camobj.position;
-            this.camSDir = camobj.distance;
-            this.camSAngle = camobj.rotation;
-            this.camSFOV = camobj.fov;
         }
 
         public Vector3 vec3(float x, float y, float z)

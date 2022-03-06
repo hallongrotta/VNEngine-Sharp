@@ -154,7 +154,9 @@ namespace VNEngine
 
         public static void sys_map_pos(VNNeoController game, Vector3 param)
         {
+            var mapctrl = MapCtrl.Instance;
             game.studio_scene.caMap.pos = param;
+            mapctrl.Reflect();
         }
 
         public static void sys_map(VNNeoController game, int param)
@@ -219,12 +221,13 @@ namespace VNEngine
         {
             sys_map(game, s.map);
         }
-        public static void sys_map(StudioController game, int param)
+
+        public static void sys_map(StudioController game, int mapNum)
         {
             // set map
-            if (param != game.studio_scene.map)
+            if (mapNum != game.studio_scene.map)
             {
-                game.change_map_to(param);
+                game.ChangeMap(mapNum);
             }
         }
 

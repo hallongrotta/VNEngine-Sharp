@@ -79,7 +79,6 @@ namespace VNEngine
             game.anim_to_camera(param.duration, param.position, param.distance, param.rotation, param.fov, param.style);
         }
 
-
         public static void cam_rotate(VNNeoController game, Vector3 param)
         {
             var camobj = game.get_camera_num(0);
