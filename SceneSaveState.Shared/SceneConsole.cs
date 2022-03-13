@@ -19,6 +19,7 @@ using static VNActor.Light;
 using static VNEngine.Utils;
 using static VNEngine.VNCamera;
 using static VNEngine.VNCamera.VNData;
+using KeyboardShortcut = BepInEx.Configuration.KeyboardShortcut;
 using Light = VNActor.Light;
 
 namespace SceneSaveState
@@ -52,8 +53,6 @@ namespace SceneSaveState
         internal SceneManager block;
 
         internal List<CamData> camset;
-
-        internal bool changeScene;
 
         internal string charname;
 
@@ -237,11 +236,6 @@ namespace SceneSaveState
             if (SSSHotkey.Value.IsDown())
                 //UI.sceneConsoleGUIStart(game);
                 Instance.guiOnShow = !Instance.guiOnShow;
-            if (changeScene)
-            {
-                SetSceneState(block.CurrentScene);
-                changeScene = false;
-            }
         }
 
         internal double CalculateSaveDataSize(byte[] bytes)
@@ -483,7 +477,7 @@ namespace SceneSaveState
 
         internal void loadCurrentScene()
         {
-            changeScene = true;
+            SetSceneState(block.CurrentScene);
             if (block.Count > 0 && block.currentCamCount > 0)
             {
                 block.FirstCam();
@@ -1114,13 +1108,13 @@ namespace SceneSaveState
                                 $"Error occurred when importing Character with id {actid}");
                             SceneFolders.LoadTrackedActorsAndProps();
                         }
-                    // yield return null;
                 }
             }
 
             var propid = "";
-            foreach (var kvp in game.AllProps)
-                try
+            try
+            {
+                foreach (var kvp in game.AllProps)
                 {
                     propid = kvp.Key;
                     if (kvp.Value is Item i)
@@ -1139,13 +1133,13 @@ namespace SceneSaveState
                         s.ApplyStatus(p, status);
                     }
                 }
-                catch (Exception e)
-                {
-                    game.GetLogger.LogError($"Error occurred when importing Prop with id {propid}" + e);
-                    SceneFolders.LoadTrackedActorsAndProps();
-                    Instance.game.GetLogger.LogMessage($"Error occurred when importing Prop with id {propid}");
-                }
-            //yield return null;
+            }
+            catch (Exception e)
+            {
+                game.GetLogger.LogError($"Error occurred when importing Prop with id {propid}" + e);
+                SceneFolders.LoadTrackedActorsAndProps();
+                Instance.game.GetLogger.LogMessage($"Error occurred when importing Prop with id {propid}");
+            }
         }
 
         internal string GetIDOfSelectedObject()
