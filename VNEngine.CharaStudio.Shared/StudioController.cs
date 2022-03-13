@@ -139,7 +139,6 @@ namespace VNEngine
             }
             var mapctrl = MapCtrl.Instance;
             mapctrl.Reflect();
-            yield break;
         }
 
         public void ChangeMap(int mapNum)
