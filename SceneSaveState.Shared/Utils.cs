@@ -320,99 +320,9 @@ namespace SceneSaveState
             return null;
         }
 
-        public static List<List<VNActor.Character>> getSelectedChars(VNNeoController game)
-        {
-            var mtreeman = game.studio.treeNodeCtrl;
-            var ar = new List<VNActor.Character>();
-            foreach (var node in mtreeman.selectNodes)
-            {
-                var ochar = NeoOCI.create_from_treenode(node);
-                if (ochar.objctrl is OCIChar)
-                {
-                    VNActor.Character chara = (VNActor.Character)ochar;
-                    ar.Add(chara);
-                }
-            }
-            var am = new List<VNActor.Character>();
-            var af = new List<VNActor.Character>();
-            foreach (var chara in ar)
-            {
-                if (chara.Sex == 0)
-                {
-                    am.Add(chara);
-                }
-                else
-                {
-                    af.Add(chara);
-                }
-            }
-            return new List<List<VNActor.Character>> {
-                af,
-                am
-            };
-        }
 
-        public static VNActor.Character getSelectedChar(VNNeoController game)
-        {
-            var mtreeman = game.studio.treeNodeCtrl;
-            var ar = new List<VNActor.Character>();
-            foreach (var node in mtreeman.selectNodes)
-            {
-                var ochar = NeoOCI.create_from_treenode(node);
-                if (ochar.objctrl is OCIChar)
-                {
-                    VNActor.Character chara = (VNActor.Character)ochar;
-                    ar.Add(chara);
-                }
-            }
-            return ar[0];
-        }
 
-        public static Item getSelectedItem(VNNeoController game)
-        {
-            var mtreeman = game.studio.treeNodeCtrl;
-            var ar = new List<Item>();
-            foreach (var node in mtreeman.selectNodes)
-            {
-                var oitem = NeoOCI.create_from_treenode(node);
-                if (oitem.objctrl is OCIItem)
-                {
-                    Item prop = (Item)oitem;
-                    ar.Add(prop);
-                }
-            }
-            if (ar.Count > 0)
-            {
-                return ar[0];
-            }
-            else
-            {
-                throw new Exception("No items selected");
-            }
-        }
 
-        public static List<Item> getSelectedItems(VNNeoController game)
-        {
-            var mtreeman = game.studio.treeNodeCtrl;
-            var ar = new List<Item>();
-            foreach (var node in mtreeman.selectNodes)
-            {
-                var oitem = NeoOCI.create_from_treenode(node);
-                if (oitem.objctrl is OCIItem)
-                {
-                    Item prop = (Item)oitem;
-                    ar.Add(prop);
-                }
-            }
-            if (ar.Count > 0)
-            {
-                return ar;
-            }
-            else
-            {
-                throw new Exception("No items selected");
-            }
-        }
 
         // def getSelectedFolder(game, all=False):
         //     mtreeman = game.studio.treeNodeCtrl
@@ -644,11 +554,6 @@ namespace SceneSaveState
         }
 
         // tree node
-        public static bool treenode_check_select(TreeNodeObject treenode)
-        {
-            VNNeoController game = SceneConsole.Instance.game;
-            return game.studio.treeNodeCtrl.CheckSelect(treenode);
-        }
 
         // util colors
         public static string color_text(string text, string color)

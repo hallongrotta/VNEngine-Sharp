@@ -1,23 +1,37 @@
-﻿using BepInEx.Configuration;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using BepInEx.Configuration;
 using UnityEngine;
 using static VNEngine.Utils;
 using static VNEngine.VNCamera;
+
 //using WindowsInput;
 //using WindowsInput.Native;
 
 namespace VNEngine
 {
     public abstract class VNController
-       : BaseController
+        : BaseController
     {
+        public delegate void GameFunc(VNController controller);
 
-        public List<Button_s> btnsFull;
+        // 
+        //         Made animation movement to camera with some number
+        //         :param float duration: Duration of animation in seconds
+        //         :param int camnum: Camera number to animate from current position
+        //         :param * style: may be an object or string. String can be linear,slow-fast,fast-slow,slow-fast3,fast-slow3,slow-fast4,fast-slow4. Object may vary
+        //         :param Callable onCameraEnd: function that wil called after animation end
+        //         
 
-        public int wwidth;
+        public delegate void MenuFunc(VNController controller, Dictionary<string, string> param);
+
+        public delegate void TimerUpdateFunc(VNController controller, float deltaTime, float timeLapsed,
+            float timeLeft);
+
+        public delegate void UpdateFunc(string file);
+
         public int _btnSepCounter;
 
         public Dictionary<string, List<GameFunc>> _eventListenerDic;
@@ -27,6 +41,7 @@ namespace VNEngine
         public GameFunc _onCameraEnd;
 
         public List<Button_s> _vnButtons = new List<Button_s>();
+        private List<Button_s> _vnStButtons;
 
         public string _vnStText;
 
@@ -35,6 +50,8 @@ namespace VNEngine
         public string[] arKeyKodes;
 
         public string btnNextText;
+
+        public List<Button_s> btnsFull;
 
         public int camAnimeTID;
 
@@ -100,31 +117,6 @@ namespace VNEngine
 
         public double readingSpeed;
 
-        public Timer[] timers;
-        private List<Button_s> _vnStButtons;
-
-        public delegate void TimerUpdateFunc(VNController controller, float deltaTime, float timeLapsed, float timeLeft);
-
-        public class Timer
-        {
-            public float timeLeft;
-            public float duration;
-            public GameFunc funcEnd;
-            public TimerUpdateFunc updateFunc;
-        }
-
-        public struct RegisteredChar_s
-        {
-            public string color;
-            public string showname;
-
-            public RegisteredChar_s(string color, string showname)
-            {
-                this.color = color;
-                this.showname = showname;
-            }
-        }
-
         public Dictionary<string, RegisteredChar_s> registeredChars;
 
         public string sceneDir;
@@ -135,13 +127,14 @@ namespace VNEngine
 
         public SkinBase skin_saved;
 
-        public delegate void GameFunc(VNController controller);
-
-        public delegate void UpdateFunc(string file);
+        public Timer[] timers;
 
         public UpdateFunc updFunc;
 
         public string updFuncParam;
+
+        public string vnButtonsStyle;
+        public int wheight;
 
         public GUI.WindowFunction windowCallback;
 
@@ -151,19 +144,12 @@ namespace VNEngine
 
         public GUIStyle windowStyleDefault;
 
-        public string vnButtonsStyle;
-        public int wheight;
+        public int wwidth;
 
-        public struct Checkpoint
+        public VNController()
         {
-            public string id;
-            public GameFunc func;
-        }
-
-        public VNController() : base()
-        {
-            this.arKeyKodes = null; //Utils.getEngineOptions()["keysforbuttons"].Split(',');
-            this.vnButtonsStyle = "normal";
+            arKeyKodes = null; //Utils.getEngineOptions()["keysforbuttons"].Split(',');
+            vnButtonsStyle = "normal";
             //this.visible = this.engineOptions["starthidden"] == "0";
             // self.wwidth = 500
             // self.wheight = 230
@@ -171,34 +157,35 @@ namespace VNEngine
             // self.windowName = ''
             // self.windowRect = Rect (Screen.width / 2 - self.wwidth / 2, Screen.height - self.wheight - 10, self.wwidth, self.wheight)
             //self.skin_panel_unity = CloneSkin(GUI.)
-            this.windowStyle = null;
-            this.windowStyleDefault = new GUIStyle("window");
-            this.skin_set_byname("skin_default");
-            this.skin_default = this.skin;
-            this._vnText = "Welcome to <b>VN Game engine</b>!\n";
+            windowStyle = null;
+            windowStyleDefault = new GUIStyle("window");
+            skin_set_byname("skin_default");
+            skin_default = skin;
+            _vnText = "Welcome to <b>VN Game engine</b>!\n";
             try
             {
                 //this._vnText = this._vnText;
-                this._vnText += "\n";
+                _vnText += "\n";
             }
             catch (Exception)
             {
-                this._vnText += "<color=red>Warning!</color> You have a problems with UTF-8 libs! See website.\n";
+                _vnText += "<color=red>Warning!</color> You have a problems with UTF-8 libs! See website.\n";
                 Console.WriteLine("VNGE: problems with UTF-8 libs detected");
             }
+
             //this._vnText += "- " + Utils.getKeyCodes()["hide"].code + " to show/hide this window\n- " + Utils.getKeyCodes()["reset"].code + " to return to this main screen (more in INI file)";
             //self._vnButtons = ["Start >"]
             //self._vnButtonsActions = [self.StartAct]
-            this.registeredChars = new Dictionary<string, RegisteredChar_s>();
-            this.register_char("s", "ff5555", "");
-            this.curCharText = "s";
-            this.curCharFull = "s";
+            registeredChars = new Dictionary<string, RegisteredChar_s>();
+            register_char("s", "ff5555", "");
+            curCharText = "s";
+            curCharFull = "s";
 
             //this.nextTexts = new Dictionary<int, List<Action>>(); TODO add this back
 
-            this.updFunc = null;
-            this.updFuncParam = "";
-            this.timers = new Timer[8];
+            updFunc = null;
+            updFuncParam = "";
+            timers = new Timer[8];
 
             /* TODO
 
@@ -218,99 +205,108 @@ namespace VNEngine
             }
 
             */
-            this._vnStButtons = this._vnButtons;
-            this._vnStText = this._vnText;
-            this.maxBtnsBeforeSeparator = 5;
-            this._btnSepCounter = 0;
-            this.btnsFull = new List<Button_s>();
+            _vnStButtons = _vnButtons;
+            _vnStText = _vnText;
+            maxBtnsBeforeSeparator = 5;
+            _btnSepCounter = 0;
+            btnsFull = new List<Button_s>();
             //this.gdata = new GData();
             //this.scenedata = new GData();
-            this.gpersdata = new Dictionary<string, object>();
-            this.current_game = "";
-            this._eventListenerDic = new Dictionary<string, List<GameFunc>>();
-            this.isfAutoLipSync = false;
-            this.fAutoLipSyncVer = "v10";
-            this.init_start_params();
+            gpersdata = new Dictionary<string, object>();
+            current_game = "";
+            _eventListenerDic = new Dictionary<string, List<GameFunc>>();
+            isfAutoLipSync = false;
+            fAutoLipSyncVer = "v10";
+            init_start_params();
             // autoloading feature
-            this.windowCallback = new GUI.WindowFunction(this.FuncWindowGUI);
+            windowCallback = FuncWindowGUI;
+        }
+
+        //self.OnGUI(self)
+        public string vnText
+        {
+            get => _vnText;
+            set => _vnText = value;
+        }
+
+        //self.OnGUI(self)
+        // ---- external game functions ---------
+        public List<Button_s> vnButtons
+        {
+            get => _vnButtons;
+            set => _vnButtons = value;
         }
 
         public void init_start_params()
         {
-            this.isShowDevConsole = false;
+            isShowDevConsole = false;
             // menu
-            this._menuStack = new List<GameFunc>();
-            this.isHideGameButtons = false;
-            this.onSetTextCallback = null;
-            this.camAnimeTID = -1;
-            this.onDumpSceneOverride = null;
-            this.isHideWindowDuringCameraAnimation = false;
-            this.isFuncLocked = false;
-            this.funcLockedText = "SYSTEM: Unknown default lock";
+            _menuStack = new List<GameFunc>();
+            isHideGameButtons = false;
+            onSetTextCallback = null;
+            camAnimeTID = -1;
+            onDumpSceneOverride = null;
+            isHideWindowDuringCameraAnimation = false;
+            isFuncLocked = false;
+            funcLockedText = "SYSTEM: Unknown default lock";
             // some settings - may be localized
-            this.btnNextText = "Next >";
+            btnNextText = "Next >";
             //self.autostart = False
             //self.isDevDumpButtons = False - no use
-            this.sceneDir = "";
+            sceneDir = "";
             //this.gdata = new GData();
-            this.gpersdata = new Dictionary<string, object>();
+            gpersdata = new Dictionary<string, object>();
             //this.scenedata = new GData();
-            this.current_game = "";
+            current_game = "";
             // lip sync
-            this.isfAutoLipSync = false;
-            this.fAutoLipSyncVer = "v10";
-            this.readingChar = null;
-            this.readingSpeed = 12.0;
-            this.readingProgress = 0;
-            this.lipAnimeTID = -1;
-            this._eventListenerDic = new Dictionary<string, List<GameFunc>>();
-            this.windowStyle = this.windowStyleDefault;
-            this.skin_set(this.skin_default);
+            isfAutoLipSync = false;
+            fAutoLipSyncVer = "v10";
+            readingChar = null;
+            readingSpeed = 12.0;
+            readingProgress = 0;
+            lipAnimeTID = -1;
+            _eventListenerDic = new Dictionary<string, List<GameFunc>>();
+            windowStyle = windowStyleDefault;
+            skin_set(skin_default);
         }
 
         public void FuncWindowGUI(int windowid)
         {
-            if (this.skin is SkinCustomWindow customWindow)
+            if (skin is SkinCustomWindow customWindow)
             {
                 // skin has it's own WindowGUI func
                 customWindow.customWindowGUI(windowid);
                 return;
             }
-            if (!this.isFuncLocked)
+
+            if (!isFuncLocked)
             {
-                if (!this.isShowDevConsole)
-                {
+                if (!isShowDevConsole)
                     try
                     {
-                        this.skin.render_main(this.curCharFull, this.vnText, this.vnButtons, this.vnButtonsStyle);
+                        skin.render_main(curCharFull, vnText, vnButtons, vnButtonsStyle);
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine("Error in skin.render_main: " + e.ToString());
-                        this.visible = false;
+                        Console.WriteLine("Error in skin.render_main: " + e);
+                        visible = false;
                     }
-                }
                 else
-                {
                     // show dev console
                     try
                     {
-                        if (this.skin is SkinDefault skinDefault)
-                        {
-                            skinDefault.render_dev_console();
-                        }
+                        if (skin is SkinDefault skinDefault) skinDefault.render_dev_console();
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine("Error in skin.render_dev_console: " + e.ToString());
-                        this.visible = false;
+                        Console.WriteLine("Error in skin.render_dev_console: " + e);
+                        visible = false;
                     }
-                }
             }
             else
             {
                 // render system message
-                this.skin.render_system(this.funcLockedText);
+                skin.render_system(funcLockedText);
             }
         }
 
@@ -321,87 +317,60 @@ namespace VNEngine
             //if self.windowStyle:
             //    GUI.skin.window = self.windowStyle
             //BaseController.OnGUI(self)
-            if (!this.visible)
-            {
-                return;
-            }
-            this.windowRect = GUI.Window(0, this.windowRect, this.windowCallback, this.windowName, this.windowStyle);
+            if (!visible) return;
+            windowRect = GUI.Window(0, windowRect, windowCallback, windowName, windowStyle);
         }
 
 
-
-        new public void Update()
+        public new void Update()
         {
             base.Update();
-            if (this.updFunc != null)
+            if (updFunc != null)
             {
-                var func = this.updFunc;
-                this.updFunc = null;
-                func(this.updFuncParam);
+                var func = updFunc;
+                updFunc = null;
+                func(updFuncParam);
             }
-            for (int i = 0; i < timers.Length; i++)
-            {
+
+            for (var i = 0; i < timers.Length; i++)
                 if (timers[i] is Timer timer)
-                {
                     if (timer.timeLeft > 0)
                     {
                         timer.timeLeft -= Time.deltaTime;
 
                         if (timer.updateFunc is TimerUpdateFunc func)
-                        {
                             func(this, Time.deltaTime, timer.duration - timer.timeLeft, timer.duration);
-                        }
 
-                        if (timer.timeLeft <= 0)
-                        {
-                            this.call_game_func(timer.funcEnd);
-                        }
+                        if (timer.timeLeft <= 0) call_game_func(timer.funcEnd);
                     }
-                }
-            }
-            this.UpdateKeyChecks();
-            this.event_dispatch("update", null);
+
+            UpdateKeyChecks();
+            event_dispatch("update", null);
         }
 
 
         public void UpdateKeyChecks()
         {
-            if (checkKeyCode("Reset"))
-            {
-                this.return_to_start_screen_clear();
-            }
+            if (checkKeyCode("Reset")) return_to_start_screen_clear();
             if (checkKeyCode("ReloadCurrentGame"))
-            {
-                if (this.current_game != "")
-                {
-                    this.game_start_fromfile(this, this.current_game);
-                }
-            }
+                if (current_game != "")
+                    game_start_fromfile(this, current_game);
             if (checkKeyCode("VNFrameDeveloperConsole"))
-            {
                 try
                 {
                     //ScriptHelper.toggle_devconsole(this); TODO
                 }
                 catch (Exception e)
                 {
-                    this.show_blocking_message_time(String.Format("Error: can't start VNFrame developer console: {0}", e.ToString()));
+                    show_blocking_message_time(string.Format("Error: can't start VNFrame developer console: {0}", e));
                 }
-            }
-            if (this.GetConfigEntry("Skins", "usekeysforbuttons"))
-            {
-                if (this.visible && !this.isFuncLocked && !this.isHideGameButtons)
-                {
-                    foreach (var i in Enumerable.Range(0, this.vnButtons.Count))
-                    {
-                        if (Input.GetKeyDown(this.arKeyKodes[i]))
-                        {
+
+            if (GetConfigEntry("Skins", "usekeysforbuttons"))
+                if (visible && !isFuncLocked && !isHideGameButtons)
+                    foreach (var i in Enumerable.Range(0, vnButtons.Count))
+                        if (Input.GetKeyDown(arKeyKodes[i]))
                             //self._vnButtonsActions[i](self)
-                            this.call_game_func(this._vnButtons[i]);
-                        }
-                    }
-                }
-            }
+                            call_game_func(_vnButtons[i]);
             // running games from INI
             /*
             this._util_upd_check_and_start_game("game1");
@@ -417,25 +386,23 @@ namespace VNEngine
             */
             if (checkKeyCode("developerconsole"))
             {
-                if (this.isShowDevConsole)
+                if (isShowDevConsole)
                 {
                     // restoring old window
-                    this.isShowDevConsole = false;
-                    this.skin_set(this.skin_saved);
+                    isShowDevConsole = false;
+                    skin_set(skin_saved);
                 }
                 else
                 {
                     // set default skin and set console flag to show
                     // console must be rendered only in default skin
-                    this.skin_saved = this.skin;
-                    this.skin_set(this.skin_default);
-                    this.isShowDevConsole = true;
+                    skin_saved = skin;
+                    skin_set(skin_default);
+                    isShowDevConsole = true;
                 }
             }
-            if (checkKeyCode("dumpcamera"))
-            {
-                this.dump_camera();
-            }
+
+            if (checkKeyCode("dumpcamera")) dump_camera();
             if (checkKeyCode("reloadvnengine"))
             {
                 // reload engine
@@ -471,27 +438,21 @@ namespace VNEngine
 
         public bool GetConfigEntry(string section, string key)
         {
-
-            ConfigEntryBase value = Config[new BepInEx.Configuration.ConfigDefinition(section, key)];
+            var value = Config[new ConfigDefinition(section, key)];
 
             if (value.BoxedValue is bool option)
-            {
                 return option;
-            }
-            else
-            {
-                return (bool)value.DefaultValue;
-            }
+            return (bool) value.DefaultValue;
         }
 
         public void return_to_start_screen_clear()
         {
-            this.clear_timers();
+            clear_timers();
             //self.reset() # before init_start_params to call before_scene_unload event
-            this._unload_scene_before();
+            _unload_scene_before();
             // no resetting scene!
-            this.init_start_params();
-            this.return_to_start_screen();
+            init_start_params();
+            return_to_start_screen();
         }
 
         public int set_timer(float duration, GameFunc timerFuncEnd, TimerUpdateFunc timerFuncUpd = null)
@@ -499,10 +460,9 @@ namespace VNEngine
             Logger.LogDebug("Start set_timer!");
             int i;
             for (i = 0; i < timers.Length; i++)
-            {
                 if (timers[i] is null)
                 {
-                    Timer timer = new Timer
+                    var timer = new Timer
                     {
                         timeLeft = duration,
                         duration = duration,
@@ -513,125 +473,80 @@ namespace VNEngine
                     timers[i] = timer;
                     return i;
                 }
-            }
+
             return -1;
         }
 
         public void clear_timer(int index, bool runEndFunc = false)
         {
-            if (index < this.timers.Length)
+            if (index < timers.Length)
             {
-                if (runEndFunc && this.timers[index] is Timer t)
-                {
-                    t.funcEnd(this);
-                }
-                this.timers[index] = null;
+                if (runEndFunc && timers[index] is Timer t) t.funcEnd(this);
+                timers[index] = null;
             }
         }
 
         public void return_to_start_screen()
         {
-            this.skin_set_byname("skin_default");
-            this.set_text("s", this._vnStText);
+            skin_set_byname("skin_default");
+            set_text("s", _vnStText);
             //this.set_buttons(this._vnStButtons, this._vnStButtonsActions); TODO
         }
 
         public void clear_timers()
         {
             // not calling end function
-            this.timers = new Timer[8];
-        }
-
-        //self.OnGUI(self)
-        public string vnText
-        {
-            get
-            {
-                return this._vnText;
-            }
-            set
-            {
-                this._vnText = value;
-            }
-        }
-
-        //self.OnGUI(self)
-        // ---- external game functions ---------
-        public List<Button_s> vnButtons
-        {
-            get
-            {
-                return this._vnButtons;
-            }
-            set
-            {
-                this._vnButtons = value;
-            }
+            timers = new Timer[8];
         }
 
         public void set_buttons(List<Button_s> buttons, string style = "normal")
         {
-            this.vnButtonsStyle = style;
-            if (style == "normal")
-            {
-                this.maxBtnsBeforeSeparator = this.skin.maxButtonsNormal;
-            }
-            if (style == "compact")
-            {
-                this.maxBtnsBeforeSeparator = this.skin.maxButtonsCompact;
-            }
-            if (buttons.Count <= this.maxBtnsBeforeSeparator)
+            vnButtonsStyle = style;
+            if (style == "normal") maxBtnsBeforeSeparator = skin.maxButtonsNormal;
+            if (style == "compact") maxBtnsBeforeSeparator = skin.maxButtonsCompact;
+            if (buttons.Count <= maxBtnsBeforeSeparator)
             {
                 // normal case, not so much btns
-                this._btnSepCounter = 0;
-                this.vnButtons = buttons;
+                _btnSepCounter = 0;
+                vnButtons = buttons;
             }
             else
             {
-                this._btnSepCounter = 0;
-                this.btnsFull = buttons;
-                this._btnCallSepCounter(this, 0);
+                _btnSepCounter = 0;
+                btnsFull = buttons;
+                _btnCallSepCounter(this, 0);
                 //self.OnGUI(self)
             }
         }
 
         public void _btnCallFull(VNController game, int param)
         {
-            this.call_game_func(this.btnsFull[param]);
+            call_game_func(btnsFull[param]);
         }
 
         public void _btnCallSepCounter(VNController game, int param)
         {
             // wrapping over list
-            if (param > this.btnsFull.Count - 1)
-            {
-                param = 0;
-            }
+            if (param > btnsFull.Count - 1) param = 0;
             // get sublist
-            var endindex = param + this.maxBtnsBeforeSeparator - 1;
-            if (endindex > this.btnsFull.Count)
-            {
-                endindex = this.btnsFull.Count;
-            }
-            var ar1 = this.btnsFull.GetRange(param, this.maxBtnsBeforeSeparator - 1);
+            var endindex = param + maxBtnsBeforeSeparator - 1;
+            if (endindex > btnsFull.Count) endindex = btnsFull.Count;
+            var ar1 = btnsFull.GetRange(param, maxBtnsBeforeSeparator - 1);
             //print param
             //print endindex
             //print ar1
             var ar2 = new List<Button_s>();
-            foreach (var i in Enumerable.Range(0, ar1.Count))
-            {
-                ar2.Add(new Button_s("Button", this._btnCallFull, param + i));
-            }
+            foreach (var i in Enumerable.Range(0, ar1.Count)) ar2.Add(new Button_s("Button", _btnCallFull, param + i));
             // add button to move forward
-            ar2.Add(new Button_s(">>", this._btnCallSepCounter, param + this.maxBtnsBeforeSeparator - 1));
+            ar2.Add(new Button_s(">>", _btnCallSepCounter, param + maxBtnsBeforeSeparator - 1));
             // setting buttons
-            this.set_buttons(ar2, this.vnButtonsStyle);
+            set_buttons(ar2, vnButtonsStyle);
         }
 
 
         public void set_buttons_alt(List<Button_s> arButTextsActions, string style = "normal")
         {
-            this.set_buttons(arButTextsActions, style);
+            set_buttons(arButTextsActions, style);
 
 /* Unmerged change from project 'VNEngine.AI'
 Before:
@@ -663,56 +578,48 @@ After:
 
         public void set_buttons_end_game()
         {
-            var buttons = new List<Button_s>() { new Button_s("End Game & Return >>", this._onEndGame, -1) };
-            this.set_buttons(buttons);
+            var buttons = new List<Button_s> {new Button_s("End Game & Return >>", _onEndGame, -1)};
+            set_buttons(buttons);
         }
 
         public void _onEndGame(VNController game, int i)
         {
-            this.return_to_start_screen_clear();
+            return_to_start_screen_clear();
         }
 
         public void set_text(string character, string text)
         {
             var char0 = character.Split('/')[0];
-            this.curCharText = char0;
-            this.curCharFull = character;
+            curCharText = char0;
+            curCharFull = character;
             if (text.StartsWith("!"))
-            {
-                this.vnText = text.Substring(1);
-            }
+                vnText = text.Substring(1);
             else
-            {
-                this.vnText = text;
-            }
+                vnText = text;
             //self.OnGUI(self)
-            if (this.onSetTextCallback != null)
-            {
-                this.onSetTextCallback(this, character, text);
-            }
-            this.event_dispatch("set_text", new RegisteredChar_s(character, text));
+            if (onSetTextCallback != null) onSetTextCallback(this, character, text);
+            event_dispatch("set_text", new RegisteredChar_s(character, text));
         }
 
         public void set_text_s(string text)
         {
-            this.set_text("s", text);
+            set_text("s", text);
         }
 
         public void register_char(string name, string color, string showname)
         {
-            this.registeredChars[name] = new RegisteredChar_s(color, showname);
+            registeredChars[name] = new RegisteredChar_s(color, showname);
         }
 
         public void texts_next(Dictionary<int, List<Action>> nexttexts, GameFunc endfunc)
         {
             //this.nextTexts = nexttexts; TODO
-            this.endNextTextFunc = endfunc;
-            this.NextText(this);
+            endNextTextFunc = endfunc;
+            NextText(this);
         }
 
         public void NextText(VNController game)
         {
-            return;
         }
 
         /* TODO
@@ -740,19 +647,19 @@ After:
 
         public void show_blocking_message(string text = "...")
         {
-            this.funcLockedText = text;
-            this.isFuncLocked = true;
+            funcLockedText = text;
+            isFuncLocked = true;
         }
 
         public void hide_blocking_message(VNController game = null)
         {
-            this.isFuncLocked = false;
+            isFuncLocked = false;
         }
 
         public void show_blocking_message_time(string text = "...", int duration = 3)
         {
-            this.show_blocking_message(text);
-            this.set_timer(duration, this.hide_blocking_message);
+            show_blocking_message(text);
+            set_timer(duration, hide_blocking_message);
         }
 
         /* TODO replace with bepinex
@@ -786,7 +693,7 @@ After:
 
         // reseting scene - must be overrided by engine
 
-        public void call_game_func(Utils.Button_s param)
+        public void call_game_func(Button_s param)
         {
             try
             {
@@ -794,7 +701,7 @@ After:
             }
             catch (Exception e)
             {
-                Logger.LogError("Error in call_game_func: " + e.ToString());
+                Logger.LogError("Error in call_game_func: " + e);
             }
         }
 
@@ -817,11 +724,10 @@ After:
             try
             {
                 a(this, o);
-                return;
             }
             catch (Exception e)
             {
-                Logger.LogError("Error in call_game_func: " + e.ToString());
+                Logger.LogError("Error in call_game_func: " + e);
             }
         }
 
@@ -829,12 +735,11 @@ After:
         {
             try
             {
-                a((VNNeoController)this);
-                return;
+                a((VNNeoController) this);
             }
             catch (Exception e)
             {
-                Logger.LogError("Error in call_game_func: " + e.ToString());
+                Logger.LogError("Error in call_game_func: " + e);
             }
         }
 
@@ -848,7 +753,7 @@ After:
             }
             catch (Exception e)
             {
-                Logger.LogError("Error in call_game_func: " + e.ToString());
+                Logger.LogError("Error in call_game_func: " + e);
             }
         }
 
@@ -861,62 +766,49 @@ After:
             }
             catch (Exception e)
             {
-                Logger.LogError("Error in call_game_func: " + e.ToString());
+                Logger.LogError("Error in call_game_func: " + e);
             }
         }
-
-        // Load scene from file
-        public abstract void load_scene(string file);
 
         // Return dir, where engine saves scenes
         public abstract string SceneDir();
 
         public abstract void dump_camera();
 
-        // 
-        //         Made animation movement to camera with some number
-        //         :param float duration: Duration of animation in seconds
-        //         :param int camnum: Camera number to animate from current position
-        //         :param * style: may be an object or string. String can be linear,slow-fast,fast-slow,slow-fast3,fast-slow3,slow-fast4,fast-slow4. Object may vary
-        //         :param Callable onCameraEnd: function that wil called after animation end
-        //         
-
-        public delegate void MenuFunc(VNController controller, Dictionary<string, string> param);
-
         // ---------- menu functions -------------------------
         public void run_menu(MenuFunc menufunc, Dictionary<string, string> menuparam, GameFunc onEndFunc)
         {
-            this._menuStack.Add(onEndFunc);
+            _menuStack.Add(onEndFunc);
             menufunc(this, menuparam);
         }
 
         public void menu_finish(int result)
         {
-            this.menu_result = result;
-            GameFunc endFunc = _menuStack.Last();
+            menu_result = result;
+            var endFunc = _menuStack.Last();
             _menuStack.RemoveAt(-1);
-            this.call_game_func(endFunc);
+            call_game_func(endFunc);
         }
 
         // ---------- checking for engine types --------------
         // -------- other ----------
         public void scene_set_bg_png(object filepng)
         {
-            this.show_blocking_message_time("ERROR: scene_set_bg_png was not implemented");
+            show_blocking_message_time("ERROR: scene_set_bg_png was not implemented");
         }
 
         // ---------- cameras ----------
 
         public void move_camera(CamData cam)
         {
-            this.move_camera_direct(cam);
+            move_camera_direct(cam);
         }
 
         public void move_camera(Vector3 pos, Vector3 distance, Vector3 rotate, float fov = 23.0f)
         {
             //self.show_blocking_message_time("ERROR: move_camera was not implemented")
-            CamData camobj = new CamData(pos, rotate, distance, fov);
-            this.move_camera_obj(camobj);
+            var camobj = new CamData(pos, rotate, distance, fov);
+            move_camera_obj(camobj);
         }
 
         public abstract void move_camera_direct(CamData cam);
@@ -925,7 +817,7 @@ After:
 
         public void move_camera_obj(CamData camobj)
         {
-            this.move_camera_direct(camobj);
+            move_camera_direct(camobj);
         }
 
         /* TODO
@@ -954,100 +846,63 @@ After:
         public void animation_cam_timer(float duration, GameFunc onCameraEnd)
         {
             // camera animation one timer only
-            if (this.camAnimeTID != -1)
-            {
-                this.clear_timer(this.camAnimeTID);
-            }
-            this.camAnimeTID = this.set_timer(duration, this._anim_to_cam_end, this._anim_to_cam_upd);
-            this._onCameraEnd = onCameraEnd;
-            if (this.isHideWindowDuringCameraAnimation)
-            {
-                this.visible = false;
-            }
+            if (camAnimeTID != -1) clear_timer(camAnimeTID);
+            camAnimeTID = set_timer(duration, _anim_to_cam_end, _anim_to_cam_upd);
+            _onCameraEnd = onCameraEnd;
+            if (isHideWindowDuringCameraAnimation) visible = false;
         }
 
         public void _anim_to_cam_upd(VNController game, float dt, float time, float duration)
         {
             var camProgress = time / duration;
-            if (this.camAnimStyle == "linear")
+            if (camAnimStyle == "linear") camProgress = time / duration;
+            if (camAnimStyle == "slow-fast") camProgress = Mathf.Pow(camProgress, 2);
+            if (camAnimStyle == "fast-slow") camProgress = 1 - Mathf.Pow(1 - camProgress, 2);
+            if (camAnimStyle == "slow-fast3") camProgress = Mathf.Pow(camProgress, 3);
+            if (camAnimStyle == "fast-slow3") camProgress = 1 - Mathf.Pow(1 - camProgress, 3);
+            if (camAnimStyle == "slow-fast4") camProgress = Mathf.Pow(camProgress, 4);
+            if (camAnimStyle == "fast-slow4") camProgress = 1 - Mathf.Pow(1 - camProgress, 4);
+            var TPos = camTPos;
+            var TDir = camTDir;
+            var TAngle = camTAngle;
+            if (camAnimFullStyle != null)
             {
-                camProgress = time / duration;
+                if (camAnimFullStyle.ContainsKey("target_camera_zooming_in"))
+                    TDir = new Vector3(TDir.x, TDir.y,
+                        TDir.z - camAnimFullStyle["target_camera_zooming_in"] * (1 - time / duration));
+                if (camAnimFullStyle.ContainsKey("target_camera_rotating_z"))
+                    TAngle = new Vector3(TAngle.x, TAngle.y,
+                        TAngle.z + camAnimFullStyle["target_camera_rotating_z"] * (1 - time / duration));
+                if (camAnimFullStyle.ContainsKey("target_camera_rotating_x"))
+                    TAngle = new Vector3(
+                        TAngle.x + camAnimFullStyle["target_camera_rotating_x"] * (1 - time / duration), TAngle.y,
+                        TAngle.z);
+                if (camAnimFullStyle.ContainsKey("target_camera_rotating_y"))
+                    TAngle = new Vector3(TAngle.x,
+                        TAngle.y + camAnimFullStyle["target_camera_rotating_y"] * (1 - time / duration), TAngle.z);
+                if (camAnimFullStyle.ContainsKey("target_camera_posing_y"))
+                    TPos = new Vector3(TPos.x,
+                        TPos.y + camAnimFullStyle["target_camera_posing_y"] * (1 - time / duration), TPos.z);
+                // TDir.z = TDir.z + self.camAnimFullStyle["move_distance"] * time / duration
+                // TDir.z = TDir.z + (-20)
+                // print "z: %s"%(str(TDir.z))
             }
-            if (this.camAnimStyle == "slow-fast")
-            {
-                camProgress = Mathf.Pow(camProgress, 2);
-            }
-            if (this.camAnimStyle == "fast-slow")
-            {
-                camProgress = 1 - Mathf.Pow(1 - camProgress, 2);
-            }
-            if (this.camAnimStyle == "slow-fast3")
-            {
-                camProgress = Mathf.Pow(camProgress, 3);
-            }
-            if (this.camAnimStyle == "fast-slow3")
-            {
-                camProgress = 1 - Mathf.Pow(1 - camProgress, 3);
-            }
-            if (this.camAnimStyle == "slow-fast4")
-            {
-                camProgress = Mathf.Pow(camProgress, 4);
-            }
-            if (this.camAnimStyle == "fast-slow4")
-            {
-                camProgress = 1 - Mathf.Pow(1 - camProgress, 4);
-            }
-            var TPos = this.camTPos;
-            var TDir = this.camTDir;
-            Vector3 TAngle = this.camTAngle;
-            if (this.camAnimFullStyle != null)
-            {
-                if (this.camAnimFullStyle.ContainsKey("target_camera_zooming_in"))
-                {
-                    TDir = new Vector3(TDir.x, TDir.y, TDir.z - this.camAnimFullStyle["target_camera_zooming_in"] * (1 - time / duration));
-                }
-                if (this.camAnimFullStyle.ContainsKey("target_camera_rotating_z"))
-                {
-                    TAngle = new Vector3(TAngle.x, TAngle.y, TAngle.z + this.camAnimFullStyle["target_camera_rotating_z"] * (1 - time / duration));
-                }
-                if (this.camAnimFullStyle.ContainsKey("target_camera_rotating_x"))
-                {
-                    TAngle = new Vector3(TAngle.x + this.camAnimFullStyle["target_camera_rotating_x"] * (1 - time / duration), TAngle.y, TAngle.z);
-                }
-                if (this.camAnimFullStyle.ContainsKey("target_camera_rotating_y"))
-                {
-                    TAngle = new Vector3(TAngle.x, TAngle.y + this.camAnimFullStyle["target_camera_rotating_y"] * (1 - time / duration), TAngle.z);
-                }
-                if (this.camAnimFullStyle.ContainsKey("target_camera_posing_y"))
-                {
-                    TPos = new Vector3(TPos.x, TPos.y + this.camAnimFullStyle["target_camera_posing_y"] * (1 - time / duration), TPos.z);
-                    // TDir.z = TDir.z + self.camAnimFullStyle["move_distance"] * time / duration
-                    // TDir.z = TDir.z + (-20)
-                    // print "z: %s"%(str(TDir.z))
-                }
-            }
-            var pos = Vector3.Lerp(this.camSPos, TPos, camProgress);
-            var distance = Vector3.Lerp(this.camSDir, TDir, camProgress);
-            var rotate = Vector3.Slerp(this.camSAngle, TAngle, camProgress);
-            var fov = Mathf.Lerp(this.camSFOV, this.camTFOV, camProgress);
+
+            var pos = Vector3.Lerp(camSPos, TPos, camProgress);
+            var distance = Vector3.Lerp(camSDir, TDir, camProgress);
+            var rotate = Vector3.Slerp(camSAngle, TAngle, camProgress);
+            var fov = Mathf.Lerp(camSFOV, camTFOV, camProgress);
             //print fov, self.camSFOV, self.camTFOV, camProgress
-            this.move_camera_direct(pos, distance, rotate, fov);
+            move_camera_direct(pos, distance, rotate, fov);
         }
 
         public void _anim_to_cam_end(VNController game)
         {
             // game.set_text("Anim camera end!")
             // print "Anim camera end!"
-            if (this.isHideWindowDuringCameraAnimation)
-            {
-                this.visible = false;
-            }
-            this.camAnimeTID = -1;
-            if (this._onCameraEnd != null)
-            {
-                this.call_game_func(this._onCameraEnd);
-            }
-            return;
+            if (isHideWindowDuringCameraAnimation) visible = false;
+            camAnimeTID = -1;
+            if (_onCameraEnd != null) call_game_func(_onCameraEnd);
         }
 
         public Vector3 vec3(float x, float y, float z)
@@ -1058,12 +913,11 @@ After:
         // ---- automaking list of games -----
         public void prepare_auto_games()
         {
-            this.prepare_auto_games_prefix(this, "");
+            prepare_auto_games_prefix(this, "");
         }
 
         public void prepare_auto_games_prefix(VNController game, string prefix)
         {
-            return;
         }
 
         /*public object prepare_auto_games_prefix(VNNeoController game, string prefix)
@@ -1147,9 +1001,13 @@ After:
         }*/
 
 
-        public void game_start_fromfile() { }
+        public void game_start_fromfile()
+        {
+        }
 
-        public void game_start_fromfile(object game, string gamefilestr) { }
+        public void game_start_fromfile(object game, string gamefilestr)
+        {
+        }
         //public void game_start_fromfile(object game, object gamefilestr) { }
         /*
     {
@@ -1214,71 +1072,64 @@ After:
                 var content = File.ReadAllText(filename);
                 return content;
             }
+
             return "";
         }
 
         // ------------ event system -----------
         public void event_reg_listener(string eventid, GameFunc func)
         {
-            this._event_create_lisarray_ifneeded(eventid);
-            this._eventListenerDic[eventid].Add(func);
+            _event_create_lisarray_ifneeded(eventid);
+            _eventListenerDic[eventid].Add(func);
         }
 
         public void _event_create_lisarray_ifneeded(string eventid)
         {
-            if (this._eventListenerDic.ContainsKey(eventid))
-            {
-                return;
-            }
-            else
-            {
-                //this._eventListenerDic[eventid] = new List<Action>(); TODO
-            }
+            if (_eventListenerDic.ContainsKey(eventid)) return;
         }
 
         public object event_unreg_listener(string eventid, GameFunc func)
         {
-            this._event_create_lisarray_ifneeded(eventid);
-            if (this._eventListenerDic[eventid].Contains(func))
+            _event_create_lisarray_ifneeded(eventid);
+            if (_eventListenerDic[eventid].Contains(func))
             {
-                this._eventListenerDic[eventid].Remove(func);
+                _eventListenerDic[eventid].Remove(func);
                 return true;
             }
+
             return false;
         }
 
         public void event_dispatch(string eventid, object param)
         {
-            if (this._eventListenerDic.ContainsKey(eventid))
-            {
-                foreach (var func in this._eventListenerDic[eventid])
+            if (_eventListenerDic.ContainsKey(eventid))
+                foreach (var func in _eventListenerDic[eventid])
                 {
                     //func(this, eventid, param); TODO
                 }
-            }
         }
 
         public void _load_scene_before(string file)
         {
-            this._unload_scene_before();
-            this.event_dispatch("before_scene_load", file);
+            _unload_scene_before();
+            event_dispatch("before_scene_load", file);
         }
 
         public void _unload_scene_before()
         {
-            this.event_dispatch("before_scene_unload", null);
+            event_dispatch("before_scene_unload", null);
         }
 
         // -------- game persistent data ----------
         public string gpersdata_getfilename()
         {
-            var dstfile = Utils.combine_path(this.pygamepath, "Gpdata", this.current_game + "_p.dat");
+            var dstfile = combine_path(pygamepath, "Gpdata", current_game + "_p.dat");
             return dstfile;
         }
 
         public bool gpersdata_exists()
         {
-            var dstfile = this.gpersdata_getfilename();
+            var dstfile = gpersdata_getfilename();
             return File.Exists(dstfile);
         }
 
@@ -1287,23 +1138,19 @@ After:
             object msg;
             try
             {
-                var dstfile = this.gpersdata_getfilename();
-                if (this.gpersdata_exists())
-                {
-
+                var dstfile = gpersdata_getfilename();
+                if (gpersdata_exists())
                     //this.gpersdata = pickle.load(f2);
 
                     msg = "gpersdata loaded!";
-                }
                 else
-                {
                     msg = "gpersdata not exists!";
-                }
             }
             catch (Exception e)
             {
-                msg = "gpersdata load Failed: " + e.ToString();
+                msg = "gpersdata load Failed: " + e;
             }
+
             Console.WriteLine(msg);
         }
 
@@ -1311,15 +1158,14 @@ After:
         {
             try
             {
-                var dstfile = this.gpersdata_getfilename();
+                var dstfile = gpersdata_getfilename();
 
                 //pickle.dump(this.gpersdata, f);
                 return "";
-
             }
             catch (Exception e)
             {
-                var msg = "gpersdata save Failed: " + e.ToString();
+                var msg = "gpersdata save Failed: " + e;
                 Console.WriteLine(msg);
                 return msg;
                 // game.show_blocking_message_time(msg)
@@ -1328,8 +1174,8 @@ After:
 
         public object gpersdata_set(string param, List<object> val)
         {
-            this.gpersdata[param] = val;
-            return this.gpersdata_save();
+            gpersdata[param] = val;
+            return gpersdata_save();
         }
 
 
@@ -1353,15 +1199,16 @@ After:
             object msg;
             try
             {
-                var dstfile = this.gpersdata_getfilename();
+                var dstfile = gpersdata_getfilename();
                 File.Delete(dstfile);
-                this.gpersdata = new Dictionary<string, object>();
+                gpersdata = new Dictionary<string, object>();
                 msg = "gpersdata cleared!";
             }
             catch (Exception e)
             {
-                msg = "gpersdata clear Failed: " + e.ToString();
+                msg = "gpersdata clear Failed: " + e;
             }
+
             Console.WriteLine(msg);
         }
 
@@ -1497,7 +1344,8 @@ After:
                         skin = new SkinDefault();
                         break;
                 }
-                this.skin_set(skin);
+
+                skin_set(skin);
             }
             catch (Exception e)
             {
@@ -1507,8 +1355,33 @@ After:
 
         public SkinBase skin_get_current()
         {
-            return this.skin;
+            return skin;
+        }
+
+        public class Timer
+        {
+            public float duration;
+            public GameFunc funcEnd;
+            public float timeLeft;
+            public TimerUpdateFunc updateFunc;
+        }
+
+        public struct RegisteredChar_s
+        {
+            public string color;
+            public string showname;
+
+            public RegisteredChar_s(string color, string showname)
+            {
+                this.color = color;
+                this.showname = showname;
+            }
+        }
+
+        public struct Checkpoint
+        {
+            public string id;
+            public GameFunc func;
         }
     }
-
 }

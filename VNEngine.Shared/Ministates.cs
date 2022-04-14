@@ -120,42 +120,6 @@ namespace VNEngine
                 return ar;
             }
         }
-        public int find_item_in_objlist(ObjectCtrlInfo obj)
-        {
-            var dobjctrl = StudioController.Instance.studio.dicObjectCtrl;
-            foreach (var key in dobjctrl.Keys)
-            {
-                var objctrl = dobjctrl[key];
-                if (objctrl == obj)
-                {
-                    return key;
-                }
-            }
-            throw new Exception("Item does not exist");
-        }
-
-        public static List<NeoOCI> get_selected_objs()
-        {
-            var mtreeman = StudioController.Instance.studio.treeNodeCtrl;
-            var ar = new List<NeoOCI>();
-            foreach (var node in mtreeman.selectNodes)
-            {
-                var ochar = NeoOCI.create_from_treenode(node);
-                if (ochar is VNActor.Character chara)
-                {
-                    ar.Add(chara);
-                }
-                else if (ochar is Prop prop)
-                {
-                    ar.Add(prop);
-                }
-                else
-                {
-                    throw new Exception("Invalid object");
-                }
-            }
-            return ar;
-        }
 
     }
 

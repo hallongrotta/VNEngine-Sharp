@@ -35,7 +35,7 @@ namespace SceneSaveState
         {
         }
 
-        public Scene(VNNeoController game, bool importSys) : this(new Dictionary<string, ActorData>(), new Dictionary<string, NEOItemData>(), new Dictionary<string, LightData>(), new Dictionary<string, NEOPropData>(), new List<CamData>())
+        public Scene(StudioController game, bool importSys) : this(new Dictionary<string, ActorData>(), new Dictionary<string, NEOItemData>(), new Dictionary<string, LightData>(), new Dictionary<string, NEOPropData>(), new List<CamData>())
         {
             SceneFolders.LoadTrackedActorsAndProps();
             Dictionary<string, VNActor.Character> actors = game.AllActors;
@@ -51,7 +51,7 @@ namespace SceneSaveState
             }
             if (importSys)
             {
-                this.sys = (VNEngine.System.SystemData)export_full_status();
+                this.sys = game.export_full_status();
             }
         }
 

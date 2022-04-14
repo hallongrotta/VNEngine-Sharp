@@ -1,10 +1,10 @@
-﻿using BepInEx;
-using BepInEx.Configuration;
-using Studio;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using BepInEx;
+using BepInEx.Configuration;
+using Studio;
 using UnityEngine;
 using static VNEngine.Utils;
 
@@ -17,31 +17,114 @@ namespace VNEngine
     public partial class StudioController
         : VNNeoController
     {
-
-        new public static StudioController Instance { get; private set; }
-
-        public StudioController() : base()
+        public StudioController()
         {
-
-            if (Instance != null)
-            {
-                throw new InvalidOperationException("Can only create one instance of Controller");
-            }
+            if (Instance != null) throw new InvalidOperationException("Can only create one instance of Controller");
             Instance = this;
         }
 
-        public StudioController(List<Button_s> vnButtonsStart) : base()
+        public StudioController(List<Button_s> vnButtonsStart)
         {
-            if (Instance != null)
-            {
-                throw new InvalidOperationException("Can only create one instance of Controller");
-            }
-            this._vnButtons = vnButtonsStart;
+            if (Instance != null) throw new InvalidOperationException("Can only create one instance of Controller");
+            _vnButtons = vnButtonsStart;
             Instance = this;
-
         }
+
+        public new static StudioController Instance { get; private set; }
 
         public static ConfigEntry<KeyboardShortcut> VNControllerHotkey { get; private set; }
+
+        public string FrameFile
+        {
+            get => studio_scene.frame;
+            set
+            {
+                var obj = FindObjectOfType<FrameCtrl>();
+                obj.Load(value);
+            }
+        }
+
+        public int MapNumber
+        {
+            set => StartCoroutine(AddMapCoroutine(value));
+
+
+            get => studio_scene.map;
+        }
+
+        internal System.Ace Ace
+        {
+            get => new System.Ace {no = studio_scene.aceNo, blend = studio_scene.aceBlend};
+            set
+            {
+                studio_scene.aceNo = value.no;
+                studio_scene.aceBlend = value.blend;
+                Studio.Studio.Instance.systemButtonCtrl.UpdateInfo();
+            }
+        }
+
+        public bool MapOption
+        {
+            set
+            {
+                Map map;
+                // set map option visible: param = 1/0
+                map = Map.Instance;
+                map.visibleOption = value;
+            }
+            get => studio_scene.mapOption;
+        }
+
+        public Vector3 MapRot
+        {
+            set => studio_scene.caMap.rot = value;
+            get => studio_scene.caMap.rot;
+        }
+
+        public Vector3 MapPos
+        {
+            set
+            {
+                var mapctrl = MapCtrl.Instance;
+                studio_scene.caMap.pos = value;
+                mapctrl.Reflect();
+            }
+            get => studio_scene.caMap.pos;
+        }
+
+        public int Sun
+        {
+            set
+            {
+                var st = new[]
+                    {SunLightInfo.Info.Type.DayTime, SunLightInfo.Info.Type.Evening, SunLightInfo.Info.Type.Night};
+                var map = Map.Instance;
+                map.sunType = st[value];
+            }
+            get => studio_scene.sunLightType;
+        }
+
+
+        public string Frame
+        {
+            set
+            {
+                var pngName = value;
+                if (pngName is null)
+                {
+                    pngName = "";
+                }
+                else
+                {
+                    // try to load png in "frame" folder
+                    var path = combine_path(Application.dataPath, "..", "UserData", "frame", pngName);
+                    var pngInDefault = Path.GetFullPath(path);
+                    if (!File.Exists(pngInDefault)) pngName = "";
+                }
+
+                FrameFile = pngName;
+            }
+        }
 
         internal void Main()
         {
@@ -51,102 +134,47 @@ namespace VNEngine
             //StudioSaveLoadApi.RegisterExtraBehaviour<AnimationControllerSceneController>(GUID);
         }
 
-        // --- support functions ----
-        public override void load_scene(string file)
-        {
-            this._load_scene_before(file);
-            var studio = Studio.Studio.Instance;
-            //studio.InitScene(False) # or init scene to false
-            this.updFuncParam = file;
-            this.updFunc = this.load_scene2;
-            this.funcLockedText = "Loading scene...";
-            this.isFuncLocked = true;
-            //self.saveTChar = 
-        }
-
-        public void load_scene2(string file)
-        {
-            this.updFunc = this.load_scene3;
-        }
-
-        public void load_scene3(string file)
-        {
-            this.updFunc = this.load_scene_immediately;
-        }
-
-        public void load_scene_immediately(string file)
-        {
-            var studio = Studio.Studio.Instance;
-            //return Path.Combine(get_scene_dir(),file)
-            var fpath = Path.Combine(this.SceneDir(), this.sceneDir + file);
-            studio.LoadScene(fpath);
-            //self.change_map_to(-1)
-            //self.change_map_to(studio.sceneInfo.map)
-            //self.updFunc = self.testupdfunc
-            // -------- this loading scene certainly work, but show scene unimmersive, step-by-step -----------
-            //studio.StartCoroutine(studio.LoadSceneCoroutine(fpath))
-            this.isFuncLocked = false;
-        }
-
         public override string SceneDir()
         {
-            return Path.GetFullPath(Path.Combine(Path.Combine(Path.Combine(Path.Combine(Application.dataPath, ".."), "UserData"), "Studio"), "scene"));
-        }
-
-        // 
-        //             try:
-        //                 ffile = "..\\studio\\scene\\" + self.sceneDir + filepng
-        //                 print ffile
-        //                 from Studio import BackgroundCtrl
-        //                 from UnityEngine import GameObject
-        //                 #print self.studio.m_BackgroundCtrl.Load(ffile)
-        //                 #for obj in GameObject.FindObjectOfType(BackgroundCtrl):
-        //                 obj = GameObject.FindObjectOfType(BackgroundCtrl)
-        //                 print obj.Load(ffile)
-        //             except Exception, e:
-        //                 print("Error: " + str(e))
-        //             
-        public void scene_set_bg_png(string filepng)
-        {
-            var ffile = "..\\studio\\scene\\" + this.sceneDir + filepng;
-            this.scene_set_bg_png_orig(ffile);
-        }
-
-        public string scene_get_framefile()
-        {
-            return this.studio_scene.frame;
-        }
-
-        public bool scene_set_framefile(string ffile)
-        {
-            var obj = GameObject.FindObjectOfType<FrameCtrl>();
-            return obj.Load(ffile);
+            return Path.GetFullPath(Path.Combine(
+                Path.Combine(Path.Combine(Path.Combine(Application.dataPath, ".."), "UserData"), "Studio"), "scene"));
         }
 
         private IEnumerator AddMapCoroutine(int mapNum)
         {
             yield return Singleton<Map>.Instance.LoadMapCoroutine(mapNum, true);
-            this.studio_scene.map = mapNum;
-            if (!(studio.onChangeMap is null))
-            {
-                studio.onChangeMap();
-            }
+            studio_scene.map = mapNum;
+            if (!(studio.onChangeMap is null)) studio.onChangeMap();
             studio.m_CameraCtrl.CloerListCollider();
             Info.MapLoadInfo mapLoadInfo = null;
             if (Singleton<Info>.Instance.dicMapLoadInfo.TryGetValue(Singleton<Map>.Instance.no, out mapLoadInfo))
-            {
-                studio.m_CameraCtrl.LoadVanish(mapLoadInfo.vanish.bundlePath, mapLoadInfo.vanish.fileName, Singleton<Map>.Instance.mapRoot);
-            }
+                studio.m_CameraCtrl.LoadVanish(mapLoadInfo.vanish.bundlePath, mapLoadInfo.vanish.fileName,
+                    Singleton<Map>.Instance.mapRoot);
             var mapctrl = MapCtrl.Instance;
             mapctrl.Reflect();
-            yield break;
         }
 
-        public void ChangeMap(int mapNum)
+        public System.SystemData export_full_status()
         {
-            base.StartCoroutine(AddMapCoroutine(mapNum));
+            return new System.SystemData(this);
+        }
 
+        public void Apply(System.SystemData data, bool change_map = true)
+        {
+            BGM = data.bgm;
+
+            if (!(data.wav is null)) WAV = (System.Wav_s) data.wav;
+
+            if (change_map) MapNumber = data.map;
+
+            MapPos = data.map_pos;
+            MapRot = data.map_rot;
+            Sun = data.sun;
+            MapOption = data.map_opt;
+            BackgroundImage = data.bg_png;
+            Frame = data.fm_png;
+            CharLight = data.char_light;
+            if (!Ace.Equals(data.ace)) Ace = data.ace;
         }
     }
-
 }

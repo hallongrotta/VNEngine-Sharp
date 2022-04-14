@@ -6,7 +6,6 @@ using HarmonyLib;
 using Studio;
 using UnityEngine;
 using VNActor;
-using static VNEngine.Utils;
 using static VNEngine.VNCamera;
 
 namespace VNEngine
@@ -43,7 +42,7 @@ namespace VNEngine
 
         public Dictionary<string, Prop> AllProps => SceneFolders.AllProps;
 
-        public Studio.Studio studio
+        protected Studio.Studio studio
         {
             get
             {
@@ -52,7 +51,128 @@ namespace VNEngine
             }
         }
 
-        public SceneInfo studio_scene => studio.sceneInfo;
+        protected SceneInfo studio_scene => studio.sceneInfo;
+
+        public List<List<Character>> SelectedChars
+        {
+            get
+            {
+                var mtreeman = studio.treeNodeCtrl;
+                var ar = new List<Character>();
+                foreach (var node in mtreeman.selectNodes)
+                {
+                    var ochar = NeoOCI.create_from_treenode(node);
+                    if (ochar.objctrl is OCIChar)
+                    {
+                        var chara = (Character) ochar;
+                        ar.Add(chara);
+                    }
+                }
+
+                var am = new List<Character>();
+                var af = new List<Character>();
+                foreach (var chara in ar)
+                    if (chara.Sex == 0)
+                        am.Add(chara);
+                    else
+                        af.Add(chara);
+                return new List<List<Character>>
+                {
+                    af,
+                    am
+                };
+            }
+        }
+
+        public Character SelectedChar
+        {
+            get
+            {
+                var mtreeman = studio.treeNodeCtrl;
+                var ar = new List<Character>();
+                foreach (var node in mtreeman.selectNodes)
+                {
+                    var ochar = NeoOCI.create_from_treenode(node);
+                    if (ochar.objctrl is OCIChar)
+                    {
+                        var chara = (Character) ochar;
+                        ar.Add(chara);
+                    }
+                }
+
+                return ar[0];
+            }
+        }
+
+        public List<Item> SelectedItems
+        {
+            get
+            {
+                var mtreeman = studio.treeNodeCtrl;
+                var ar = new List<Item>();
+                foreach (var node in mtreeman.selectNodes)
+                {
+                    var oitem = NeoOCI.create_from_treenode(node);
+                    if (oitem.objctrl is OCIItem)
+                    {
+                        var prop = (Item) oitem;
+                        ar.Add(prop);
+                    }
+                }
+
+                if (ar.Count > 0)
+                    return ar;
+                throw new Exception("No items selected");
+            }
+        }
+
+        public Item SelectedItem
+        {
+            get
+            {
+                var mtreeman = studio.treeNodeCtrl;
+                var ar = new List<Item>();
+                foreach (var node in mtreeman.selectNodes)
+                {
+                    var oitem = NeoOCI.create_from_treenode(node);
+                    if (oitem.objctrl is OCIItem)
+                    {
+                        var prop = (Item) oitem;
+                        ar.Add(prop);
+                    }
+                }
+
+                if (ar.Count > 0)
+                    return ar[0];
+                throw new Exception("No items selected");
+            }
+        }
+
+        public string CameraName
+        {
+            get
+            {
+                // return the current active camera's name, or return None if no camera actived.
+                if (studio.ociCamera != null) return studio.ociCamera.name;
+                return null;
+            }
+            set
+            {
+                // set the named camera as active camera, if name is None or not found, switch to default camera
+                // if active an object camera, return true. Or return false if non object camera actived.
+                foreach (var ociobj in studio.dicObjectCtrl.Values)
+                    if (ociobj is OCICamera cam)
+                    {
+                        if (cam.name == name)
+                            if (studio.ociCamera != cam)
+                                studio.ChangeCamera(cam);
+                        return;
+                    }
+
+                studio.ChangeCamera(null);
+            }
+        }
+
 
         /*        public string calc_py_path()
                 {
@@ -176,7 +296,7 @@ namespace VNEngine
 
         public void anim_to_camera_num(float duration, int camnum, string style = "linear", GameFunc onCameraEnd = null)
         {
-            this.anim_to_camera_obj(duration, this.get_camera_num(camnum), style, onCameraEnd);
+            anim_to_camera_obj(duration, get_camera_num(camnum), style, onCameraEnd);
         }
 
         public void reset()
@@ -200,7 +320,7 @@ namespace VNEngine
             return new Character((OCIChar) get_objctrl_num(num));
         }
 
-        public new List<Character> scene_get_all_females()
+        public List<Character> scene_get_all_females()
         {
             var ar = new List<Character>();
             var dobjctrl = studio.dicObjectCtrl;
@@ -217,13 +337,23 @@ namespace VNEngine
             return ar;
         }
 
+        public bool treenode_check_select(TreeNodeObject treenode)
+        {
+            return studio.treeNodeCtrl.CheckSelect(treenode);
+        }
+
+        public void SelectObject(NeoOCI elem)
+        {
+            studio.treeNodeCtrl.SelectSingle(elem.treeNodeObject);
+        }
+
         public void _anim_to_camera_savecurrentpos()
         {
-            CamData camobj = this.get_camera_num(0);
-            this.camSPos = camobj.position;
-            this.camSDir = camobj.distance;
-            this.camSAngle = camobj.rotation;
-            this.camSFOV = camobj.fov;
+            var camobj = get_camera_num(0);
+            camSPos = camobj.position;
+            camSDir = camobj.distance;
+            camSAngle = camobj.rotation;
+            camSFOV = camobj.fov;
         }
 
         public void anim_to_camera(
@@ -236,43 +366,40 @@ namespace VNEngine
             GameFunc onCameraEnd = null)
         {
             var camobj = new CamData(pos, rotate, distance, fov);
-            this.anim_to_camera_obj(duration, camobj, style, onCameraEnd);
+            anim_to_camera_obj(duration, camobj, style, onCameraEnd);
         }
 
-        public void anim_to_camera_obj(float duration, CamData camobj, string style = "linear", GameFunc onCameraEnd = null)
+        public void anim_to_camera_obj(float duration, CamData camobj, string style = "linear",
+            GameFunc onCameraEnd = null)
         {
-            this._anim_to_camera_savecurrentpos();
+            _anim_to_camera_savecurrentpos();
             // print "Anim to cam 1"
             // print "Anim to cam 2"
             var camobjv = camobj;
-            this.camTPos = camobjv.position;
-            this.camTDir = camobjv.distance;
-            this.camTAngle = camobjv.rotation;
-            this.camTFOV = camobjv.fov;
-            this.camAnimStyle = style;
-            this.camAnimFullStyle = null;
+            camTPos = camobjv.position;
+            camTDir = camobjv.distance;
+            camTAngle = camobjv.rotation;
+            camTFOV = camobjv.fov;
+            camAnimStyle = style;
+            camAnimFullStyle = null;
             // camera animation one timer only
             animation_cam_timer(duration, onCameraEnd);
         }
 
         public void debug_print_all_chars()
         {
-            var fems = this.scene_get_all_females();
+            var fems = scene_get_all_females();
             Console.WriteLine("-- Female scene chars: --");
             foreach (var i in Enumerable.Range(0, fems.Count))
-            {
-                Console.WriteLine(String.Format("{0}: {1}", i.ToString(), fems[i].text_name));
-            }
-            fems = this.scene_get_all_males();
+                Console.WriteLine("{0}: {1}", i.ToString(), fems[i].text_name);
+            fems = scene_get_all_males();
             Console.WriteLine("-- Male scene chars: --");
             foreach (var i in Enumerable.Range(0, fems.Count))
-            {
-                Console.WriteLine(String.Format("{0}: {1}", i.ToString(), fems[i].text_name));
-            }
-            this.show_blocking_message_time("Debug: list of chars printed in console!");
+                Console.WriteLine("{0}: {1}", i.ToString(), fems[i].text_name);
+            show_blocking_message_time("Debug: list of chars printed in console!");
         }
 
-        public new List<Character> scene_get_all_males()
+        public List<Character> scene_get_all_males()
         {
             var ar = new List<Character>();
             var dobjctrl = studio.dicObjectCtrl;
@@ -332,43 +459,6 @@ namespace VNEngine
             return ar;
         }
 
-        public void vnscenescript_run_current(GameFunc onEnd, string startState = "0")
-        {
-            //print "Run current!"
-            /*
-            MenuFunc func = VNSceneScript.start_menu;
-            this.run_menu(func, new Dictionary<string, string> {
-                {
-                    "mode",
-                    "view"
-                },
-                {
-                    "startState",
-                    startState
-                }
-            }, onEnd);
-            */
-        }
-
-        public void vnscenescript_run_filescene(string file, GameFunc onEnd)
-        {
-            runScAct = onEnd;
-            load_scene(file);
-            set_text_s("...");
-            set_buttons_alt(new List<Button_s>());
-            set_timer(0.5f, _vnscenescript_run_filescene);
-        }
-
-        public void _vnscenescript_run_filescene(VNController game)
-        {
-            set_timer(0.5f, _vnscenescript_run_filescene2);
-        }
-
-        public void _vnscenescript_run_filescene2(VNController game)
-        {
-            vnscenescript_run_current(runScAct);
-        }
-
         public string scene_get_bg_png_orig()
         {
             return studio.sceneInfo.background;
@@ -385,171 +475,6 @@ namespace VNEngine
             return true;
         }
 
-        // -------- scene with framework ------------
-
-        /*
-        public void scenef_register_actorsprops()
-        {
-            foreach (var obj in StudioAPI.GetSelectedObjects())
-            {
-                if (obj is OCIItem item)
-                {
-                    string id = "prp" + this._scenef_props.Count;
-                    this._scenef_props[id] = new Item(item); // TODO dont make a new one each time
-                }
-                else if (obj is OCIChar chara) 
-                {
-                    string id = "act" + this._scenef_actors.Count;
-                    this._scenef_actors[id] = new Character(chara);
-                }
-            }
-        }
-        */
-
-
-        /*
-        public void scenef_register_actorsprops()
-        {
-            string actorTitle = "";
-            Console.WriteLine("-- Framework: register actors and props start --");
-            var game = this;
-            // search for tag folder (-actor:,-prop:,-dlgFolder-) and load them into game automaticlly
-            // so this function must be called AFTER SCENE HAD BE LOADED!!
-            game._scenef_actors = new Dictionary<string, Character>
-            {
-            };
-            game._scenef_props = new Dictionary<string, Item>
-            {
-            };
-            // get all from scene
-            var folders = game.scene_get_all_folders_raw();
-            // load actors and props from -actor:/-prop: tag folder attach on char/item
-            string actorAlias;
-            string actorColor = "ffffff";
-            string propAlias;
-            HSNeoOCI hsobj;
-            foreach (var fld in folders)
-            {
-                var ftn = fld.name;
-                if (ftn.StartsWith("-actor:"))
-                {
-                    // analysis actor tag
-                    var tagElements = ftn.Split(':');
-                    if (tagElements.Length == 2)
-                    {
-                        actorAlias = tagElements[1];
-                    }
-                    else if (tagElements.Length == 3)
-                    {
-                        actorAlias = tagElements[1];
-                        actorColor = tagElements[2];
-                    }
-                    else
-                    {
-                        actorAlias = tagElements[1];
-                        actorColor = tagElements[2];
-                        actorTitle = tagElements[3];
-                    }
-                    // register actor
-                    try
-                    {
-                        var hsociChar = HSNeoOCI.create_from_treenode(fld.treeNodeObject.parent.parent.parent);
-                        if (hsociChar is Character chara)
-                        {
-                            if (actorTitle is null)
-                            {
-                                actorTitle = hsociChar.text_name;
-                            }
-                            //game._scenef_actors[actorAlias] = Character(hsociChar.objctrl)
-                            //adapted to multiple frameworks in 2.0
-                            game._scenef_actors[actorAlias] = chara.as_actor;
-                            if (actorColor is string)
-                            {
-                                game.register_char(actorAlias, actorColor, actorTitle);
-                            }
-                            else
-                            {
-
-                            }
-                            Console.WriteLine("Registered actor: '" + Utils.to_roman(actorAlias) + "' as " + Utils.to_roman(actorTitle) + " (#" + actorColor.ToString() + ")");
-                        }
-                        else
-                        {
-                            Console.WriteLine("Error in register char tag (not correct child) <" + Utils.to_roman(ftn) + ">");
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine("error in register char tag <" + Utils.to_roman(ftn) + ">: " + e.ToString());
-                        continue;
-                    }
-                }
-                else if (ftn.StartsWith("-prop:"))
-                {
-                    // analysis props tag
-
-                    propAlias = ftn.Substring("-prop:".Length).Trim();
-                    // register props
-                    HSNeoOCI oci = HSNeoOCI.create_from_treenode(fld.treeNodeObject.parent);
-
-                    if (oci is Item prop) {
-                        game._scenef_props[propAlias] = prop;
-                    }
-                    
-                    Console.WriteLine("Registered prop: '" + Utils.to_roman(propAlias) + "' as " + Utils.to_roman(oci.text_name));
-                }
-                else if (ftn.StartsWith("-propchild:"))
-                {
-                    // analysis props tag
-                    propAlias = ftn.Substring("-propchild:".Length).Trim();
-                    // register props
-                    hsobj = HSNeoOCI.create_from_treenode(fld.treeNodeObject.child[0]);
-                    game._scenef_props[propAlias] = (Item)hsobj;
-                    Console.WriteLine("Registered prop: '" + Utils.to_roman(propAlias) + "' as " + Utils.to_roman(hsobj.text_name));
-                }
-                else if (ftn.StartsWith("-propgrandpa:"))
-                {
-                    // analysis props tag
-                    propAlias = ftn.Substring("-propgrandpa:".Length).Trim();
-                    // register props
-                    hsobj = HSNeoOCI.create_from_treenode(fld.treeNodeObject.parent.parent);
-                    game._scenef_props[propAlias] = (Item)hsobj;
-                    Console.WriteLine("Registered prop: '" + Utils.to_roman(propAlias) + "' as " + Utils.to_roman(hsobj.text_name));
-                }
-            }
-            Console.WriteLine("-- Framework: register actors and props end --");
-        }
-       */
-
-
-        // ---- lip sync ------- TODO
-        /*        new public void set_text(string character, string text)
-                {
-                    base.set_text(character, text);
-                    if (this.isfAutoLipSync)
-                    {
-                        try
-                        {
-                            this._flipsync_text_handler(character, text);
-                        }
-                        catch (Exception e)
-                        {
-                            Console.WriteLine("Error in flipsync: " + e.ToString());
-                        }
-                    }
-                }*/
-
-        /*        public object _flipsync_text_handler(object character, object text)
-                {
-                    vngelipsync.flipsync_text_handler(character, text);
-                }
-
-                public object fake_lipsync_stop()
-                {
-                    vngelipsync.fake_lipsync_stop(this);
-                }*/
-
-        // --------- sync_h ---------
         public void sync_h(Character female, Character male)
         {
             // if factor.isHAnime:

@@ -180,7 +180,7 @@ namespace SceneSaveState
 
         internal double saveDataSize { get; private set; }
 
-        internal VNNeoController game => VNNeoController.Instance;
+        internal StudioController game => StudioController.Instance;
 
         internal static SceneConsole Instance { get; private set; }
 
@@ -586,7 +586,7 @@ namespace SceneSaveState
         {
             if (block.Count > 0)
             {
-                var curstatus = VNEngine.System.export_full_status();
+                var curstatus = game.export_full_status();
                 foreach (var i in Enumerable.Range(0, block.Count))
                 {
                     var scene = block[i];
@@ -880,7 +880,7 @@ namespace SceneSaveState
         // Change name
         internal static void changeCharName(VNNeoController game, string name)
         {
-            var chara = Utils.getSelectedChar(game);
+            var chara = game.SelectedChar;
             var old_name = chara.text_name;
             chara.objctrl.treeNodeObject.textName = name;
             // for sex in range(len(self.basechars)):
@@ -1035,7 +1035,7 @@ namespace SceneSaveState
             block.SetCurrent(calcPos);
             loadCurrentScene();
             Console.WriteLine("Run VNSS from state {0}", calcPos.ToString());
-            game.vnscenescript_run_current(onEndVNSS, calcPos.ToString());
+            //game.vnscenescript_run_current(onEndVNSS, calcPos.ToString());
         }
 
         internal void endVNSSbtn(VNNeoController game)
@@ -1084,7 +1084,7 @@ namespace SceneSaveState
 
         internal void SetSceneState(Scene s)
         {
-            if (isSysTracking) VNEngine.System.import_status(s.sys, track_map);
+            if (isSysTracking) game.Apply(s.sys, track_map);
             foreach (var actid in s.actors.Keys)
             {
                 var actors = game.AllActors;

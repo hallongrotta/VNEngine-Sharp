@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using MessagePack;
-using Studio;
 using UnityEngine;
 
 namespace VNEngine
@@ -176,29 +175,7 @@ namespace VNEngine
         */
 
         // :type game: vngameengine.VNNeoController
-        public static void set_camera_name(VNNeoController game, string name)
-        {
-            // set the named camera as active camera, if name is None or not found, switch to default camera
-            // if active an object camera, return true. Or return false if non object camera actived.
-            foreach (var ociobj in game.studio.dicObjectCtrl.Values)
-                if (ociobj is OCICamera cam)
-                {
-                    if (cam.name == name)
-                        if (game.studio.ociCamera != cam)
-                            game.studio.ChangeCamera(cam);
-                    return;
-                }
 
-            game.studio.ChangeCamera(null);
-        }
-
-        // :type game: vngameengine.VNNeoController
-        public static string get_camera_name(VNNeoController game)
-        {
-            // return the current active camera's name, or return None if no camera actived.
-            if (game.studio.ociCamera != null) return game.studio.ociCamera.name;
-            return null;
-        }
 
         public struct adv_properties
         {

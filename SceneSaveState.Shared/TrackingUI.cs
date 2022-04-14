@@ -96,7 +96,6 @@ namespace SceneSaveState
             GUILayout.EndHorizontal();
         }
 
-        // :type elem:HSNeoOCI
         public static void render_ui_for_tracking(string id, NeoOCI elem)
         {
             var txt = id + ": " + elem.text_name;
@@ -111,10 +110,10 @@ namespace SceneSaveState
             {
                 elem.visible_treenode = !elem.visible_treenode;
             }
-            bool isSelected = Utils.treenode_check_select(elem.treeNodeObject);
+            bool isSelected = Instance.game.treenode_check_select(elem.treeNodeObject);
             if (GUILayout.Button(Utils.btntext_get_if_selected(txt, isSelected)))
             {
-                Instance.game.studio.treeNodeCtrl.SelectSingle(elem.treeNodeObject);
+                Instance.game.SelectObject(elem);
             }
             //GUILayout.Label(txt)
             GUILayout.FlexibleSpace();
