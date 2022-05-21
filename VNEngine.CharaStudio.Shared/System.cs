@@ -3,6 +3,7 @@ using Studio;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 using VNActor;
 
@@ -33,6 +34,7 @@ namespace VNEngine
 
             public Wav_s? wav;
             public int map;
+            public string MapFilename;
             public Vector3 map_pos;
             public Vector3 map_rot;
             public int sun;
@@ -54,6 +56,11 @@ namespace VNEngine
 
             }
 
+            public string GetMapFilename(int mapNumber)
+            {
+                return Singleton<Info>.Instance.dicMapLoadInfo[mapNumber].fileName;
+            }
+
             public SystemData(StudioController game)
             {
                 // export a dict contains all system status
@@ -72,12 +79,13 @@ namespace VNEngine
                 }
 
                 map = game.MapNumber;
+                MapFilename = GetMapFilename(map);
                 map_pos = game.MapPos;
                 map_rot = game.MapRot;
 
                 sun = game.Sun;
 
-                bg_png = game.scene_get_bg_png_orig();
+                bg_png = game.scene_get_bg_png_orig(); 
 
                 fm_png = game.FrameFile;
 

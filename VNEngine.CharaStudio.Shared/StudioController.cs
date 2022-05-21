@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using BepInEx;
 using BepInEx.Configuration;
 using Studio;
@@ -159,13 +160,40 @@ namespace VNEngine
             return new System.SystemData(this);
         }
 
-        public void Apply(System.SystemData data, bool change_map = true)
+        public static int GetMapNumberByFilename(string fileName)
+        {
+            var mapLoadInfoDictionary = Singleton<Info>.Instance.dicMapLoadInfo;
+
+            foreach (var kv in mapLoadInfoDictionary.Where(kv => kv.Value.fileName == fileName))
+            {
+                return kv.Key;
+            }
+
+            return -1;
+        }
+
+        public void Apply(System.SystemData data, bool changeMap = true)
         {
             BGM = data.bgm;
 
             if (!(data.wav is null)) WAV = (System.Wav_s) data.wav;
 
-            if (change_map) MapNumber = data.map;
+            if (changeMap)
+            {
+                // MapNumber = data.map;
+                var mapNum = GetMapNumberByFilename(data.MapFilename);
+
+                // For backwards compatibility
+                if (data.MapFilename is null)
+                {
+                    mapNum = data.map;
+                }
+
+                if (mapNum != MapNumber)
+                {
+                    MapNumber = mapNum;
+                }
+            }
 
             MapPos = data.map_pos;
             MapRot = data.map_rot;
