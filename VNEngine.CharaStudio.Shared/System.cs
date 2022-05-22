@@ -58,7 +58,7 @@ namespace VNEngine
 
             public string GetMapFilename(int mapNumber)
             {
-                return Singleton<Info>.Instance.dicMapLoadInfo[mapNumber].fileName;
+                return mapNumber == -1 ? null : Singleton<Info>.Instance.dicMapLoadInfo[mapNumber].fileName;
             }
 
             public SystemData(StudioController game)
