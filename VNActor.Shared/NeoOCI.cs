@@ -94,6 +94,25 @@ namespace VNActor
             return null;
         }
 
+        public static NeoOCI createFromOCI(ObjectCtrlInfo oci)
+        {
+            switch (oci)
+            {
+                case OCIChar chara:
+                    return create_from(chara);
+                case OCIItem item:
+                    return create_from(item);
+                case OCIFolder fld:
+                    return create_from(fld);
+                case OCIRoute route:
+                    return create_from(route);
+                case OCILight light:
+                    return create_from(light);
+                default:
+                    return null;
+            }
+        }
+
 
         public static NeoOCI create_from_selected()
         {

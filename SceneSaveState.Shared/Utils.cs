@@ -29,17 +29,11 @@ namespace SceneSaveState
         // :type game:vngameengine.VNNeoController
         public static void start(VNNeoController game)
         {
-            UI.sceneConsoleGUIStart(game);
-            SceneFolders.LoadTrackedActorsAndProps();
-            // if no blocks - autoload
             if (SceneConsole.Instance.block.Count == 0)
             {
-                if (Folder.find_single_startswith("-scenesavestate:") != null)
-                {
-                    SceneConsole.Instance.loadSceneData();
-                    SceneConsole.Instance.show_blocking_message_time_sc("Scene data was auto-loaded!");
-                }
+                return;
             }
+            UI.sceneConsoleGUIStart(game);
         }
 
 
@@ -256,48 +250,14 @@ namespace SceneSaveState
 
         public static string btntext_get_if_selected(string btntext, bool isSelected)
         {
-            object col;
-            if (isSelected)
-            {
-                col = SceneConsole.Instance.sel_font_col;
-            }
-            else
-            {
-                col = SceneConsole.Instance.nor_font_col;
-            }
-            return String.Format("<color={0}>{1}</color>", col, btntext);
-        }
-
-        public static string btntext_get_if_selected2(string btntext, bool isSelected)
-        {
-            object col;
-            if (isSelected)
-            {
-                col = "#f8e473";
-            }
-            else
-            {
-                col = SceneConsole.Instance.nor_font_col;
-            }
-            return String.Format("<color={0}>{1}</color>", col, btntext);
-        }
-
-        public static void recalc_autostates()
-        {
-            var ar = Folder.find_all_startswith("-msauto:vis:");
-            ar.Sort();
-            SceneConsole.Instance.arAutoStatesItemsVis = ar;
-            var ar2 = Folder.find_all_startswith("-msauto:choice:");
-            ar2.Sort();
-            SceneConsole.Instance.arAutoStatesItemsChoice = ar2;
+            var col = isSelected ? UI.SelectedTextColor : UI.NormalTextColor;
+            return $"<color={col}>{btntext}</color>";
         }
 
         public static string sort_by_textname(NeoOCI el)
         {
             return el.treeNodeObject.textName;
         }
-
-
 
         // ::::: Essential functions :::::
         public static Folder getFolder(VNNeoController game, string name, bool exact = false)

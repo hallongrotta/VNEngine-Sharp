@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Linq;
+using UnityEngine;
 using VNActor;
 using VNEngine;
 using static SceneSaveState.SceneConsole;
@@ -10,49 +11,73 @@ namespace SceneSaveState
         {      
             GUILayout.BeginHorizontal();          
             GUILayout.BeginVertical(GUILayout.Width(ColumnWidth));
-            GUILayout.Label("Actors:");
+            GUILayout.Label("Character Roles");
             tracking_actors_scroll = GUILayout.BeginScrollView(tracking_actors_scroll);
-            var actors = Instance.game.AllActors;
-            foreach (var actorid in actors.Keys)
+
+            var rt = Instance.roleTracker;
+            var actors = Instance.roleTracker.AllCharacters;
+            var props = Instance.roleTracker.AllProps;
+
+            foreach (var kv in rt.CharacterRoles)
             {
-                VNActor.Character character = actors[actorid];
-                render_ui_for_tracking(actorid, character);
+                render_ui_for_tracking(kv.Key, !rt.RoleFilled(kv.Key) ? null : actors[kv.Key]);
             }
+
             GUILayout.EndScrollView();
             GUILayout.EndVertical();
 
             GUILayout.BeginVertical(GUILayout.Width(ColumnWidth));
-            GUILayout.Label("Props:");
+            GUILayout.Label("Prop Roles");
             tracking_props_scroll = GUILayout.BeginScrollView(tracking_props_scroll);
-            var props = Instance.game.AllProps;
-            foreach (var propid in props.Keys)
+            foreach (var kv in rt.PropRoles)
             {
-                render_ui_for_tracking(propid, props[propid]);
+                render_ui_for_tracking(kv.Key, !rt.RoleFilled(kv.Key) ? null : props[kv.Key]);
             }
             GUILayout.EndScrollView();
 
             GUILayout.EndVertical();
             GUILayout.BeginVertical(GUILayout.Width(ColumnWidth));
-            if (GUILayout.Button("Track selected", GUILayout.Height(50), GUILayout.Width(ColumnWidth)))
+            GUILayout.Label("Role Controls");
+            
+            if (GUILayout.Button("Add selected to new role.", GUILayout.Height(50), GUILayout.Width(ColumnWidth)))
             {
-                Instance.addSelectedToTrack();
+                Instance.AddSelectedToRole();
             }
-            if (GUILayout.Button("Untrack selected", GUILayout.Height(25), GUILayout.Width(ColumnWidth)))
+
+            if (GUILayout.Button("Remove selected from role.", GUILayout.Height(25), GUILayout.Width(ColumnWidth)))
             {
-                if (Instance.promptOnDelete.Value)
+                Instance.ClearRoleOfSelected();
+            }
+
+            if (Instance.SelectedRole == "")
+            {
+                GUILayout.Space(50);
+            }
+            else
+            {
+                if (GUILayout.Button($"Assign selected to {Instance.SelectedRole}.", GUILayout.Height(25), GUILayout.Width(ColumnWidth)))
                 {
-                    warning_action = Instance.delSelectedFromTrack;
-                    warning_param = new WarningParam_s("Untrack and delete selected from scenes?", false);
+                    if (Instance.SelectedRole != "")
+                    {
+                        Instance.AddSelectedToRole(Instance.SelectedRole);
+                    }
                 }
-                else
+
+                if (GUILayout.Button("Remove role.", GUILayout.Height(25), GUILayout.Width(ColumnWidth)))
                 {
-                    Instance.delSelectedFromTrack();
+
+                    if (Instance.promptOnDelete.Value)
+                    {
+                        warning_action = Instance.RemoveSelectedRole;
+                        warning_param = new WarningParam_s("Remove role from all scenes?", false);
+                    }
+                    else
+                    {
+                        Instance.RemoveSelectedRole();
+                    }
                 }
             }
-            if (GUILayout.Button("Refresh", GUILayout.Height(25), GUILayout.Width(ColumnWidth)))
-            {
-                SceneFolders.LoadTrackedActorsAndProps();
-            }
+
             if (!Instance.isSysTracking)
             {
                 if (GUILayout.Button("Track scene settings", GUILayout.Height(25), GUILayout.Width(ColumnWidth)))
@@ -83,37 +108,39 @@ namespace SceneSaveState
             }
             GUILayout.EndVertical();
             GUILayout.EndHorizontal();
-            GUILayout.FlexibleSpace();
             GUILayout.BeginHorizontal();
-            GUILayout.Label("Pro: Change selected char ID to ");
-            //GUILayout.Label("  Who say:", GUILayout.Width(80))
+            GUILayout.Label("Change selected role name to:");
             Instance.newid = GUILayout.TextField(Instance.newid);
             if (GUILayout.Button("Change", GUILayout.Width(60)))
             {
-                //sc.cam_whosay = sc.get_next_speaker(sc.cam_whosay, False)
-                Instance.changeSelTrackID(Instance.newid);
+                Instance.ChangeSelectedRoleName(Instance.newid);
             }
             GUILayout.EndHorizontal();
         }
 
         public static void render_ui_for_tracking(string id, NeoOCI elem)
         {
-            var txt = id + ": " + elem.text_name;
             GUILayout.BeginHorizontal();
-            GUILayout.Space(20);
-            var btntext = "";
-            if (elem.visible_treenode)
+            var isSelected = Instance.SelectedRole == id;
+            
+            // Role Button
+            if (GUILayout.Button(Utils.btntext_get_if_selected(id, isSelected), GUILayout.Width(50)))
             {
-                btntext = "v";
+                Instance.SelectedRole = isSelected ? "" : id;
             }
-            if (GUILayout.Button(btntext, GUILayout.Width(22)))
+
+            // Object button
+            if (elem is null)
             {
-                elem.visible_treenode = !elem.visible_treenode;
+                GUILayout.Button("Empty");
             }
-            bool isSelected = Instance.game.treenode_check_select(elem.treeNodeObject);
-            if (GUILayout.Button(Utils.btntext_get_if_selected(txt, isSelected)))
+            else
             {
-                Instance.game.SelectObject(elem);
+                isSelected = Instance.game.treenode_check_select(elem.treeNodeObject);
+                if (GUILayout.Button(Utils.btntext_get_if_selected(elem.text_name, isSelected)))
+                {
+                    Instance.game.SelectObject(elem);
+                }
             }
             //GUILayout.Label(txt)
             GUILayout.FlexibleSpace();

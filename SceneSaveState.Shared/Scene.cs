@@ -35,23 +35,19 @@ namespace SceneSaveState
         {
         }
 
-        public Scene(StudioController game, bool importSys) : this(new Dictionary<string, ActorData>(), new Dictionary<string, NEOItemData>(), new Dictionary<string, LightData>(), new Dictionary<string, NEOPropData>(), new List<CamData>())
+        public Scene(SystemData sysData, Dictionary<string, Character> actors, Dictionary<string, Prop> props, bool importSys) : this(new Dictionary<string, ActorData>(), new Dictionary<string, NEOItemData>(), new Dictionary<string, LightData>(), new Dictionary<string, NEOPropData>(), new List<CamData>())
         {
-            SceneFolders.LoadTrackedActorsAndProps();
-            Dictionary<string, VNActor.Character> actors = game.AllActors;
-            Dictionary<string, Prop> props = game.AllProps;
-            foreach (string actid in actors.Keys)
+            foreach (var kv in actors)
             {
-                this.actors[actid] = (ActorData)actors[actid].export_full_status();
+                this.actors[kv.Key] = (ActorData)kv.Value.export_full_status();
             }
-            foreach (string propid in props.Keys)
+            foreach (var kv in props)
             {
-                var prop = props[propid];
-                AddProp(propid, prop);
+                AddProp(kv.Key, kv.Value);
             }
             if (importSys)
             {
-                this.sys = game.export_full_status();
+                sys = sysData;
             }
         }
 
@@ -83,9 +79,22 @@ namespace SceneSaveState
             }
         }
 
+
+        public void Remove(string roleName)
+        {
+            if (actors.ContainsKey(roleName))
+            {
+                actors.Remove(roleName);
+            }
+            else
+            {
+                RemoveProp(roleName);
+            }
+        }
+
         public void RemoveProp(string key)
         {
-            if (this.items.ContainsKey(key))
+            if (items.ContainsKey(key))
             {
                 items.Remove(key);
             }
@@ -156,5 +165,46 @@ namespace SceneSaveState
                 return 0;
             }
         }
+
+        public Type RoleType(string roleName)
+        {
+            if (items.ContainsKey(roleName))
+            {
+                return typeof(ItemData);
+            }
+            if (actors.ContainsKey(roleName))
+            {
+                return typeof(ActorData);
+            }
+            if (lights.ContainsKey(roleName))
+            {
+                return typeof(LightData);
+            }
+            return props.ContainsKey(roleName) ? typeof(NEOPropData) : null;
+        }
+
+
+        public void ChangeRoleName<T>(string roleName, string newRoleName, Dictionary<string, T> data)
+        {
+            if (!data.ContainsKey(roleName)) return;
+
+            data[newRoleName] = data[roleName];
+            data.Remove(roleName);
+        }
+
+        public void ChangeRoleName(string roleName, string newRoleName)
+        {
+
+            ChangeRoleName(roleName, newRoleName, actors);
+            ChangeRoleName(roleName, newRoleName, items);
+            ChangeRoleName(roleName, newRoleName, props);
+            ChangeRoleName(roleName, newRoleName, lights);
+
+            foreach (var cam in cams)
+            {
+                if (cam.addata.whosay == roleName) cam.addata.whosay = newRoleName;
+            }
+        }
+
     }
 }

@@ -26,11 +26,24 @@ namespace VNEngine
 
         public static void AddToTrack<T>(T objctrl) where T : ObjectCtrlInfo
         {
-            if (objctrl is OCIItem i) AddToTrack(i);
-            else if (objctrl is OCIChar c) AddToTrack(c);
-            else if (objctrl is OCIFolder f) AddToTrack(f);
-            else if (objctrl is OCILight l) AddToTrack(l);
-            else if (objctrl is OCIRoute r) AddToTrack(r);
+            switch (objctrl)
+            {
+                case OCIItem i:
+                    AddToTrack(i);
+                    break;
+                case OCIChar c:
+                    AddToTrack(c);
+                    break;
+                case OCIFolder f:
+                    AddToTrack(f);
+                    break;
+                case OCILight l:
+                    AddToTrack(l);
+                    break;
+                case OCIRoute r:
+                    AddToTrack(r);
+                    break;
+            }
         }
 
         public static void AddToTrack(OCIChar objctrl)
@@ -84,7 +97,7 @@ namespace VNEngine
             }
         }
 
-        private static string ResolveID<T>(string baseid, T obj, Dictionary<string, T> dict) where T : NeoOCI
+        internal static string ResolveID<T>(string baseid, T obj, Dictionary<string, T> dict) where T : NeoOCI
         {
             foreach (var p in dict.Values)
                 if (p.objctrl == obj.objctrl)

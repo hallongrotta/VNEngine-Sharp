@@ -154,6 +154,11 @@ namespace SceneSaveState
             }
         }
 
+        public IEnumerator<Scene> GetEnumerator()
+        {
+            return scenes.GetEnumerator();
+        }
+
         internal void RebuildSceneStrings()
         {
             var new_scene_str_array = new string[scenes.Count];

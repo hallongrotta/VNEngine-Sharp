@@ -10,8 +10,8 @@ namespace SceneSaveState
     {
 
         private const string about_text =
-            "SceneSaveState rewrite by @kasanari\n" +
-            "SceneSaveState by @keitaro\n" +
+            "SceneSaveState C# rewrite by @kasanari\n" +
+            "SceneSaveState/VNEngine by @keitaro\n" +
             "Original SceneConsole code by @chickenManX\n" +
             "Some cool features by @countd360\n";
 
@@ -43,7 +43,11 @@ namespace SceneSaveState
         public static string[] consolenames = new string[] { "SceneSaveState" };
         public static string[] options = new string[] { "Edit", "Tracking", "Load/Save", "Advanced"};
 
-public struct WarningParam_s
+
+        public const string SelectedTextColor = "#f24115";
+        public const string NormalTextColor = "#f9f9f9";
+
+        public struct WarningParam_s
         {
             public string msg;
             public object func_param;
@@ -220,7 +224,7 @@ public struct WarningParam_s
                         }                   
                         if (GUILayout.Button("Close console", GUILayout.Width(100)))
                         {
-                            var col = Instance.sel_font_col;
+                            var col = UI.SelectedTextColor;
                             Utils.sceneConsoleGUIClose();
                         }
                         GUILayout.EndHorizontal();

@@ -38,10 +38,6 @@ namespace VNEngine
             }
         }
 
-        public Dictionary<string, Character> AllActors => SceneFolders.AllActors;
-
-        public Dictionary<string, Prop> AllProps => SceneFolders.AllProps;
-
         protected Studio.Studio studio
         {
             get
@@ -340,6 +336,11 @@ namespace VNEngine
         public bool treenode_check_select(TreeNodeObject treenode)
         {
             return studio.treeNodeCtrl.CheckSelect(treenode);
+        }
+
+        public void SelectNothing()
+        {
+            studio.treeNodeCtrl.RemoveNode();
         }
 
         public void SelectObject(NeoOCI elem)

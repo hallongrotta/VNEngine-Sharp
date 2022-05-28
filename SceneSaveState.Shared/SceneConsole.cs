@@ -85,8 +85,6 @@ namespace SceneSaveState
 
         internal string newid;
 
-        internal string nor_font_col;
-
         internal float paramAnimCamDuration;
 
         internal ConfigEntry<bool> paramAnimCamIfPossible;
@@ -97,7 +95,8 @@ namespace SceneSaveState
 
         internal ConfigEntry<bool> promptOnDelete;
 
-        internal string sel_font_col;
+        internal RoleTracker roleTracker;
+        internal string SelectedRole = "";
 
         //internal Dictionary<string, KeyValuePair<string, string>> shortcuts;
 
@@ -128,10 +127,6 @@ namespace SceneSaveState
             // self.dupchars = self.getAllDupChars()
             // self.updateNameset()
             // :::: UI Data ::::
-
-            // -- Main --
-            sel_font_col = "#f24115";
-            nor_font_col = "#f9f9f9";
 
             // self.char_name = ""
 
@@ -174,6 +169,7 @@ namespace SceneSaveState
             };
             skinDefault_sideApp = "";
             Instance = this;
+            roleTracker = new RoleTracker();
         }
 
         internal static ConfigEntry<KeyboardShortcut> SSSHotkey { get; private set; }
@@ -254,6 +250,7 @@ namespace SceneSaveState
                     pluginData.data["currentScene"] = block.currentSceneIndex;
                     pluginData.data["sceneNames"] = block.ExportSceneStrings();
                     pluginData.data["trackMap"] = track_map;
+                    pluginData.data["roles"] = Utils.SerializeData(roleTracker.ExportRoles());
                     var saveDataSizeKb = CalculateSaveDataSize(sceneData);
                     Logger.LogMessage($"Saved {saveDataSizeKb:N} Kb of scene state data.");
                     saveDataSize = saveDataSizeKb;
@@ -272,15 +269,15 @@ namespace SceneSaveState
 
         internal void LoadPluginData(PluginData pluginData)
         {
-            if (pluginData == null || pluginData?.data == null)
+            if (pluginData?.data == null)
             {
+                roleTracker = new RoleTracker();
                 block = new SceneManager();
                 saveDataSize = 0;
             }
             else
             {
-                var sceneData = pluginData.data["scenes"] as byte[];
-                if (sceneData != null && sceneData.Length > 0)
+                if (pluginData.data["scenes"] is byte[] sceneData && sceneData.Length > 0)
                     try
                     {
                         var scenes = Utils.DeserializeData<Scene[]>(sceneData);
@@ -296,6 +293,7 @@ namespace SceneSaveState
                         pluginData.data.TryGetValue("trackMap", out temp);
                         track_map = temp as bool? ?? true;
 
+
                         var sceneStrings = SceneManager.DeserializeSceneStrings(sceneNames);
 
                         block = new SceneManager(scenes, currentSceneIndex: sceneIndex, sceneStrings: sceneStrings);
@@ -309,10 +307,24 @@ namespace SceneSaveState
                         Logger.LogError("Error occurred while loading scene data: " + e);
                         Logger.LogMessage("Failed to load scene data, check debug log for more info.");
                     }
-            }
 
-            SceneFolders.LoadTrackedActorsAndProps();
-            loadCurrentScene();
+                if (pluginData.data["roles"] is byte[] roleData && roleData.Length > 0)
+                    try
+                    {
+                        var roles = Utils.DeserializeData<Dictionary<int, Dictionary<string, int>>>(roleData);
+                        roleTracker = new RoleTracker(roles);
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.LogError("Error occurred while loading role data: " + e);
+                        Logger.LogMessage("Failed to load role data, check debug log for more info.");
+                    }
+
+                SceneFolders.LoadTrackedActorsAndProps();
+                if (SceneFolders.AllActors.Any() || SceneFolders.AllProps.Any())
+                    roleTracker.AddFrom(SceneFolders.AllActors, SceneFolders.AllProps);
+                loadCurrentScene();
+            }
         }
 
 
@@ -443,16 +455,16 @@ namespace SceneSaveState
 
         internal void UpdateScene()
         {
-            if (block.HasScenes)
-            {
-                var scene = new Scene(game, isSysTracking);
-                block.Update(scene);
-            }
+            if (!block.HasScenes) return;
+            var scene = new Scene(game.export_full_status(), roleTracker.AllCharacters, roleTracker.AllProps,
+                isSysTracking);
+            block.Update(scene);
         }
 
         internal void addAuto(bool insert = false, bool addsc = true, bool allbase = true)
         {
-            var scene = new Scene(game, isSysTracking);
+            var scene = new Scene(game.export_full_status(), roleTracker.AllCharacters, roleTracker.AllProps,
+                isSysTracking);
             if (insert)
                 block.Insert(scene);
             else
@@ -491,7 +503,7 @@ namespace SceneSaveState
             if (elem is Character chara)
             {
                 var tmp_status = chara.export_full_status();
-                var actors = game.AllActors;
+                var actors = roleTracker.AllCharacters;
                 foreach (var key in actors.Keys)
                 {
                     var character = actors[key];
@@ -607,11 +619,11 @@ namespace SceneSaveState
             isSysTracking = false;
         }
 
-        internal void addSelectedToTrack()
+        internal void AddSelectedToRole()
         {
             var objects = StudioAPI.GetSelectedObjects();
 
-            if (objects.Count() == 0)
+            if (!objects.Any())
             {
                 show_blocking_message_time_sc("Nothing selected");
                 return;
@@ -620,175 +632,73 @@ namespace SceneSaveState
             foreach (var objectCtrl in objects)
                 try
                 {
-                    SceneFolders.AddToTrack(objectCtrl);
+                    roleTracker.AddToRole(objectCtrl);
                 }
                 catch
                 {
                 }
-
-            SceneFolders.LoadTrackedActorsAndProps();
         }
 
-        internal void changeSelTrackID(string toId)
+        internal void ChangeSelectedRoleName(string newRoleName)
         {
-            if (toId == "")
+            if (SelectedRole == "")
             {
-                show_blocking_message_time_sc("Please, set ID to change to first");
-                return;
+                show_blocking_message("No role selected.");
             }
+            else
+            {
+                if (ChangeRoleName(SelectedRole, newRoleName)) SelectedRole = newRoleName;
+            }
+        }
 
-            var elem = NeoOCI.create_from_selected();
-            if (elem == null)
+        internal void ClearRoleOfSelected()
+        {
+            var objects = StudioAPI.GetSelectedObjects();
+
+            foreach (var oci in objects) roleTracker.RemoveFromRole(oci);
+        }
+
+        internal void AddSelectedToRole(string roleName)
+        {
+            var objects = StudioAPI.GetSelectedObjects();
+            foreach (var oci in objects) roleTracker.AddToRole(oci, roleName);
+        }
+
+        internal void RemoveRoleOfSelected()
+        {
+            var objects = StudioAPI.GetSelectedObjects();
+
+            if (!objects.Any())
             {
                 show_blocking_message_time_sc("Nothing selected");
                 return;
             }
 
-            if (elem is Character chara)
+            foreach (var oci in objects)
             {
-                var actors = game.AllActors;
-                var id = "";
-                foreach (var actid in actors.Keys)
-                    if (actors[actid].objctrl == elem.objctrl)
-                    {
-                        // found
-                        id = actid;
-                        break;
-                    }
-
-                //self.delActorFromTrack(actid)
-                if (id == "")
-                {
-                    show_blocking_message_time_sc("Can't find actor to change ID");
-                    return;
-                }
-
-                // actually changing ID
-                changeActorTrackId(id, toId);
-            }
-
-            // updating set
-            SceneFolders.LoadTrackedActorsAndProps();
-        }
-
-        internal void delSelectedFromTrack(object o)
-        {
-            delSelectedFromTrack();
-        }
-
-
-        internal void delSelectedFromTrack()
-        {
-            var elem = NeoOCI.create_from_selected();
-            if (elem == null)
-            {
-                show_blocking_message_time_sc("Nothing selected");
-                return;
-            }
-
-            if (elem is Character chara)
-            {
-                var actors = game.AllActors;
-                var id = "";
-                foreach (var actid in actors.Keys)
-                    if (actors[actid].objctrl == elem.objctrl)
-                    {
-                        // found
-                        id = actid;
-                        break;
-                    }
-
-                if (id == "")
-                {
-                    show_blocking_message_time_sc("Can't delete; seems this actor is not tracking yet");
-                    return;
-                }
-
-                delActorFromTrack(id);
-            }
-            else if (elem is Prop)
-            {
-                var props = game.AllProps;
-                var id = "";
-                foreach (var propid in props.Keys)
-                    if (props[propid].objctrl == elem.objctrl)
-                    {
-                        id = propid; // found
-                        break;
-                    }
-
-                delPropFromTrack(id);
-            }
-
-            // updating set
-            SceneFolders.LoadTrackedActorsAndProps();
-        }
-
-        internal void delActorFromTrack(string actid)
-        {
-            if (actid != "")
-            {
-                // we found this char
-                var fld = Folder.find_single(SceneFolders.actor_folder_prefix + actid);
-                if (fld == null) fld = Folder.find_single_startswith(SceneFolders.actor_folder_prefix + actid + ":");
-                // found
-                if (fld != null) fld.delete();
-                foreach (var i in Enumerable.Range(0, block.Count))
-                {
-                    var scene = block[i];
-                    scene.actors.Remove(actid);
-                }
+                var roleName = roleTracker.GetRoleName(oci);
+                RemoveRole(roleName);
             }
         }
 
-        internal void changeActorTrackId(string actid, string toid)
+        internal void RemoveRole(string roleName)
         {
-            if (actid != "")
-            {
-                // we found this char
-                var fld = Folder.find_single(SceneFolders.actor_folder_prefix + actid);
-                if (fld == null) fld = Folder.find_single_startswith(SceneFolders.actor_folder_prefix + actid + ":");
-                // found
-                //if fld != None:
-                //    fld.delete()
-                var fldoldname = fld.name;
-                var lastelems = fldoldname.Substring((SceneFolders.actor_folder_prefix + actid).Length);
-                //print lastelems
-                fld.name = SceneFolders.actor_folder_prefix + toid + lastelems;
-                //
-                for (var i = 0; i < block.Count; i++)
-                {
-                    var scene = block[i];
-                    scene.actors[toid] = scene.actors[actid];
-                    scene.actors.Remove(actid);
-                    foreach (var cam in scene.cams)
-                    {
-                        var info = cam.addata;
-                        if (info.whosay == actid) info.whosay = toid;
-                    }
-                }
-            }
+            if (roleName == "") return;
+
+            roleTracker.RemoveRole(roleName);
+
+            foreach (var scene in block) scene.Remove(roleName);
         }
 
-        internal void delPropFromTrack(string propid)
+        internal bool ChangeRoleName(string roleName, string newRoleName)
         {
-            if (propid != "")
-            {
-                // we found this prop
-                var fld = Folder.find_single(SceneFolders.prop_folder_prefix + propid);
-                // found
-                if (fld != null) fld.delete();
-                foreach (var i in Enumerable.Range(0, block.Count))
-                {
-                    var scene = block[i];
-                    scene.RemoveProp(propid);
-                }
-            }
-        }
+            if (roleName == "") return false;
 
-        internal void saveSceneData(object param)
-        {
-            saveSceneData((bool) param);
+            if (!roleTracker.ChangeRoleName(roleName, newRoleName)) return false;
+
+            foreach (var scene in block) scene.ChangeRoleName(roleName, newRoleName);
+
+            return true;
         }
 
         internal void Reset()
@@ -893,9 +803,6 @@ namespace SceneSaveState
         internal void dupScene()
         {
             if (block.Count > 0)
-                //import copy
-                // we have a problem with copy, so... just serialize and back it
-                //objstr = MessagePackSerializer.Serialize(self.block[self.cur_index])
                 block.Insert(block.CurrentScene.copy());
         }
 
@@ -1053,7 +960,7 @@ namespace SceneSaveState
         internal string get_next_speaker(string curSpeakAlias, bool next)
         {
             // next from unknown speaker
-            var all_actors = game.AllActors;
+            var all_actors = roleTracker.AllCharacters;
             var keylist = all_actors.Keys.ToList();
             if (curSpeakAlias != defaultSpeakerAlias && !all_actors.ContainsKey(curSpeakAlias))
                 return defaultSpeakerAlias;
@@ -1087,7 +994,7 @@ namespace SceneSaveState
             if (isSysTracking) game.Apply(s.sys, track_map);
             foreach (var actid in s.actors.Keys)
             {
-                var actors = game.AllActors;
+                var actors = roleTracker.AllCharacters;
 
                 foreach (var kvp in actors)
                 {
@@ -1106,7 +1013,6 @@ namespace SceneSaveState
                                 $"Error occurred when importing Character with id {actid}" + e);
                             Instance.game.GetLogger.LogMessage(
                                 $"Error occurred when importing Character with id {actid}");
-                            SceneFolders.LoadTrackedActorsAndProps();
                         }
                 }
             }
@@ -1114,23 +1020,29 @@ namespace SceneSaveState
             var propid = "";
             try
             {
-                foreach (var kvp in game.AllProps)
+                foreach (var kvp in roleTracker.AllProps)
                 {
                     propid = kvp.Key;
-                    if (kvp.Value is Item i)
+                    switch (kvp.Value)
                     {
-                        s.items.TryGetValue(kvp.Key, out var status);
-                        s.ApplyStatus(i, status);
-                    }
-                    else if (kvp.Value is Light l)
-                    {
-                        s.lights.TryGetValue(kvp.Key, out var status);
-                        s.ApplyStatus(l, status);
-                    }
-                    else if (kvp.Value is Prop p)
-                    {
-                        s.props.TryGetValue(kvp.Key, out var status);
-                        s.ApplyStatus(p, status);
+                        case Item i:
+                        {
+                            s.items.TryGetValue(kvp.Key, out var status);
+                            s.ApplyStatus(i, status);
+                            break;
+                        }
+                        case Light l:
+                        {
+                            s.lights.TryGetValue(kvp.Key, out var status);
+                            s.ApplyStatus(l, status);
+                            break;
+                        }
+                        case Prop p:
+                        {
+                            s.props.TryGetValue(kvp.Key, out var status);
+                            s.ApplyStatus(p, status);
+                            break;
+                        }
                     }
                 }
             }
@@ -1146,8 +1058,6 @@ namespace SceneSaveState
         {
             var objects = StudioAPI.GetSelectedObjects();
 
-            if (objects.Count() == 0)
-                return null;
             foreach (var objectCtrl in objects)
                 try
                 {
@@ -1158,6 +1068,11 @@ namespace SceneSaveState
                 }
 
             return null;
+        }
+
+        public void RemoveSelectedRole()
+        {
+            roleTracker.RemoveRole(SelectedRole);
         }
 
         internal enum CamTask

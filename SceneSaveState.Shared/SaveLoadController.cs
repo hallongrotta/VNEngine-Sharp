@@ -24,7 +24,6 @@ namespace SceneSaveState
             SceneConsole sc = SceneConsole.Instance;
             SetExtendedData(new PluginData() { data = null });
             sc.block = new SceneManager();
-            SceneFolders.LoadTrackedActorsAndProps();
         }       
 
         protected override void OnSceneLoad(SceneOperationKind operation, ReadOnlyDictionary<int, ObjectCtrlInfo> loadedItems)

@@ -12,6 +12,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ActorUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AutoScriptInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)BaseController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RoleTracker.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SceneFolders.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SkinRenPy.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StudioController.cs" />

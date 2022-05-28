@@ -92,14 +92,7 @@ namespace SceneSaveState
               
                 for (int i = 0; i < Instance.block.Count; i++)
                 {
-                    if (i == Instance.block.currentSceneIndex)
-                    {
-                        col = Instance.sel_font_col;
-                    }
-                    else
-                    {
-                        col = Instance.nor_font_col;
-                    }
+                    col = i == Instance.block.currentSceneIndex ? UI.SelectedTextColor : UI.NormalTextColor;
                     if (Instance.block.SceneStrings[i] is null)
                     {
                         Instance.block.SceneStrings[i] = $"Scene {i + 1}";
@@ -156,7 +149,7 @@ namespace SceneSaveState
             {
                 if (i == Instance.block.currentCamIndex)
                 {
-                    col = Instance.sel_font_col;
+                    col = UI.SelectedTextColor;
                 }
                 else
                 {
