@@ -224,7 +224,6 @@ namespace SceneSaveState
                         }                   
                         if (GUILayout.Button("Close console", GUILayout.Width(100)))
                         {
-                            var col = UI.SelectedTextColor;
                             Utils.sceneConsoleGUIClose();
                         }
                         GUILayout.EndHorizontal();
