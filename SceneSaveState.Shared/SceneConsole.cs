@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using BepInEx;
@@ -993,7 +994,13 @@ namespace SceneSaveState
         internal void SetSceneState(Scene s)
         {
             if (isSysTracking) game.Apply(s.sys, track_map);
+
+            //var watch = new Stopwatch();
+            //watch.Start();
             s.SetCharacterState(roleTracker.AllCharacters);
+            //watch.Stop();
+            //Logger.LogInfo($"Loaded character data in {watch.ElapsedMilliseconds} ms.");
+
             s.SetPropState(roleTracker.AllProps);
         }
 
