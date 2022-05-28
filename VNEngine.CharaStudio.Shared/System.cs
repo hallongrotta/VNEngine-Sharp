@@ -83,7 +83,7 @@ namespace VNEngine
                 map_pos = game.MapPos;
                 map_rot = game.MapRot;
 
-                sun = game.Sun;
+                sun = game.TimeOfDay;
 
                 bg_png = game.scene_get_bg_png_orig(); 
 

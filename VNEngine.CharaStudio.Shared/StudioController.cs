@@ -99,7 +99,7 @@ namespace VNEngine
             get => studio_scene.caMap.pos;
         }
 
-    public int Sun
+    public int TimeOfDay
         {
             set
             {
@@ -202,7 +202,7 @@ namespace VNEngine
 
             MapPos = data.map_pos;
             MapRot = data.map_rot;
-            Sun = data.sun;
+            TimeOfDay = data.sun;
             MapOption = data.map_opt;
             BackgroundImage = data.bg_png;
             Frame = data.fm_png;
