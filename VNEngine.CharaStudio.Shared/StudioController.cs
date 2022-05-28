@@ -99,16 +99,13 @@ namespace VNEngine
             get => studio_scene.caMap.pos;
         }
 
-        public int Sun
+    public int Sun
         {
             set
             {
-                if (value > 2) return;
-                var st = new[]
-                    {SunLightInfo.Info.Type.DayTime, SunLightInfo.Info.Type.Evening, SunLightInfo.Info.Type.Night};
                 var map = Map.Instance;
-                if (map.sunType == st[value]) return;
-                map.sunType = st[value];
+                if ((int)map.sunType == value) return;
+                map.sunType = (SunLightInfo.Info.Type)value;
             }
             get => studio_scene.sunLightType;
         }
