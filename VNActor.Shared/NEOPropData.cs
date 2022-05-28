@@ -10,7 +10,7 @@ namespace VNActor
 
         [Key("Rotation")] public Vector3 rotation;
 
-        [Key("Visible")] public bool visible;
+        [Key("Visible")] public bool Visible;
 
         public NEOPropData()
         {
@@ -18,16 +18,16 @@ namespace VNActor
 
         public NEOPropData(Prop p)
         {
-            visible = p.Visible;
-            if (!visible) return;
+            Visible = p.Visible;
+            if (!Visible) return;
             position = p.Position;
             rotation = p.Rotation;
         }
 
         public void Apply(Prop p)
         {
-            p.Visible = visible;
-            if (visible)
+            p.Visible = Visible;
+            if (Visible)
             {
                 p.Position = position;
                 p.Rotation = rotation;

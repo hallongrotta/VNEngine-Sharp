@@ -78,7 +78,13 @@ namespace VNEngine
 
         public Vector3 MapRot
         {
-            set => studio_scene.caMap.rot = value;
+            set
+            {
+                if (studio_scene.caMap.rot == value) return;
+                studio_scene.caMap.rot = value;
+                MapCtrl.Instance.Reflect();
+            }
+           
             get => studio_scene.caMap.rot;
         }
 
@@ -86,9 +92,9 @@ namespace VNEngine
         {
             set
             {
-                var mapctrl = MapCtrl.Instance;
+                if (studio_scene.caMap.pos == value) return;
                 studio_scene.caMap.pos = value;
-                mapctrl.Reflect();
+                MapCtrl.Instance.Reflect();
             }
             get => studio_scene.caMap.pos;
         }
@@ -97,9 +103,11 @@ namespace VNEngine
         {
             set
             {
+                if (value > 2) return;
                 var st = new[]
                     {SunLightInfo.Info.Type.DayTime, SunLightInfo.Info.Type.Evening, SunLightInfo.Info.Type.Night};
                 var map = Map.Instance;
+                if (map.sunType == st[value]) return;
                 map.sunType = st[value];
             }
             get => studio_scene.sunLightType;

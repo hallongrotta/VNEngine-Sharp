@@ -206,12 +206,11 @@ namespace SceneSaveState
 
         public void Update(int position, Scene newScene)
         {
-            if (position < scenes.Count)
-            {
-                var oldScene = scenes[position];
-                newScene.cams = oldScene.cams;
-                scenes[position] = newScene;
-            }
+            if (position >= scenes.Count) return;
+            
+            var oldScene = scenes[position];
+            newScene.cams = oldScene.cams;
+            scenes[position] = newScene;
         }
 
         public void RemoveScene(int position)
@@ -229,7 +228,7 @@ namespace SceneSaveState
         {
             if (scenes.Count > 0)
             {
-                scenes.Insert(currentSceneIndex, scenes[currentSceneIndex].copy());
+                scenes.Insert(currentSceneIndex, scenes[currentSceneIndex].Copy());
             }
         }
 

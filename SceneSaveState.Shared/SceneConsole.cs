@@ -327,7 +327,7 @@ namespace SceneSaveState
                 SceneFolders.LoadTrackedActorsAndProps();
                 if (SceneFolders.AllActors.Any() || SceneFolders.AllProps.Any())
                     roleTracker.AddFrom(SceneFolders.AllActors, SceneFolders.AllProps);
-                loadCurrentScene();
+                LoadCurrentScene();
             }
         }
 
@@ -453,19 +453,27 @@ namespace SceneSaveState
 
         internal void addAutoWithMsg()
         {
-            addAuto();
+            AddScene();
             show_blocking_message_time_sc("Scene added!", 2.0f);
         }
 
         internal void UpdateScene()
         {
             if (!block.HasScenes) return;
+
             var scene = new Scene(game.export_full_status(), roleTracker.AllCharacters, roleTracker.AllProps,
                 isSysTracking);
+
             block.Update(scene);
         }
 
-        internal void addAuto(bool insert = false, bool addsc = true, bool allbase = true)
+
+        internal void InsertScene()
+        {
+            AddScene(insert:true);
+        }
+
+        internal void AddScene(bool insert = false)
         {
             var scene = new Scene(game.export_full_status(), roleTracker.AllCharacters, roleTracker.AllProps,
                 isSysTracking);
@@ -473,9 +481,8 @@ namespace SceneSaveState
                 block.Insert(scene);
             else
                 block.Add(scene);
-            if (addsc)
-                if (autoAddCam.Value)
-                    changeSceneCam(CamTask.ADD);
+            if (autoAddCam.Value)
+                changeSceneCam(CamTask.ADD);
         }
 
         // Remove stuff
@@ -491,14 +498,12 @@ namespace SceneSaveState
 
         // Load scene
 
-        internal void loadCurrentScene()
+        internal void LoadCurrentScene()
         {
             SetSceneState(block.CurrentScene);
-            if (block.Count > 0 && block.currentCamCount > 0)
-            {
-                block.FirstCam();
-                setCamera();
-            }
+            if (block.Count <= 0 || block.currentCamCount <= 0) return;
+            block.FirstCam();
+            setCamera();
         }
 
         internal void copySelectedStatusToTracking(List<string> exclude)
@@ -804,10 +809,10 @@ namespace SceneSaveState
             // Duplicate scene
         }
 
-        internal void dupScene()
+        internal void DuplicateScene()
         {
             if (block.Count > 0)
-                block.Insert(block.CurrentScene.copy());
+                block.Insert(block.CurrentScene.Copy());
         }
 
         // Copy/paste cam set
@@ -830,7 +835,7 @@ namespace SceneSaveState
         internal void goto_first()
         {
             block.First();
-            loadCurrentScene();
+            LoadCurrentScene();
         }
 
         internal void goto_next(VNController game, int i)
@@ -851,7 +856,7 @@ namespace SceneSaveState
                 {
                     // elif self.cur_index < (len(self.block) - 1):
                     // self.cur_index += 1
-                    goto_next_sc();
+                    LoadNextScene();
                 }
             }
         }
@@ -869,37 +874,31 @@ namespace SceneSaveState
                 {
                     // elif self.cur_index > 0:
                     // self.cur_index -= 1
-                    goto_prev_sc(true);
+                    LoadPreviousScene(true);
                 }
             }
         }
 
-        internal void goto_next_sc()
+        internal void LoadNextScene()
         {
-            if (block.HasNext)
-            {
-                block.Next();
-                loadCurrentScene();
-            }
+            if (!block.HasNext) return;
+            block.Next();
+            LoadCurrentScene();
         }
 
-        internal void goto_prev_sc()
+        internal void LoadPreviousScene()
         {
-            goto_prev_sc(false);
+            LoadPreviousScene(false);
         }
 
-        internal void goto_prev_sc(bool lastcam = false)
+        internal void LoadPreviousScene(bool lastcam = false)
         {
-            if (block.HasPrev)
-            {
-                block.Back();
-                loadCurrentScene();
-                if (lastcam && block.currentCamCount > 0)
-                {
-                    block.LastCam();
-                    setCamera();
-                }
-            }
+            if (!block.HasPrev) return;
+            block.Back();
+            LoadCurrentScene();
+            if (!lastcam || block.currentCamCount <= 0) return;
+            block.LastCam();
+            setCamera();
         }
 
         internal void camSetAll(bool state)
@@ -944,7 +943,7 @@ namespace SceneSaveState
             else
                 calcPos = 0;
             block.SetCurrent(calcPos);
-            loadCurrentScene();
+            LoadCurrentScene();
             Console.WriteLine("Run VNSS from state {0}", calcPos.ToString());
             //game.vnscenescript_run_current(onEndVNSS, calcPos.ToString());
         }
@@ -986,9 +985,7 @@ namespace SceneSaveState
                 nextIndex += 1;
             else
                 nextIndex -= 1;
-            if (Enumerable.Range(0, all_actors.Count).Contains(nextIndex))
-                return keylist[nextIndex];
-            return defaultSpeakerAlias;
+            return Enumerable.Range(0, all_actors.Count).Contains(nextIndex) ? keylist[nextIndex] : defaultSpeakerAlias;
         }
 
         // Set scene chars with state data from dictionary
@@ -996,66 +993,8 @@ namespace SceneSaveState
         internal void SetSceneState(Scene s)
         {
             if (isSysTracking) game.Apply(s.sys, track_map);
-            foreach (var actid in s.actors.Keys)
-            {
-                var actors = roleTracker.AllCharacters;
-
-                foreach (var kvp in actors)
-                {
-                    s.actors.TryGetValue(kvp.Key, out var char_status);
-
-                    if (char_status is null)
-                        kvp.Value.Visible = false;
-                    else
-                        try
-                        {
-                            char_status.Apply(kvp.Value);
-                        }
-                        catch (Exception e)
-                        {
-                            Instance.game.GetLogger.LogError(
-                                $"Error occurred when importing Character with id {actid}" + e);
-                            Instance.game.GetLogger.LogMessage(
-                                $"Error occurred when importing Character with id {actid}");
-                        }
-                }
-            }
-
-            var propid = "";
-            try
-            {
-                foreach (var kvp in roleTracker.AllProps)
-                {
-                    propid = kvp.Key;
-                    switch (kvp.Value)
-                    {
-                        case Item i:
-                        {
-                            s.items.TryGetValue(kvp.Key, out var status);
-                            s.ApplyStatus(i, status);
-                            break;
-                        }
-                        case Light l:
-                        {
-                            s.lights.TryGetValue(kvp.Key, out var status);
-                            s.ApplyStatus(l, status);
-                            break;
-                        }
-                        case Prop p:
-                        {
-                            s.props.TryGetValue(kvp.Key, out var status);
-                            s.ApplyStatus(p, status);
-                            break;
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                game.GetLogger.LogError($"Error occurred when importing Prop with id {propid}" + e);
-                SceneFolders.LoadTrackedActorsAndProps();
-                Instance.game.GetLogger.LogMessage($"Error occurred when importing Prop with id {propid}");
-            }
+            s.SetCharacterState(roleTracker.AllCharacters);
+            s.SetPropState(roleTracker.AllProps);
         }
 
         internal string GetIDOfSelectedObject()

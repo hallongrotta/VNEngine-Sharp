@@ -30,7 +30,7 @@ namespace VNActor
         public NEOItemData(Item i) : base(i)
         {
             // export full status of prop
-            if (visible)
+            if (Visible)
             {
                 scale = i.scale;
                 if (i.isColorable) color = i.color;
@@ -58,7 +58,7 @@ namespace VNActor
         {
             // export full status of prop
             base.Apply(i);
-            if (visible)
+            if (Visible)
             {
                 i.scale = scale;
                 if (anim_spd is float f) i.anime_speed = f;

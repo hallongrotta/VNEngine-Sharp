@@ -116,7 +116,7 @@ namespace SceneSaveState
                         Instance.block.SetCurrent(i);
                         if (Instance.autoLoad.Value)
                         {
-                            Instance.loadCurrentScene();
+                            Instance.LoadCurrentScene();
                             // sc.cur_index = GUILayout.SelectionGrid(sc.cur_index,sc.scene_str_array,1)
                         }
                     }
@@ -253,7 +253,7 @@ namespace SceneSaveState
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Add scene", GUILayout.Height(55), GUILayout.Width(ColumnWidth / 2)))
             {
-                Instance.addAuto();
+                Instance.AddScene();
             }
             if (GUILayout.Button("Update scene", GUILayout.Height(55), GUILayout.Width(ColumnWidth / 2)))
             {
@@ -263,11 +263,11 @@ namespace SceneSaveState
             GUILayout.BeginHorizontal();      
             if (GUILayout.Button("Insert scene", GUILayout.Height(25), GUILayout.Width(ColumnWidth/2)))
             {
-                Instance.addAuto(insert: true);
+                Instance.InsertScene();
             }
             if (GUILayout.Button("Dup scene", GUILayout.Height(25), GUILayout.Width(ColumnWidth / 2)))
             {
-                Instance.dupScene();
+                Instance.DuplicateScene();
             }
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
@@ -292,11 +292,11 @@ namespace SceneSaveState
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Prev scene", GUILayout.Height(25), GUILayout.Width(ColumnWidth / 2)))
             {
-                Instance.goto_prev_sc();
+                Instance.LoadPreviousScene();
             }
             if (GUILayout.Button("Next scene", GUILayout.Height(25), GUILayout.Width(ColumnWidth / 2)))
             {
-                Instance.goto_next_sc();
+                Instance.LoadNextScene();
             }
             GUILayout.EndHorizontal();
         }
@@ -337,7 +337,7 @@ namespace SceneSaveState
                 GUILayout.Space(10);
                 if (GUILayout.Button("Load Scene", GUILayout.Height(35)))
                 {
-                    Instance.loadCurrentScene();
+                    Instance.LoadCurrentScene();
                 }
             }
             Instance.currentVNData.enabled = GUILayout.Toggle(Instance.currentVNData.enabled, "Use cam in Visual Novel");
