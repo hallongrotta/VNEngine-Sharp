@@ -1,452 +1,13 @@
-﻿using MessagePack;
-using Studio;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using MessagePack;
 using UnityEngine;
 
 namespace VNActor
 {
     public partial class Item : IVNObject<Item>
     {
-
-
-
-        [MessagePackObject(keyAsPropertyName: true)]
-        public class ItemData : NEOItemData, IDataClass<Item>
-        {
-
-            public ItemData()
-            {
-
-            }
-
-            override public void Apply(Item i)
-            {
-                base.Apply(i);
-                if (i.hasLine)
-                {
-                    if (line is Line_s line_s)
-                    {
-                        line = line_s;
-                    }
-                }
-                if (i.hasShadowColor)
-                {
-                    if (shadow_color is Color c)
-                    {
-                        shadow_color = c;
-                    }
-                }
-                if (i.hasLightCancel)
-                {
-                    if (light_cancel is float cancel)
-                        light_cancel = cancel;
-                }
-                if (i.isFK)
-                {
-                    i.import_fk_bone_info(fk_set);
-                }
-            }
-
-            public ItemData(Item i) : base(i)
-            {
-                if (i.hasLine)
-                {
-                    line = i.line;
-                }
-                if (i.hasShadowColor)
-                {
-                    shadow_color = i.shadow_color;
-                }
-                if (i.hasLightCancel)
-                {
-                    light_cancel = i.light_cancel;
-                }
-                if (i.isFK)
-                {
-                    fk_set = i.export_fk_bone_info();
-                }
-            }
-        }
-
-        public Dictionary<int, Color> color
-        {
-            set
-            {
-                if (this.isColorable)
-                {
-                    var i = 0;
-                    if (this.objctrl.useColor[0] && i < color.Count && color.ContainsKey(i))
-                    {
-                        this.objctrl.itemInfo.color[0] = value[i];
-                    }
-                    i = 1;
-                    if (this.objctrl.useColor[1] && i < color.Count && color.ContainsKey(i))
-                    {
-                        this.objctrl.itemInfo.color[1] = value[i];
-                    }
-                    i = 2;
-                    if (this.objctrl.useColor[2] && i < color.Count && color.ContainsKey(i))
-                    {
-                        this.objctrl.itemInfo.color[2] = value[i];
-                    }
-                    i = 3;
-                    if (this.objctrl.useColor4 && i < color.Count && color.ContainsKey(i))
-                    {
-                        this.objctrl.itemInfo.color[7] = value[i];
-                    }
-                    this.objctrl.UpdateColor();
-                }
-            }
-            get
-            {
-                // return a tuple of used color
-                if (this.isColorable)
-                {
-                    var cl = new Dictionary<int, Color>();
-                    if (this.objctrl.useColor[0])
-                    {
-                        cl[0] = this.objctrl.itemInfo.color[0];
-                    }
-                    if (this.objctrl.useColor[1])
-                    {
-                        cl[1] = this.objctrl.itemInfo.color[1];
-                    }
-                    if (this.objctrl.useColor[2])
-                    {
-                        cl[2] = this.objctrl.itemInfo.color[2];
-                    }
-                    if (this.objctrl.useColor4)
-                    {
-                        cl[4] = this.objctrl.itemInfo.color[7];
-                    }
-                    return cl;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-        }
-
-        public bool hasPattern
-        {
-            get
-            {
-                if (!this.isItem)
-                {
-                    return false;
-                }
-                foreach (var n in this.objctrl.usePattern)
-                {
-                    if (n)
-                    {
-                        return true;
-                    }
-                }
-                return false;
-            }
-        }
-
-        public Dictionary<int, Pattern> pattern
-        {
-            set
-            {
-                // param: a set of ((key, filepath, clamp), (key, filepath, clamp), (key, filepath, clamp))
-                if (this.hasPattern)
-                {
-                    foreach (var i in Enumerable.Range(0, this.objctrl.usePattern.Length))
-                    {
-                        if (this.objctrl.usePattern[i] && value.ContainsKey(i))
-                        {
-                            this.objctrl.itemInfo.pattern[i].key = value[i].key;
-                            this.objctrl.itemInfo.pattern[i].filePath = value[i].filepath;
-                            this.objctrl.itemInfo.pattern[i].clamp = value[i].clamp;
-                        }
-                    }
-                    this.objctrl.SetupPatternTex();
-                    this.objctrl.UpdateColor();
-                }
-            }
-            get
-            {
-                if (this.hasPattern)
-                {
-                    var pt = new Dictionary<int, Pattern>();
-                    foreach (var i in Enumerable.Range(0, this.objctrl.usePattern.Length))
-                    {
-                        if (this.objctrl.usePattern[i])
-                        {
-                            var pi = this.objctrl.itemInfo.pattern[i];
-                            pt[i] = new Pattern { key = pi.key, filepath = pi.filePath, clamp = pi.clamp };
-                        }
-                    }
-                    return pt;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-        }
-
-        public Dictionary<int, PatternDetail_s> pattern_detail
-        {
-            set
-            {
-                // param: a set of ((color, ut, vt, us, vs, rot), (color, ut, vt, us, vs, rot), (color, ut, vt, us, vs, rot))
-                if (this.hasPattern)
-                {
-                    foreach (var i in Enumerable.Range(0, this.objctrl.usePattern.Length))
-                    {
-                        if (this.objctrl.usePattern[i] && value.ContainsKey(i))
-                        {
-                            this.objctrl.itemInfo.color[i + 3] = value[i].color;
-                            this.objctrl.itemInfo.pattern[i].ut = value[i].ut;
-                            this.objctrl.itemInfo.pattern[i].vt = value[i].vt;
-                            this.objctrl.itemInfo.pattern[i].us = value[i].us;
-                            this.objctrl.itemInfo.pattern[i].vs = value[i].vs;
-                            this.objctrl.itemInfo.pattern[i].rot = value[i].rot;
-                        }
-                    }
-                    this.objctrl.UpdateColor();
-                }
-            }
-            get
-            {
-                if (this.hasPattern)
-                {
-                    var pt = new Dictionary<int, PatternDetail_s>();
-                    foreach (var i in Enumerable.Range(0, this.objctrl.usePattern.Length))
-                    {
-                        if (this.objctrl.usePattern[i])
-                        {
-                            var color = this.objctrl.itemInfo.color[i + 3];
-                            var pi = this.objctrl.itemInfo.pattern[i];
-                            pt[i] = new PatternDetail_s { color = color, ut = pi.ut, vt = pi.vt, us = pi.us, vs = pi.vs, rot = pi.rot };
-                        }
-                    }
-                    return pt;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-        }
-
-        public bool hasPanel
-        {
-            get
-            {
-                return this.isItem && this.objctrl.checkPanel;
-            }
-        }
-
-        public Panel panel
-        {
-            set
-            {
-                // param: a set of (filepath, clamp)
-                if (this.hasPanel)
-                {
-                    this.objctrl.SetMainTex(value.filepath);
-                    this.objctrl.SetPatternClamp(0, value.clamp);
-                }
-            }
-            get
-            {
-                if (this.hasPanel)
-                {
-                    var pi = this.objctrl.itemInfo.panel;
-                    var p0 = this.objctrl.itemInfo.pattern[0];
-                    return new Panel { filepath = pi.filePath, clamp = p0.clamp };
-                }
-                else
-                {
-                    throw new Exception("Item does not have panel.");
-                }
-            }
-        }
-
-        public PanelDetail_s panel_detail
-        {
-            set
-            {
-                // param: a set of (color, ut, vt, us, vs, rot)
-                if (this.hasPanel)
-                {
-                    PatternInfo p0 = this.objctrl.itemInfo.pattern[0];
-                    this.objctrl.itemInfo.color[0] = value.color;
-                    p0.ut = value.ut;
-                    p0.vt = value.vt;
-                    p0.us = value.us;
-                    p0.vs = value.vs;
-                    p0.rot = value.rot;
-                    this.objctrl.UpdateColor();
-                }
-            }
-            get
-            {
-                if (this.hasPanel)
-                {
-                    var p0 = this.objctrl.itemInfo.pattern[0];
-                    return new PanelDetail_s { color = this.objctrl.itemInfo.color[0], ut = p0.ut, vt = p0.vt, us = p0.us, vs = p0.vs, rot = p0.rot };
-                }
-                else
-                {
-                    throw new Exception("Item does not have panel.");
-                }
-            }
-        }
-
-        public bool hasEmission
-        {
-            get
-            {
-                if (!this.isItem)
-                {
-                    return false;
-                }
-                else
-                {
-                    return this.objctrl.checkEmission;
-                }
-            }
-        }
-
-        public bool hasAlpha
-        {
-            get
-            {
-                return this.isColorable && this.objctrl.checkAlpha;
-            }
-        }
-
-        public bool hasLine
-        {
-            get
-            {
-                return this.isItem && this.objctrl.checkLine;
-            }
-        }
-
-        public Line_s line
-        {
-            set
-            {
-                // param: (lineColor, lineWidth)
-                if (this.hasLine)
-                {
-                    this.objctrl.SetLineColor(value.color);
-                    this.objctrl.SetLineWidth(value.lineWidth);
-                }
-
-
-            }
-            get
-            {
-                if (this.hasLine)
-                {
-                    return new Line_s { color = this.objctrl.itemInfo.lineColor, lineWidth = this.objctrl.itemInfo.lineWidth };
-                }
-                else
-                {
-                    throw new Exception();
-                }
-            }
-        }
-
-        public bool hasShadowColor
-        {
-            get
-            {
-                return this.isItem && this.objctrl.checkShadow;
-            }
-        }
-
-        public Color shadow_color
-        {
-            get
-            {
-                if (this.hasShadowColor)
-                {
-                    return this.objctrl.itemInfo.color[6];
-                }
-                else
-                {
-                    throw new Exception();
-                }
-            }
-            set
-            {
-                // param: color
-                if (this.hasShadowColor)
-                {
-                    this.objctrl.itemInfo.color[6] = value;
-                    this.objctrl.UpdateColor();
-                }
-            }
-        }
-
-        public float light_cancel
-        {
-            set
-            {
-                // param: light cancel
-                if (this.hasLightCancel)
-                {
-                    this.objctrl.SetLightCancel(value);
-                }
-            }
-            get
-            {
-                if (this.hasLightCancel)
-                {
-                    return this.objctrl.itemInfo.lightCancel;
-                }
-                else
-                {
-                    throw new Exception();
-                }
-            }
-        }
-
-        public bool hasLightCancel
-        {
-            get
-            {
-                return this.isItem && this.objctrl.checkLightCancel;
-            }
-        }
-
-        public static void prop_line(Item prop, ItemData param)
-        {
-            // param: (color, width)
-            prop.line = (Line_s)param.line;
-        }
-
-        public static void prop_shadow_color(Item prop, ItemData param)
-        {
-            // param: shadow color
-            prop.shadow_color = (Color)param.shadow_color;
-        }
-
-        public static void prop_light_cancel(Item prop, ItemData param)
-        {
-            // param: light cancel
-            prop.light_cancel = (float)param.light_cancel;
-        }
-
-        public static void prop_color(Item prop, Dictionary<int, Color> param)
-        {
-            prop.color = param;
-        }
-
-
-
-
         /* TODO
 
         public static void prop_color(Item prop, Color param)
@@ -497,6 +58,278 @@ namespace VNActor
         */
 
         public delegate void PropActFunction(Item p, ItemData data);
+
+        public Dictionary<int, Color> color
+        {
+            set
+            {
+                if (!isColorable || value is null) return;
+                var i = 0;
+                if (objctrl.useColor[0] && i < color.Count && color.ContainsKey(i))
+                    objctrl.itemInfo.color[0] = value[i];
+                i = 1;
+                if (objctrl.useColor[1] && i < color.Count && color.ContainsKey(i))
+                    objctrl.itemInfo.color[1] = value[i];
+                i = 2;
+                if (objctrl.useColor[2] && i < color.Count && color.ContainsKey(i))
+                    objctrl.itemInfo.color[2] = value[i];
+                i = 3;
+                if (objctrl.useColor4 && i < color.Count && color.ContainsKey(i))
+                    objctrl.itemInfo.color[7] = value[i];
+                objctrl.UpdateColor();
+            }
+            get
+            {
+                // return a tuple of used color
+                if (!isColorable) return null;
+                var cl = new Dictionary<int, Color>();
+                if (objctrl.useColor[0]) cl[0] = objctrl.itemInfo.color[0];
+                if (objctrl.useColor[1]) cl[1] = objctrl.itemInfo.color[1];
+                if (objctrl.useColor[2]) cl[2] = objctrl.itemInfo.color[2];
+                if (objctrl.useColor4) cl[4] = objctrl.itemInfo.color[7];
+                return cl;
+
+            }
+        }
+
+        public bool hasPattern
+        {
+            get
+            {
+                return isItem && objctrl.usePattern.Any(n => n);
+            }
+        }
+
+        public Dictionary<int, Pattern> pattern
+        {
+            set
+            {
+                // param: a set of ((key, filepath, clamp), (key, filepath, clamp), (key, filepath, clamp))
+                if (!hasPattern || value is null) return;
+                foreach (var i in Enumerable.Range(0, objctrl.usePattern.Length))
+                {
+                    if (!objctrl.usePattern[i] || !value.ContainsKey(i)) continue;
+                    objctrl.itemInfo.pattern[i].key = value[i].key;
+                    objctrl.itemInfo.pattern[i].filePath = value[i].filepath;
+                    objctrl.itemInfo.pattern[i].clamp = value[i].clamp;
+                }
+
+                objctrl.SetupPatternTex();
+                objctrl.UpdateColor();
+            }
+            get
+            {
+                if (!hasPattern) return null;
+                var pt = new Dictionary<int, Pattern>();
+                foreach (var i in Enumerable.Range(0, objctrl.usePattern.Length))
+                {
+                    if (!objctrl.usePattern[i]) continue;
+                    var pi = objctrl.itemInfo.pattern[i];
+                    pt[i] = new Pattern {key = pi.key, filepath = pi.filePath, clamp = pi.clamp};
+                }
+
+                return pt;
+            }
+        }
+
+        public Dictionary<int, PatternDetail_s> pattern_detail
+        {
+            set
+            {
+                // param: a set of ((color, ut, vt, us, vs, rot), (color, ut, vt, us, vs, rot), (color, ut, vt, us, vs, rot))
+                if (!hasPattern || value is null) return;
+                foreach (var i in Enumerable.Range(0, objctrl.usePattern.Length))
+                {
+                    if (!objctrl.usePattern[i] || !value.ContainsKey(i)) continue;
+                    objctrl.itemInfo.color[i + 3] = value[i].color;
+                    objctrl.itemInfo.pattern[i].ut = value[i].ut;
+                    objctrl.itemInfo.pattern[i].vt = value[i].vt;
+                    objctrl.itemInfo.pattern[i].us = value[i].us;
+                    objctrl.itemInfo.pattern[i].vs = value[i].vs;
+                    objctrl.itemInfo.pattern[i].rot = value[i].rot;
+                }
+
+                objctrl.UpdateColor();
+            }
+            get
+            {
+                if (!hasPattern) return null;
+                var pt = new Dictionary<int, PatternDetail_s>();
+                foreach (var i in Enumerable.Range(0, objctrl.usePattern.Length))
+                {
+                    if (!objctrl.usePattern[i]) continue;
+                    var color = objctrl.itemInfo.color[i + 3];
+                    var pi = objctrl.itemInfo.pattern[i];
+                    pt[i] = new PatternDetail_s
+                        {color = color, ut = pi.ut, vt = pi.vt, us = pi.us, vs = pi.vs, rot = pi.rot};
+                }
+
+                return pt;
+
+            }
+        }
+
+        public bool hasPanel => isItem && objctrl.checkPanel;
+
+        public Panel panel
+        {
+            set
+            {
+                // param: a set of (filepath, clamp)
+                if (!hasPanel) return;
+                objctrl.SetMainTex(value.filepath);
+                objctrl.SetPatternClamp(0, value.clamp);
+            }
+            get
+            {
+                if (!hasPanel) throw new Exception("Item does not have panel.");
+                var pi = objctrl.itemInfo.panel;
+                var p0 = objctrl.itemInfo.pattern[0];
+                return new Panel {filepath = pi.filePath, clamp = p0.clamp};
+
+            }
+        }
+
+        public PanelDetail_s panel_detail
+        {
+            set
+            {
+                // param: a set of (color, ut, vt, us, vs, rot)
+                if (!hasPanel) return;
+                var p0 = objctrl.itemInfo.pattern[0];
+                objctrl.itemInfo.color[0] = value.color;
+                p0.ut = value.ut;
+                p0.vt = value.vt;
+                p0.us = value.us;
+                p0.vs = value.vs;
+                p0.rot = value.rot;
+                objctrl.UpdateColor();
+            }
+            get
+            {
+                if (!hasPanel) throw new Exception("Item does not have panel.");
+                var p0 = objctrl.itemInfo.pattern[0];
+                return new PanelDetail_s
+                {
+                    color = objctrl.itemInfo.color[0], ut = p0.ut, vt = p0.vt, us = p0.us, vs = p0.vs, rot = p0.rot
+                };
+
+            }
+        }
+
+        public bool hasEmission => isItem && objctrl.checkEmission;
+
+        public bool hasAlpha => isColorable && objctrl.checkAlpha;
+
+        public bool hasLine => isItem && objctrl.checkLine;
+
+        public Line_s line
+        {
+            set
+            {
+                // param: (lineColor, lineWidth)
+                if (!hasLine) return;
+                objctrl.SetLineColor(value.color);
+                objctrl.SetLineWidth(value.lineWidth);
+            }
+            get
+            {
+                if (hasLine)
+                    return new Line_s {color = objctrl.itemInfo.lineColor, lineWidth = objctrl.itemInfo.lineWidth};
+                throw new Exception();
+            }
+        }
+
+        public bool hasShadowColor => isItem && objctrl.checkShadow;
+
+        public Color shadow_color
+        {
+            get
+            {
+                if (hasShadowColor)
+                    return objctrl.itemInfo.color[6];
+                throw new Exception();
+            }
+            set
+            {
+                // param: color
+                if (!hasShadowColor) return;
+                objctrl.itemInfo.color[6] = value;
+                objctrl.UpdateColor();
+            }
+        }
+
+        public float light_cancel
+        {
+            set
+            {
+                // param: light cancel
+                if (hasLightCancel) objctrl.SetLightCancel(value);
+            }
+            get
+            {
+                if (hasLightCancel)
+                    return objctrl.itemInfo.lightCancel;
+                throw new Exception();
+            }
+        }
+
+        public bool hasLightCancel => isItem && objctrl.checkLightCancel;
+
+        public static void prop_line(Item prop, ItemData param)
+        {
+            // param: (color, width)
+            prop.line = (Line_s) param.line;
+        }
+
+        public static void prop_shadow_color(Item prop, ItemData param)
+        {
+            // param: shadow color
+            prop.shadow_color = (Color) param.shadow_color;
+        }
+
+        public static void prop_light_cancel(Item prop, ItemData param)
+        {
+            // param: light cancel
+            prop.light_cancel = (float) param.light_cancel;
+        }
+
+        public static void prop_color(Item prop, Dictionary<int, Color> param)
+        {
+            prop.color = param;
+        }
+
+
+        [MessagePackObject(true)]
+        public class ItemData : NEOItemData, IDataClass<Item>
+        {
+            public ItemData()
+            {
+            }
+
+            public ItemData(Item i) : base(i)
+            {
+                if (i.hasLine) line = i.line;
+                if (i.hasShadowColor) shadow_color = i.shadow_color;
+                if (i.hasLightCancel) light_cancel = i.light_cancel;
+                if (i.isFK) fk_set = i.export_fk_bone_info();
+            }
+
+            public override void Apply(Item i)
+            {
+                base.Apply(i);
+                if (i.hasLine)
+                    if (line is Line_s line_s)
+                        line = line_s;
+                if (i.hasShadowColor)
+                    if (shadow_color is Color c)
+                        shadow_color = c;
+                if (i.hasLightCancel)
+                    if (light_cancel is float cancel)
+                        light_cancel = cancel;
+                if (i.isFK) i.import_fk_bone_info(fk_set);
+            }
+        }
 
         /* TODO
 

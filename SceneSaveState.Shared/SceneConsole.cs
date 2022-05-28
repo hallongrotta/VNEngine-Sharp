@@ -308,7 +308,7 @@ namespace SceneSaveState
                         Logger.LogMessage("Failed to load scene data, check debug log for more info.");
                     }
 
-                if (pluginData.data["roles"] is byte[] roleData && roleData.Length > 0)
+                if (pluginData.data.ContainsKey("roles") && pluginData.data["roles"] is byte[] roleData && roleData.Length > 0)
                     try
                     {
                         var roles = Utils.DeserializeData<Dictionary<int, Dictionary<string, int>>>(roleData);
@@ -319,6 +319,10 @@ namespace SceneSaveState
                         Logger.LogError("Error occurred while loading role data: " + e);
                         Logger.LogMessage("Failed to load role data, check debug log for more info.");
                     }
+                else
+                {
+                    roleTracker = new RoleTracker();
+                }
 
                 SceneFolders.LoadTrackedActorsAndProps();
                 if (SceneFolders.AllActors.Any() || SceneFolders.AllProps.Any())
