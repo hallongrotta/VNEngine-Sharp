@@ -11,7 +11,7 @@ using static VNEngine.VNCamera;
 namespace SceneSaveState
 {
 
-    public class Scene
+    public partial class Scene
     {
 
         public string name; // Explcitly set scene name

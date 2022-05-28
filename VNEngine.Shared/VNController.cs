@@ -365,12 +365,12 @@ namespace VNEngine
                     show_blocking_message_time(string.Format("Error: can't start VNFrame developer console: {0}", e));
                 }
 
-            if (GetConfigEntry("Skins", "usekeysforbuttons"))
-                if (visible && !isFuncLocked && !isHideGameButtons)
-                    foreach (var i in Enumerable.Range(0, vnButtons.Count))
-                        if (Input.GetKeyDown(arKeyKodes[i]))
+            //if (GetConfigEntry("Skins", "usekeysforbuttons"))
+                //if (visible && !isFuncLocked && !isHideGameButtons)
+                    //foreach (var i in Enumerable.Range(0, vnButtons.Count))
+                        //if (Input.GetKeyDown(arKeyKodes[i]))
                             //self._vnButtonsActions[i](self)
-                            call_game_func(_vnButtons[i]);
+                            //call_game_func(_vnButtons[i]);
             // running games from INI
             /*
             this._util_upd_check_and_start_game("game1");

@@ -19,11 +19,9 @@ namespace VNActor
         public NEOPropData(Prop p)
         {
             visible = p.Visible;
-            if (visible)
-            {
-                position = p.Position;
-                rotation = p.Rotation;
-            }
+            if (!visible) return;
+            position = p.Position;
+            rotation = p.Rotation;
         }
 
         public void Apply(Prop p)
