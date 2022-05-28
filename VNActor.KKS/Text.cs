@@ -28,8 +28,8 @@ namespace VNActor.KKS
 
             public void Apply(Text t)
             {
-                t.Visible = Visible;
-                if (Visible)
+                t.Visible = visible;
+                if (visible)
                 { 
                     t.Color = Color;
                     t.OutlineColor = OutlineColor;
@@ -41,7 +41,7 @@ namespace VNActor.KKS
 
             public TextData(Text t) : base(t)
             {
-                if (!Visible) return;
+                if (!visible) return;
                 Color = t.Color;
                 OutlineColor = t.OutlineColor;
                 TextInfo = t.TextInfo;
@@ -101,7 +101,7 @@ namespace VNActor.KKS
         public OITextInfo.TextInfo[] TextInfo
         {
             get
-            {
+            { 
                 var array = new OITextInfo.TextInfo[oci.textInfo.textInfos.Length];
                 oci.textInfo.textInfos.CopyTo(array, 0);
                 return array;

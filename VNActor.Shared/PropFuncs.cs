@@ -11,7 +11,7 @@ namespace VNActor
         public static void prop_visible(Item prop, ItemData param)
         {
             // param = 0(hide)/1(show)
-            prop.Visible = param.Visible;
+            prop.Visible = param.visible;
         }
 
         public static void prop_move(Item prop, ItemData param)

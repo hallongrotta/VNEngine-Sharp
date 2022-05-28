@@ -284,7 +284,7 @@ namespace VNActor
         public static void char_kinematic(Character chara, ActorData param)
         {
             // param = 0-none, 1-IK, 2-FK
-            chara.set_kinematic(param.kinematicType);
+            chara.Kinematic = param.kinematicType;
         }
 
         public static void char_fk_active(Character chara, ActorData param)
@@ -293,13 +293,13 @@ namespace VNActor
             var curFk = chara.get_FK_active();
             foreach (var i in Enumerable.Range(0, 7))
                 if (param.fkActive[i] != curFk[i])
-                    chara.set_FK_active(i, param.fkActive[i]);
+                    chara.SetActiveFK(i, param.fkActive[i]);
         }
 
         public static void char_fk_set(Character chara, ActorData param)
         {
             // param = fk bones info dict
-            chara.import_fk_bone_info(param.fk);
+            chara.FK= param.fk;
         }
 
         public static void char_ik_active(Character chara, ActorData param)
@@ -308,13 +308,13 @@ namespace VNActor
             var curIk = chara.get_IK_active();
             foreach (var i in Enumerable.Range(0, 5))
                 if (param.ikActive[i] != curIk[i])
-                    chara.set_IK_active(i, param.ikActive[i]);
+                    chara.SetActiveIK(i, param.ikActive[i]);
         }
 
         public static void char_ik_set(Character chara, ActorData param)
         {
             // param = ik target info dict
-            chara.import_ik_target_info(param.ik);
+            chara.IK = param.ik;
         }
 
         public static void char_voice_lst(Character chara, ActorData param)

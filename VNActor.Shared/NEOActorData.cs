@@ -188,9 +188,9 @@ After:
                 ikActive = a.get_IK_active();
 
                 if (kinematicType == KinematicMode.FK || kinematicType == KinematicMode.IKFK)
-                    fk = a.export_fk_bone_info();
+                    fk = a.FK;
                 if (kinematicType == KinematicMode.IK || kinematicType == KinematicMode.IKFK)
-                    ik = a.export_ik_target_info();
+                    ik = a.IK;
 
                 voiceList = a.VoiceList;
                 voiceRepeat = a.VoiceRepeat;
@@ -210,91 +210,91 @@ After:
         public virtual void Apply(Character a)
         {
             a.Visible = visible;
-            if (visible)
+            if (!visible) return;
+            //if (this.kinematicType != KinematicMode.IK)
+            //{
+            if (a.Position != position || a.Animation.no != anim.no) a.BreastDBEnable = false;
+            //}
+
+
+            a.Position = position;
+            a.Rotation = rotation;
+            a.Scale = scale;
+            a.AnimeSpeed = animeSpeed;
+            a.AnimePattern = animePattern;
+            a.AnimationForceLoop = forceLoop;
+            a.Accessories = accessoryStatus;
+            a.FaceRedness = faceRedness;
+            son = a.Son;
+
+            if (anim.normalizedTime is float time)
+                a.SetAnimate(anim.@group, anim.category, anim.no, time);
+            else
+                a.SetAnimate(anim.@group, anim.category, anim.no);
+
+
+            //(height, breast) = a.animeOption;
+
+            a.Clothes = cloth;
+
+            a.Juice = juice;
+            a.NippleStand = nippleHardness;
+
+            a.Simple = simple;
+            a.SimpleColor = simpleColor;
+
+            a.Gaze = eyeLookPattern;
+            a.GazeTarget = eyeLookPos;
+            a.LookNeckPattern = neckPattern;
+
+            a.LookNeckFull2 = neck;
+            a.EyebrowPattern = eyebrowPattern;
+            a.EyePattern = eyePattern;
+            a.EyeAngles = eyeAngles;
+            a.EyesOpenLevel = eyesOpen;
+            a.EyesBlink = blinking;
+            a.MouthPattern = mouthPattern;
+            a.MouthOpenLevel = mouthOpen;
+            a.LipSync = lipSync;
+            a.HandPattern = handMotions;
+
+            if (a.Kinematic != kinematicType) a.Kinematic = kinematicType;
+
+            switch (kinematicType)
             {
-                //if (this.kinematicType != KinematicMode.IK)
-                //{
-                if (a.Position != position || a.Animation.no != anim.no) a.BreastDBEnable = false;
-                //}
+                case KinematicMode.IK:
+                    a.SetActiveIK(ikActive);
+                    a.IK = ik;
+                    break;
+                case KinematicMode.FK:
+                    a.SetActiveFK(fkActive);
+                    a.FK = fk;
+                    break;
+                case KinematicMode.IKFK:
+                    a.SetActiveIK(ikActive);
+                    a.SetActiveFK(fkActive);
+                    a.IK = ik;
+                    a.FK = fk;
+                    break;
+                case KinematicMode.None:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            //voice_lst = voiceList;
+            a.VoiceRepeat = voiceRepeat;
 
+            if (a.Position != position || a.Animation.no != anim.no) a.BreastDBEnable = true;
 
-                a.Position = position;
-                a.Rotation = rotation;
-                a.Scale = scale;
-                a.AnimeSpeed = animeSpeed;
-                a.AnimePattern = animePattern;
-                a.AnimationForceLoop = forceLoop;
-                a.Accessories = accessoryStatus;
-                a.FaceRedness = faceRedness;
-                son = a.Son;
+            //External plugin data
 
-                if (anim.normalizedTime is float time)
-                    a.SetAnimate(anim.@group, anim.category, anim.no, time);
-                else
-                    a.SetAnimate(anim.@group, anim.category, anim.no);
-
-
-                //(height, breast) = a.animeOption;
-
-                a.Clothes = cloth;
-
-                a.Juice = juice;
-                a.NippleStand = nippleHardness;
-
-                a.Simple = simple;
-                a.SimpleColor = simpleColor;
-
-                a.Gaze = eyeLookPattern;
-                a.GazeTarget = eyeLookPos;
-                a.LookNeckPattern = neckPattern;
-
-                a.LookNeckFull2 = neck;
-                a.EyebrowPattern = eyebrowPattern;
-                a.EyePattern = eyePattern;
-                a.EyeAngles = eyeAngles;
-                a.EyesOpenLevel = eyesOpen;
-                a.EyesBlink = blinking;
-                a.MouthPattern = mouthPattern;
-                a.MouthOpenLevel = mouthOpen;
-                a.LipSync = lipSync;
-                a.HandPattern = handMotions;
-
-                if (a.Kinematic != kinematicType) a.set_kinematic(kinematicType);
-
-                if (kinematicType == KinematicMode.IK)
-                {
-                    a.set_IK_active(ikActive);
-                    a.import_ik_target_info(ik);
-                }
-                else if (kinematicType == KinematicMode.FK)
-                {
-                    a.set_FK_active(fkActive);
-                    a.import_fk_bone_info(fk);
-                }
-                else if (kinematicType == KinematicMode.IKFK)
-                {
-                    a.set_IK_active(ikActive);
-                    a.set_FK_active(fkActive);
-                    a.import_ik_target_info(ik);
-                    a.import_fk_bone_info(fk);
-                }
-
-
-                //voice_lst = voiceList;
-                a.VoiceRepeat = voiceRepeat;
-
-                if (a.Position != position || a.Animation.no != anim.no) a.BreastDBEnable = true;
-
-                //External plugin data
-
-                try
-                {
-                    if (kinematicType == KinematicMode.IK) advIKData.Apply(a);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                }
+            try
+            {
+                if (kinematicType == KinematicMode.IK) advIKData.Apply(a);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
             }
         }
     }

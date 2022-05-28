@@ -101,7 +101,7 @@ namespace VNActor
         public static void prop_enable(Light prop, LightData param)
         {
             // param = 0(hide)/1(show)
-            prop.Visible = param.Visible;
+            prop.Visible = param.visible;
         }
 
         public static void prop_intensity(Light prop, LightData param)

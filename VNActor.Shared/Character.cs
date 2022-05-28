@@ -43,6 +43,12 @@ namespace VNActor
             Fixed
         }
 
+        public static OIBoneInfo.BoneGroup[] BoneGroups =
+        {
+            OIBoneInfo.BoneGroup.Body, OIBoneInfo.BoneGroup.RightLeg, OIBoneInfo.BoneGroup.LeftLeg,
+            OIBoneInfo.BoneGroup.RightArm, OIBoneInfo.BoneGroup.LeftArm
+        };
+
         public new OCIChar objctrl;
 
 
@@ -450,7 +456,6 @@ namespace VNActor
         {
             set =>
                 // flag: 0/1. 
-                // this is the lip sync option for voice play, not for VNGameEngine
                 objctrl.ChangeLipSync(value);
             get =>
                 // return lip sync status
@@ -481,7 +486,6 @@ namespace VNActor
                     int[] vi = {v.group, v.category, v.no};
                     vlist.Add(vi);
                 }
-
                 return vlist;
             }
         }
@@ -501,12 +505,16 @@ namespace VNActor
             }
             get
             {
-                // return the status of voice repeat setting: 0: no repeat, 1: repeat selected one, 2: repeat all
-                if (objctrl.voiceCtrl.repeat == VoiceCtrl.Repeat.All)
-                    return 2;
-                if (objctrl.voiceCtrl.repeat == VoiceCtrl.Repeat.Select)
-                    return 1;
-                return 0;
+                switch (objctrl.voiceCtrl.repeat)
+                {
+                    // return the status of voice repeat setting: 0: no repeat, 1: repeat selected one, 2: repeat all
+                    case VoiceCtrl.Repeat.All:
+                        return 2;
+                    case VoiceCtrl.Repeat.Select:
+                        return 1;
+                    default:
+                        return 0;
+                }
             }
         }
 
@@ -515,16 +523,113 @@ namespace VNActor
             get
             {
                 // return current kinematice mode: 0-none, 1-IK, 2-FK, 3-IK&FK
-                KinematicMode kmode;
-                if (objctrl.oiCharInfo.enableIK && objctrl.oiCharInfo.enableFK)
-                    kmode = KinematicMode.IKFK;
-                else if (objctrl.oiCharInfo.enableIK)
-                    kmode = KinematicMode.IK;
-                else if (objctrl.oiCharInfo.enableFK)
-                    kmode = KinematicMode.FK;
-                else
-                    kmode = KinematicMode.None;
-                return kmode;
+                switch (objctrl.oiCharInfo.enableIK)
+                {
+                    case true when objctrl.oiCharInfo.enableFK:
+                        return KinematicMode.IKFK;
+                    case true:
+                        return KinematicMode.IK;
+                    default:
+                    {
+                        return objctrl.oiCharInfo.enableFK ? KinematicMode.FK : KinematicMode.None;
+                    }
+                }
+            }
+            set
+            {
+                switch (value)
+                {
+                    // mode: 0-none, 1-IK, 2-FK, 3-IK&FK
+                    case KinematicMode.IKFK:
+                    {
+                        EnableIkFk();
+                        break;
+                    }
+                    case KinematicMode.FK:
+                    {
+                        EnableFk();
+                        break;
+                    }
+                    case KinematicMode.IK:
+                    {
+                        EnableIk();
+                        break;
+                    }
+                    case KinematicMode.None:
+                    default:
+                    {
+                        if (objctrl.oiCharInfo.enableIK)
+                            objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.IK, false, false);
+
+                        if (objctrl.oiCharInfo.enableFK)
+                            objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.FK, false, false);
+                        break;
+                    }
+                }
+            }
+        }
+
+        public Dictionary<int, Vector3> FK
+        {
+            set
+            {
+                if (value is null) return;
+                foreach (var boneInfo in objctrl.listBones.Where(boneInfo =>
+                             value.ContainsKey(boneInfo.boneID) && boneInfo.active))
+                    boneInfo.boneInfo.changeAmount.rot = value[boneInfo.boneID];
+            }
+
+            get
+            {
+                var fkBoneInfo = new Dictionary<int, Vector3>();
+                foreach (var boneInfo in objctrl.listBones)
+                    if (boneInfo.active)
+                    {
+                        var rot = boneInfo.boneInfo.changeAmount.rot;
+                        var rotClone = new Vector3(rot.x, rot.y, rot.z);
+                        //var rotClone = new Vector3(NormalizeAngle(rot.x), NormalizeAngle(rot.y), NormalizeAngle(rot.z));
+                        fkBoneInfo[boneInfo.boneID] = rotClone;
+                    }
+                return fkBoneInfo;
+            }
+        }
+
+        public Dictionary<string, IK_node_s> IK
+        {
+            set
+            {
+                if (value is null) return;
+                foreach (var ikTgt in objctrl.listIKTarget)
+                {
+                    var nodeName = ikTgt.boneObject.name;
+                    if (!(ikTgt.active && value.ContainsKey(nodeName))) continue;
+                    ikTgt.targetInfo.changeAmount.pos = value[nodeName].pos;
+                    if (IsRotatableIK(nodeName) && value[nodeName].rot is Vector3 ikRot)
+                        ikTgt.targetInfo.changeAmount.rot = ikRot;
+                }
+            }
+            get
+            {
+                var ik = new Dictionary<string, IK_node_s>();
+                foreach (var itInfo in objctrl.listIKTarget)
+                    if (itInfo.active)
+                    {
+                        var tgtName = itInfo.boneObject.name;
+                        var pos = itInfo.targetInfo.changeAmount.pos;
+                        var posClone = new Vector3(pos.x, pos.y, pos.z);
+                        if (IsRotatableIK(tgtName))
+                        {
+                            var rot = itInfo.targetInfo.changeAmount.rot;
+                            var rotClone = new Vector3(rot.x, rot.y, rot.z);
+                            //var rotClone = new Vector3(NormalizeAngle(rot.x), NormalizeAngle(rot.y), NormalizeAngle(rot.z));
+                            ik[tgtName] = new IK_node_s {pos = posClone, rot = rotClone};
+                        }
+                        else
+                        {
+                            ik[tgtName] = new IK_node_s {pos = posClone, rot = null};
+                        }
+                    }
+                return ik;
             }
         }
 
@@ -555,180 +660,54 @@ namespace VNActor
             objctrl.ShowAccessory(accIndex, accShow);
         }
 
-        public void import_fk_bone_info(Dictionary<int, Vector3> biDic)
-        {
-            // import fk bone info from dic
-            foreach (var binfo in objctrl.listBones)
-                if (biDic.ContainsKey(binfo.boneID))
-                    binfo.boneInfo.changeAmount.rot = biDic[binfo.boneID];
-        }
-
         public void reset_fk_bone_info()
         {
             // import fk bone info from dic
             foreach (var binfo in objctrl.listBones) binfo.boneInfo.changeAmount.rot = Vector3.zero;
         }
 
-        public Dictionary<int, Vector3> export_fk_bone_info(bool activedOnly = true)
+        private float NormalizeAngle(float angle)
         {
-            // export a dic contents FK bone info
-            var biDic = new Dictionary<int, Vector3>();
-            foreach (var binfo in objctrl.listBones)
-                if (!activedOnly || binfo.active)
-                {
-                    // posClone = Vector3(binfo.posision.x, binfo.posision.y, binfo.posision.z)
-                    var rot = binfo.boneInfo.changeAmount.rot;
-                    var rotClone = new Vector3(rot.x <= 180 ? rot.x : rot.x - 360, rot.y <= 180 ? rot.y : rot.y - 360,
-                        rot.z <= 180 ? rot.z : rot.z - 360);
-                    // abDic[binfo.boneID] = (posClone, rotClone)
-                    biDic[binfo.boneID] = rotClone;
-                }
-
-            // print "exported", len(biDic), "bones"
-            return biDic;
+            return angle <= 180 ? angle : angle - 360;
         }
 
-        public void import_ik_target_info(Dictionary<string, IK_node_s> itDic)
+        public void EnableIkFk()
         {
-            // import IK target info from dic 
-            foreach (var ikTgt in objctrl.listIKTarget)
-            {
-                var ikTgName = ikTgt.boneObject.name;
-                if (itDic.ContainsKey(ikTgName))
-                {
-                    ikTgt.targetInfo.changeAmount.pos = itDic[ikTgName].pos;
+            // enable IK
+            objctrl.finalIK.enabled = true;
+            objctrl.oiCharInfo.enableIK = true;
+            objctrl.ActiveIK(OIBoneInfo.BoneGroup.Body, objctrl.oiCharInfo.activeIK[0], true);
+            objctrl.ActiveIK(OIBoneInfo.BoneGroup.RightLeg, objctrl.oiCharInfo.activeIK[1], true);
+            objctrl.ActiveIK(OIBoneInfo.BoneGroup.LeftLeg, objctrl.oiCharInfo.activeIK[2], true);
+            objctrl.ActiveIK(OIBoneInfo.BoneGroup.RightArm, objctrl.oiCharInfo.activeIK[3], true);
+            objctrl.ActiveIK(OIBoneInfo.BoneGroup.LeftArm, objctrl.oiCharInfo.activeIK[4], true);
+            // enable FK, disable "body" because it should be controlled by IK
+            objctrl.oiCharInfo.activeFK[3] = false;
+            objctrl.fkCtrl.enabled = true;
+            objctrl.oiCharInfo.enableFK = true;
+            foreach (var i in Enumerable.Range(0, FKCtrl.parts.Length))
+                objctrl.ActiveFK(FKCtrl.parts[i], objctrl.oiCharInfo.activeFK[i], true);
 
-                    if (IsRotatableIK(ikTgName))
-                        if (itDic[ikTgName].rot is Vector3 ik_rot)
-                            ikTgt.targetInfo.changeAmount.rot = ik_rot;
-                }
-            }
+            // call ActiveKinematicMode to set pvCopy?
+            objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.IK, true, false);
         }
 
-        public Dictionary<string, IK_node_s> export_ik_target_info(bool activedOnly = true)
+        public void EnableIk()
         {
-            // export a dic contents IK target info
-            var itDic = new Dictionary<string, IK_node_s>();
-            foreach (var itInfo in objctrl.listIKTarget)
-                if (!activedOnly || itInfo.active)
-                {
-                    var tgtName = itInfo.boneObject.name;
-                    var pos = itInfo.targetInfo.changeAmount.pos;
-                    var posClone = new Vector3(pos.x, pos.y, pos.z);
-                    if (IsRotatableIK(tgtName))
-                    {
-                        var rot = itInfo.targetInfo.changeAmount.rot;
-                        var rotClone = new Vector3(rot.x, rot.y, rot.z);
-                        //rotClone = Vector3(rot.x if rot.x <= 180 else rot.x - 360, rot.y if rot.y <= 180 else rot.y - 360, rot.z if rot.z <= 180 else rot.z - 360)
-                        itDic[tgtName] = new IK_node_s {pos = posClone, rot = rotClone};
-                    }
-                    else
-                    {
-                        itDic[tgtName] = new IK_node_s {pos = posClone, rot = null};
-                    }
-                }
+            if (objctrl.oiCharInfo.enableFK)
+                objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.FK, false, true);
 
-            //print "exported", len(itDic), "IK Targets"
-            return itDic;
+            if (objctrl.oiCharInfo.enableIK) return;
+            objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.IK, true, true);
         }
 
-        public void set_kinematic(KinematicMode mode, bool force = false)
+        public void EnableFk()
         {
-            // mode: 0-none, 1-IK, 2-FK, 3-IK&FK
-            if (mode == KinematicMode.IKFK)
-            {
-                // enable IK
-                objctrl.finalIK.enabled = true;
-                objctrl.oiCharInfo.enableIK = true;
-                objctrl.ActiveIK(OIBoneInfo.BoneGroup.Body, objctrl.oiCharInfo.activeIK[0], true);
-                objctrl.ActiveIK(OIBoneInfo.BoneGroup.RightLeg, objctrl.oiCharInfo.activeIK[1], true);
-                objctrl.ActiveIK(OIBoneInfo.BoneGroup.LeftLeg, objctrl.oiCharInfo.activeIK[2], true);
-                objctrl.ActiveIK(OIBoneInfo.BoneGroup.RightArm, objctrl.oiCharInfo.activeIK[3], true);
-                objctrl.ActiveIK(OIBoneInfo.BoneGroup.LeftArm, objctrl.oiCharInfo.activeIK[4], true);
-                // enable FK, disable "body" because it should be controlled by IK
-                objctrl.oiCharInfo.activeFK[3] = false;
-                objctrl.fkCtrl.enabled = true;
-                objctrl.oiCharInfo.enableFK = true;
-                foreach (var i in Enumerable.Range(0, FKCtrl.parts.Length))
-                    try
-                    {
-                        objctrl.ActiveFK(FKCtrl.parts[i], objctrl.oiCharInfo.activeFK[i], true);
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(string.Format(
-                            $"Error set kinematic to 3(IK&FK), when ActiveFK[{i}: {FKCtrl.parts[i]}]. Error message = {e}"));
-                    }
+            if (objctrl.oiCharInfo.enableIK) 
+                objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.IK, false, true);
 
-                // call ActiveKinematicMode to set pvCopy?
-                objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.IK, true, false);
-            }
-            else if (mode == KinematicMode.FK)
-            {
-                if (objctrl.oiCharInfo.enableIK)
-                    try
-                    {
-                        objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.IK, false, force);
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine($"Error set kinematic to 2(FK), when clear IK. Error message = {e}");
-                    }
-
-                if (!objctrl.oiCharInfo.enableFK)
-                    try
-                    {
-                        objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.FK, true, force);
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine($"Error set kinematic to 2(FK), when set FK. Error message = {e}");
-                    }
-            }
-            else if (mode == KinematicMode.IK)
-            {
-                if (objctrl.oiCharInfo.enableFK)
-                    try
-                    {
-                        objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.FK, false, force);
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine($"Error set kinematic to 1(IK), when clear FK. Error message = {e}");
-                    }
-
-                if (!objctrl.oiCharInfo.enableIK)
-                    try
-                    {
-                        objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.IK, true, force);
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine($"Error set kinematic to 1(IK), when set IK. Error message = {e}");
-                    }
-            }
-            else
-            {
-                if (objctrl.oiCharInfo.enableIK)
-                    try
-                    {
-                        objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.IK, false, force);
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine($"Error set kinematic to 0(None), when clear IK. Error message = {e}");
-                    }
-
-                if (objctrl.oiCharInfo.enableFK)
-                    try
-                    {
-                        objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.FK, false, force);
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine($"Error set kinematic to 0(None), when clear FK. Error message = {e}");
-                    }
-            }
+            if (objctrl.oiCharInfo.enableFK) return;
+            objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.FK, true, true);
         }
 
         public float get_face_shape(int p1)
@@ -988,7 +967,7 @@ namespace VNActor
             objctrl.StopVoice();
         }
 
-        public void set_FK_active(int group, bool active = false, bool force = false)
+        public void SetActiveFK(int group, bool active = false, bool force = false)
         {
             OIBoneInfo.BoneGroup[] bis =
             {
@@ -1000,7 +979,7 @@ namespace VNActor
             objctrl.ActiveFK(bis[group], active, force);
         }
 
-        public void set_FK_active(bool group, bool force = false)
+        public void SetActiveFK(bool group, bool force = false)
         {
             // param pattern 1: set one group
             // group: FK group: 0=hair, 1=neck, 2=Breast, 3=body, 4=right hand, 5=left hand, 6=skirt
@@ -1024,7 +1003,7 @@ namespace VNActor
             foreach (var i in Enumerable.Range(0, 7)) objctrl.ActiveFK(bis[i], group, force);
         }
 
-        public void set_FK_active(bool[] group, bool active = false, bool force = false)
+        public void SetActiveFK(bool[] group, bool active = false, bool force = false)
         {
             OIBoneInfo.BoneGroup[] bis =
             {
@@ -1045,42 +1024,7 @@ namespace VNActor
             return activeFK;
         }
 
-        /*
-        public Dictionary<int, Vector3> export_fk_bone_info(bool activedOnly = true)
-        {
-            // export a dic contents FK bone info
-            Dictionary<int, Vector3> biDic = new Dictionary<int, Vector3>();
-            foreach (var i in Enumerable.Range(0, this.objctrl.listBones.Count))
-            {
-                OCIChar.BoneInfo binfo = this.objctrl.listBones[i];
-                if (!activedOnly || binfo.active)
-                {
-                    //posClone = Vector3(binfo.posision.x, binfo.posision.y, binfo.posision.z)
-                    Vector3 rot = binfo.boneInfo.changeAmount.rot;
-                    Vector3 rotClone = new Vector3(rot.x <= 180 ? rot.x : rot.x - 360, rot.y <= 180 ? rot.y : rot.y - 360, rot.z <= 180 ? rot.z : rot.z - 360);
-                    //abDic[binfo.boneID] = (posClone, rotClone)
-                    biDic[i] = rotClone;
-                }
-            }
-            //print "exported", len(biDic), "bones"
-            return biDic;
-        }
-
-        public void import_fk_bone_info(Dictionary<int, Vector3> biDic)
-        {
-            // import fk bone info from dic
-            foreach (var i in Enumerable.Range(0, this.objctrl.listBones.Count))
-            {
-                OCIChar.BoneInfo binfo = this.objctrl.listBones[i];
-                if (biDic[i] != null)
-                {
-                    binfo.boneInfo.changeAmount.rot = biDic[i];
-                }
-            }
-        }
-        */
-
-        public void set_IK_active(bool[] group, bool force = false)
+        public void SetActiveIK(bool[] group, bool force = false)
         {
             // param pattern 1: set one group
             // group: IK group: 0=body, 1=right leg, 2=left leg, 3=right arm, 4=left arm
@@ -1094,28 +1038,16 @@ namespace VNActor
             // group: 0/1 for all IK group
             // active: must be None
             // force: 0/1
-            OIBoneInfo.BoneGroup[] bis =
-            {
-                OIBoneInfo.BoneGroup.Body, OIBoneInfo.BoneGroup.RightLeg, OIBoneInfo.BoneGroup.LeftLeg,
-                OIBoneInfo.BoneGroup.RightArm, OIBoneInfo.BoneGroup.LeftArm
-            };
-
             foreach (var i in Enumerable.Range(0, group.Length <= 5 ? group.Length : 5))
-                objctrl.ActiveIK(bis[i], group[i], force);
+                objctrl.ActiveIK(BoneGroups[i], group[i], force);
         }
 
-        public void set_IK_active(int group, bool active = false, bool force = false)
+        public void SetActiveIK(int group, bool active = false, bool force = false)
         {
-            OIBoneInfo.BoneGroup[] bis =
-            {
-                OIBoneInfo.BoneGroup.Body, OIBoneInfo.BoneGroup.RightLeg, OIBoneInfo.BoneGroup.LeftLeg,
-                OIBoneInfo.BoneGroup.RightArm, OIBoneInfo.BoneGroup.LeftArm
-            };
-
-            objctrl.ActiveIK(bis[group], active, force);
+            objctrl.ActiveIK(BoneGroups[group], active, force);
         }
 
-        public void set_IK_active(bool group, bool force = false)
+        public void SetActiveIK(bool group, bool force = false)
         {
             // param pattern 1: set one group
             // group: IK group: 0=body, 1=right leg, 2=left leg, 3=right arm, 4=left arm

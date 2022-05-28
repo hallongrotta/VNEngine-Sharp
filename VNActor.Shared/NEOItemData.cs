@@ -30,35 +30,33 @@ namespace VNActor
         public NEOItemData(Item i) : base(i)
         {
             // export full status of prop
-            if (Visible)
+            if (!visible) return;
+            scale = i.scale;
+            if (i.isColorable) color = i.color;
+            if (i.hasPattern)
             {
-                scale = i.scale;
-                if (i.isColorable) color = i.color;
-                if (i.hasPattern)
-                {
-                    ptn_set = i.pattern;
-                    ptn_dtl = i.pattern_detail;
-                }
-
-                if (i.hasPanel)
-                {
-                    pnl_set = i.panel;
-                    pnl_dtl = i.panel_detail;
-                }
-
-                if (i.hasEmission) emission = i.emission;
-                if (i.hasAlpha) alpha = i.alpha;
-                if (i.isDynamicBone) db_active = i.dynamicbone_enable;
-                if (i.isAnime) anim_spd = i.anime_speed;
-                if (i.isDynamicBone) db_active = i.dynamicbone_enable;
+                ptn_set = i.pattern;
+                ptn_dtl = i.pattern_detail;
             }
+
+            if (i.hasPanel)
+            {
+                pnl_set = i.panel;
+                pnl_dtl = i.panel_detail;
+            }
+
+            if (i.hasEmission) emission = i.emission;
+            if (i.hasAlpha) alpha = i.alpha;
+            if (i.isDynamicBone) db_active = i.dynamicbone_enable;
+            if (i.isAnime) anim_spd = i.anime_speed;
+            if (i.isDynamicBone) db_active = i.dynamicbone_enable;
         }
 
         public virtual void Apply(Item i)
         {
             // export full status of prop
             base.Apply(i);
-            if (Visible)
+            if (visible)
             {
                 i.scale = scale;
                 if (anim_spd is float f) i.anime_speed = f;
