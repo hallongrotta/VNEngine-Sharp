@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using MessagePack;
 using UnityEngine;
+using NotImplementedException = System.NotImplementedException;
 
 namespace VNEngine
 {
@@ -223,8 +224,17 @@ namespace VNEngine
         }
 
         [MessagePackObject(true)]
-        public class CamData
+        public class CamData : IManaged<CamData>
         {
+            public string name { get; set; }
+
+            public string TypeName => "Cam";
+
+            public CamData Copy()
+            {
+                throw new NotImplementedException();
+            }
+
             public VNData addata;
             public int camnum;
             public Vector3 distance;

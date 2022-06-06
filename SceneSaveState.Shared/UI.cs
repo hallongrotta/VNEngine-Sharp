@@ -25,10 +25,8 @@ namespace SceneSaveState
 
         internal static int windowindex = 0;
 
-        internal static int WindowHeight = 350;
+        internal static int WindowHeight = 550;
         internal static int WindowWidth = 550;
-
-        private static int camviewwidth = 120;
 
         public static Vector2 cam_scroll = new Vector2(0, 0);
         public static Vector2 fset_scroll = new Vector2(0, 0);
@@ -163,84 +161,61 @@ namespace SceneSaveState
                 }
                 else
                 {
-                    GUILayout.BeginHorizontal();
-                    windowindex = GUILayout.Toolbar(windowindex, consolenames);
-                    GUILayout.EndHorizontal();
-                    GUILayout.Space(10);
-                    setWindowName(windowindex);
-                    // Scene Console
-                    if (windowindex == 0)
-                    {
-                        GUILayout.BeginVertical();
-                        subwinindex = GUILayout.Toolbar(subwinindex, options);
-                        GUILayout.Space(10);
-                        // Edit window
-                        if (subwinindex == 0)
-                        {
-                            sceneConsoleEditUI();
-                        }
-                        else if (subwinindex == 1)
-                        {
-                            // Trackable window
-                            sceneConsoleTrackable();
-                        }
-                        else if (subwinindex == 2)
-                        {
-                            // Load/Save window
-                            sceneConsoleLdSvUI();
-                        }
-                        else if (subwinindex == 3)
-                        {
-                            // --------- Advanced controls -------------
-                            sceneConsoleAdvUI();
-                        }                      
-                        else if (subwinindex == 4)
-                        {
-                            // Ministates window
-                            //sceneConsoleMinistates();
-                        }
-                        else if (subwinindex == 100)
-                        {
-                            // Render for advanced cam properties
-                            //VNExt.render_wizard_ui(SceneConsole.Instance); TODO
-                        }
-                        GUILayout.FlexibleSpace();
-                        GUILayout.BeginHorizontal();
-                        // GUILayout.Label("<b>Warning:</b> Closing console removes all console data")
-                        if (GUILayout.Button("Reset scenes", GUILayout.Width(100)))
-                        {
-                            warning_action = Instance.Reset;
-                            warning_param = new WarningParam_s("Delete current scene data? This will not delete scene data saved to the card.", false);
-                        }
-                        GUILayout.FlexibleSpace();
-                        if (GUILayout.Button("Start VN from scene.", GUILayout.Width(100)))
-                        {
-                            Instance.runVNSS("scene");
-                        }
-                        if (GUILayout.Button("About v" + mod_version, GUILayout.Width(100)))
-                        {
-                            //resetConsole(sc.game)
-                            Instance.show_blocking_message_time_sc($"SceneSaveState {mod_version}\n{about_text}", 5.0f);
-                        }                   
-                        if (GUILayout.Button("Close console", GUILayout.Width(100)))
-                        {
-                            Utils.sceneConsoleGUIClose();
-                        }
-                        GUILayout.EndHorizontal();
-                        GUILayout.EndVertical();
-                        GUI.DragWindow();
-                    }
-                    else if (windowindex == 1)
-                    {
-                        // Pose Console
-                        //var _pc = posesavestate.init_from_sc(SceneConsole.Instance.game); //TODO add posesavestate
-                        //posesavestate.poseConsoleUIFuncs();
-                        //GUILayout.Label("No poses console for now ))")
-                    }
-                    else if (windowindex == 2)
-                    {
-                        //Utils.sceneUtilsUI(); TODO
-                    }
+                    GUILayout.BeginVertical();
+                            subwinindex = GUILayout.Toolbar(subwinindex, options);
+                            GUILayout.Space(10);
+                            switch (subwinindex)
+                            {
+                                // Edit window
+                                case 0:
+                                    sceneConsoleEditUI();
+                                    break;
+                                case 1:
+                                    // Trackable window
+                                    sceneConsoleTrackable();
+                                    break;
+                                case 2:
+                                    // Load/Save window
+                                    sceneConsoleLdSvUI();
+                                    break;
+                                case 3:
+                                    // --------- Advanced controls -------------
+                                    sceneConsoleAdvUI();
+                                    break;
+                                case 4:
+                                    // Ministates window
+                                    //sceneConsoleMinistates();
+                                    break;
+                                case 100:
+                                    // Render for advanced cam properties
+                                    //VNExt.render_wizard_ui(SceneConsole.Instance); TODO
+                                    break;
+                            }
+                            GUILayout.FlexibleSpace();
+                            GUILayout.BeginHorizontal();
+                            // GUILayout.Label("<b>Warning:</b> Closing console removes all console data")
+                            if (GUILayout.Button("Reset scenes", GUILayout.Width(100)))
+                            {
+                                warning_action = Instance.Reset;
+                                warning_param = new WarningParam_s("Delete current scene data? This will not delete scene data saved to the card.", false);
+                            }
+                            GUILayout.FlexibleSpace();
+                            if (GUILayout.Button("Start VN from scene.", GUILayout.Width(100)))
+                            {
+                                Instance.runVNSS("scene");
+                            }
+                            if (GUILayout.Button("About v" + mod_version, GUILayout.Width(100)))
+                            {
+                                //resetConsole(sc.game)
+                                Instance.show_blocking_message_time_sc($"SceneSaveState {mod_version}\n{about_text}", 5.0f);
+                            }                   
+                            if (GUILayout.Button("Close console", GUILayout.Width(100)))
+                            {
+                                Utils.sceneConsoleGUIClose();
+                            }
+                            GUILayout.EndHorizontal();
+                            GUILayout.EndVertical();
+                            GUI.DragWindow();
                 }
             }
             catch (Exception e)

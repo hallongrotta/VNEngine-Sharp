@@ -75,7 +75,7 @@ namespace SceneSaveState
             GUILayout.FlexibleSpace();
             if (GUILayout.Button("<color=#00ff00>Load</color> from file", GUILayout.Height(btnBigHeight), GUILayout.Width(210)))
             {
-                if (Instance.block.Count > 0)
+                if (Instance.ChapterManager.Count > 0)
                 {
                     warning_action = Instance.loadSceneData;
                     warning_param = new WarningParam_s("Do you wish to load scenedata from file? (Will overwrite console data)", false);
@@ -115,7 +115,7 @@ namespace SceneSaveState
             if (GUILayout.Button("Load backup scene data\n(scene/external file)", GUILayout.Height(btnSmallHeight), GUILayout.Width(210)))
             {
                 fld = Utils.getFolder(Instance.game, "-scfile:", false);
-                if (Instance.block.Count > 0)
+                if (Instance.ChapterManager.Count > 0)
                 {
                     if (fld == null)
                     {
@@ -141,7 +141,7 @@ namespace SceneSaveState
             if (GUILayout.Button("Load auto-timer backup file", GUILayout.Height(btnSmallHeight), GUILayout.Width(210)))
             {
                 //sc.exportToVNSS()
-                if (Instance.block.Count > 0)
+                if (Instance.ChapterManager.Count > 0)
                 {
                     warning_action = Instance.loadSceneDataBackupTimer;
                     warning_param = new WarningParam_s("Do you wish to load backup scenedata from file auto-saved by timer? (Will overwrite console data)", false);
@@ -210,12 +210,12 @@ namespace SceneSaveState
             GUILayout.FlexibleSpace();
             if (GUILayout.Button("Export cam texts\nto sss_camtexts.xml", GUILayout.Height(btnSmallHeight), GUILayout.Width(210)))
             {
-                Instance.block.exportCamTexts();
+                //Instance.ChapterManager.exportCamTexts();
             }
             GUILayout.FlexibleSpace();
             if (GUILayout.Button("Import cam texts\nfrom sss_camtexts.xml", GUILayout.Height(btnSmallHeight), GUILayout.Width(210)))
             {
-                Instance.block.importCamTexts();
+                //Instance.ChapterManager.importCamTexts();
             }
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
@@ -223,7 +223,7 @@ namespace SceneSaveState
             GUILayout.FlexibleSpace();
             if (GUILayout.Button("Import cam texts\nfrom sss_camtexts.txt (Python)", GUILayout.Height(btnSmallHeight), GUILayout.Width(210)))
             {
-                Instance.block.ImportCamTextsCustom();
+                //Instance.ChapterManager.ImportCamTextsCustom();
             }
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();

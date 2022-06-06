@@ -10,6 +10,7 @@ using ExtensibleSaveFormat;
 using KKAPI;
 using KKAPI.Studio;
 using KKAPI.Studio.SaveLoad;
+using MessagePack;
 using Studio;
 using UnityEngine;
 using VNActor;
@@ -47,11 +48,9 @@ namespace SceneSaveState
 
         internal ConfigEntry<bool> autoAddCam;
 
-        internal ConfigEntry<bool> autoLoad;
-
         internal string autoshownewid;
 
-        internal SceneManager block;
+        internal Manager<Chapter> ChapterManager;
 
         internal List<CamData> camset;
 
@@ -115,6 +114,8 @@ namespace SceneSaveState
 
         private Rect windowRect;
 
+        internal Manager<CamData> CamManager;
+
         internal SceneConsole()
         {
             // init dict
@@ -123,7 +124,10 @@ namespace SceneSaveState
             guiOnShow = false;
             // --- Essential Data ---
             last_acc_id = 0;
-            block = new SceneManager();
+            ChapterManager = new Manager<Chapter>();
+
+            ChapterManager.Add(new Chapter());
+
             // self.basechars = self.getAllBaseChars()
             // self.dupchars = self.getAllDupChars()
             // self.updateNameset()
@@ -188,6 +192,10 @@ namespace SceneSaveState
             StudioSaveLoadApi.RegisterExtraBehaviour<SaveLoadController>(GUID);
         }
 
+        internal Scene CurrentScene => CurrentChapter.Current;
+
+        internal Chapter CurrentChapter => ChapterManager.Current;
+
         internal void Start()
         {
             Logger = base.Logger;
@@ -202,7 +210,6 @@ namespace SceneSaveState
                 new KeyboardShortcut(KeyCode.B), "Show or hide the VN Controller window in Studio");
 
             // Settings
-            autoLoad = Config.Bind("Scene Console Settings", "AutoLoadScene", true, "Load scenes when selected.");
             autoAddCam = Config.Bind("Scene Console Settings", "AutoAddCamera", true, "Auto add cam for new scenes");
             promptOnDelete = Config.Bind("Scene Console Settings", "AutoAddCamera", true,
                 "Prompt before delete (scene/cam/chars)");
@@ -240,19 +247,48 @@ namespace SceneSaveState
             return (double) bytes.Length / 1000;
         }
 
+        [Serializable]
+        [MessagePackObject]
+        public class ChapterData
+        {
+            [Key("Scenes")] public Scene[] Scenes;
+
+            public ChapterData()
+            {
+
+            }
+
+            public ChapterData(Scene[] scenes)
+            {
+                Scenes = scenes;
+            }
+        }
+
+
         internal PluginData GetPluginData()
         {
             var pluginData = new PluginData();
-            if (block.Count > 0)
+            if (ChapterManager.Count > 0) 
                 try
                 {
-                    var sceneData = Utils.SerializeData(block.ExportScenes());
-                    pluginData.data["scenes"] = sceneData;
-                    pluginData.data["currentScene"] = block.currentSceneIndex;
-                    pluginData.data["sceneNames"] = block.ExportSceneStrings();
+
+                    var chapters = ChapterManager.ExportItems();
+                    var chapterData = new ChapterData[chapters.Length];
+                    for (var index = 0; index < chapters.Length; index++)
+                    {
+                        chapterData[index] = new ChapterData(chapters[index].ExportItems());
+                    }
+
+                    var serializedChapters = Utils.SerializeData(chapterData);
+                    pluginData.data["chapters"] = serializedChapters;
+                    pluginData.data["currentScene"] = CurrentChapter.CurrentIndex;
+                    pluginData.data["currentChapter"] = ChapterManager.CurrentIndex;
+                    pluginData.data["sceneNames"] = CurrentChapter.ExportItemNames();
+                    pluginData.data["currentChapter"] = ChapterManager.CurrentIndex;
+                    pluginData.data["chapterNames"] = ChapterManager.ExportItemNames();
                     pluginData.data["trackMap"] = track_map;
                     pluginData.data["roles"] = Utils.SerializeData(roleTracker.ExportRoles());
-                    var saveDataSizeKb = CalculateSaveDataSize(sceneData);
+                    var saveDataSizeKb = CalculateSaveDataSize(serializedChapters);
                     Logger.LogMessage($"Saved {saveDataSizeKb:N} Kb of scene state data.");
                     saveDataSize = saveDataSizeKb;
                     return pluginData;
@@ -273,33 +309,55 @@ namespace SceneSaveState
             if (pluginData?.data == null)
             {
                 roleTracker = new RoleTracker();
-                block = new SceneManager();
+                ChapterManager = new Manager<Chapter>();
+                ChapterManager.Add(new Chapter());
                 saveDataSize = 0;
             }
             else
             {
-                if (pluginData.data["scenes"] is byte[] sceneData && sceneData.Length > 0)
+
+                pluginData.data.TryGetValue("currentScene", out var temp);
+                var sceneIndex = temp as int? ?? 0;
+
+                pluginData.data.TryGetValue("currentChapter", out temp);
+                var chapterIndex = temp as int? ?? 0;
+
+                pluginData.data.TryGetValue("sceneNames", out temp);
+                var sceneNames = temp as string;
+                var sceneStrings = Manager<Scene>.DeserializeItemNames(sceneNames);
+
+                pluginData.data.TryGetValue("sceneNames", out temp);
+                var chapterNames = temp as string;
+
+                pluginData.data.TryGetValue("trackMap", out temp);
+                track_map = temp as bool? ?? true;
+
+
+                if (pluginData.data.ContainsKey("scenes") && pluginData.data["scenes"] is byte[] sceneData &&
+                    sceneData.Length > 0 && !pluginData.data.ContainsKey("chapters"))
+                {
+                    var sceneArray = Utils.DeserializeData<Scene[]>(sceneData);
+                    ChapterManager = new Manager<Chapter>();
+                    ChapterManager.Add(new Chapter(sceneArray.ToList(), sceneStrings));
+                }
+
+                if (pluginData.data.ContainsKey("chapters") && pluginData.data["chapters"] is byte[] chapterData && chapterData.Length > 0)
                     try
                     {
-                        var scenes = Utils.DeserializeData<Scene[]>(sceneData);
+                        var chapterDataArray = Utils.DeserializeData<ChapterData[]>(chapterData);
 
-                        object temp;
+                        var chapters = new List<Chapter>(chapterDataArray.Length);
+ 
+                        foreach (var t in chapterDataArray)
+                        {
+                            chapters.Add(new Chapter(t.Scenes.ToList(), sceneStrings));
+                        }
 
-                        pluginData.data.TryGetValue("currentScene", out temp);
-                        var sceneIndex = temp as int? ?? 0;
+                        var chapterStrings = Manager<Chapter>.DeserializeItemNames(chapterNames);
+                        
+                        ChapterManager = new Manager<Chapter>(chapters, currentIndex: chapterIndex, itemNames: chapterStrings);
 
-                        pluginData.data.TryGetValue("sceneNames", out temp);
-                        var sceneNames = temp as string;
-
-                        pluginData.data.TryGetValue("trackMap", out temp);
-                        track_map = temp as bool? ?? true;
-
-
-                        var sceneStrings = SceneManager.DeserializeSceneStrings(sceneNames);
-
-                        block = new SceneManager(scenes, currentSceneIndex: sceneIndex, sceneStrings: sceneStrings);
-
-                        var saveDataSizeKb = CalculateSaveDataSize(sceneData);
+                        var saveDataSizeKb = CalculateSaveDataSize(chapterData);
                         Logger.LogMessage($"Loaded {saveDataSizeKb:N} Kb of scene state data.");
                         saveDataSize = saveDataSizeKb;
                     }
@@ -325,9 +383,14 @@ namespace SceneSaveState
                     roleTracker = new RoleTracker();
                 }
 
+                // For scenes that still use SceneFolders
                 SceneFolders.LoadTrackedActorsAndProps();
                 if (SceneFolders.AllActors.Any() || SceneFolders.AllProps.Any())
                     roleTracker.AddFrom(SceneFolders.AllActors, SceneFolders.AllProps);
+
+                ChapterManager.SetCurrent(chapterIndex);
+                CurrentChapter.SetCurrent(sceneIndex);
+
                 LoadCurrentScene();
             }
         }
@@ -360,31 +423,28 @@ namespace SceneSaveState
             changeSceneCam(CamTask.DELETE);
         }
 
-        internal void changeSceneCam()
-        {
-            changeSceneCam(CamTask.ADD);
-        }
-
         internal void changeSceneCam(CamTask task)
         {
             var cdata = VNNeoController.cameraData;
             var addata = currentVNData;
-            var cam_data = new CamData(cdata.pos, cdata.rotate, cdata.distance, cdata.parse, addata);
-            if (task == CamTask.ADD)
+            var camData = new CamData(cdata.pos, cdata.rotate, cdata.distance, cdata.parse, addata);
+            switch (task)
             {
-                block.AddCam(cam_data);
-            }
-            else if (task == CamTask.UPDATE)
-            {
-                block.UpdateCam(cam_data);
-            }
-            else if (task == CamTask.DELETE)
-            {
-                var cur_cam = block.DeleteCam();
-                if (cur_cam > -1) setCamera();
+                case CamTask.ADD:
+                    CamManager.Add(camData);
+                    break;
+                case CamTask.UPDATE:
+                    CamManager.Update(camData);
+                    break;
+                case CamTask.DELETE:
+                {
+                    var curCam = CamManager.Remove();
+                    if (curCam > -1) setCamera();
+                    break;
+                }
             }
 
-            if (!(task == CamTask.UPDATE)) getSceneCamString();
+            if (task != CamTask.UPDATE) getSceneCamString();
         }
 
         internal void setCamera()
@@ -394,7 +454,7 @@ namespace SceneSaveState
 
         internal void setCamera(bool isAnimated)
         {
-            var camera_data = block.CurrentCam;
+            var camera_data = CamManager.Current;
             // check and run adv command
             var keepCamera = false;
             if (camera_data.addata.enabled)
@@ -460,12 +520,12 @@ namespace SceneSaveState
 
         internal void UpdateScene()
         {
-            if (!block.HasScenes) return;
+            if (!CurrentChapter.HasItems) return;
 
             var scene = new Scene(game.export_full_status(), roleTracker.AllCharacters, roleTracker.AllProps,
                 isSysTracking);
 
-            block.Update(scene);
+            CurrentChapter.Update(scene);
         }
 
 
@@ -479,31 +539,52 @@ namespace SceneSaveState
             var scene = new Scene(game.export_full_status(), roleTracker.AllCharacters, roleTracker.AllProps,
                 isSysTracking);
             if (insert)
-                block.Insert(scene);
+                CurrentChapter.Insert(scene);
             else
-                block.Add(scene);
+                CurrentChapter.Add(scene);
+
+            CamManager = new Manager<CamData>(scene.cams);
+
             if (autoAddCam.Value)
                 changeSceneCam(CamTask.ADD);
         }
 
         // Remove stuff
-        internal void removeScene(object param)
-        {
-            removeScene();
-        }
 
-        internal void removeScene()
+        internal void RemoveScene()
         {
-            if (block.HasScenes) block.RemoveScene();
+            if (CurrentChapter.HasItems) CurrentChapter.Remove();
         }
 
         // Load scene
 
+        internal void SetCurrentScene(int i)
+        {
+            CurrentChapter.SetCurrent(i);
+            LoadCurrentScene();
+        }
+
+        internal void SetCurrentChapter(int chapterNumber, int sceneNumber)
+        {
+            Instance.ChapterManager.SetCurrent(chapterNumber);
+            SetCurrentScene(sceneNumber);
+        }
+
+        internal void SetCurrentChapter(int chapterNumber)
+        {
+            Instance.ChapterManager.SetCurrent(chapterNumber);
+            CurrentChapter.First();
+            if (CurrentChapter.HasItems)
+            {
+                LoadCurrentScene();
+            }
+        }
+
         internal void LoadCurrentScene()
         {
-            SetSceneState(block.CurrentScene);
-            if (block.Count <= 0 || block.currentCamCount <= 0) return;
-            block.FirstCam();
+            CamManager = new Manager<CamData>(CurrentScene.cams);
+            SetSceneState(CurrentScene);
+            if (ChapterManager.Count <= 0 || CamManager.Count <= 0) return;
             setCamera();
         }
 
@@ -606,12 +687,11 @@ namespace SceneSaveState
 
         internal void addSysTracking()
         {
-            if (block.Count > 0)
+            if (ChapterManager.Count > 0)
             {
                 var curstatus = game.export_full_status();
-                foreach (var i in Enumerable.Range(0, block.Count))
+                foreach (var scene in CurrentChapter)
                 {
-                    var scene = block[i];
                     //scene.actors["sys"] = curstatus;
                     scene.sys = curstatus;
                 }
@@ -697,7 +777,7 @@ namespace SceneSaveState
 
             roleTracker.RemoveRole(roleName);
 
-            foreach (var scene in block) scene.Remove(roleName);
+            foreach (var scene in CurrentChapter) scene.Remove(roleName);
         }
 
         internal bool ChangeRoleName(string roleName, string newRoleName)
@@ -706,14 +786,15 @@ namespace SceneSaveState
 
             if (!roleTracker.ChangeRoleName(roleName, newRoleName)) return false;
 
-            foreach (var scene in block) scene.ChangeRoleName(roleName, newRoleName);
+            foreach (var scene in CurrentChapter) scene.ChangeRoleName(roleName, newRoleName);
 
             return true;
         }
 
         internal void Reset()
         {
-            block = new SceneManager();
+            ChapterManager = new Manager<Chapter>();
+            ChapterManager.Add(new Chapter());
         }
 
         internal void SaveToFile()
@@ -729,7 +810,7 @@ namespace SceneSaveState
 
             var file_path = Path.Combine(backup_folder_name, filename);
             var abs_file_path = Path.Combine(app_dir, file_path);
-            var data = Utils.SerializeData(block.ExportScenes());
+            var data = Utils.SerializeData(ChapterManager.ExportItems());
             File.WriteAllBytes(abs_file_path, data);
         }
 
@@ -741,8 +822,8 @@ namespace SceneSaveState
             if (File.Exists(abs_file_path))
             {
                 var data = File.ReadAllBytes(abs_file_path);
-                var scenes = Utils.DeserializeData<Scene[]>(data);
-                block = new SceneManager(scenes);
+                var chapters = Utils.DeserializeData<Chapter[]>(data);
+                ChapterManager = new Manager<Chapter>(chapters.ToList());
             }
         }
 
@@ -790,10 +871,10 @@ namespace SceneSaveState
 
             // loading
             if (setToFirst)
-                if (block.HasScenes)
+                if (CurrentChapter.HasItems)
                 {
-                    block.First();
-                    block.FirstCam();
+                    ChapterManager.First();
+                    CamManager.First();
                 }
         }
 
@@ -812,30 +893,28 @@ namespace SceneSaveState
 
         internal void DuplicateScene()
         {
-            if (block.Count > 0)
-                block.Insert(block.CurrentScene.Copy());
+            if (ChapterManager.Count > 0)
+                CurrentChapter.Insert(CurrentChapter.Current.Copy());
         }
 
         // Copy/paste cam set
         internal void copyCamSet()
         {
-            if (block.HasScenes)
-            {
-                if (camset is null) camset = new List<CamData>();
-                camset = block.CurrentScene.cams;
-            }
+            if (!CurrentChapter.HasItems) return;
+            if (camset is null) camset = new List<CamData>();
+            camset = CurrentChapter.Current.cams;
         }
 
         internal void pasteCamSet()
         {
-            if (block.HasScenes) block.CurrentScene.cams.AddRange(camset);
+            if (CurrentChapter.HasItems) CurrentChapter.Current.cams.AddRange(camset);
         }
 
 
         // Goto next/prev
         internal void goto_first()
         {
-            block.First();
+            ChapterManager.First();
             LoadCurrentScene();
         }
 
@@ -846,44 +925,46 @@ namespace SceneSaveState
 
         internal void goto_next()
         {
-            if (block.Count > 0)
+            if (ChapterManager.Count <= 0) return;
+            if (CamManager.Count > 0 && CamManager.HasNext)
             {
-                if (block.currentCamCount > 0 && block.HasNextCam)
-                {
-                    block.NextCam();
-                    setCamera();
-                }
-                else
-                {
-                    // elif self.cur_index < (len(self.block) - 1):
-                    // self.cur_index += 1
-                    LoadNextScene();
-                }
+                CamManager.Next();
+                setCamera();
+            }
+            else
+            {
+                // elif self.cur_index < (len(self.block) - 1):
+                // self.cur_index += 1
+                LoadNextScene();
             }
         }
 
         internal void goto_prev()
         {
-            if (block.HasPrev)
+            if (!CurrentChapter.HasPrev) return;
+            if (CamManager.CurrentIndex > 0)
             {
-                if (block.currentCamIndex > 0)
-                {
-                    block.PrevCam();
-                    setCamera();
-                }
-                else
-                {
-                    // elif self.cur_index > 0:
-                    // self.cur_index -= 1
-                    LoadPreviousScene(true);
-                }
+                CamManager.Back();
+                setCamera();
+            }
+            else
+            {
+                // elif self.cur_index > 0:
+                // self.cur_index -= 1
+                LoadPreviousScene(true);
             }
         }
 
         internal void LoadNextScene()
         {
-            if (!block.HasNext) return;
-            block.Next();
+            if (!CurrentChapter.HasNext)
+            {
+                GoToNextChapter();
+            }
+            else
+            {
+                CurrentChapter.Next();
+            }
             LoadCurrentScene();
         }
 
@@ -892,21 +973,78 @@ namespace SceneSaveState
             LoadPreviousScene(false);
         }
 
+        internal void GoToPreviousChapter()
+        {
+            if (!ChapterManager.HasPrev) return;
+            ChapterManager.Back();
+            CurrentChapter.Last();
+        }
+
+        internal void GoToNextChapter()
+        {
+            if (!ChapterManager.HasNext) return;
+            ChapterManager.Next();
+            CurrentChapter.First();
+        }
+
+        internal void MoveSceneForward()
+        {
+            if (!CurrentChapter.HasNext && ChapterManager.HasNext)
+            {
+                var scene = CurrentScene;
+                CurrentChapter.Remove();
+                ChapterManager.Next();
+                CurrentChapter.Prepend(scene);
+            }
+            else
+            {
+                CurrentChapter.MoveItemForward();
+            }
+            
+        }
+
+        internal void MoveSceneBackward()
+        {
+
+            if (!CurrentChapter.HasPrev && ChapterManager.HasPrev)
+            {
+                var scene = CurrentScene;
+                CurrentChapter.Remove();
+                ChapterManager.Back();
+                CurrentChapter.Add(scene);
+            }
+            else
+            {
+                CurrentChapter.MoveItemBack();
+            }
+        }
+        
+
+
         internal void LoadPreviousScene(bool lastcam = false)
         {
-            if (!block.HasPrev) return;
-            block.Back();
+
+            if (!CurrentChapter.HasPrev)
+            {
+                GoToPreviousChapter();
+            }
+            else
+            {
+                CurrentChapter.Back();
+            }
+
             LoadCurrentScene();
-            if (!lastcam || block.currentCamCount <= 0) return;
-            block.LastCam();
+            if (!lastcam || CamManager.Count <= 0) return;
+            CamManager.Last();
             setCamera();
+
         }
 
         internal void camSetAll(bool state)
         {
-            foreach (var i in Enumerable.Range(0, block.Count))
+            foreach (var i in Enumerable.Range(0, ChapterManager.Count))
             {
-                var scene = block[i];
+                var scene = CurrentChapter[i];
                 // only process scene if 1 cam is VN cam - other, skip
                 // cam = scene.cams[0]
                 foreach (var j in Enumerable.Range(0, scene.cams.Count))
@@ -925,7 +1063,7 @@ namespace SceneSaveState
             //self.game.skin_set_byname("skin_renpy")
             //from skin_renpy import SkinRenPy
 
-            if (block.Count == 0) return;
+            if (ChapterManager.Count == 0) return;
 
             var rpySkin = new SkinRenPyMini();
             int calcPos;
@@ -938,12 +1076,12 @@ namespace SceneSaveState
             game.visible = true;
             if (starfrom == "cam")
                 //print self.cur_index, self.cur_cam
-                calcPos = (block.currentSceneIndex + 1) * 100 + block.currentCamIndex;
+                calcPos = (ChapterManager.CurrentIndex + 1) * 100 + CamManager.CurrentIndex;
             else if (starfrom == "scene")
-                calcPos = (block.currentSceneIndex + 1) * 100;
+                calcPos = (ChapterManager.CurrentIndex + CurrentChapter.CurrentIndex + 1) * 100;
             else
                 calcPos = 0;
-            block.SetCurrent(calcPos);
+            ChapterManager.SetCurrent(calcPos);
             LoadCurrentScene();
             Console.WriteLine("Run VNSS from state {0}", calcPos.ToString());
             //game.vnscenescript_run_current(onEndVNSS, calcPos.ToString());
@@ -1030,6 +1168,28 @@ namespace SceneSaveState
             UPDATE,
             DELETE,
             ADD
+        }
+
+        public void AddChapter()
+        {
+            ChapterManager.Add(new Chapter());
+            AddScene();
+        }
+
+        public void InsertChapter()
+        {
+            ChapterManager.Insert(new Chapter());
+            AddScene();
+        }
+
+        public void DuplicateChapter()
+        {
+            ChapterManager.Duplicate();
+        }
+
+        public void RemoveChapter()
+        {
+            ChapterManager.Remove();
         }
     }
 }

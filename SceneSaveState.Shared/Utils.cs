@@ -29,7 +29,7 @@ namespace SceneSaveState
         // :type game:vngameengine.VNNeoController
         public static void start(VNNeoController game)
         {
-            if (SceneConsole.Instance.block.Count == 0)
+            if (SceneConsole.Instance.ChapterManager.Count == 0)
             {
                 return;
             }

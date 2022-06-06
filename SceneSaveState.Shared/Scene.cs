@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using VNActor;
+using VNEngine;
 using static VNActor.Character;
 using static VNActor.Light;
 using static VNEngine.System;
@@ -7,13 +8,14 @@ using static VNEngine.VNCamera;
 
 namespace SceneSaveState
 {
-    public partial class Scene
+    public partial class Scene : IManaged<Scene>
     {
         public Dictionary<string, ActorData> actors;
         public List<CamData> cams;
         public Dictionary<string, NEOItemData> items;
         public Dictionary<string, LightData> lights;
-        public string name; // Explcitly set scene name
+        public string TypeName => "Scene";
+        public string name { get; set; }
         public Dictionary<string, NEOPropData> props;
         public SystemData sys;
 

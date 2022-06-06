@@ -46,7 +46,7 @@ namespace SceneSaveState
             }
             if (GUILayout.Button("Set current map to all scenes."))
             {
-                Instance.block.SetCurrentMapForAllScenes();
+                Instance.CurrentChapter.SetCurrentMapForAllScenes();
             }
 #if HS2
             if (GUILayout.Button("Set current actor's clothes to all scenes."))
@@ -54,7 +54,7 @@ namespace SceneSaveState
                 string id = Instance.GetIDOfSelectedObject();
                 if (!(id is null))
                 {
-                    Instance.block.SetCurrentClothesForAllScenes(id);
+                    Instance.CurrentChapter.SetCurrentClothesForAllScenes(id);
                 }
             }
             if (GUILayout.Button("Set current actor's accessories to all scenes."))
@@ -62,7 +62,7 @@ namespace SceneSaveState
                 string id = Instance.GetIDOfSelectedObject();
                 if (!(id is null))
                 {
-                    Instance.block.SetCurrentAccessoriesForAllScenes(id);
+                    Instance.CurrentChapter.SetCurrentAccessoriesForAllScenes(id);
                 }
             }
 #endif
@@ -81,8 +81,6 @@ namespace SceneSaveState
             }
             GUILayout.EndHorizontal();
             GUILayout.Space(20);
-            Instance.autoLoad.Value = GUILayout.Toggle(Instance.autoLoad.Value, "Load scene on select");
-            GUILayout.Space(10);
             Instance.autoAddCam.Value = GUILayout.Toggle(Instance.autoAddCam.Value, "Auto add cam for new scenes");
             GUILayout.Space(10);
             Instance.promptOnDelete.Value = GUILayout.Toggle(Instance.promptOnDelete.Value, "Prompt before delete (scene/cam/chars)");
