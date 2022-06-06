@@ -6,7 +6,7 @@ using VNEngine;
 
 namespace SceneSaveState
 {
-    internal class Manager<T> where T : IManaged<T>
+    public class Manager<T> where T : IManaged<T>
     {
 
         protected List<T> Items;
@@ -104,6 +104,18 @@ namespace SceneSaveState
         {
             Items.Insert(0, i);
             CurrentIndex = 0;
+        }
+
+        public List<T> RemoveUntilEnd(int from)
+        {
+            var items = Items.GetRange(from, Count - from);
+            Items.RemoveRange(from, Count - from);
+            return items;
+        }
+
+        public void AddRange(List<T> items)
+        {
+            Items.AddRange(items);
         }
 
         public void Insert(T i, int position)

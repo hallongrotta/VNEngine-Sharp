@@ -7,7 +7,7 @@ using VNEngine;
 
 namespace SceneSaveState
 {
-    internal class Chapter : Manager<Scene>, IManaged<Chapter>
+    public class Chapter : Manager<Scene>, IManaged<Chapter>
     {
         public string name { get; set; }
 

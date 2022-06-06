@@ -323,6 +323,16 @@ namespace SceneSaveState
                 }
             }
             GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("Merge chapters", GUILayout.Height(25), GUILayout.Width(ColumnWidth * 0.5f)))
+            {
+                Instance.MergeChapters();
+            }
+            if (GUILayout.Button("Split chapter", GUILayout.Height(25), GUILayout.Width(ColumnWidth * 0.5f)))
+            {
+                Instance.SplitChapter();
+            }
+            GUILayout.EndHorizontal();
         }
 
         public static void DrawSceneEditButtons()

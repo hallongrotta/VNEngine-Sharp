@@ -247,22 +247,22 @@ namespace SceneSaveState
             return (double) bytes.Length / 1000;
         }
 
-        [Serializable]
-        [MessagePackObject]
-        public class ChapterData
-        {
-            [Key("Scenes")] public Scene[] Scenes;
+        //[Serializable]
+        //[MessagePackObject]
+        //public class ChapterData
+        //{
+        //    [Key("Scenes")] public Scene[] Scenes;
 
-            public ChapterData()
-            {
+        //    public ChapterData()
+        //    {
 
-            }
+        //    }
 
-            public ChapterData(Scene[] scenes)
-            {
-                Scenes = scenes;
-            }
-        }
+        //    public ChapterData(Scene[] scenes)
+        //    {
+        //        Scenes = scenes;
+        //    }
+        //}
 
 
         internal PluginData GetPluginData()
@@ -273,10 +273,10 @@ namespace SceneSaveState
                 {
 
                     var chapters = ChapterManager.ExportItems();
-                    var chapterData = new ChapterData[chapters.Length];
+                    var chapterData = new Scene[chapters.Length][];
                     for (var index = 0; index < chapters.Length; index++)
                     {
-                        chapterData[index] = new ChapterData(chapters[index].ExportItems());
+                        chapterData[index] = chapters[index].ExportItems();
                     }
 
                     var serializedChapters = Utils.SerializeData(chapterData);
@@ -344,13 +344,13 @@ namespace SceneSaveState
                 if (pluginData.data.ContainsKey("chapters") && pluginData.data["chapters"] is byte[] chapterData && chapterData.Length > 0)
                     try
                     {
-                        var chapterDataArray = Utils.DeserializeData<ChapterData[]>(chapterData);
+                        var chapterDataArray = Utils.DeserializeData<Scene[][]>(chapterData);
 
                         var chapters = new List<Chapter>(chapterDataArray.Length);
  
                         foreach (var t in chapterDataArray)
                         {
-                            chapters.Add(new Chapter(t.Scenes.ToList(), sceneStrings));
+                            chapters.Add(new Chapter(t.ToList(), sceneStrings));
                         }
 
                         var chapterStrings = Manager<Chapter>.DeserializeItemNames(chapterNames);
@@ -1173,13 +1173,40 @@ namespace SceneSaveState
         public void AddChapter()
         {
             ChapterManager.Add(new Chapter());
-            AddScene();
         }
 
         public void InsertChapter()
         {
             ChapterManager.Insert(new Chapter());
-            AddScene();
+        }
+
+        public void SplitChapter()
+        {
+
+            if (!CurrentChapter.HasItems) return;
+
+            var currentIndex = CurrentChapter.CurrentIndex;
+
+            var scenes = CurrentChapter.RemoveUntilEnd(currentIndex+1);
+            ChapterManager.Insert(new Chapter(scenes, null));
+            LoadCurrentScene();
+
+        }
+
+        public void MergeChapters()
+        {
+
+            if (!ChapterManager.HasNext) return;
+
+            var currentIndex = CurrentChapter.CurrentIndex;
+
+            var nextChapter = ChapterManager[currentIndex + 1]; 
+
+            CurrentChapter.AddRange(nextChapter.ExportItems().ToList());
+
+            ChapterManager.Remove(currentIndex + 1);
+
+
         }
 
         public void DuplicateChapter()
