@@ -6,20 +6,22 @@ using static VNActor.Light;
 using static VNEngine.System;
 using static VNEngine.VNCamera;
 
+using static VNActor.Item;
+
 namespace SceneSaveState
 {
     public partial class Scene : IManaged<Scene>
     {
         public Dictionary<string, ActorData> actors;
         public List<CamData> cams;
-        public Dictionary<string, NEOItemData> items;
+        public Dictionary<string, ItemData> items;
         public Dictionary<string, LightData> lights;
         public string TypeName => "Scene";
         public string name { get; set; }
         public Dictionary<string, NEOPropData> props;
         public SystemData sys;
 
-        public Scene(Dictionary<string, ActorData> actors, Dictionary<string, NEOItemData> items,
+        public Scene(Dictionary<string, ActorData> actors, Dictionary<string, ItemData> items,
             Dictionary<string, LightData> lights, Dictionary<string, NEOPropData> props, List<CamData> cams)
         {
             this.cams = cams;
@@ -34,7 +36,7 @@ namespace SceneSaveState
         }
 
         public Scene(SystemData sysData, Dictionary<string, Character> actors, Dictionary<string, Prop> props,
-            bool importSys) : this(new Dictionary<string, ActorData>(), new Dictionary<string, NEOItemData>(),
+            bool importSys) : this(new Dictionary<string, ActorData>(), new Dictionary<string, ItemData>(),
             new Dictionary<string, LightData>(), new Dictionary<string, NEOPropData>(), new List<CamData>())
         {
             foreach (var kv in actors) this.actors[kv.Key] = (ActorData) kv.Value.export_full_status();
@@ -55,7 +57,7 @@ namespace SceneSaveState
         public void AddProp(string key, IVNObject<Prop> p)
         {
             if (p is Item i)
-                items[key] = i.export_full_status() as NEOItemData;
+                items[key] = i.export_full_status() as ItemData;
             else if (p is Light l)
                 lights[key] = l.export_full_status() as LightData;
             else // Generic prop
