@@ -34,12 +34,12 @@ namespace VNActor
                 {
                     i.metallic = metallic;
                 }
-                if (i.isFK)
+                if (i.IsFk)
                 {
                     i.fk_enable = fk_active;
                     if (fk_active)
                     {
-                        i.import_fk_bone_info(fk_set);
+                        i.Fk = fk_set;
                     }
                 }
             }
@@ -54,17 +54,10 @@ namespace VNActor
                 {
                     option = i.option;
                 }
-                if (i.isFK)
+                if (i.IsFk)
                 {
                     fk_active = i.fk_enable;
-                    if (fk_active)
-                    {
-                        fk_set = i.export_fk_bone_info();
-                    }
-                    else
-                    {
-                        fk_set = null;
-                    }
+                    fk_set = fk_active ? i.Fk : null;
                 }
                 if (i.hasAnimePattern)
                 {
@@ -116,7 +109,7 @@ namespace VNActor
             set
             {
                 // color : a tuple of UnityEngine.Color
-                if (this.isColorable)
+                if (this.IsColorable)
                 {
                     var i = 0;
                     if (objctrl.useColor[0] && color.ContainsKey(i))
@@ -144,7 +137,7 @@ namespace VNActor
             get
             {
                 // return a tuple of used color
-                if (this.isColorable)
+                if (this.IsColorable)
                 {
                     var cl = new Dictionary<int, Color>();
                     if (this.objctrl.useColor[0])
@@ -176,7 +169,7 @@ namespace VNActor
         {
             get
             {
-                if (!this.isItem)
+                if (!this.IsItem)
                 {
                     return false;
                 }
@@ -283,7 +276,7 @@ namespace VNActor
         {
             get
             {
-                return this.isItem && this.objctrl.checkPanel;
+                return this.IsItem && this.objctrl.checkPanel;
             }
         }
 
@@ -348,7 +341,7 @@ namespace VNActor
         {
             get
             {
-                if (!this.isColorable)
+                if (!this.IsColorable)
                 {
                     return false;
                 }
@@ -407,7 +400,7 @@ namespace VNActor
         {
             get
             {
-                if (!this.isItem)
+                if (!this.IsItem)
                 {
                     return false;
                 }
@@ -422,7 +415,7 @@ namespace VNActor
         {
             get
             {
-                return this.isColorable && this.objctrl.CheckAlpha;
+                return this.IsColorable && this.objctrl.CheckAlpha;
             }
         }
 
@@ -450,7 +443,7 @@ namespace VNActor
         {
             get
             {
-                return this.isItem && this.objctrl.CheckOption;
+                return this.IsItem && this.objctrl.CheckOption;
             }
         }
 
@@ -461,14 +454,14 @@ namespace VNActor
             set
             {
                 // param: fk enable/disable
-                if (this.isFK)
+                if (this.IsFk)
                 {
                     this.objctrl.ActiveFK(value);
                 }
             }
             get
             {
-                if (this.isFK)
+                if (this.IsFk)
                 {
                     return this.objctrl.itemInfo.enableFK;
                 }
@@ -483,7 +476,7 @@ namespace VNActor
         {
             get
             {
-                return this.isItem && this.isAnime && this.objctrl.CheckAnimePattern;
+                return this.IsItem && this.IsAnime && this.objctrl.CheckAnimePattern;
             }
         }
 
@@ -551,13 +544,13 @@ namespace VNActor
         public static void prop_emission(Item prop, Emission_s param)
         {
             // param: (color, power)
-            prop.emission = param;
+            prop.Emission = param;
         }
 
         public static void prop_alpha(Item prop, float param)
         {
             // param = 0~1
-            prop.alpha = param;
+            prop.Alpha = param;
         }
 
         public static void prop_option(Item prop, object param)

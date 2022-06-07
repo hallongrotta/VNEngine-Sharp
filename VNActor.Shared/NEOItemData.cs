@@ -31,8 +31,8 @@ namespace VNActor
         {
             // export full status of prop
             if (!visible) return;
-            scale = i.scale;
-            if (i.isColorable) color = i.color;
+            scale = i.Scale;
+            if (i.IsColorable) color = i.color;
             if (i.hasPattern)
             {
                 ptn_set = i.pattern;
@@ -45,11 +45,11 @@ namespace VNActor
                 pnl_dtl = i.panel_detail;
             }
 
-            if (i.hasEmission) emission = i.emission;
-            if (i.hasAlpha) alpha = i.alpha;
-            if (i.isDynamicBone) db_active = i.dynamicbone_enable;
-            if (i.isAnime) anim_spd = i.anime_speed;
-            if (i.isDynamicBone) db_active = i.dynamicbone_enable;
+            if (i.hasEmission) emission = i.Emission;
+            if (i.hasAlpha) alpha = i.Alpha;
+            if (i.IsDynamicBone) db_active = i.DynamicBoneEnable;
+            if (i.IsAnime) anim_spd = i.AnimeSpeed;
+            if (i.IsDynamicBone) db_active = i.DynamicBoneEnable;
         }
 
         public virtual void Apply(Item i)
@@ -58,9 +58,9 @@ namespace VNActor
             base.Apply(i);
             if (visible)
             {
-                i.scale = scale;
-                if (anim_spd is float f) i.anime_speed = f;
-                if (i.isColorable && color is Dictionary<int, Color>) i.color = color;
+                i.Scale = scale;
+                if (anim_spd is float f) i.AnimeSpeed = f;
+                if (i.IsColorable && color is Dictionary<int, Color>) i.color = color;
                 if (i.hasPattern)
                 {
                     i.pattern = ptn_set;
@@ -73,11 +73,11 @@ namespace VNActor
                     i.panel_detail = detail;
                 }
 
-                if (i.hasEmission && emission is Emission_s e) i.emission = e;
-                if (i.hasAlpha && alpha is float alpha_set) i.alpha = alpha_set;
-                if (i.isDynamicBone)
+                if (i.hasEmission && emission is Emission_s e) i.Emission = e;
+                if (i.hasAlpha && alpha is float alpha_set) i.Alpha = alpha_set;
+                if (i.IsDynamicBone)
                     if (db_active is bool b)
-                        i.dynamicbone_enable = b;
+                        i.DynamicBoneEnable = b;
             }
         }
     }

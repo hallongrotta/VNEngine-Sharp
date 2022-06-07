@@ -29,7 +29,7 @@ namespace VNActor
             set => objctrl.objectInfo.changeAmount.rot = value;
         }
 
-        public Vector3 scale
+        public Vector3 Scale
         {
             get
             {
@@ -44,7 +44,7 @@ namespace VNActor
             }
         }
 
-        public int no
+        public int No
         {
             get
             {
@@ -54,7 +54,7 @@ namespace VNActor
         }
 
 
-        public string name => objctrl.treeNodeObject.textName;
+        public string Name => objctrl.treeNodeObject.textName;
         /*
         public bool isFolder
         {
@@ -65,7 +65,7 @@ namespace VNActor
         }
         */
 
-        public bool isItem => objctrl is OCIItem;
+        public bool IsItem => objctrl is OCIItem;
 
         /*
         public bool isLight
@@ -77,11 +77,11 @@ namespace VNActor
         }
         */
 
-        public bool isColorable
+        public bool IsColorable
         {
             get
             {
-                if (isItem)
+                if (IsItem)
                 {
                     var item = objctrl;
                     return item.isChangeColor;
@@ -91,11 +91,11 @@ namespace VNActor
             }
         }
 
-        public bool isAnime
+        public bool IsAnime
         {
             get
             {
-                if (isItem)
+                if (IsItem)
                 {
                     var item = objctrl;
                     return item.isAnime;
@@ -105,9 +105,9 @@ namespace VNActor
             }
         }
 
-        public bool isFK => objctrl.isFK;
+        public bool IsFk => objctrl.isFK;
 
-        public float anime_speed
+        public float AnimeSpeed
         {
             set =>
                 // speed: 0~1
@@ -117,7 +117,7 @@ namespace VNActor
                 objctrl.animeSpeed;
         }
 
-        public Emission_s emission
+        public Emission_s Emission
         {
             set
             {
@@ -146,7 +146,7 @@ namespace VNActor
             }
         }
 
-        public float alpha
+        public float Alpha
         {
             set =>
                 // param: 0~1 for alpha
@@ -159,26 +159,26 @@ namespace VNActor
             }
         }
 
-        public bool dynamicbone_enable
+        public bool DynamicBoneEnable
         {
             set
             {
                 // param: dynamic bone (yure) enable/disable
-                if (isDynamicBone) objctrl.ActiveDynamicBone(value);
+                if (IsDynamicBone) objctrl.ActiveDynamicBone(value);
             }
             get
             {
-                if (isDynamicBone)
+                if (IsDynamicBone)
                     return objctrl.itemInfo.enableDynamicBone;
                 throw new Exception();
             }
         }
 
-        public bool isDynamicBone
+        public bool IsDynamicBone
         {
             get
             {
-                if (isItem)
+                if (IsItem)
                     return objctrl.isDynamicBone;
                 return false;
             }
@@ -234,7 +234,7 @@ namespace VNActor
         {
             if (pos != null) objctrl.objectInfo.changeAmount.pos = pos;
             if (rot != null) objctrl.objectInfo.changeAmount.rot = rot;
-            if (scale != null && isItem) objctrl.objectInfo.changeAmount.scale = scale;
+            if (scale != null && IsItem) objctrl.objectInfo.changeAmount.scale = scale;
         }
 
         public void import_status(ItemData p)
@@ -311,37 +311,31 @@ namespace VNActor
             }
         }*/
 
-        public List<Vector3> export_fk_bone_info()
+        public List<Vector3> Fk
         {
-            // return a tuple of FK bone rot
-            if (isFK)
+            get
             {
-                var boneinfo = new List<Vector3>();
-                var item = objctrl;
-                foreach (var bi in item.listBones)
+                // return a tuple of FK bone rot
+                if (!IsFk) return new List<Vector3>();
+                var boneInfo = new List<Vector3>();
+                foreach (var bi in objctrl.listBones)
                 {
                     var rot = bi.boneInfo.changeAmount.rot;
                     var rotClone = new Vector3(rot.x <= 180 ? rot.x : rot.x - 360, rot.y <= 180 ? rot.y : rot.y - 360,
                         rot.z <= 180 ? rot.z : rot.z - 360);
-                    boneinfo.Add(rotClone);
+                    boneInfo.Add(rotClone);
                 }
 
-                return boneinfo;
+                return boneInfo;
             }
-
-            return new List<Vector3>();
-        }
-
-        public void import_fk_bone_info(List<Vector3> biList)
-        {
-            // import fk bone info from dic
-            if (isFK)
+            set
             {
-                var item = objctrl;
-                foreach (var i in Enumerable.Range(0, item.listBones.Count))
+                // import fk bone info from dic
+                if (!IsFk) return;
+                foreach (var i in Enumerable.Range(0, objctrl.listBones.Count))
                 {
-                    var binfo = item.listBones[i];
-                    if (i < biList.Count) binfo.boneInfo.changeAmount.rot = biList[i];
+                    var bone = objctrl.listBones[i];
+                    if (i < value.Count) bone.boneInfo.changeAmount.rot = value[i];
                 }
             }
         }

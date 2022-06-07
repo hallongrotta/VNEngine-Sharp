@@ -67,7 +67,7 @@ namespace VNActor
 
         public static void prop_scale_to(Item prop, Vector3 param)
         {
-            prop.scale = param;
+            prop.Scale = param;
         }
 
         /*
@@ -163,22 +163,16 @@ namespace VNActor
         */
 
 
-        public static void prop_fk_set(Item prop, List<Vector3> param)
-        {
-            // param: a list/tuple of Vector3 or tuple(3), as the rot of prop's FK bone
-            prop.import_fk_bone_info(param);
-        }
-
         public static void prop_dynamicbone_enable(Item prop, bool param)
         {
             // param: 0/1
-            prop.dynamicbone_enable = param;
+            prop.DynamicBoneEnable = param;
         }
 
         public static void prop_anime_speed(Item prop, float param)
         {
             // param = speed (0~3)
-            prop.anime_speed = param;
+            prop.AnimeSpeed = param;
         }
     }
 }

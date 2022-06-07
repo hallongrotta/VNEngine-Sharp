@@ -63,7 +63,7 @@ namespace VNActor
         {
             set
             {
-                if (!isColorable || value is null) return;
+                if (!IsColorable || value is null) return;
                 var i = 0;
                 if (objctrl.useColor[0] && i < color.Count && color.ContainsKey(i))
                     objctrl.itemInfo.color[0] = value[i];
@@ -81,7 +81,7 @@ namespace VNActor
             get
             {
                 // return a tuple of used color
-                if (!isColorable) return null;
+                if (!IsColorable) return null;
                 var cl = new Dictionary<int, Color>();
                 if (objctrl.useColor[0]) cl[0] = objctrl.itemInfo.color[0];
                 if (objctrl.useColor[1]) cl[1] = objctrl.itemInfo.color[1];
@@ -96,7 +96,7 @@ namespace VNActor
         {
             get
             {
-                return isItem && objctrl.usePattern.Any(n => n);
+                return IsItem && objctrl.usePattern.Any(n => n);
             }
         }
 
@@ -169,7 +169,7 @@ namespace VNActor
             }
         }
 
-        public bool hasPanel => isItem && objctrl.checkPanel;
+        public bool hasPanel => IsItem && objctrl.checkPanel;
 
         public Panel panel
         {
@@ -217,11 +217,11 @@ namespace VNActor
             }
         }
 
-        public bool hasEmission => isItem && objctrl.checkEmission;
+        public bool hasEmission => IsItem && objctrl.checkEmission;
 
-        public bool hasAlpha => isColorable && objctrl.checkAlpha;
+        public bool hasAlpha => IsColorable && objctrl.checkAlpha;
 
-        public bool hasLine => isItem && objctrl.checkLine;
+        public bool hasLine => IsItem && objctrl.checkLine;
 
         public Line_s line
         {
@@ -240,7 +240,7 @@ namespace VNActor
             }
         }
 
-        public bool hasShadowColor => isItem && objctrl.checkShadow;
+        public bool hasShadowColor => IsItem && objctrl.checkShadow;
 
         public Color shadow_color
         {
@@ -274,7 +274,7 @@ namespace VNActor
             }
         }
 
-        public bool hasLightCancel => isItem && objctrl.checkLightCancel;
+        public bool hasLightCancel => IsItem && objctrl.checkLightCancel;
 
         public static void prop_line(Item prop, ItemData param)
         {
@@ -312,7 +312,7 @@ namespace VNActor
                 if (i.hasLine) line = i.line;
                 if (i.hasShadowColor) shadow_color = i.shadow_color;
                 if (i.hasLightCancel) light_cancel = i.light_cancel;
-                if (i.isFK) fk_set = i.export_fk_bone_info();
+                if (i.IsFk) fk_set = i.Fk;
             }
 
             public override void Apply(Item i)
@@ -327,7 +327,7 @@ namespace VNActor
                 if (i.hasLightCancel)
                     if (light_cancel is float cancel)
                         light_cancel = cancel;
-                if (i.isFK) i.import_fk_bone_info(fk_set);
+                if (i.IsFk) i.Fk = fk_set;
             }
         }
 

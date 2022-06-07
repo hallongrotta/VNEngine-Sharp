@@ -103,7 +103,7 @@ namespace VNEngine
             catch (Exception)
             {
             }
-            string txt1 = String.Format("{" + "'no': {0}, 'prs': ({1},{2},{3})", item.no, item.Position, item.Rotation, item.scale);
+            string txt1 = String.Format("{" + "'no': {0}, 'prs': ({1},{2},{3})", item.No, item.Position, item.Rotation, item.Scale);
             txt1 += addparams;
             return txt1;
         }
@@ -191,7 +191,7 @@ namespace VNEngine
                 }
                 item.Position = obj.pos;
                 item.Rotation = obj.rot;
-                item.scale = obj.scale;
+                item.Scale = obj.scale;
                 if (obj.anSp != null)
                 {
                     item.objctrl.animeSpeed = (float)obj.anSp;
