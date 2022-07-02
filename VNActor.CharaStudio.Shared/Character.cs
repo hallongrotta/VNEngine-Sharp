@@ -57,15 +57,11 @@ namespace VNActor
 
             public ActorData(Character a) : base(a)
             {
-                if (visible)
-                {
-                    tearLevel = a.TearLevel;
-                    coordinateType = a.CoordinateType;
-                    shoesType = a.ShoesType;
-                    eyeAngles = a.EyeAngles;
-
-
-                }
+                if (!visible) return;
+                tearLevel = a.TearLevel;
+                coordinateType = a.CoordinateType;
+                shoesType = a.ShoesType;
+                eyeAngles = a.EyeAngles;
 
                 /* TODO implement KKPE
 

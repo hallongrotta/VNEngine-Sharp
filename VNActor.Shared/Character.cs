@@ -195,6 +195,27 @@ namespace VNActor
             }
         }
 
+        public bool[] JointCorrection
+        {
+            get
+            {
+                var jointInfo = this.OICharInfo.expression;
+                var data = new bool[jointInfo.Length];
+                jointInfo.CopyTo(data, 0);
+                return data;
+            }
+            set
+            {
+                if (value is null) return;
+                var i = 0;
+                foreach (var jointEnabled in value)
+                {
+                    this.objctrl.EnableExpressionCategory(i, jointEnabled);
+                    i++;
+                }
+            }
+        }
+
         public int FaceShapesCount => FaceShapesAll.Length;
 
         public string[] FaceShapesNames => ChaFileDefine.cf_headshapename;

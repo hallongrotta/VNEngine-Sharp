@@ -105,6 +105,7 @@ namespace VNActor
 
         public Color simpleColor;
 
+        public bool[] JointCorrection;
 
 /* Unmerged change from project 'VNActor.AI'
 Before:
@@ -158,6 +159,8 @@ After:
                 son = a.Son;
 
                 anim = a.Animation;
+
+                JointCorrection = a.JointCorrection;
 
                 animeOption = new AnimeOption_s {height = a.Height, breast = a.Breast};
 
@@ -225,7 +228,9 @@ After:
             a.AnimationForceLoop = forceLoop;
             a.Accessories = accessoryStatus;
             a.FaceRedness = faceRedness;
-            son = a.Son;
+            a.Son = son;
+            a.JointCorrection = JointCorrection;
+
 
             if (anim.normalizedTime is float time)
                 a.SetAnimate(anim.@group, anim.category, anim.no, time);
