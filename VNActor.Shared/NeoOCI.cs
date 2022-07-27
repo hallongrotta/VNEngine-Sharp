@@ -1,5 +1,8 @@
 ﻿using Studio;
 using UnityEngine;
+#if KKS
+using VNActor.KKS;
+#endif
 
 namespace VNActor
 {
@@ -68,6 +71,13 @@ namespace VNActor
             return new Folder(objctrl);
         }
 
+#if KKS
+        public static Text create_from(OCIText objctrl)
+        {
+            return new Text(objctrl);
+        }
+#endif
+
         //public static HSNeoOCI create_from(ObjectCtrlInfo objctrl) { return new HSNeoOCI(objctrl); }
 
         public static NeoOCI create_from_treenode(TreeNodeObject treenode)
@@ -76,22 +86,7 @@ namespace VNActor
             var studio = Studio.Studio.Instance;
             var dobjctrl = studio.dicInfo;
             var obj = dobjctrl[treenode];
-            if (obj != null)
-            {
-                if (obj is OCIItem item)
-                    return create_from(item);
-                if (obj is OCIFolder fld)
-                    return create_from(fld);
-                if (obj is OCIChar chara)
-                    return create_from(chara);
-                if (obj is OCIRoute route)
-                    return create_from(route);
-                if (obj is OCILight light)
-                    return create_from(light);
-                return null;
-            }
-
-            return null;
+            return obj == null ? null : createFromOCI(obj);
         }
 
         public static NeoOCI createFromOCI(ObjectCtrlInfo oci)
@@ -108,6 +103,10 @@ namespace VNActor
                     return create_from(route);
                 case OCILight light:
                     return create_from(light);
+#if KKS
+                case OCIText text:
+                    return create_from(text);
+#endif
                 default:
                     return null;
             }

@@ -1,5 +1,8 @@
 ﻿using System.Collections.Generic;
 using VNActor;
+#if KKS
+using VNActor.KKS;
+#endif
 using VNEngine;
 using static VNActor.Character;
 using static VNActor.Light;
@@ -33,11 +36,18 @@ namespace SceneSaveState
 
         public Scene()
         {
+            this.cams = new List<CamData>();
+            this.actors = new Dictionary<string, ActorData>();
+            this.props = new Dictionary<string, NEOPropData>();
+            this.items = new Dictionary<string, ItemData>();
+            this.lights = new Dictionary<string, LightData>();
+#if KKS
+            this.texts = new Dictionary<string, Text.TextData>();
+#endif
         }
 
         public Scene(SystemData sysData, Dictionary<string, Character> actors, Dictionary<string, Prop> props,
-            bool importSys) : this(new Dictionary<string, ActorData>(), new Dictionary<string, ItemData>(),
-            new Dictionary<string, LightData>(), new Dictionary<string, NEOPropData>(), new List<CamData>())
+            bool importSys) : this()
         {
             foreach (var kv in actors) this.actors[kv.Key] = (ActorData) kv.Value.export_full_status();
 
@@ -56,12 +66,24 @@ namespace SceneSaveState
 
         public void AddProp(string key, IVNObject<Prop> p)
         {
-            if (p is Item i)
-                items[key] = i.export_full_status() as ItemData;
-            else if (p is Light l)
-                lights[key] = l.export_full_status() as LightData;
-            else // Generic prop
-                props[key] = p.export_full_status() as NEOPropData;
+            switch (p)
+            {
+                case Item i:
+                    items[key] = i.export_full_status() as ItemData;
+                    break;
+                case Light l:
+                    lights[key] = l.export_full_status() as LightData;
+                    break;
+#if KKS
+                case Text t:
+                    texts[key] = t.export_full_status() as Text.TextData;
+                    break;
+#endif
+                // Generic prop
+                default:
+                    props[key] = p.export_full_status() as NEOPropData;
+                    break;
+            }
         }
 
 
@@ -80,6 +102,9 @@ namespace SceneSaveState
             else if (lights.ContainsKey(key))
                 lights.Remove(key);
             else if (props.ContainsKey(key)) props.Remove(key);
+#if KKS
+            else if (texts.ContainsKey(key)) texts.Remove(key);
+#endif
         }
 
         public Scene Copy()
@@ -105,31 +130,6 @@ namespace SceneSaveState
         }
 
 
-        // Camera Manip
-        public int addCam(CamData cam_data)
-        {
-            cams.Add(cam_data);
-            return cams.Count - 1;
-        }
-
-        public void updateCam(int index, CamData cam_data)
-        {
-            if (cams.Count > 0) cams[index] = cam_data;
-        }
-
-        public int deleteCam(int index)
-        {
-            if (cams.Count > 1)
-            {
-                cams.RemoveAt(index);
-                if (index == 0 && cams.Count > 0) return index;
-
-                return index - 1;
-            }
-
-            return 0;
-        }
-
         public void ChangeRoleName<T>(string roleName, string newRoleName, Dictionary<string, T> data)
         {
             if (!data.ContainsKey(roleName)) return;
@@ -144,6 +144,9 @@ namespace SceneSaveState
             ChangeRoleName(roleName, newRoleName, items);
             ChangeRoleName(roleName, newRoleName, props);
             ChangeRoleName(roleName, newRoleName, lights);
+#if KKS
+            ChangeRoleName(roleName, newRoleName, texts);
+#endif
 
             foreach (var cam in cams)
                 if (cam.addata.whosay == roleName)
@@ -180,6 +183,14 @@ namespace SceneSaveState
                     ApplyStatus(l, status);
                     break;
                 }
+#if KKS
+                case Text t:
+                {
+                    texts.TryGetValue(roleName, out var status);
+                    ApplyStatus(t, status);
+                    break;
+                }
+#endif
                 case Prop p:
                 {
                     props.TryGetValue(roleName, out var status);

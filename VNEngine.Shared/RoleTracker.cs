@@ -74,6 +74,10 @@ namespace VNEngine
                     return "light";
                 case OCIRoute r:
                     return "route";
+#if KKS
+                    case OCIText t:
+                    return "text";          
+#endif
             }
 
             return "role";

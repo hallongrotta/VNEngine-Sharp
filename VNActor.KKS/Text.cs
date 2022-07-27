@@ -3,23 +3,29 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ADV.Commands.Object;
 using MessagePack;
+using MessagePack.Resolvers;
 using Studio;
 using UnityEngine;
 
 namespace VNActor.KKS
 {
-    public class Text : Prop
+    public class Text : Prop, IVNObject<Text>
     {
 
         [MessagePackObject(keyAsPropertyName: true)]
-        public class TextData : NEOPropData, IDataClass<Prop>
+        public class TextData : NEOPropData, IDataClass<Text>
         {
 
             [Key("Color")] public Color Color;
             [Key("OutlineColor")] public Color OutlineColor;
-            [Key("OutlineSize")] public Color OutlineSize;
+            [Key("OutlineSize")] public float OutlineSize;
             [Key("TextInfo")] public OITextInfo.TextInfo[] TextInfo;
+            [Key("Position")] public Vector3 Position;
+            [Key("Rotation")] public Vector3 Rotation;
+            [Key("Scale")] public Vector3 Scale;
+
 
             public TextData() : base()
             {
@@ -30,10 +36,14 @@ namespace VNActor.KKS
             {
                 t.Visible = visible;
                 if (visible)
-                { 
+                {
+                    t.Position = Position;
+                    t.Rotation = Rotation;
+                    t.Scale = Scale;
                     t.Color = Color;
                     t.OutlineColor = OutlineColor;
                     t.TextInfo = TextInfo;
+                    t.OutLineSize = OutlineSize;
                 }
 
                 t.oci.Update();
@@ -43,8 +53,12 @@ namespace VNActor.KKS
             {
                 if (!visible) return;
                 Color = t.Color;
+                Position = t.Position;
+                Rotation = t.Rotation;
                 OutlineColor = t.OutlineColor;
                 TextInfo = t.TextInfo;
+                OutlineSize = t.OutLineSize;
+                Scale = t.Scale;
             }
         }
 
@@ -56,65 +70,79 @@ namespace VNActor.KKS
             oci = objctrl as OCIText;
         }
 
+        public override Vector3 Position
+        {
+            get => oci.objectInfo.changeAmount.pos;
+            set => oci.objectInfo.changeAmount.pos = value;
+        }
+
+        public override Vector3 Rotation
+        {
+            get => oci.objectInfo.changeAmount.rot;
+            set => oci.objectInfo.changeAmount.rot = value;
+        }
+
+        public Vector3 Scale
+        {
+            get => oci.objectInfo.changeAmount.scale;
+            set => oci.objectInfo.changeAmount.scale = value;
+        }
+
+
         public Color Color
         {
-            get
-            {
-                return oci.textInfo.color;
-            }
-            set
-            {
-                oci.SetColor(value);
-            }
+            get => oci.textInfo.color;
+            set => oci.SetColor(value);
         }
 
         public Color OutlineColor
         {
-            get
-            {
-                return oci.textInfo.outlineColor;
-            }
-            set
-            {
-                oci.textInfo.outlineColor = value;
-            }
+            get => oci.textInfo.outlineColor;
+            set => oci.textInfo.outlineColor = value;
         }
 
         public float OutLineSize
         {
-            get
-            {
-                return oci.textInfo.outlineSize;
-            }
-            set
-            {
-                oci.textInfo.outlineSize = value;
-            }
+            get => oci.textInfo.outlineSize;
+            set => oci.textInfo.outlineSize = value;
         }
 
-        public struct Effect_s
+        public OITextInfo.TextInfo CopyTextInfo(OITextInfo.TextInfo tf)
         {
-            internal int idx;
-            internal int effect;
+            var bytes = Utils.SerializeData(tf);
+            var s = Utils.DeserializeData<OITextInfo.TextInfo>(bytes);
+            return s;
         }
 
         public OITextInfo.TextInfo[] TextInfo
         {
             get
             { 
-                var array = new OITextInfo.TextInfo[oci.textInfo.textInfos.Length];
-                oci.textInfo.textInfos.CopyTo(array, 0);
+                var array = new OITextInfo.TextInfo[2];
+                for (var i = 0; i < array.Length; i++)
+                {
+                    array[i] = CopyTextInfo(oci.textInfo.textInfos[i]);
+                }
                 return array;
             }
             set
             {
-                var array = new OITextInfo.TextInfo[value.Length];
-                value.CopyTo(array, 0);
-                oci.textInfo.textInfos = array;
+                if (value is null) return;
+                for (var i = 0; i < 2; i++)
+                {
+                    oci.textInfo.textInfos[i] = CopyTextInfo(value[i]);
+                }
             }
         }
 
-        public override Vector3 Position { get; set; }
-        public override Vector3 Rotation { get; set; }
+        public new IDataClass<Text> export_full_status()
+        {
+            return new TextData(this);
+        }
+
+        public void import_status(IDataClass<Text> status)
+        {
+            status.Apply(this);
+        }
     }
 }
