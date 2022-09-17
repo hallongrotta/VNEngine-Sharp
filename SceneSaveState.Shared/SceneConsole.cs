@@ -403,6 +403,17 @@ namespace SceneSaveState
             isFuncLocked = true;
         }
 
+
+        internal void MoveChapterForward()
+        {
+            ChapterManager.MoveItemForward();
+        }
+
+        internal void MoveChapterBackward()
+        {
+            ChapterManager.MoveItemBack();
+        }
+
         internal void hide_blocking_message(object game = null)
         {
             isFuncLocked = false;

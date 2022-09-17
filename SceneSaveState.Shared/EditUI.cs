@@ -194,15 +194,8 @@ namespace SceneSaveState
             if (!Instance.CurrentChapter.HasItems) return;
 
             GUILayout.FlexibleSpace();
-            if (GUILayout.Button("Move up"))
-            {
-                Instance.MoveSceneBackward();
-            }
-
-            if (GUILayout.Button("Move down"))
-            {
-                Instance.MoveSceneForward();
-            }
+            
+            DrawMoveUpDownButtons();
             DrawNextPrevButtons();
         }
 
@@ -369,6 +362,34 @@ namespace SceneSaveState
                 {
                     Instance.RemoveScene();
                 }
+            }
+            GUILayout.EndHorizontal();
+        }
+
+        public static void DrawMoveUpDownButtons()
+        {
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Scene");
+            GUILayout.FlexibleSpace();
+            if (GUILayout.Button("Move ↑"))
+            {
+                Instance.MoveSceneBackward();
+            }
+            if (GUILayout.Button("Move ↓"))
+            {
+                Instance.MoveSceneForward();
+            }
+            GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Chapter");
+            GUILayout.FlexibleSpace();
+            if (GUILayout.Button("Move ↑"))
+            {
+                Instance.MoveChapterBackward();
+            }
+            if (GUILayout.Button("Move ↓"))
+            {
+                Instance.MoveChapterForward();
             }
             GUILayout.EndHorizontal();
         }
