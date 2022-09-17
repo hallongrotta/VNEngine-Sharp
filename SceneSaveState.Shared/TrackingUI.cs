@@ -15,12 +15,10 @@ namespace SceneSaveState
             tracking_actors_scroll = GUILayout.BeginScrollView(tracking_actors_scroll);
 
             var rt = Instance.roleTracker;
-            var actors = Instance.roleTracker.AllCharacters;
-            var props = Instance.roleTracker.AllProps;
 
             foreach (var kv in rt.CharacterRoles)
             {
-                render_ui_for_tracking(kv.Key, !rt.RoleFilled(kv.Key) ? null : actors[kv.Key]);
+                render_ui_for_tracking(kv.Key, rt.RoleFilled(kv.Key));
             }
 
             GUILayout.EndScrollView();
@@ -31,7 +29,7 @@ namespace SceneSaveState
             tracking_props_scroll = GUILayout.BeginScrollView(tracking_props_scroll);
             foreach (var kv in rt.PropRoles)
             {
-                render_ui_for_tracking(kv.Key, !rt.RoleFilled(kv.Key) ? null : props[kv.Key]);
+                render_ui_for_tracking(kv.Key, rt.RoleFilled(kv.Key));
             }
             GUILayout.EndScrollView();
 
@@ -118,29 +116,30 @@ namespace SceneSaveState
             GUILayout.EndHorizontal();
         }
 
-        public static void render_ui_for_tracking(string id, NeoOCI elem)
+        public static void render_ui_for_tracking(string roleName, bool roleFilled)
         {
             GUILayout.BeginHorizontal();
-            var isSelected = Instance.SelectedRole == id;
+            var isSelected = Instance.SelectedRole == roleName;
             
             // Role Button
-            if (GUILayout.Button(Utils.btntext_get_if_selected(id, isSelected), GUILayout.Width(50)))
+            if (GUILayout.Button(Utils.btntext_get_if_selected(roleName, isSelected), GUILayout.Width(50)))
             {
-                Instance.SelectedRole = isSelected ? "" : id;
+                Instance.SelectedRole = isSelected ? "" : roleName;
             }
 
             // Object button
-            if (elem is null)
+            if (roleFilled)
             {
-                GUILayout.Button("Empty");
-            }
-            else
-            {
+                var elem = Instance.roleTracker.GetOCI(roleName);
                 isSelected = Instance.game.treenode_check_select(elem.treeNodeObject);
                 if (GUILayout.Button(Utils.btntext_get_if_selected(elem.text_name, isSelected)))
                 {
                     Instance.game.SelectObject(elem);
                 }
+            }
+            else
+            {
+                GUILayout.Button("Empty");
             }
             //GUILayout.Label(txt)
             GUILayout.FlexibleSpace();

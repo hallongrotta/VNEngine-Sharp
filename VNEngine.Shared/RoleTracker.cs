@@ -17,8 +17,6 @@ namespace VNEngine
 
         public RoleTracker()
         {
-            AllCharacters = new Dictionary<string, Character>();
-            AllProps = new Dictionary<string, Prop>();
             CharacterRoles = new Dictionary<string, int>();
             PropRoles = new Dictionary<string, int>();
         }
@@ -40,8 +38,36 @@ namespace VNEngine
             }
         }
 
-        public Dictionary<string, Character> AllCharacters { get; }
-        public Dictionary<string, Prop> AllProps { get; }
+        internal Dictionary<string, T> GenerateActorDict<T>(Dictionary<string, int> roleList) where T : NeoOCI
+        {
+            var allActors = new Dictionary<string, T>();
+            var rolesToEmpty = new List<string>();
+            foreach (var kv in roleList)
+            {
+                if (kv.Value == EMPTY) continue;
+                var oci = GetOCI(kv.Value);
+                if (oci is null)
+                {
+                    rolesToEmpty.Add(kv.Key);
+                }
+                else
+                {
+                    allActors[kv.Key] = (T)NeoOCI.createFromOCI(oci);
+                }
+            }
+
+            foreach (var role in rolesToEmpty)
+            {
+                roleList[role] = EMPTY;
+            }
+
+            return allActors;
+        }
+
+        public Dictionary<string, Character> AllCharacters => GenerateActorDict<Character>(CharacterRoles);
+
+        public Dictionary<string, Prop> AllProps => GenerateActorDict<Prop>(PropRoles);
+
         public Dictionary<string, int> CharacterRoles { get; }
 
         public Dictionary<string, int> PropRoles { get; }
@@ -51,13 +77,11 @@ namespace VNEngine
             foreach (var kv in characters)
             {
                 CharacterRoles[kv.Key] = FindObjectIndex(kv.Value.objctrl);
-                AllCharacters[kv.Key] = kv.Value;
             }
 
             foreach (var kv in props)
             {
                 PropRoles[kv.Key] = FindObjectIndex(kv.Value.objctrl);
-                AllProps[kv.Key] = kv.Value;
             }
         }
 
@@ -96,6 +120,11 @@ namespace VNEngine
                 return null;
             dicObjectCtrl.TryGetValue(id, out var oci);
             return oci;
+        }
+
+        public NeoOCI GetOCI(string roleName)
+        {
+            return NeoOCI.createFromOCI(IsCharacterRole(roleName) ? GetOCI(CharacterRoles[roleName]) : GetOCI(PropRoles[roleName]));
         }
 
 
@@ -175,17 +204,14 @@ namespace VNEngine
             if (!RoleExists(roleName)) return EMPTY;
 
             var roleDict = IsCharacterRole(roleName) ? CharacterRoles : PropRoles;
-            var status = IsCharacterRole(roleName)
-                ? ClearRole(roleName, roleDict, AllCharacters)
-                : ClearRole(roleName, roleDict, AllProps);
+            var status = ClearRole(roleName, roleDict);
             return status;
         }
 
-        public int ClearRole<T>(string roleName, Dictionary<string, int> roleDict, Dictionary<string, T> actorDict)
+        public int ClearRole(string roleName, Dictionary<string, int> roleDict)
         {
             var id = roleDict[roleName];
             roleDict[roleName] = EMPTY;
-            actorDict.Remove(roleName);
             return id;
         }
 
@@ -214,8 +240,6 @@ namespace VNEngine
         {
             CharacterRoles.Remove(roleName);
             PropRoles.Remove(roleName);
-            AllProps.Remove(roleName);
-            AllCharacters.Remove(roleName);
         }
 
         public void AddToRole(ObjectCtrlInfo oci, string roleName)
@@ -239,27 +263,19 @@ namespace VNEngine
             {
                 case Character character:
                     CharacterRoles[roleName] = FindObjectIndex(oci);
-                    AllCharacters[roleName] = character;
                     break;
                 case Prop prop:
                     PropRoles[roleName] = FindObjectIndex(oci);
-                    AllProps[roleName] = prop;
                     break;
             }
         }
 
-        public bool ChangeRoleName<T>(string roleName, string newRoleName, Dictionary<string, int> roleList,
-            Dictionary<string, T> roles)
+        public bool ChangeRoleName(string roleName, string newRoleName, Dictionary<string, int> roleList)
         {
             if (!roleList.ContainsKey(roleName) || RoleExists(newRoleName)) return false;
 
             roleList[newRoleName] = roleList[roleName];
             roleList.Remove(roleName);
-
-            if (!roles.ContainsKey(roleName)) return true;
-
-            roles[newRoleName] = roles[roleName];
-            roles.Remove(roleName);
 
             return true;
         }
@@ -267,8 +283,8 @@ namespace VNEngine
         public bool ChangeRoleName(string roleName, string newRoleName)
         {
             return IsCharacterRole(roleName)
-                ? ChangeRoleName(roleName, newRoleName, CharacterRoles, AllCharacters)
-                : ChangeRoleName(roleName, newRoleName, PropRoles, AllProps);
+                ? ChangeRoleName(roleName, newRoleName, CharacterRoles)
+                : ChangeRoleName(roleName, newRoleName, PropRoles);
         }
 
 

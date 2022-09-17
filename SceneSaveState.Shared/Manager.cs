@@ -86,7 +86,7 @@ namespace SceneSaveState
             return Items.GetEnumerator();
         }
 
-        public bool HasItems => CurrentIndex > -1;
+        public bool HasItems => CurrentIndex > -1 && Items.Count > 0;
 
 
         public int Add(T i)

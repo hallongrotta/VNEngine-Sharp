@@ -1102,7 +1102,7 @@ namespace SceneSaveState
         internal string get_next_speaker(string curSpeakAlias, bool next)
         {
             // next from unknown speaker
-            var all_actors = roleTracker.AllCharacters;
+            var all_actors = roleTracker.CharacterRoles;
             var keylist = all_actors.Keys.ToList();
             if (curSpeakAlias != defaultSpeakerAlias && !all_actors.ContainsKey(curSpeakAlias))
                 return defaultSpeakerAlias;
