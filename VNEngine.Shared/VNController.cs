@@ -267,7 +267,7 @@ namespace VNEngine
             lipAnimeTID = -1;
             _eventListenerDic = new Dictionary<string, List<GameFunc>>();
             windowStyle = windowStyleDefault;
-            skin_set(skin_default);
+            Skin = skin_default;
         }
 
         public void FuncWindowGUI(int windowid)
@@ -390,14 +390,14 @@ namespace VNEngine
                 {
                     // restoring old window
                     isShowDevConsole = false;
-                    skin_set(skin_saved);
+                    Skin = skin_saved;
                 }
                 else
                 {
                     // set default skin and set console flag to show
                     // console must be rendered only in default skin
                     skin_saved = skin;
-                    skin_set(skin_default);
+                    Skin = skin_default;
                     isShowDevConsole = true;
                 }
             }
@@ -489,7 +489,7 @@ namespace VNEngine
         public void return_to_start_screen()
         {
             skin_set_byname("skin_default");
-            set_text("s", _vnStText);
+            SetText("s", _vnStText);
             //this.set_buttons(this._vnStButtons, this._vnStButtonsActions); TODO
         }
 
@@ -587,15 +587,12 @@ After:
             return_to_start_screen_clear();
         }
 
-        public void set_text(string character, string text)
+        public void SetText(string character, string text)
         {
             var char0 = character.Split('/')[0];
             curCharText = char0;
             curCharFull = character;
-            if (text.StartsWith("!"))
-                vnText = text.Substring(1);
-            else
-                vnText = text;
+            vnText = text.StartsWith("!") ? text.Substring(1) : text;
             //self.OnGUI(self)
             if (onSetTextCallback != null) onSetTextCallback(this, character, text);
             event_dispatch("set_text", new RegisteredChar_s(character, text));
@@ -603,7 +600,7 @@ After:
 
         public void set_text_s(string text)
         {
-            set_text("s", text);
+            SetText("s", text);
         }
 
         public void register_char(string name, string color, string showname)
@@ -1318,10 +1315,18 @@ After:
         */
 
         // --------- skin system ------------
-        public void skin_set(SkinBase skin)
+
+        public SkinBase Skin
         {
-            this.skin = skin;
-            this.skin.setup(this);
+            set
+            {
+                this.skin = value;
+                this.skin.setup(this);
+            }
+            get
+            {
+                return this.skin;
+            }
         }
 
         public void skin_set_byname(string skinname)
@@ -1345,17 +1350,12 @@ After:
                         break;
                 }
 
-                skin_set(skin);
+                Skin = skin;
             }
             catch (Exception e)
             {
                 Console.WriteLine("Error loading skin ", skinname, ", error: ", e);
             }
-        }
-
-        public SkinBase skin_get_current()
-        {
-            return skin;
         }
 
         public class Timer

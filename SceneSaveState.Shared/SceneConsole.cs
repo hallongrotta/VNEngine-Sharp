@@ -116,6 +116,8 @@ namespace SceneSaveState
 
         internal Manager<CamData> CamManager;
 
+        internal bool showTextBox = false;
+
         internal SceneConsole()
         {
             // init dict
@@ -510,7 +512,7 @@ namespace SceneSaveState
 
                 currentVNData.addprops = addata.addprops;
 
-                game.set_text(currentVNData.whosay, currentVNData.whatsay);
+                game.SetText(currentVNData.whosay, currentVNData.whatsay);
             }
             else
             {
@@ -929,12 +931,12 @@ namespace SceneSaveState
             LoadCurrentScene();
         }
 
-        internal void goto_next(VNController game, int i)
+        internal void NextSceneOrCamera(VNController vn, int i)
         {
-            goto_next();
+            NextSceneOrCamera();
         }
 
-        internal void goto_next()
+        internal void NextSceneOrCamera()
         {
             if (ChapterManager.Count <= 0) return;
             if (CamManager.Count > 0 && CamManager.HasNext)
@@ -944,8 +946,6 @@ namespace SceneSaveState
             }
             else
             {
-                // elif self.cur_index < (len(self.block) - 1):
-                // self.cur_index += 1
                 LoadNextScene();
             }
         }
@@ -1070,21 +1070,9 @@ namespace SceneSaveState
 
         internal void runVNSS(string starfrom = "begin")
         {
-            //this.game.gdata.vnbupskin = this.game.skin;
-            //self.game.skin_set_byname("skin_renpy")
-            //from skin_renpy import SkinRenPy
-
             if (ChapterManager.Count == 0) return;
-
-            var rpySkin = new SkinRenPyMini();
+            ShowVNTextBox();
             int calcPos;
-            rpySkin.isEndButton = true;
-            rpySkin.endButtonTxt = "X";
-            rpySkin.endButtonCall = endVNSSbtn;
-            game.set_text_s("...");
-            game.set_buttons(new List<Button_s> {new Button_s(">>", goto_next, 1)});
-            game.skin_set(rpySkin);
-            game.visible = true;
             if (starfrom == "cam")
                 //print self.cur_index, self.cur_cam
                 calcPos = (ChapterManager.CurrentIndex + 1) * 100 + CamManager.CurrentIndex;
@@ -1098,6 +1086,20 @@ namespace SceneSaveState
             //game.vnscenescript_run_current(onEndVNSS, calcPos.ToString());
         }
 
+        internal void ShowVNTextBox()
+        {
+            var rpySkin = new SkinRenPyMini
+            {
+                isEndButton = true,
+                endButtonTxt = "X",
+                endButtonCall = endVNSSbtn
+            };
+            game.set_text_s("...");
+            game.set_buttons(new List<Button_s> { new Button_s(">>", NextSceneOrCamera, 1) });
+            game.Skin = rpySkin;
+            game.visible = true;
+        }
+
         internal void endVNSSbtn(VNNeoController game)
         {
             this.game.visible = false;
@@ -1106,7 +1108,7 @@ namespace SceneSaveState
 
         internal void onEndVNSS(VNController game = null)
         {
-            this.game.skin_set(this.game.skin_default);
+            this.game.Skin = this.game.skin_default;
         }
 
         //def _exportAddBlock(self,fld_acode,):

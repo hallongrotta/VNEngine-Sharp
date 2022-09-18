@@ -89,7 +89,7 @@ namespace SceneSaveState
             var skin = new SkinCustomWindow();
             skin.funcSetup = sceneConsoleSkinSetup;
             //skin.funcWindowGUI = sceneConsoleSkinWindowGUI;
-            game.skin_set(skin);
+            game.Skin = skin;
             // sc.originalWindowCallback = game.windowCallback
             // sc.originalwindowwidth = game.wwidth
             // sc.originalwindowheight = game.wheight
@@ -204,7 +204,13 @@ namespace SceneSaveState
                             {
                                 Instance.runVNSS("scene");
                             }
-                            if (GUILayout.Button("About v" + mod_version, GUILayout.Width(100)))
+
+                            var buttonText = Instance.showTextBox ? "Text off" : "Text on";
+                            if (GUILayout.Button(buttonText, GUILayout.Width(100)))
+                            {
+                                Instance.runVNSS("scene");
+                            }
+                    if (GUILayout.Button("About v" + mod_version, GUILayout.Width(100)))
                             {
                                 //resetConsole(sc.game)
                                 Instance.show_blocking_message_time_sc($"SceneSaveState {mod_version}\n{about_text}", 5.0f);
