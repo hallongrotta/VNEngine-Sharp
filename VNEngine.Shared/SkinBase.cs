@@ -31,6 +31,6 @@ namespace VNEngine
             string text_author,
             string text,
             List<Button_s> btns,
-            string btnStyle);
+            ButtonStyle btnStyle);
     }
 }

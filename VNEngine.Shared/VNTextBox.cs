@@ -38,16 +38,14 @@ namespace VNEngine
         {
             name = "skin_renpymini";
             contentHeight = 0.15f;
-            //self.wheight = Screen.height / 4
             contentWidthProp = 0.7;
             calcWindowProp = Screen.width / 1920;
-            labelFontSize = 28;
+            labelFontSize = 20;
             buttonFontSize = 20;
-            buttonHeight = 36;
+            buttonHeight = 25;
             maxButtonsNormal = 3;
             maxButtonsCompact = 6;
             //boxstyle = GUIStyle("box");
-            //boxstyle.
             isEndButton = false;
             endButtonTxt = ">>";
         }
@@ -64,8 +62,8 @@ namespace VNEngine
             controller.windowRect = new Rect(Screen.width / 2 - controller.wwidth / 2,
                 Screen.height - controller.wheight, controller.wwidth, controller.wheight);
             //GUI.skin.panel.onActive.textColor
-            var style = new GUIStyle("label");
-            this.controller.windowStyle = style;
+            //var style = new GUIStyle("label");
+            //this.controller.windowStyle = style;
             //style.
             //GUI.skin.window = style
             //GUI.backgroundColor.a = 0.7
@@ -111,13 +109,12 @@ namespace VNEngine
             string text_author,
             string text,
             List<Button_s> btnsActions,
-            string btnStyle)
+            ButtonStyle btnStyle)
         {
             RegisteredChar_s charinfo;
-            //stylebox = GUIStyle("box")
-            //stylebox.border = 0
-            //GUI.Box(Rect(0, 0, Screen.width / 7, Screen.height / 1), "");
+            
             ren_start();
+            var fullw0 = wwidth * (float)(contentWidthProp - 0.2f);
             // --------- calculate actual author ------------
             var char0 = text_author.Split('/')[0];
             if (controller.registeredChars.ContainsKey(char0))
@@ -125,57 +122,20 @@ namespace VNEngine
             else
                 charinfo = new RegisteredChar_s("ffffff", char0);
             // --------- render ---------------
-            var fullw = (float) (wwidth * contentWidthProp);
-            var fullw0 = wwidth * (float) (contentWidthProp - 0.2f);
-            var fullw1 = wwidth * 0.2f;
-            //GUILayout.BeginVertical("box1", GUILayout.Width(fullw), GUILayout.Height(self.wheight))
-            //GUILayout.BeginVertical("box1", GUILayout.Width(fullw), GUILayout.Height(self.wheight))
+
 
             GUILayout.BeginVertical(GUILayout.Width(fullw0), GUILayout.Height(wheight));
 
             GUILayout.Space(10);
+            
             // ---- preparing styles ----------
             var style = new GUIStyle("label");
             style.richText = true;
             style.fontSize = labelFontSize;
             style.wordWrap = true;
-            var customButton = new GUIStyle("button");
-            customButton.fontSize = buttonFontSize;
-            // ----------- render ---------
-            /*
-            if (btnStyle is List<string>)
-            {
-                // -------- custom render -----------
-                // tuple is specific action
-                if (btnStyle[0] == "function")
-                {
-                    try
-                    {
-                        btnStyle[1](this.controller, new Dictionary<object, object> {
-                            {
-                                "fwidth",
-                                fullw},
-                            {
-                                "btnheight",
-                                this.buttonHeight},
-                            {
-                                "btnstyle",
-                                customButton},
-                            {
-                                "labelstyle",
-                                style}});
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine("Error in call custom GUI buttons: " + e.ToString());
-                    }
-                }
-            }
-            else
 
-            {
-            */
-            // --------- normal render ----------
+            // ----------- render ---------
+           
             //GUILayout.BeginHorizontal()
             if (charinfo.showname != "")
             {
@@ -184,78 +144,72 @@ namespace VNEngine
                 GUILayout.Space(0);
             }
 
-            /*
-            // -- special processing for translation --
-            if (this.controller.engineOptions["usetranslator"] == "1" && this.controller.engineOptions["translatetexts"] == "1")
-            {
-                GUILayout.Label(translateText(text), style, GUILayout.Width(fullw0));
-            }
-            else 
-            */
-
             GUILayout.Label(text, style, GUILayout.Width(fullw0));
 
-            //GUILayout.FlexibleSpace()
+
             GUILayout.EndVertical();
-            GUILayout.BeginVertical(GUILayout.Width(fullw1), GUILayout.Height(wheight));
+            GUILayout.BeginVertical(GUILayout.Width(wwidth * 0.2f), GUILayout.Height(wheight));
             GUILayout.FlexibleSpace();
+            
             // ---- show buttons ---
             if (!controller.isHideGameButtons)
             {
-                if (btnStyle == "compact") GUILayout.BeginHorizontal();
-                foreach (var i in Enumerable.Range(0, btnsActions.Count))
-                {
-                    // preparing button texts
-                    var restext = btnsActions[i].label;
-                    /*
-                    if (this.controller.engineOptions["usetranslator"] == "1" && this.controller.engineOptions["translatebuttons"] == "1")
-                    {
-                        restext = translateText(restext);
-                    }
-                    */
-                    var fintext = restext;
-                    if (controller.GetConfigEntry("Skins", "usekeysforbuttons"))
-                        if (controller.arKeyKodes.Length > i)
-                            fintext = controller.arKeyKodes[i].ToUpper() + ": " + fintext;
-                    // render button
-                    if (btnStyle == "normal")
-                    {
-                        if (btnsActions.Count > 1)
-                        {
-                            if (GUILayout.Button(fintext, customButton, GUILayout.Width(fullw1),
-                                    GUILayout.Height(buttonHeight))) controller.call_game_func(btnsActions[i]);
-                        }
-                        else
-                        {
-                            // special case for 1 button
-                            GUILayout.BeginHorizontal();
-                            GUILayout.FlexibleSpace();
-                            customButton.fontSize = (int) (customButton.fontSize * 1.2);
-                            if (GUILayout.Button(fintext, customButton, GUILayout.Width(fullw1),
-                                    GUILayout.Height(buttonHeight * 1.4f))) controller.call_game_func(btnsActions[i]);
-                            GUILayout.EndHorizontal();
-                        }
-                    }
-
-                    if (btnStyle == "compact")
-                    {
-                        if (GUILayout.Button(fintext, customButton, GUILayout.Width(fullw1 / 2 - 2),
-                                GUILayout.Height(buttonHeight))) controller.call_game_func(btnsActions[i]);
-                        if (i % 2 == 1)
-                        {
-                            GUILayout.EndHorizontal();
-                            GUILayout.BeginHorizontal();
-                            // pass
-                        }
-                    }
-                }
-
-                if (btnStyle == "compact") GUILayout.EndHorizontal();
+                RenderButtons(btnStyle, btnsActions);
             }
 
             GUILayout.Space(16);
             GUILayout.EndVertical();
             ren_end();
+        }
+
+        internal void RenderButtons(ButtonStyle btnStyle, List<Button_s> btnsActions)
+        {    
+            var fullw1 = wwidth * 0.2f;
+            var customButton = new GUIStyle("button");
+            customButton.fontSize = buttonFontSize;
+            if (btnStyle == ButtonStyle.Compact) GUILayout.BeginHorizontal();
+            foreach (var i in Enumerable.Range(0, btnsActions.Count))
+            {
+                // preparing button texts
+                var restext = btnsActions[i].label;
+                var fintext = restext;
+                if (controller.GetConfigEntry("Skins", "usekeysforbuttons"))
+                    if (controller.arKeyKodes.Length > i)
+                        fintext = controller.arKeyKodes[i].ToUpper() + ": " + fintext;
+                // render button
+                if (btnStyle == ButtonStyle.Normal)
+                {
+                    if (btnsActions.Count > 1)
+                    {
+                        if (GUILayout.Button(fintext, customButton, GUILayout.Width(fullw1),
+                                GUILayout.Height(buttonHeight))) controller.call_game_func(btnsActions[i]);
+                    }
+                    else
+                    {
+                        // special case for 1 button
+                        GUILayout.BeginHorizontal();
+                        GUILayout.FlexibleSpace();
+                        customButton.fontSize = (int)(customButton.fontSize * 1.2);
+                        if (GUILayout.Button(fintext, customButton, GUILayout.Width(fullw1),
+                                GUILayout.Height(buttonHeight * 1.4f))) controller.call_game_func(btnsActions[i]);
+                        GUILayout.EndHorizontal();
+                    }
+                }
+
+                if (btnStyle == ButtonStyle.Compact)
+                {
+                    if (GUILayout.Button(fintext, customButton, GUILayout.Width(fullw1 / 2 - 2),
+                            GUILayout.Height(buttonHeight))) controller.call_game_func(btnsActions[i]);
+                    if (i % 2 == 1)
+                    {
+                        GUILayout.EndHorizontal();
+                        GUILayout.BeginHorizontal();
+                        // pass
+                    }
+                }
+            }
+
+            if (btnStyle == ButtonStyle.Compact) GUILayout.EndHorizontal();
         }
 
         public override void render_system(string sys_text)

@@ -108,20 +108,15 @@ namespace VNEngine
 
         public Dictionary<string, RegisteredChar_s> registeredChars;
 
-
-        public SkinBase skin;
-
-        public SkinBase skin_default;
-
-        public SkinBase skin_saved;
-
         public Timer[] timers;
 
         public UpdateFunc updFunc;
 
         public string updFuncParam;
 
-        public string vnButtonsStyle;
+        public SkinBase textBox;
+
+        public ButtonStyle vnButtonsStyle;
         public int wheight;
 
         public GUI.WindowFunction windowCallback;
@@ -269,17 +264,14 @@ namespace VNEngine
             //print self.engineOptions;
             Instance = this;
             arKeyKodes = null; //Utils.getEngineOptions()["keysforbuttons"].Split(',');
-            vnButtonsStyle = "normal";
+            vnButtonsStyle = ButtonStyle.Normal;
             //this.visible = this.engineOptions["starthidden"] == "0";
             // self.wwidth = 500
-            // self.wheight = 230
+            // self.wheight = 230 
             //
             // self.windowName = ''
             // self.windowRect = Rect (Screen.width / 2 - self.wwidth / 2, Screen.height - self.wheight - 10, self.wwidth, self.wheight)
             //self.skin_panel_unity = CloneSkin(GUI.)
-            windowStyle = null;
-            windowStyleDefault = new GUIStyle("window");
-            skin_default = skin;
             _vnText = "Welcome to <b>VN Game engine</b>!\n";
             try
             {
@@ -387,19 +379,18 @@ namespace VNEngine
             lipAnimeTID = -1;
             _eventListenerDic = new Dictionary<string, List<GameFunc>>();
             windowStyle = windowStyleDefault;
-            Skin = skin_default;
         }
 
         public void FuncWindowGUI(int windowid)
         {
             if (!isFuncLocked)
             {
-                skin.render_main(curCharFull, vnText, vnButtons, vnButtonsStyle);
+                TextBox.render_main(curCharFull, vnText, vnButtons, vnButtonsStyle);
             }
             else
             {
                 // render system message
-                skin.render_system(funcLockedText);
+                TextBox.render_system(funcLockedText);
             }
         }
 
@@ -442,95 +433,9 @@ namespace VNEngine
 
                         if (timer.timeLeft <= 0) call_game_func(timer.funcEnd);
                     }
-
-            UpdateKeyChecks();
             event_dispatch("update", null);
         }
 
-
-        public void UpdateKeyChecks()
-        {
-            if (checkKeyCode("ReloadCurrentGame"))
-                if (current_game != "")
-                    game_start_fromfile(this, current_game);
-            if (checkKeyCode("VNFrameDeveloperConsole"))
-                try
-                {
-                    //ScriptHelper.toggle_devconsole(this); TODO
-                }
-                catch (Exception e)
-                {
-                    show_blocking_message_time(string.Format("Error: can't start VNFrame developer console: {0}", e));
-                }
-
-            //if (GetConfigEntry("Skins", "usekeysforbuttons"))
-                //if (visible && !isFuncLocked && !isHideGameButtons)
-                    //foreach (var i in Enumerable.Range(0, vnButtons.Count))
-                        //if (Input.GetKeyDown(arKeyKodes[i]))
-                            //self._vnButtonsActions[i](self)
-                            //call_game_func(_vnButtons[i]);
-            // running games from INI
-            /*
-            this._util_upd_check_and_start_game("game1");
-            this._util_upd_check_and_start_game("game2");
-            this._util_upd_check_and_start_game("game3");
-            this._util_upd_check_and_start_game("game4");
-            this._util_upd_check_and_start_game("game5");
-            this._util_upd_check_and_start_game("game6");
-            this._util_upd_check_and_start_game("game7");
-            this._util_upd_check_and_start_game("game8");
-            this._util_upd_check_and_start_game("game9");
-            this._util_upd_check_and_start_game("game10");
-            */
-            if (checkKeyCode("developerconsole"))
-            {
-                if (isShowDevConsole)
-                {
-                    // restoring old window
-                    isShowDevConsole = false;
-                    Skin = skin_saved;
-                }
-                else
-                {
-                    // set default skin and set console flag to show
-                    // console must be rendered only in default skin
-                    skin_saved = skin;
-                    Skin = skin_default;
-                    isShowDevConsole = true;
-                }
-            }
-            if (checkKeyCode("reloadvnengine"))
-            {
-                // reload engine
-                Console.WriteLine("Try reloading engine...");
-                try
-                {
-                    //reload(sys.modules["vngameengine"]);
-                    //sys.modules["vngameengine"].vngame_window_autogames_uni();
-                    Console.WriteLine("Reloading engine success!");
-                }
-                catch (Exception)
-                {
-                    Console.WriteLine("Error in reloading game engine");
-                }
-            }
-        }
-
-        /*
-        public void _util_upd_check_and_start_game(string gamekey)
-        {
-            if (this.engineOptions.ContainsKey(gamekey))
-            {
-                if (this.engineOptions[gamekey] != "")
-                {
-                    if (checkKeyCode(gamekey))
-                    {
-                        this.game_start_fromfile(this, this.engineOptions[gamekey]);
-                    }
-                }
-            }
-        }
-        */
 
         public bool GetConfigEntry(string section, string key)
         {
@@ -579,11 +484,11 @@ namespace VNEngine
             timers = new Timer[8];
         }
 
-        public void set_buttons(List<Button_s> buttons, string style = "normal")
+        public void set_buttons(List<Button_s> buttons, ButtonStyle style = ButtonStyle.Normal)
         {
             vnButtonsStyle = style;
-            if (style == "normal") maxBtnsBeforeSeparator = skin.maxButtonsNormal;
-            if (style == "compact") maxBtnsBeforeSeparator = skin.maxButtonsCompact;
+            if (style == ButtonStyle.Normal) maxBtnsBeforeSeparator = TextBox.maxButtonsNormal;
+            if (style == ButtonStyle.Compact) maxBtnsBeforeSeparator = TextBox.maxButtonsCompact;
             if (buttons.Count <= maxBtnsBeforeSeparator)
             {
                 // normal case, not so much btns
@@ -642,44 +547,11 @@ namespace VNEngine
                 endButtonTxt = "X",
                 endButtonCall = HideVNBox
             };
-            set_text_s("...");
+            TextBox = rpySkin;
+            set_text_s("");
             set_buttons(buttons);
-            Skin = rpySkin;
             visible = true;
         }
-
-
-        public void set_buttons_alt(List<Button_s> arButTextsActions, string style = "normal")
-        {
-            set_buttons(arButTextsActions, style);
-
-/* Unmerged change from project 'VNEngine.AI'
-Before:
-        }
-        
-        
-        public void set_buttons_end_game()
-After:
-        }
-
-
-        public void set_buttons_end_game()
-*/
-
-/* Unmerged change from project 'VNEngine.HS2'
-Before:
-        }
-        
-        
-        public void set_buttons_end_game()
-After:
-        }
-
-
-        public void set_buttons_end_game()
-*/
-        }
-
 
         public void SetText(string character, string text)
         {
@@ -1321,16 +1193,16 @@ After:
 
         // --------- skin system ------------
 
-        public SkinBase Skin
+        public SkinBase TextBox
         {
             set
             {
-                this.skin = value;
-                this.skin.setup(this);
+                this.textBox = value;
+                this.textBox.setup(this);
             }
             get
             {
-                return this.skin;
+                return this.textBox;
             }
         }
 

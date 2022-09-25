@@ -242,13 +242,13 @@ namespace SceneSaveState
                 // Rect (Screen.width / 2 - sc.game.wwidth * 1.5, Screen.height - sc.game.wheight - 500,
                 //               110, 75)
                 //sc.game.windowCallback = GUI.WindowFunction(minimizeWindowFunc)
-                controller.skin.funcWindowGUI = sceneConsoleSkinWindowGUIMin;
+                controller.TextBox.funcWindowGUI = sceneConsoleSkinWindowGUIMin;
             }
             else
             {
                 controller.windowRect.width = sc.consoleWidth;
                 controller.windowRect.height = sc.consoleHeight;
-                controller.skin.funcWindowGUI = sceneConsoleSkinWindowGUI;
+                controller.TextBox.funcWindowGUI = sceneConsoleSkinWindowGUI;
                 //sc.game.windowCallback = GUI.WindowFunction(sceneConsoleWindowFunc)
             }
         }
@@ -261,7 +261,7 @@ namespace SceneSaveState
                 {
                     controller.windowRect.width = Instance.consoleWidth;
                     controller.windowRect.height = Instance.consoleHeight;
-                    controller.skin.funcWindowGUI = sceneConsoleSkinWindowGUI;
+                    controller.TextBox.funcWindowGUI = sceneConsoleSkinWindowGUI;
                 }
                 GUI.DragWindow();
             }

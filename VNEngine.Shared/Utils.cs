@@ -11,6 +11,12 @@ namespace VNEngine
     public static partial class Utils
     {
 
+        public enum ButtonStyle
+        {
+            Compact,
+            Normal
+        }
+
         public struct Button_s
         {
             public string label;
