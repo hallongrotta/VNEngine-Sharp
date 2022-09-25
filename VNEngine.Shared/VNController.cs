@@ -49,7 +49,6 @@ namespace VNEngine
         public List<GameFunc> _menuStack;
 
 
-
         public List<Button_s> _vnButtons = new List<Button_s>();
         private List<Button_s> _vnStButtons;
 
@@ -108,7 +107,6 @@ namespace VNEngine
         public double readingSpeed;
 
         public Dictionary<string, RegisteredChar_s> registeredChars;
-
 
 
         public SkinBase skin;

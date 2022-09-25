@@ -69,8 +69,6 @@ namespace SceneSaveState
 
         internal string funcLockedText;
 
-        //internal StudioController game;
-
         internal bool guiOnShow;
 
         internal bool isFuncLocked;

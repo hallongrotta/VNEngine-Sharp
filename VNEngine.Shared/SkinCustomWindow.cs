@@ -8,7 +8,7 @@ namespace VNEngine
 
         public Action<VNController> funcSetup;
 
-        //public Action<StudioController, int> funcWindowGUI;
+
 
         public string name;
 

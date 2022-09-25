@@ -4,7 +4,6 @@ using System.IO;
 using Studio;
 using UnityEngine;
 using VNActor;
-using BepInEx;
 using static VNEngine.Utils;
 
 namespace VNEngine

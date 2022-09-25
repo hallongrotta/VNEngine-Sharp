@@ -7,7 +7,7 @@ using BepInEx;
 using BepInEx.Configuration;
 using Studio;
 using static VNEngine.Utils;
-using KKAPI.Utilities;
+
 using UnityEngine;
 
 namespace VNEngine
