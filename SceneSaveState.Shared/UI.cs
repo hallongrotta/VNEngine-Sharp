@@ -83,43 +83,6 @@ namespace SceneSaveState
             }
         }
 
-        public static void sceneConsoleGUIStart(VNController game)
-        {
-            var skin = new SkinCustomWindow();
-            skin.funcSetup = sceneConsoleSkinSetup;
-            //skin.funcWindowGUI = sceneConsoleSkinWindowGUI;
-            game.Skin = skin;
-            // sc.originalWindowCallback = game.windowCallback
-            // sc.originalwindowwidth = game.wwidth
-            // sc.originalwindowheight = game.wheight
-            Instance.guiOnShow = true;
-            // setWindowName(sc.windowindex)
-            // game.wwidth = sc.windowwidth
-            // game.wheight = sc.windowheight
-            //
-            // game.windowRect = Rect(Screen.width / 2 - game.wwidth * 1.5, Screen.height - game.wheight - 500,
-            //                        game.wwidth + 50, game.wheight + 400)
-            //Utils.loadConfig();
-            // game.windowCallback = GUI.WindowFunction(sceneConsoleWindowFunc)
-        }
-
-        public static void sceneConsoleSkinSetup(VNController game)
-        {
-            setWindowName(windowindex);
-            game.wwidth = WindowWidth;
-            game.wheight = WindowHeight;
-            // #game.windowRect = Rect (Screen.width / 2 - game.wwidth / 2, Screen.height - game.wheight - 10, game.wwidth, game.wheight)
-            var x = Utils.get_ini_value_def_int("WindowX", (int)(Screen.width - game.wwidth * 1.3));
-            var y = Utils.get_ini_value_def_int("WindowY", Screen.height - game.wheight - 650);
-            var w = Utils.get_ini_value_def_int("WindowWidth", game.wwidth + 50);
-            var h = Utils.get_ini_value_def_int("WindowHeight", game.wheight + 400);
-            // game.windowRect = Rect(Screen.width / 2 - game.wwidth * 1.5, Screen.height - game.wheight - 500,
-            //                        game.wwidth + 50, game.wheight + 400)
-            game.windowRect = new Rect(x, y, w, h);
-            //game.windowCallback = GUI.WindowFunction(scriptHelperWindowGUI)
-            game.windowStyle = game.windowStyleDefault;
-        }
-
         public static void sceneConsoleSkinWindowGUI(int windowid)
         {
             sceneConsoleWindowFunc(windowid);

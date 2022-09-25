@@ -98,8 +98,6 @@ namespace SceneSaveState
 
         //internal Dictionary<string, KeyValuePair<string, string>> shortcuts;
 
-        internal SkinDefault skinDefault;
-
         internal string skinDefault_sideApp;
 
         internal ConfigEntry<bool> skipClothesChanges;
@@ -183,10 +181,6 @@ namespace SceneSaveState
             funcLockedText = "...";
             isFuncLocked = false;
             // skin_default internal
-            skinDefault = new SkinDefault
-            {
-                controller = GameController
-            };
             skinDefault_sideApp = "";
             Instance = this;
             roleTracker = new RoleTracker();
@@ -606,12 +600,14 @@ namespace SceneSaveState
             }
         }
 
-        internal void LoadCurrentScene()
+        internal bool LoadCurrentScene()
         {
-            CamManager = new Manager<CamData>(CurrentScene.cams);
+            if (ChapterManager.Count <= 0 || CurrentChapter.Count <= 0) return false;
             SetSceneState(CurrentScene);
-            if (ChapterManager.Count <= 0 || CamManager.Count <= 0) return;
+            CamManager = new Manager<CamData>(CurrentScene.cams);
+            if (CamManager.Count <= 0) return false;
             setCamera();
+            return true;
         }
 
         internal void copySelectedStatusToTracking(List<string> exclude)
@@ -951,6 +947,12 @@ namespace SceneSaveState
 
         internal void NextSceneOrCamera()
         {
+
+            if (ChapterManager.Count == 1 && CurrentChapter.Count == 0)
+            {
+                return;
+            }
+
             if (ChapterManager.Count <= 0) return;
             if (CamManager.Count > 0 && CamManager.HasNext)
             {
@@ -1084,7 +1086,7 @@ namespace SceneSaveState
         internal void runVNSS(string starfrom = "begin")
         {
             if (ChapterManager.Count == 0) return;
-            ShowVNTextBox();
+            GameController.ShowVNTextBox(new List<Button_s> { new Button_s(">>", NextSceneOrCamera, 1) });
             int calcPos;
             if (starfrom == "cam")
                 //print self.cur_index, self.cur_cam
@@ -1097,31 +1099,6 @@ namespace SceneSaveState
             LoadCurrentScene();
             Console.WriteLine("Run VNSS from state {0}", calcPos.ToString());
             //game.vnscenescript_run_current(onEndVNSS, calcPos.ToString());
-        }
-
-        internal void ShowVNTextBox()
-        {
-            var rpySkin = new SkinRenPyMini
-            {
-                isEndButton = true,
-                endButtonTxt = "X",
-                endButtonCall = endVNSSbtn
-            };
-            GameController.set_text_s("...");
-            GameController.set_buttons(new List<Button_s> { new Button_s(">>", NextSceneOrCamera, 1) });
-            GameController.Skin = rpySkin;
-            GameController.visible = true;
-        }
-
-        internal void endVNSSbtn(VNController game)
-        {
-            this.GameController.visible = false;
-            //VNSceneScript.run_state(this.game, this.game.scenedata.scMaxState + 1, true); TODO
-        }
-
-        internal void onEndVNSS(VNController game = null)
-        {
-            this.GameController.Skin = this.GameController.skin_default;
         }
 
         //def _exportAddBlock(self,fld_acode,):

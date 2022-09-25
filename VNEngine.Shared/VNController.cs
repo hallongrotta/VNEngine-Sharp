@@ -279,7 +279,6 @@ namespace VNEngine
             //self.skin_panel_unity = CloneSkin(GUI.)
             windowStyle = null;
             windowStyleDefault = new GUIStyle("window");
-            skin_set_byname("skin_default");
             skin_default = skin;
             _vnText = "Welcome to <b>VN Game engine</b>!\n";
             try
@@ -287,7 +286,7 @@ namespace VNEngine
                 //this._vnText = this._vnText;
                 _vnText += "\n";
             }
-            catch (Exception)
+            catch (Exception) 
             {
                 _vnText += "<color=red>Warning!</color> You have a problems with UTF-8 libs! See website.\n";
                 Console.WriteLine("VNGE: problems with UTF-8 libs detected");
@@ -393,13 +392,6 @@ namespace VNEngine
 
         public void FuncWindowGUI(int windowid)
         {
-            if (skin is SkinCustomWindow customWindow)
-            {
-                // skin has it's own WindowGUI func
-                customWindow.customWindowGUI(windowid);
-                return;
-            }
-
             if (!isFuncLocked)
             {
                 skin.render_main(curCharFull, vnText, vnButtons, vnButtonsStyle);
@@ -458,7 +450,6 @@ namespace VNEngine
 
         public void UpdateKeyChecks()
         {
-            if (checkKeyCode("Reset")) return_to_start_screen_clear();
             if (checkKeyCode("ReloadCurrentGame"))
                 if (current_game != "")
                     game_start_fromfile(this, current_game);
@@ -550,15 +541,6 @@ namespace VNEngine
             return (bool) value.DefaultValue;
         }
 
-        public void return_to_start_screen_clear()
-        {
-            clear_timers();
-            //self.reset() # before init_start_params to call before_scene_unload event
-            _unload_scene_before();
-            // no resetting scene!
-            init_start_params();
-            return_to_start_screen();
-        }
 
         public int set_timer(float duration, GameFunc timerFuncEnd, TimerUpdateFunc timerFuncUpd = null)
         {
@@ -589,13 +571,6 @@ namespace VNEngine
                 if (runEndFunc && timers[index] is Timer t) t.funcEnd(this);
                 timers[index] = null;
             }
-        }
-
-        public void return_to_start_screen()
-        {
-            skin_set_byname("skin_default");
-            SetText("s", _vnStText);
-            //this.set_buttons(this._vnStButtons, this._vnStButtonsActions); TODO
         }
 
         public void clear_timers()
@@ -654,6 +629,25 @@ namespace VNEngine
             set_buttons(ar2, vnButtonsStyle);
         }
 
+        internal void HideVNBox(VNController game)
+        {
+            visible = false;
+        }
+
+        public void ShowVNTextBox(List<Button_s> buttons)
+        {
+            var rpySkin = new VNTextBox
+            {
+                isEndButton = true,
+                endButtonTxt = "X",
+                endButtonCall = HideVNBox
+            };
+            set_text_s("...");
+            set_buttons(buttons);
+            Skin = rpySkin;
+            visible = true;
+        }
+
 
         public void set_buttons_alt(List<Button_s> arButTextsActions, string style = "normal")
         {
@@ -686,17 +680,6 @@ After:
 */
         }
 
-
-        public void set_buttons_end_game()
-        {
-            var buttons = new List<Button_s> {new Button_s("End Game & Return >>", _onEndGame, -1)};
-            set_buttons(buttons);
-        }
-
-        public void _onEndGame(VNController game, int i)
-        {
-            return_to_start_screen_clear();
-        }
 
         public void SetText(string character, string text)
         {
@@ -1348,35 +1331,6 @@ After:
             get
             {
                 return this.skin;
-            }
-        }
-
-        public void skin_set_byname(string skinname)
-        {
-            try
-            {
-                SkinBase skin;
-                switch (skinname)
-                {
-                    case "skin_default":
-                        skin = new SkinDefault();
-                        break;
-                    case "skin_renpy":
-                        skin = new SkinRenPy();
-                        break;
-                    case "skin_renpymini":
-                        skin = new SkinRenPyMini();
-                        break;
-                    default:
-                        skin = new SkinDefault();
-                        break;
-                }
-
-                Skin = skin;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Error loading skin ", skinname, ", error: ", e);
             }
         }
 

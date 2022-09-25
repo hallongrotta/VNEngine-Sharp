@@ -27,15 +27,6 @@ namespace SceneSaveState
         // :::::::::: JSON Derulo ::::::::::::
         // :::::::::: For debug only ::::::::::::
         // :type game:vngameengine.StudioController
-        public static void start(VNController game)
-        {
-            if (SceneConsole.Instance.ChapterManager.Count == 0)
-            {
-                return;
-            }
-            UI.sceneConsoleGUIStart(game);
-        }
-
 
         public static byte[] SerializeData<T>(T item)
         {
@@ -115,17 +106,6 @@ namespace SceneSaveState
 
         // main class
         // ::::: Console init and window :::::
-        public static void toggle_scene_console(VNController game)
-        {
-            if (SceneConsole.Instance.guiOnShow)
-            {
-                sceneConsoleGUIClose();
-            }
-            else
-            {
-                UI.sceneConsoleGUIStart(game);
-            }
-        }
 
         //public static void loadConfig()
         //{

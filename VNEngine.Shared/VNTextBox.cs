@@ -7,7 +7,7 @@ using static VNEngine.VNController;
 
 namespace VNEngine
 {
-    public class SkinRenPyMini
+    public class VNTextBox
         : SkinBase
     {
         public int buttonFontSize;
@@ -34,7 +34,7 @@ namespace VNEngine
 
         public int wwidth;
 
-        public SkinRenPyMini()
+        public VNTextBox()
         {
             name = "skin_renpymini";
             contentHeight = 0.15f;
