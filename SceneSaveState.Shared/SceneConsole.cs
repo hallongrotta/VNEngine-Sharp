@@ -69,7 +69,7 @@ namespace SceneSaveState
 
         internal string funcLockedText;
 
-        //internal VNNeoController game;
+        //internal StudioController game;
 
         internal bool guiOnShow;
 
@@ -116,7 +116,22 @@ namespace SceneSaveState
 
         internal Manager<CamData> CamManager;
 
-        internal bool showTextBox = false;
+        internal bool showTextBox = false; 
+
+        internal CameraController CameraController { 
+        get
+            {
+                return CameraController.Instance;
+            }
+            
+        }
+        internal VNController GameController
+        { 
+            get
+            {
+                return VNController.Instance;
+            }
+        }
 
         internal SceneConsole()
         {
@@ -172,7 +187,7 @@ namespace SceneSaveState
             // skin_default internal
             skinDefault = new SkinDefault
             {
-                controller = game
+                controller = GameController
             };
             skinDefault_sideApp = "";
             Instance = this;
@@ -424,7 +439,7 @@ namespace SceneSaveState
         internal void show_blocking_message_time_sc(string text = "...", float duration = 3f)
         {
             show_blocking_message(text);
-            game.set_timer(duration, hide_blocking_message);
+            GameController.set_timer(duration, hide_blocking_message);
         }
 
         internal void getSceneCamString()
@@ -438,7 +453,7 @@ namespace SceneSaveState
 
         internal void changeSceneCam(CamTask task)
         {
-            var cdata = VNNeoController.cameraData;
+            var cdata = CameraController.cameraData;
             var addata = currentVNData;
             var camData = new CamData(cdata.pos, cdata.rotate, cdata.distance, cdata.parse, addata);
             switch (task)
@@ -491,12 +506,12 @@ namespace SceneSaveState
                     style["target_camera_zooming_in"] = this.paramAnimCamZoomOut;
                 } */ //TODO fix this
                 var style = "linear";
-                game.anim_to_camera(paramAnimCamDuration, camera_data.position, camera_data.distance,
+                CameraController.anim_to_camera(paramAnimCamDuration, camera_data.position, camera_data.distance,
                     camera_data.rotation, camera_data.fov, style);
             }
             else
             {
-                game.move_camera(camera_data);
+                CameraController.move_camera(camera_data);
                 //this.game.move_camera(pos: camera_data.position, distance: camera_data.distance, rotate: camera_data.rotation, fov: camera_data.fov);
             }
 
@@ -512,7 +527,7 @@ namespace SceneSaveState
 
                 currentVNData.addprops = addata.addprops;
 
-                game.SetText(currentVNData.whosay, currentVNData.whatsay);
+                GameController.SetText(currentVNData.whosay, currentVNData.whatsay);
             }
             else
             {
@@ -892,7 +907,7 @@ namespace SceneSaveState
         }
 
         // Change name
-        internal static void changeCharName(VNNeoController game, string name)
+        internal static void changeCharName(StudioController game, string name)
         {
             var chara = game.SelectedChar;
             var old_name = chara.text_name;
@@ -1094,21 +1109,21 @@ namespace SceneSaveState
                 endButtonTxt = "X",
                 endButtonCall = endVNSSbtn
             };
-            game.set_text_s("...");
-            game.set_buttons(new List<Button_s> { new Button_s(">>", NextSceneOrCamera, 1) });
-            game.Skin = rpySkin;
-            game.visible = true;
+            GameController.set_text_s("...");
+            GameController.set_buttons(new List<Button_s> { new Button_s(">>", NextSceneOrCamera, 1) });
+            GameController.Skin = rpySkin;
+            GameController.visible = true;
         }
 
-        internal void endVNSSbtn(VNNeoController game)
+        internal void endVNSSbtn(VNController game)
         {
-            this.game.visible = false;
+            this.GameController.visible = false;
             //VNSceneScript.run_state(this.game, this.game.scenedata.scMaxState + 1, true); TODO
         }
 
         internal void onEndVNSS(VNController game = null)
         {
-            this.game.Skin = this.game.skin_default;
+            this.GameController.Skin = this.GameController.skin_default;
         }
 
         //def _exportAddBlock(self,fld_acode,):

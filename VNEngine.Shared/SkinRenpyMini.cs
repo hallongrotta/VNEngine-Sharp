@@ -20,7 +20,7 @@ namespace VNEngine
 
         public double contentWidthProp;
 
-        public Action<VNNeoController> endButtonCall;
+        public Action<VNController> endButtonCall;
 
         public string endButtonTxt;
 

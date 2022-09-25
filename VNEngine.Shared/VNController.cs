@@ -5,17 +5,27 @@ using System.Linq;
 using BepInEx.Configuration;
 using UnityEngine;
 using static VNEngine.Utils;
-using static VNEngine.VNCamera;
+using BepInEx.Logging;
+using BepInEx;
+
 
 //using WindowsInput;
 //using WindowsInput.Native;
 
 namespace VNEngine
 {
-    public abstract class VNController
-        : BaseController
+    [BepInProcess(Constants.StudioProcessName)]
+    [BepInPlugin(GUID, PluginName, Version)]
+    public class VNController :
+        BaseUnityPlugin
     {
+        public const string PluginName = "VN Controller";
+        public const string GUID = "com.kasanari.bepinex.vncontroller";
+        public const string Version = "1.0";
+        internal new static ManualLogSource Logger;
         public delegate void GameFunc(VNController controller);
+
+        public GameFunc runScAct;
 
         // 
         //         Made animation movement to camera with some number
@@ -38,7 +48,7 @@ namespace VNEngine
 
         public List<GameFunc> _menuStack;
 
-        public GameFunc _onCameraEnd;
+
 
         public List<Button_s> _vnButtons = new List<Button_s>();
         private List<Button_s> _vnStButtons;
@@ -53,27 +63,7 @@ namespace VNEngine
 
         public List<Button_s> btnsFull;
 
-        public int camAnimeTID;
 
-        public Dictionary<string, float> camAnimFullStyle;
-
-        public string camAnimStyle;
-
-        public Vector3 camSAngle;
-
-        public Vector3 camSDir;
-
-        public float camSFOV;
-
-        public Vector3 camSPos;
-
-        public Vector3 camTAngle;
-
-        public Vector3 camTDir;
-
-        public float camTFOV;
-
-        public Vector3 camTPos;
 
         public string curCharFull;
 
@@ -119,7 +109,7 @@ namespace VNEngine
 
         public Dictionary<string, RegisteredChar_s> registeredChars;
 
-        public string sceneDir;
+
 
         public SkinBase skin;
 
@@ -146,8 +136,140 @@ namespace VNEngine
 
         public int wwidth;
 
-        public VNController()
+        internal CameraController cameraController;
+
+        public GameFunc _onCameraEnd;
+
+        //private Component component;
+        //private int counter;
+        //private bool show_buttons;
+        public bool visible;
+        //private GUIStyle style;
+        private CameraControl cameraControl;
+        private bool lastCameraState = true;
+        private GameCursor gameCursor;
+        public string windowName;
+        //private GUI.WindowFunction windowCallback;
+        //private bool isClassicStudio;
+        protected Dictionary<string, string> engineOptions;
+
+        protected string pygamepath;
+
+        public ManualLogSource GetLogger { get { return Logger; } }
+
+        public bool checkKeyCode(string configkey)
         {
+            var entry = new ConfigDefinition("Keyboard Shortcuts", configkey);
+            if (entry != null)
+            {
+                if (Config.ContainsKey(entry))
+                {
+                    BepInEx.Configuration.KeyboardShortcut shortcut = (BepInEx.Configuration.KeyboardShortcut)Config[entry].BoxedValue;
+                    return shortcut.IsDown();
+                }
+            }
+            return false;
+        }
+
+        public bool CheckConfigEntry(string category, string key)
+        {
+            return true;
+        }
+
+        public void loadConfig()
+        {
+            Config.Bind("Keyboard Shortcuts", "ToggleVNControllerWindow", new BepInEx.Configuration.KeyboardShortcut(KeyCode.F8, KeyCode.LeftControl), "Show or hide the VN Controller window in Studio.");
+            Config.Bind("Keyboard Shortcuts", "Reset", new BepInEx.Configuration.KeyboardShortcut(KeyCode.F3, KeyCode.LeftControl), "Reset VN Controller.");
+            Config.Bind("Keyboard Shortcuts", "ReloadCurrentGame", new BepInEx.Configuration.KeyboardShortcut(KeyCode.F10), "Reload current game.");
+            Config.Bind("Keyboard Shortcuts", "VNFrameDeveloperConsole", new BepInEx.Configuration.KeyboardShortcut(KeyCode.F5, KeyCode.LeftControl), "Show or hide the VN Controller window in Studio");
+            Config.Bind("Keyboard Shortcuts", "DumpCamera", new BepInEx.Configuration.KeyboardShortcut(KeyCode.F4, KeyCode.LeftControl, KeyCode.LeftAlt), "Show or hide the VN Controller window in Studio");
+            Config.Bind("Keyboard Shortcuts", "DeveloperConsole", new BepInEx.Configuration.KeyboardShortcut(KeyCode.F4, KeyCode.LeftControl), "Show or hide the VN Controller window in Studio");
+            Config.Bind("Keyboard Shortcuts", "ReloadVNEngine", new BepInEx.Configuration.KeyboardShortcut(KeyCode.F1, KeyCode.LeftControl), "Show or hide the VN Controller window in Studio");
+            Config.Bind("Skins", "usekeysforbuttons", false);
+        }
+
+        public void EnableCamera(bool value)
+        {
+            if (this.lastCameraState != value)
+            {
+                lastCameraState = value;
+                if (cameraControl)
+                {
+                    cameraControl.enabled = value;
+                }
+                gameCursor.enabled = value;
+            }
+        }
+
+
+
+        public void ResetWindow(int windowid)
+        {
+            //Workaround mouse/camera issues when dragging window
+            if (GUIUtility.hotControl == 0)
+            {
+                EnableCamera(true);
+            }
+
+            if (Event.current.type == EventType.MouseDown)
+            {
+                GUI.FocusControl("");
+                GUI.FocusWindow(windowid);
+                EnableCamera(false);
+            }
+        }
+
+        public void Start()
+        {
+
+            try
+            {
+                if (!gameCursor)
+                {
+                    gameCursor = UnityEngine.Object.FindObjectOfType<GameCursor>();
+                }
+            }
+
+
+            catch (Exception)
+            {
+                //Logger.LogError("VNGE: passable error in Start:" + exception); //TODO
+            }
+        }
+        /*
+        public void OnGUI()
+        {
+            if (!visible)
+            {
+                return;
+            }
+            else
+            {
+                windowRect = GUI.Window(0, windowRect, windowCallback, windowName);
+            }
+        }
+        */
+
+    public VNController()
+        {
+
+            gameObject.AddComponent<CameraController>();
+            gameObject.AddComponent<StudioController>();
+
+            Logger = base.Logger;
+            //component = null; // will be assigned if exists as member
+            //counter = 1;
+            //show_buttons = false;
+            visible = false;
+            cameraControl = null;
+            windowRect = new Rect(Screen.width / 2 - 50, Screen.height / 2 - 50, 400, 400);
+            lastCameraState = true;
+            gameCursor = null;
+            windowName = "Window";
+            //loading options
+            loadConfig();
+            //print self.engineOptions;
+            Instance = this;
             arKeyKodes = null; //Utils.getEngineOptions()["keysforbuttons"].Split(',');
             vnButtonsStyle = "normal";
             //this.visible = this.engineOptions["starthidden"] == "0";
@@ -206,6 +328,7 @@ namespace VNEngine
 
             */
             _vnStButtons = _vnButtons;
+            _vnButtons = new List<Button_s>();
             _vnStText = _vnText;
             maxBtnsBeforeSeparator = 5;
             _btnSepCounter = 0;
@@ -237,6 +360,8 @@ namespace VNEngine
             set => _vnButtons = value;
         }
 
+        public static VNController Instance { get; private set; }
+
         public void init_start_params()
         {
             isShowDevConsole = false;
@@ -244,7 +369,6 @@ namespace VNEngine
             _menuStack = new List<GameFunc>();
             isHideGameButtons = false;
             onSetTextCallback = null;
-            camAnimeTID = -1;
             onDumpSceneOverride = null;
             isHideWindowDuringCameraAnimation = false;
             isFuncLocked = false;
@@ -253,7 +377,6 @@ namespace VNEngine
             btnNextText = "Next >";
             //self.autostart = False
             //self.isDevDumpButtons = False - no use
-            sceneDir = "";
             //this.gdata = new GData();
             gpersdata = new Dictionary<string, object>();
             //this.scenedata = new GData();
@@ -281,27 +404,7 @@ namespace VNEngine
 
             if (!isFuncLocked)
             {
-                if (!isShowDevConsole)
-                    try
-                    {
-                        skin.render_main(curCharFull, vnText, vnButtons, vnButtonsStyle);
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine("Error in skin.render_main: " + e);
-                        visible = false;
-                    }
-                else
-                    // show dev console
-                    try
-                    {
-                        if (skin is SkinDefault skinDefault) skinDefault.render_dev_console();
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine("Error in skin.render_dev_console: " + e);
-                        visible = false;
-                    }
+                skin.render_main(curCharFull, vnText, vnButtons, vnButtonsStyle);
             }
             else
             {
@@ -322,9 +425,15 @@ namespace VNEngine
         }
 
 
-        public new void Update()
+        public void Update()
         {
-            base.Update();
+            // Update is called less so better place to check keystate
+
+            if (checkKeyCode("ToggleVNControllerWindow"))
+            {
+                visible = !visible;
+            }
+
             if (updFunc != null)
             {
                 var func = updFunc;
@@ -401,8 +510,6 @@ namespace VNEngine
                     isShowDevConsole = true;
                 }
             }
-
-            if (checkKeyCode("dumpcamera")) dump_camera();
             if (checkKeyCode("reloadvnengine"))
             {
                 // reload engine
@@ -522,6 +629,12 @@ namespace VNEngine
         public void _btnCallFull(VNController game, int param)
         {
             call_game_func(btnsFull[param]);
+        }
+
+        public void reset()
+        {
+            _unload_scene_before();
+            //studio.InitScene(false);
         }
 
         public void _btnCallSepCounter(VNController game, int param)
@@ -728,11 +841,11 @@ After:
             }
         }
 
-        public void call_game_func(Action<VNNeoController> a)
+        public void call_game_func(Action<VNController> a)
         {
             try
             {
-                a((VNNeoController) this);
+                a(this);
             }
             catch (Exception e)
             {
@@ -761,16 +874,11 @@ After:
                 // default - call func(game)
                 param(this);
             }
-            catch (Exception e)
+            catch (Exception e) 
             {
                 Logger.LogError("Error in call_game_func: " + e);
             }
         }
-
-        // Return dir, where engine saves scenes
-        public abstract string SceneDir();
-
-        public abstract void dump_camera();
 
         // ---------- menu functions -------------------------
         public void run_menu(MenuFunc menufunc, Dictionary<string, string> menuparam, GameFunc onEndFunc)
@@ -796,26 +904,9 @@ After:
 
         // ---------- cameras ----------
 
-        public void move_camera(CamData cam)
-        {
-            move_camera_direct(cam);
-        }
 
-        public void move_camera(Vector3 pos, Vector3 distance, Vector3 rotate, float fov = 23.0f)
-        {
-            //self.show_blocking_message_time("ERROR: move_camera was not implemented")
-            var camobj = new CamData(pos, rotate, distance, fov);
-            move_camera_obj(camobj);
-        }
 
-        public abstract void move_camera_direct(CamData cam);
 
-        public abstract void move_camera_direct(Vector3 pos, Vector3 distance, Vector3 rotate, float fov);
-
-        public void move_camera_obj(CamData camobj)
-        {
-            move_camera_direct(camobj);
-        }
 
         /* TODO
         public void anim_to_camera_obj(float duration, CamData camobj, Dictionary<string, float> style, Action onCameraEnd = null)
@@ -840,73 +931,6 @@ After:
         }
         */
 
-        public void animation_cam_timer(float duration, GameFunc onCameraEnd)
-        {
-            // camera animation one timer only
-            if (camAnimeTID != -1) clear_timer(camAnimeTID);
-            camAnimeTID = set_timer(duration, _anim_to_cam_end, _anim_to_cam_upd);
-            _onCameraEnd = onCameraEnd;
-            if (isHideWindowDuringCameraAnimation) visible = false;
-        }
-
-        public void _anim_to_cam_upd(VNController game, float dt, float time, float duration)
-        {
-            var camProgress = time / duration;
-            if (camAnimStyle == "linear") camProgress = time / duration;
-            if (camAnimStyle == "slow-fast") camProgress = Mathf.Pow(camProgress, 2);
-            if (camAnimStyle == "fast-slow") camProgress = 1 - Mathf.Pow(1 - camProgress, 2);
-            if (camAnimStyle == "slow-fast3") camProgress = Mathf.Pow(camProgress, 3);
-            if (camAnimStyle == "fast-slow3") camProgress = 1 - Mathf.Pow(1 - camProgress, 3);
-            if (camAnimStyle == "slow-fast4") camProgress = Mathf.Pow(camProgress, 4);
-            if (camAnimStyle == "fast-slow4") camProgress = 1 - Mathf.Pow(1 - camProgress, 4);
-            var TPos = camTPos;
-            var TDir = camTDir;
-            var TAngle = camTAngle;
-            if (camAnimFullStyle != null)
-            {
-                if (camAnimFullStyle.ContainsKey("target_camera_zooming_in"))
-                    TDir = new Vector3(TDir.x, TDir.y,
-                        TDir.z - camAnimFullStyle["target_camera_zooming_in"] * (1 - time / duration));
-                if (camAnimFullStyle.ContainsKey("target_camera_rotating_z"))
-                    TAngle = new Vector3(TAngle.x, TAngle.y,
-                        TAngle.z + camAnimFullStyle["target_camera_rotating_z"] * (1 - time / duration));
-                if (camAnimFullStyle.ContainsKey("target_camera_rotating_x"))
-                    TAngle = new Vector3(
-                        TAngle.x + camAnimFullStyle["target_camera_rotating_x"] * (1 - time / duration), TAngle.y,
-                        TAngle.z);
-                if (camAnimFullStyle.ContainsKey("target_camera_rotating_y"))
-                    TAngle = new Vector3(TAngle.x,
-                        TAngle.y + camAnimFullStyle["target_camera_rotating_y"] * (1 - time / duration), TAngle.z);
-                if (camAnimFullStyle.ContainsKey("target_camera_posing_y"))
-                    TPos = new Vector3(TPos.x,
-                        TPos.y + camAnimFullStyle["target_camera_posing_y"] * (1 - time / duration), TPos.z);
-                // TDir.z = TDir.z + self.camAnimFullStyle["move_distance"] * time / duration
-                // TDir.z = TDir.z + (-20)
-                // print "z: %s"%(str(TDir.z))
-            }
-
-            var pos = Vector3.Lerp(camSPos, TPos, camProgress);
-            var distance = Vector3.Lerp(camSDir, TDir, camProgress);
-            var rotate = Vector3.Slerp(camSAngle, TAngle, camProgress);
-            var fov = Mathf.Lerp(camSFOV, camTFOV, camProgress);
-            //print fov, self.camSFOV, self.camTFOV, camProgress
-            move_camera_direct(pos, distance, rotate, fov);
-        }
-
-        public void _anim_to_cam_end(VNController game)
-        {
-            // game.set_text("Anim camera end!")
-            // print "Anim camera end!"
-            if (isHideWindowDuringCameraAnimation) visible = false;
-            camAnimeTID = -1;
-            if (_onCameraEnd != null) call_game_func(_onCameraEnd);
-        }
-
-        public Vector3 vec3(float x, float y, float z)
-        {
-            return new Vector3(x, y, z);
-        }
-
         // ---- automaking list of games -----
         public void prepare_auto_games()
         {
@@ -917,7 +941,7 @@ After:
         {
         }
 
-        /*public object prepare_auto_games_prefix(VNNeoController game, string prefix)
+        /*public object prepare_auto_games_prefix(StudioController game, string prefix)
         {
             var mypath = this.pygamepath;
             var onlyfiles = (from f in listdir(mypath) where isfile(join (mypath, f)) select f).ToList();

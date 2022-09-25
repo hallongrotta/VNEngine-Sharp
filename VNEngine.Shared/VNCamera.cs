@@ -7,8 +7,8 @@ namespace VNEngine
 {
     public class VNCamera
     {
-        public delegate void CamOperation(VNNeoController game, CamData param);
-
+        public delegate void CamOperation(StudioController game, CamData param);
+        /*
         public static Dictionary<string, CamActFunc> cam_act_funcs = new Dictionary<string, CamActFunc>
         {
             {
@@ -28,67 +28,50 @@ namespace VNEngine
                 new CamActFunc(cam_zoom, false)
             }
         };
+        */
 
-        public static void cam_goto_preset(VNNeoController game, CamData param)
-        {
-            // param = (set, duration)
-            game.anim_to_camera_num(param.duration, param.camnum);
-        }
+
 
         /*
-        public static void cam_goto_preset(VNNeoController game, (int camnum, int duration, string style) param)
+        public static void cam_goto_preset(StudioController game, (int camnum, int duration, string style) param)
         {
             game.anim_to_camera_num(param.duration, param.camnum, param.style);
         }
 
 
-        public static void cam_goto_preset(VNNeoController game, (int camnum, int duration, string style, GameFunc onCamEnd) param)
+        public static void cam_goto_preset(StudioController game, (int camnum, int duration, string style, GameFunc onCamEnd) param)
         {
             game.anim_to_camera_num(param.duration, param.camnum, param.style, param.onCamEnd);
         }
         */
 
-        public static void cam_goto_preset(VNNeoController game, int param)
-        {
-            game.to_camera(param);
-        }
+
 
         /*
-        public static void cam_goto_pos(VNNeoController game, (Vector3 pos, Vector3 distance, Vector3 rotate) param)
+        public static void cam_goto_pos(StudioController game, (Vector3 pos, Vector3 distance, Vector3 rotate) param)
         {
             game.move_camera(pos: param.pos, distance: param.distance, rotate: param.rotate);
         }
 
-        public static void cam_goto_pos(VNNeoController game, (Vector3 pos, Vector3 distance, Vector3 rotate, float duration, string style) param)
+        public static void cam_goto_pos(StudioController game, (Vector3 pos, Vector3 distance, Vector3 rotate, float duration, string style) param)
         {
             game.anim_to_camera(param.duration, pos: param.pos, distance: param.distance, rotate: param.rotate, style: param.style);
         }
 
-        public static void cam_goto_pos(VNNeoController game, (Vector3 pos, Vector3 distance, Vector3 rotate, float duration) param)
+        public static void cam_goto_pos(StudioController game, (Vector3 pos, Vector3 distance, Vector3 rotate, float duration) param)
         {
             game.anim_to_camera(param.duration, pos: param.pos, distance: param.distance, rotate: param.rotate);
         }
 
-        public static void cam_goto_pos(VNNeoController game, (Vector3 pos, Vector3 distance, Vector3 rotate, float duration, string style, float fov) param)
+        public static void cam_goto_pos(StudioController game, (Vector3 pos, Vector3 distance, Vector3 rotate, float duration, string style, float fov) param)
         {
             game.anim_to_camera(param.duration, pos: param.pos, distance: param.distance, rotate: param.rotate, fov: param.fov, style: param.style);
         }
         */
-        public static void cam_goto_pos(VNNeoController game, CamData param)
-        {
-            game.anim_to_camera(param.duration, param.position, param.distance, param.rotation, param.fov, param.style);
-        }
 
-        public static void cam_rotate(VNNeoController game, Vector3 param)
-        {
-            var camobj = game.get_camera_num(0);
-            var v3 = camobj.rotation;
-            camobj.rotation = new Vector3(v3.x + param.x, v3.y + param.y, v3.z + param.z);
-            game.move_camera_obj(camobj);
-        }
 
         /*
-        public static void cam_rotate(VNNeoController game, (Vector3 vec, float duration) param)
+        public static void cam_rotate(StudioController game, (Vector3 vec, float duration) param)
         {
             CamData camobj = game.get_camera_num(0);
             Vector3 v3 = camobj.rotation;
@@ -97,7 +80,7 @@ namespace VNEngine
             game.anim_to_camera_obj(param.duration, camobj);
         }
 
-        public static void cam_rotate(VNNeoController game, (Vector3 vec, float duration, string style) param)
+        public static void cam_rotate(StudioController game, (Vector3 vec, float duration, string style) param)
         {
             CamData camobj = game.get_camera_num(0);
             Vector3 v3 = camobj.rotation;
@@ -106,7 +89,7 @@ namespace VNEngine
             game.anim_to_camera_obj(param.duration, camobj, style: param.style);
         }
 
-        public static void cam_rotate(VNNeoController game, (Vector3 vec, float duration, string style, GameFunc onCameraEnd) param)
+        public static void cam_rotate(StudioController game, (Vector3 vec, float duration, string style, GameFunc onCameraEnd) param)
         {
             CamData camobj = game.get_camera_num(0);
             Vector3 v3 = camobj.rotation;
@@ -116,27 +99,11 @@ namespace VNEngine
         }
         */
 
-        public static void cam_rotate(VNNeoController game, CamData param)
-        {
-            var camobj = game.get_camera_num(0);
-            var v3 = camobj.rotation;
-            // param = ((rot_delta_x, rot_delta_y, rot_delta_z), duration)
-            camobj.rotation = new Vector3(v3.x + param.rotation.x, v3.y + param.rotation.y, v3.z + param.rotation.z);
-            game.anim_to_camera_obj(param.duration, camobj, param.style);
-        }
 
-        public static void cam_zoom(VNNeoController game, float zoom_delta)
-        {
-            var camobj = game.get_camera_num(0);
-            var dv3 = camobj.distance;
-            // param = zoom_delta, use positive value to zoom in, and negative value for zoom out 
-            camobj.distance = new Vector3(dv3.x, dv3.y, dv3.z + zoom_delta);
-            game.move_camera_obj(camobj);
-        }
 
         /*
 
-        public static void cam_zoom(VNNeoController game, (float zoom_delta, float duration) param)
+        public static void cam_zoom(StudioController game, (float zoom_delta, float duration) param)
         {
             var camobj = game.get_camera_num(0);
             var dv3 = camobj.distance;
@@ -145,7 +112,7 @@ namespace VNEngine
             game.anim_to_camera_obj(param.duration, camobj);
         }
 
-        public static void cam_zoom(VNNeoController game, (float zoom_delta, float duration, string style) param)
+        public static void cam_zoom(StudioController game, (float zoom_delta, float duration, string style) param)
         {
             var camobj = game.get_camera_num(0);
             var dv3 = camobj.distance;
@@ -155,17 +122,8 @@ namespace VNEngine
         }
         */
 
-        public static void cam_zoom(VNNeoController game, CamData param)
-        {
-            var camobj = game.get_camera_num(0);
-            var dv3 = camobj.distance;
-            // param = zoom_delta, use positive value to zoom in, and negative value for zoom out 
-            camobj.distance = new Vector3(dv3.x, dv3.y, dv3.z + param.zoom_delta);
-            game.anim_to_camera_obj(param.duration, camobj, param.style);
-        }
-
         /*
-        public static void cam_zoom(VNNeoController game, (float zoom_delta, float duration, string style, GameFunc onCameraEnd) param)
+        public static void cam_zoom(StudioController game, (float zoom_delta, float duration, string style, GameFunc onCameraEnd) param)
         {
             var camobj = game.get_camera_num(0);
             var dv3 = camobj.distance;
@@ -175,7 +133,7 @@ namespace VNEngine
         }
         */
 
-        // :type game: vngameengine.VNNeoController
+        // :type game: vngameengine.StudioController
 
 
         public struct adv_properties
@@ -289,7 +247,7 @@ namespace VNEngine
         }
 
         /*
-        public void cam_act_funcs(VNNeoController game, string func, CamData param)
+        public void cam_act_funcs(StudioController game, string func, CamData param)
         {
             switch (func)
             {

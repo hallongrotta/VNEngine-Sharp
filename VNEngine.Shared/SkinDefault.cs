@@ -12,7 +12,7 @@ namespace VNEngine
 
         public int buttonHeight;
 
-        public new VNNeoController controller;
+        public new VNController controller;
 
         public int labelFontSize;
 
@@ -40,7 +40,7 @@ namespace VNEngine
         public override void setup(VNController controller)
         {
             //super(SkinDefault, self).setup(controller)
-            this.controller = (VNNeoController) controller;
+            this.controller = controller;
             controller.wwidth = wwidth;
             controller.wheight = wheight;
             controller.windowName = "";
@@ -162,55 +162,6 @@ namespace VNEngine
             style.fontSize = labelFontSize;
             style.wordWrap = true;
             GUILayout.Label(sys_text, style, GUILayout.Width(fullw));
-            GUILayout.EndVertical();
-            GUI.DragWindow();
-        }
-
-        public void render_dev_console()
-        {
-            // require implement only in SkinDefault
-            var fullw = wwidth - 30;
-            GUILayout.BeginVertical(GUILayout.Width(fullw));
-            // guistyle1 = GUIStyle;
-            // guistyle1.wordwrap = True;
-            // GUILayout.Label("my test text bla-bla-bla ake a repeating button. The button returns true as long as the user holds down the mo", guistyle1, GUILayout.Width(260))
-            var style = new GUIStyle("label");
-            style.richText = true;
-            style.fontSize = labelFontSize;
-            style.wordWrap = true;
-            var customButton = new GUIStyle("button");
-            customButton.fontSize = buttonFontSize;
-            //GUILayout.Label(sys_text, style, GUILayout.Width(fullw))
-            GUILayout.Label("<color=#ffaaaaff><b>Developer console</b></color>", style, GUILayout.Width(fullw));
-            GUILayout.FlexibleSpace();
-            GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Dump camera", customButton, GUILayout.Width(fullw / 2 - 2),
-                    GUILayout.Height(buttonHeight))) controller.dump_camera();
-            GUILayout.EndHorizontal();
-            GUILayout.BeginHorizontal();
-            if (GUILayout.Button("List chars > console ", customButton, GUILayout.Width(fullw),
-                    GUILayout.Height(buttonHeight))) controller.debug_print_all_chars();
-            GUILayout.EndHorizontal();
-
-            GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Dump selected item/folder tree", customButton, GUILayout.Width(fullw),
-                    GUILayout.Height(buttonHeight)))
-            {
-                dump_selected_item_tree();
-                controller.show_blocking_message_time("Tree dumped!");
-            }
-
-            GUILayout.EndHorizontal();
-            GUILayout.BeginHorizontal();
-            if (GUILayout.Button("VNFrame scene dump", customButton, GUILayout.Width(fullw / 2 - 2),
-                    GUILayout.Height(buttonHeight)))
-            {
-                //this.controller.dump_scene_vnframe(controller);
-                // self.show_blocking_message_time("VNFrame scene dumped!")
-            }
-
-            GUILayout.EndHorizontal();
-
             GUILayout.EndVertical();
             GUI.DragWindow();
         }

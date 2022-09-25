@@ -6,11 +6,9 @@ namespace VNEngine
     public class SkinCustomWindow : SkinBase
     {
 
-        public Action<VNNeoController> funcSetup;
+        public Action<VNController> funcSetup;
 
-        //public Action<VNNeoController, int> funcWindowGUI;
-
-        new public VNNeoController controller;
+        //public Action<StudioController, int> funcWindowGUI;
 
         public string name;
 
@@ -22,7 +20,7 @@ namespace VNEngine
 
         override public void setup(VNController controller)
         {
-            this.controller = (VNNeoController)controller;
+            this.controller = controller;
             //controller.call_game_func(this.funcSetup);
         }
 

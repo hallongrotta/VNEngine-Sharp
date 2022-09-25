@@ -11,14 +11,13 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)ActorUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AutoScriptInfo.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)BaseController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CameraController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IManaged.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RoleTracker.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SceneFolders.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SkinRenPy.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StudioController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)System.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Ministates.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SkinBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SkinCustomWindow.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SkinDefault.cs" />
@@ -26,6 +25,5 @@
     <Compile Include="$(MSBuildThisFileDirectory)Utils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VNCamera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VNController.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)VNNeoController.cs" />
   </ItemGroup>
 </Project>

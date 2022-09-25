@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using BepInEx;
 using Studio;
@@ -8,11 +7,9 @@ using static VNEngine.Utils;
 
 namespace VNEngine
 {
-    [BepInProcess(Constants.StudioProcessName)]
-    //[BepInDependency(GUID)]
-    [BepInPlugin(GUID, PluginName, Version)]
+
+
     public partial class StudioController
-        : VNNeoController
     {
         public StudioController()
         {
@@ -20,16 +17,11 @@ namespace VNEngine
             Instance = this;
         }
 
-        public StudioController(List<Button_s> vnButtonsStart)
-        {
-            _vnButtons = vnButtonsStart;
-        }
-
-        public new static StudioController Instance { get; private set; }
+        public static StudioController Instance { get; private set; }
 
         public string FrameFile
         {
-            get => studio_scene.frame;
+            get => StudioScene.frame;
             set
             {
                 var obj = FindObjectOfType<FrameCtrl>();
@@ -41,7 +33,7 @@ namespace VNEngine
         {
             get
             {
-                var sceneInfo = studio_scene;
+                var sceneInfo = StudioScene;
                 return new System.ColorCorrection
                 {
                     no = sceneInfo.cgLookupTexture, blend = sceneInfo.cgBlend, contrast = sceneInfo.cgContrast,
@@ -50,11 +42,11 @@ namespace VNEngine
             }
             set
             {
-                studio_scene.cgLookupTexture = value.no;
-                studio_scene.cgBlend = value.blend;
-                studio_scene.cgBrightness = value.brightness;
-                studio_scene.cgContrast = value.contrast;
-                studio_scene.cgSaturation = value.saturation;
+                StudioScene.cgLookupTexture = value.no;
+                StudioScene.cgBlend = value.blend;
+                StudioScene.cgBrightness = value.brightness;
+                StudioScene.cgContrast = value.contrast;
+                StudioScene.cgSaturation = value.saturation;
                 Studio.Studio.Instance.systemButtonCtrl.UpdateInfo();
             }
         }
@@ -94,29 +86,29 @@ namespace VNEngine
 
         public Vector3 MapRot
         {
-            get => studio_scene.mapInfo.ca.rot;
-            set => studio_scene.mapInfo.ca.rot = value;
+            get => StudioScene.mapInfo.ca.rot;
+            set => StudioScene.mapInfo.ca.rot = value;
         }
 
         public Vector3 MapPos
         {
-            get => studio_scene.mapInfo.ca.pos;
-            set => studio_scene.mapInfo.ca.pos = value;
+            get => StudioScene.mapInfo.ca.pos;
+            set => StudioScene.mapInfo.ca.pos = value;
         }
 
         public int MapNumber
         {
             set
             {
-                if (value != studio_scene.mapInfo.no) studio.AddMap(value);
+                if (value != StudioScene.mapInfo.no) studio.AddMap(value);
             }
-            get => studio_scene.mapInfo.no;
+            get => StudioScene.mapInfo.no;
         }
 
         public bool MapLight
         {
-            set => studio_scene.mapInfo.light = value;
-            get => studio_scene.mapInfo.light;
+            set => StudioScene.mapInfo.light = value;
+            get => StudioScene.mapInfo.light;
         }
 
         public bool MapOption
@@ -128,10 +120,10 @@ namespace VNEngine
                 map = Studio.Map.Instance;
                 map.VisibleOption = value;
             }
-            get => studio_scene.mapInfo.option;
+            get => StudioScene.mapInfo.option;
         }
 
-        public override string SceneDir()
+        public string SceneDir()
         {
             // return path to "scene" folder
             return Path.GetFullPath(Path.Combine(Application.dataPath, "..", "UserData", "Studio", "scene"));

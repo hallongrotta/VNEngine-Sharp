@@ -26,8 +26,8 @@ namespace SceneSaveState
         //import_or_reload("posesavestate")
         // :::::::::: JSON Derulo ::::::::::::
         // :::::::::: For debug only ::::::::::::
-        // :type game:vngameengine.VNNeoController
-        public static void start(VNNeoController game)
+        // :type game:vngameengine.StudioController
+        public static void start(VNController game)
         {
             if (SceneConsole.Instance.ChapterManager.Count == 0)
             {
@@ -115,7 +115,7 @@ namespace SceneSaveState
 
         // main class
         // ::::: Console init and window :::::
-        public static void toggle_scene_console(VNNeoController game)
+        public static void toggle_scene_console(VNController game)
         {
             if (SceneConsole.Instance.guiOnShow)
             {
@@ -234,7 +234,7 @@ namespace SceneSaveState
             */
             //SceneConsole.Instance.game.event_unreg_listener("update", hook_update);
             SceneConsole.Instance.guiOnShow = false;
-            SceneConsole.Instance.game.windowName = "";
+            SceneConsole.Instance.GameController.windowName = "";
             //sc.game.skin_set(sc.game_skin_saved)
             //SceneConsole.Instance.game.skin_set(SceneConsole.Instance.game.gdata.sss_game_skin_saved);
             //SceneConsole.Instance.game.gdata.sss_game_skin_saved = null;
@@ -260,7 +260,7 @@ namespace SceneSaveState
         }
 
         // ::::: Essential functions :::::
-        public static Folder getFolder(VNNeoController game, string name, bool exact = false)
+        public static Folder getFolder(StudioController game, string name, bool exact = false)
         {
             var flds = game.scene_get_all_folders();
             foreach (var fld in flds)
@@ -428,7 +428,7 @@ namespace SceneSaveState
             return true;
         }
 
-        public static void sys_import_status_diff_optimized(VNNeoController game, object status)
+        public static void sys_import_status_diff_optimized(StudioController game, object status)
         { /* //TODO
             var ofs = GameSystem.export_sys_status(game);
             var dfs = new Dictionary<object, object>
@@ -458,50 +458,6 @@ namespace SceneSaveState
             var fold = Folder.add(childtext);
             fold.set_parent(parent);
             return fold;
-        }
-
-        // scene utils UI
-        public static void sceneUtilsUI()
-        {
-            var game = SceneConsole.Instance.game;
-            var skin_def = SceneConsole.Instance.skinDefault;
-            // run scene utils if needed
-            if (SceneConsole.Instance.skinDefault_sideApp != "sceneutils")
-            {
-                SceneConsole.Instance.skinDefault_sideApp = "sceneutils";
-            }
-            if (!game.isFuncLocked)
-            {
-                if (!game.isShowDevConsole)
-                {
-                    try
-                    {
-                        skin_def.render_main(game.curCharFull, game.vnText, game.vnButtons, game.vnButtonsStyle);
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine("Error in skin.render_main, ", e.ToString());
-                    }
-                }
-                else
-                {
-                    // show dev console
-                    try
-                    {
-
-                        skin_def.render_dev_console();
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine("Error in skin.render_dev_console, ", e.ToString());
-                    }
-                }
-            }
-            else
-            {
-                // render system message
-                skin_def.render_system(SceneConsole.Instance.funcLockedText);
-            }
         }
 
         public static object merge_two_dicts<T>(Dictionary<string, T> x, Dictionary<string, T> y)

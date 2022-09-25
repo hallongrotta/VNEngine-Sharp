@@ -299,7 +299,7 @@ namespace VNActor
         public static void char_fk_set(Character chara, ActorData param)
         {
             // param = fk bones info dict
-            chara.FK= param.fk;
+            chara.FK = param.fk;
         }
 
         public static void char_ik_active(Character chara, ActorData param)

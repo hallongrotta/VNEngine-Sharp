@@ -8,7 +8,7 @@ namespace VNEngine
     {
 
         /*
-        public static object get_hanime_group_names(VNNeoController game)
+        public static object get_hanime_group_names(StudioController game)
         {
             if (game.isStudioNEO)
             {
@@ -32,7 +32,7 @@ namespace VNEngine
             }
         }
 
-        public static object get_hanime_category_names(VNNeoController game, object group)
+        public static object get_hanime_category_names(StudioController game, object group)
         {
             if (game.isStudioNEO)
             {
@@ -56,7 +56,7 @@ namespace VNEngine
             }
         }
 
-        public static object get_hanime_no_names(VNNeoController game, object group, object category)
+        public static object get_hanime_no_names(StudioController game, object group, object category)
         {
             if (game.isStudioNEO)
             {

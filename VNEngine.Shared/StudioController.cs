@@ -1,13 +1,271 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using Studio;
 using UnityEngine;
+using VNActor;
+using BepInEx;
 using static VNEngine.Utils;
 
 namespace VNEngine
 {
-    public partial class StudioController
+    public partial class StudioController : MonoBehaviour
     {
+
+        public string sceneDir;
+
+        protected Studio.Studio studio
+        {
+            get
+            {
+                var studio = Studio.Studio.Instance;
+                return studio;
+            }
+        }
+
+        protected SceneInfo StudioScene => studio.sceneInfo;
+
         public string WavFileName => studio.outsideSoundCtrl.fileName;
+
+        public List<Character> scene_get_all_females()
+        {
+            var ar = new List<Character>();
+            var dobjctrl = studio.dicObjectCtrl;
+            foreach (var key in dobjctrl.Keys)
+            {
+                var objctrl = dobjctrl[key];
+                if (objctrl is OCICharFemale chara)
+                {
+                    var pctrl = new Character(chara);
+                    ar.Add(pctrl);
+                }
+            }
+
+            return ar;
+        }
+
+        public bool treenode_check_select(TreeNodeObject treenode)
+        {
+            return studio.treeNodeCtrl.CheckSelect(treenode);
+        }
+
+        public void SelectNothing()
+        {
+            studio.treeNodeCtrl.RemoveNode();
+        }
+
+        public void SelectObject(NeoOCI elem)
+        {
+            studio.treeNodeCtrl.SelectSingle(elem.treeNodeObject);
+        }
+
+        public List<Character> scene_get_all_males()
+        {
+            var ar = new List<Character>();
+            var dobjctrl = studio.dicObjectCtrl;
+            foreach (var key in dobjctrl.Keys)
+            {
+                var objctrl = dobjctrl[key];
+                if (objctrl is OCICharMale chara)
+                {
+                    var pctrl = new Character(chara);
+                    ar.Add(pctrl);
+                }
+            }
+
+            return ar;
+        }
+
+        public List<OCIItem> scene_get_all_items_raw()
+        {
+            var ar = new List<OCIItem>();
+            var dobjctrl = studio.dicObjectCtrl;
+            foreach (var key in dobjctrl.Keys)
+            {
+                var objctrl = dobjctrl[key];
+                if (objctrl is OCIItem item)
+                {
+                    var pctrl = objctrl;
+                    ar.Add(item);
+                }
+            }
+
+            return ar;
+        }
+
+        public List<Item> scene_get_all_items()
+        {
+            var ar = new List<Item>();
+            var dobjctrl = studio.dicObjectCtrl;
+            foreach (var key in dobjctrl.Keys)
+            {
+                var objctrl = dobjctrl[key];
+                if (objctrl is OCIItem item) ar.Add(new Item(item));
+            }
+
+            return ar;
+        }
+
+        public List<Folder> scene_get_all_folders()
+        {
+            var ar = new List<Folder>();
+            var dobjctrl = studio.dicObjectCtrl;
+            foreach (var key in dobjctrl.Keys)
+            {
+                var objctrl = dobjctrl[key];
+                if (objctrl is OCIFolder fld) ar.Add(new Folder(fld));
+            }
+
+            return ar;
+        }
+
+        public string scene_get_bg_png_orig()
+        {
+            return studio.sceneInfo.background;
+        }
+
+        public List<Item> SelectedItems
+        {
+            get
+            {
+                var mtreeman = studio.treeNodeCtrl;
+                var ar = new List<Item>();
+                foreach (var node in mtreeman.selectNodes)
+                {
+                    var oitem = NeoOCI.create_from_treenode(node);
+                    if (oitem.objctrl is OCIItem)
+                    {
+                        var prop = (Item)oitem;
+                        ar.Add(prop);
+                    }
+                }
+
+                if (ar.Count > 0)
+                    return ar;
+                throw new Exception("No items selected");
+            }
+        }
+
+        public Item SelectedItem
+        {
+            get
+            {
+                var mtreeman = studio.treeNodeCtrl;
+                var ar = new List<Item>();
+                foreach (var node in mtreeman.selectNodes)
+                {
+                    var oitem = NeoOCI.create_from_treenode(node);
+                    if (oitem.objctrl is OCIItem)
+                    {
+                        var prop = (Item)oitem;
+                        ar.Add(prop);
+                    }
+                }
+
+                if (ar.Count > 0)
+                    return ar[0];
+                throw new Exception("No items selected");
+            }
+        }
+
+        public List<List<Character>> SelectedChars
+        {
+            get
+            {
+                var mtreeman = studio.treeNodeCtrl;
+                var ar = new List<Character>();
+                foreach (var node in mtreeman.selectNodes)
+                {
+                    var ochar = NeoOCI.create_from_treenode(node);
+                    if (ochar.objctrl is OCIChar)
+                    {
+                        var chara = (Character)ochar;
+                        ar.Add(chara);
+                    }
+                }
+
+                var am = new List<Character>();
+                var af = new List<Character>();
+                foreach (var chara in ar)
+                    if (chara.Sex == 0)
+                        am.Add(chara);
+                    else
+                        af.Add(chara);
+                return new List<List<Character>>
+                {
+                    af,
+                    am
+                };
+            }
+        }
+
+        public Character SelectedChar
+        {
+            get
+            {
+                var mtreeman = studio.treeNodeCtrl;
+                var ar = new List<Character>();
+                foreach (var node in mtreeman.selectNodes)
+                {
+                    var ochar = NeoOCI.create_from_treenode(node);
+                    if (ochar.objctrl is OCIChar)
+                    {
+                        var chara = (Character)ochar;
+                        ar.Add(chara);
+                    }
+                }
+
+                return ar[0];
+            }
+        }
+
+        public ObjectCtrlInfo get_objctrl_num(int num)
+        {
+            // return ObjectCtrlInfo object from dicObjectCtrl
+            //si = self.studio_scene
+            //dobj = si.dicObject
+            var dobjctrl = studio.dicObjectCtrl;
+            return dobjctrl[num];
+        }
+
+        public Prop GetProp(string id)
+        {
+            return SceneFolders.scenef_get_propf(id);
+        }
+
+        public Character GetActor(string id)
+        {
+            return SceneFolders.scenef_get_actor(id);
+        }
+
+
+
+
+
+        public Character get_objctrl_num_tochar(int num)
+        {
+            // return VNActor.Character by num
+            return new Character((OCIChar)get_objctrl_num(num));
+        }
+
+        public bool scene_set_bg_png_orig(string filepng)
+        {
+            if (scene_get_bg_png_orig() != filepng)
+            {
+                var obj = (BackgroundCtrl)FindObjectOfType(typeof(BackgroundCtrl));
+                return obj.Load(filepng);
+            }
+
+            return true;
+        }
+
+        public void sync_h(Character female, Character male)
+        {
+            // if factor.isHAnime:
+            female.AnimationOption = new Character.AnimeOption_s { height = female.Height, breast = female.Breast };
+            // if mactor.isHAnime:
+            male.AnimationOption = new Character.AnimeOption_s { height = female.Height, breast = female.Breast };
+        }
 
         public System.Wav_s WAV
         {
@@ -82,7 +340,7 @@ namespace VNEngine
         {
             set
             {
-                var cl = studio_scene.charaLight;
+                var cl = StudioScene.charaLight;
                 cl.color = value.rgbDiffuse;
                 cl.intensity = value.cameraLightIntensity;
                 cl.rot[0] = value.rot_y;
@@ -92,7 +350,7 @@ namespace VNEngine
             }
             get
             {
-                var cl = studio_scene.charaLight;
+                var cl = StudioScene.charaLight;
                 return new System.CharLight_s
                 {
                     rgbDiffuse = cl.color,

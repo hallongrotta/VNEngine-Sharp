@@ -76,7 +76,6 @@ namespace SceneSaveState
             if (names.ContainsKey(index))
             {
                 UI.windowindex = index;
-                SceneConsole.Instance.game.windowName = names[index];
             }
             else
             {
@@ -84,7 +83,7 @@ namespace SceneSaveState
             }
         }
 
-        public static void sceneConsoleGUIStart(VNNeoController game)
+        public static void sceneConsoleGUIStart(VNController game)
         {
             var skin = new SkinCustomWindow();
             skin.funcSetup = sceneConsoleSkinSetup;
@@ -104,7 +103,7 @@ namespace SceneSaveState
             // game.windowCallback = GUI.WindowFunction(sceneConsoleWindowFunc)
         }
 
-        public static void sceneConsoleSkinSetup(VNNeoController game)
+        public static void sceneConsoleSkinSetup(VNController game)
         {
             setWindowName(windowindex);
             game.wwidth = WindowWidth;
@@ -128,7 +127,7 @@ namespace SceneSaveState
 
         public static void sceneConsoleSkinWindowGUIMin(int windowid)
         {
-            minimizeWindowFunc(windowid);
+            minimizeWindowFunc(Instance.GameController, windowid);
         }
 
         public static void sceneConsoleWindowFunc(int id)
@@ -228,7 +227,7 @@ namespace SceneSaveState
             {
                 Console.WriteLine("sceneSaveStateWindowGUI Exception: " + e.ToString());
                 //Utils.sceneConsoleGUIClose();
-                Instance.game.show_blocking_message_time("sceneSaveState error: " + e.ToString());
+                Instance.GameController.show_blocking_message_time("sceneSaveState error: " + e.ToString());
             }
         }
 
@@ -268,38 +267,38 @@ namespace SceneSaveState
             // GUILayout.FlexibleSpace()
         }
 
-        public static void minimizeWindow()
+        public static void minimizeWindow(VNController controller)
         {
             SceneConsole sc = Instance;
-            if (sc.game.windowRect.width > 200)
+            if (controller.windowRect.width > 200)
             {
-                sc.consoleWidth = sc.game.windowRect.width;
-                sc.consoleHeight = sc.game.windowRect.height;
-                sc.game.windowRect.width = 120;
-                sc.game.windowRect.height = 75;
+                sc.consoleWidth = controller.windowRect.width;
+                sc.consoleHeight = controller.windowRect.height;
+                controller.windowRect.width = 120;
+                controller.windowRect.height = 75;
                 // Rect (Screen.width / 2 - sc.game.wwidth * 1.5, Screen.height - sc.game.wheight - 500,
                 //               110, 75)
                 //sc.game.windowCallback = GUI.WindowFunction(minimizeWindowFunc)
-                sc.game.skin.funcWindowGUI = sceneConsoleSkinWindowGUIMin;
+                controller.skin.funcWindowGUI = sceneConsoleSkinWindowGUIMin;
             }
             else
             {
-                sc.game.windowRect.width = sc.consoleWidth;
-                sc.game.windowRect.height = sc.consoleHeight;
-                sc.game.skin.funcWindowGUI = sceneConsoleSkinWindowGUI;
+                controller.windowRect.width = sc.consoleWidth;
+                controller.windowRect.height = sc.consoleHeight;
+                controller.skin.funcWindowGUI = sceneConsoleSkinWindowGUI;
                 //sc.game.windowCallback = GUI.WindowFunction(sceneConsoleWindowFunc)
             }
         }
 
-        public static void minimizeWindowFunc(object windowid)
+        public static void minimizeWindowFunc(VNController controller, object windowid)
         {
             try
             {
                 if (GUILayout.Button("Expand", GUILayout.Width(100), GUILayout.Height(45)))
                 {
-                    Instance.game.windowRect.width = Instance.consoleWidth;
-                    Instance.game.windowRect.height = Instance.consoleHeight;
-                    Instance.game.skin.funcWindowGUI = sceneConsoleSkinWindowGUI;
+                    controller.windowRect.width = Instance.consoleWidth;
+                    controller.windowRect.height = Instance.consoleHeight;
+                    controller.skin.funcWindowGUI = sceneConsoleSkinWindowGUI;
                 }
                 GUI.DragWindow();
             }

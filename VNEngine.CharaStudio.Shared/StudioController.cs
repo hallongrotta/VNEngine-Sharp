@@ -6,17 +6,14 @@ using System.Linq;
 using BepInEx;
 using BepInEx.Configuration;
 using Studio;
-using UnityEngine;
 using static VNEngine.Utils;
+using KKAPI.Utilities;
+using UnityEngine;
 
 namespace VNEngine
 {
 
-    [BepInProcess(Constants.StudioProcessName)]
-    //[BepInDependency(GUID)]
-    [BepInPlugin(GUID, PluginName, Version)]
     public partial class StudioController
-        : VNNeoController
     {
         public StudioController()
         {
@@ -27,17 +24,16 @@ namespace VNEngine
         public StudioController(List<Button_s> vnButtonsStart)
         {
             if (Instance != null) throw new InvalidOperationException("Can only create one instance of Controller");
-            _vnButtons = vnButtonsStart;
             Instance = this;
         }
 
-        public new static StudioController Instance { get; private set; }
+        public static StudioController Instance { get; private set; }
 
         public static ConfigEntry<KeyboardShortcut> VNControllerHotkey { get; private set; }
 
         public string FrameFile
         {
-            get => studio_scene.frame;
+            get => StudioScene.frame;
             set
             {
                 var obj = FindObjectOfType<FrameCtrl>();
@@ -50,16 +46,16 @@ namespace VNEngine
             set => StartCoroutine(AddMapCoroutine(value));
 
 
-            get => studio_scene.map;
+            get => StudioScene.map;
         }
 
         internal System.Ace Ace
         {
-            get => new System.Ace {no = studio_scene.aceNo, blend = studio_scene.aceBlend};
+            get => new System.Ace {no = StudioScene.aceNo, blend = StudioScene.aceBlend};
             set
             {
-                studio_scene.aceNo = value.no;
-                studio_scene.aceBlend = value.blend;
+                StudioScene.aceNo = value.no;
+                StudioScene.aceBlend = value.blend;
                 Studio.Studio.Instance.systemButtonCtrl.UpdateInfo();
             }
         }
@@ -73,30 +69,30 @@ namespace VNEngine
                 map = Map.Instance;
                 map.visibleOption = value;
             }
-            get => studio_scene.mapOption;
+            get => StudioScene.mapOption;
         }
 
         public Vector3 MapRot
         {
             set
             {
-                if (studio_scene.caMap.rot == value) return;
-                studio_scene.caMap.rot = value;
+                if (StudioScene.caMap.rot == value) return;
+                StudioScene.caMap.rot = value;
                 MapCtrl.Instance.Reflect();
             }
            
-            get => studio_scene.caMap.rot;
+            get => StudioScene.caMap.rot;
         }
 
         public Vector3 MapPos
         {
             set
             {
-                if (studio_scene.caMap.pos == value) return;
-                studio_scene.caMap.pos = value;
+                if (StudioScene.caMap.pos == value) return;
+                StudioScene.caMap.pos = value;
                 MapCtrl.Instance.Reflect();
             }
-            get => studio_scene.caMap.pos;
+            get => StudioScene.caMap.pos;
         }
 
     public int TimeOfDay
@@ -107,7 +103,7 @@ namespace VNEngine
                 if ((int)map.sunType == value) return;
                 map.sunType = (SunLightInfo.Info.Type)value;
             }
-            get => studio_scene.sunLightType;
+            get => StudioScene.sunLightType;
         }
 
 
@@ -140,7 +136,7 @@ namespace VNEngine
             //StudioSaveLoadApi.RegisterExtraBehaviour<AnimationControllerSceneController>(GUID);
         }
 
-        public override string SceneDir()
+        public string SceneDir()
         {
             return Path.GetFullPath(Path.Combine(
                 Path.Combine(Path.Combine(Path.Combine(Application.dataPath, ".."), "UserData"), "Studio"), "scene"));
@@ -149,7 +145,7 @@ namespace VNEngine
         private IEnumerator AddMapCoroutine(int mapNum)
         {
             yield return Singleton<Map>.Instance.LoadMapCoroutine(mapNum, true);
-            studio_scene.map = mapNum;
+            StudioScene.map = mapNum;
             if (!(studio.onChangeMap is null)) studio.onChangeMap();
             studio.m_CameraCtrl.CloerListCollider();
             Info.MapLoadInfo mapLoadInfo = null;

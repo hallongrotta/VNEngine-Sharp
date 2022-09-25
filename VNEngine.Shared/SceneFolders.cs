@@ -169,9 +169,9 @@ namespace VNEngine
 
                             //register_char(actorAlias, actorColor, actorTitle);
 
-                            StudioController.Instance.GetLogger.LogDebug("Registered character: '" + actorAlias +
-                                                                         "' as " + actorTitle + " (#" + actorColor +
-                                                                         ")");
+                            //StudioController.Instance.GetLogger.LogDebug("Registered character: '" + actorAlias +
+                            //                                            "' as " + actorTitle + " (#" + actorColor +
+                            //                                             ")");
                         }
                     }
                 }
@@ -189,9 +189,9 @@ namespace VNEngine
                         if (oci is Prop propOci)
                         {
                             AllProps[propAlias] = propOci;
-                            StudioController.Instance.GetLogger.LogDebug("Registered prop: '" +
-                                                                         Utils.to_roman(propAlias) + "' as " +
-                                                                         Utils.to_roman(oci.text_name));
+                            //StudioController.Instance.GetLogger.LogDebug("Registered prop: '" +
+                            //                                             Utils.to_roman(propAlias) + "' as " +
+                            //                                             Utils.to_roman(oci.text_name));
                         }
                     }
                 }
@@ -207,9 +207,9 @@ namespace VNEngine
                         if (oci is Light propOci)
                         {
                             AllProps[propAlias] = propOci;
-                            StudioController.Instance.GetLogger.LogDebug("Registered light: '" +
-                                                                         Utils.to_roman(propAlias) + "' as " +
-                                                                         Utils.to_roman(oci.text_name));
+                           // StudioController.Instance.GetLogger.LogDebug("Registered light: '" +
+                           //                                              Utils.to_roman(propAlias) + "' as " +
+                           //                                              Utils.to_roman(oci.text_name));
                         }
                     }
                 }
