@@ -8,12 +8,13 @@
     <OutputType>Library</OutputType>
     <RootNamespace>VNActor.KKS</RootNamespace>
     <AssemblyName>VNActor.KKS</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -64,16 +65,17 @@
       <HintPath>..\packages\ExtensibleSaveFormat.Koikatu.18.2.0\lib\net35\ExtensibleSaveFormat.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="KKAPI, Version=1.32.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\IllusionModdingAPI.KKAPI.1.32.0\lib\net35\KKAPI.dll</HintPath>
+    <Reference Include="KKSAPI, Version=1.33.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\IllusionModdingAPI.KKSAPI.1.33.0\lib\net46\KKSAPI.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="KKS_AdvIKPlugin, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>T:\illusion\[ScrewThisNoise] Koikatsu Sunshine EX BetterRepack R5\BepInEx\plugins\KKS_AdvIKPlugin.dll</HintPath>
     </Reference>
     <Reference Include="KKS_ExtensibleSaveFormat, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\ExtensibleSaveFormat.KoikatsuSunshine.18.2.0\lib\net46\KKS_ExtensibleSaveFormat.dll</HintPath>
       <Private>False</Private>
-    </Reference>
-    <Reference Include="KK_AdvIKPlugin">
-      <HintPath>B:\illusion\Koikatu\BepInEx\plugins\KK_AdvIKPlugin.dll</HintPath>
     </Reference>
     <Reference Include="MonoMod.RuntimeDetour, Version=22.1.29.1, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\IllusionLibs.BepInEx.MonoMod.22.1.29.1\lib\net35\MonoMod.RuntimeDetour.dll</HintPath>
