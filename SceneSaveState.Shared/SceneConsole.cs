@@ -141,6 +141,8 @@ namespace SceneSaveState
 
             ChapterManager.Add(new Chapter());
 
+            CamManager = new Manager<CamData>(new List<CamData>());
+
             // self.basechars = self.getAllBaseChars()
             // self.dupchars = self.getAllDupChars()
             // self.updateNameset()

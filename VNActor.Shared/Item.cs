@@ -331,7 +331,7 @@ namespace VNActor
             set
             {
                 // import fk bone info from dic
-                if (!IsFk) return;
+                if (!IsFk || value is null) return;
                 foreach (var i in Enumerable.Range(0, objctrl.listBones.Count))
                 {
                     var bone = objctrl.listBones[i];
