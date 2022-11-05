@@ -13,7 +13,7 @@ using UnityEngine;
 namespace VNEngine
 {
 
-    public partial class StudioController
+    public partial class StudioController : MonoBehaviour
     {
         public StudioController()
         {
@@ -29,7 +29,7 @@ namespace VNEngine
 
         public static StudioController Instance { get; private set; }
 
-        public static ConfigEntry<KeyboardShortcut> VNControllerHotkey { get; private set; }
+        public ConfigEntry<KeyboardShortcut> VNControllerHotkey { get; private set; }
 
         public string FrameFile
         {
@@ -161,7 +161,7 @@ namespace VNEngine
             return new System.SystemData(this);
         }
 
-        public static int GetMapNumberByFilename(string fileName)
+        public int GetMapNumberByFilename(string fileName)
         {
             var mapLoadInfoDictionary = Singleton<Info>.Instance.dicMapLoadInfo;
 

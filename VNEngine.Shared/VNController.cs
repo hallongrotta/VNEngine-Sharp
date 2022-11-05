@@ -246,7 +246,7 @@ namespace VNEngine
     public VNController()
         {
 
-            gameObject.AddComponent<CameraController>();
+            cameraController = new CameraController();
             gameObject.AddComponent<StudioController>();
 
             Logger = base.Logger;

@@ -10,8 +10,7 @@ using BepInEx;
 
 namespace VNEngine
 {
-    public class CameraController :
-        MonoBehaviour
+    public class CameraController
     {
 
 
@@ -282,7 +281,7 @@ namespace VNEngine
             var dv3 = camobj.distance;
             // param = zoom_delta, use positive value to zoom in, and negative value for zoom out 
             camobj.distance = new Vector3(dv3.x, dv3.y, dv3.z + zoom_delta);
-            move_camera_obj(camobj);
+            move_camera_obj(camobj); 
         }
 
         public void move_camera(Vector3 pos, Vector3 distance, Vector3 rotate, float fov = 23.0f)

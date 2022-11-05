@@ -22,6 +22,11 @@ namespace VNEngine
             }
         }
 
+        public void Update()
+        {
+            return;
+        }
+
         protected SceneInfo StudioScene => studio.sceneInfo;
 
         public string WavFileName => studio.outsideSoundCtrl.fileName;

@@ -7,7 +7,7 @@ using static VNEngine.Utils;
 
 namespace VNEngine
 {
-    public partial class StudioController
+    public partial class StudioController : MonoBehaviour
     {
         public StudioController()
         {
