@@ -440,9 +440,10 @@ namespace SceneSaveState
         {
         }
 
-        internal void deleteSceneCam()
+        internal void DeleteSceneCam()
         {
-            changeSceneCam(CamTask.DELETE);
+            var curCam = CamManager.Remove();
+            if (curCam > -1) setCamera();
         }
 
         internal void changeSceneCam(CamTask task)
@@ -458,12 +459,6 @@ namespace SceneSaveState
                 case CamTask.UPDATE:
                     CamManager.Update(camData);
                     break;
-                case CamTask.DELETE:
-                {
-                    var curCam = CamManager.Remove();
-                    if (curCam > -1) setCamera();
-                    break;
-                }
             }
 
             if (task != CamTask.UPDATE) getSceneCamString();
@@ -472,6 +467,31 @@ namespace SceneSaveState
         internal void setCamera()
         {
             setCamera(paramAnimCamIfPossible.Value);
+        }
+
+        internal void SetVNData(VNData vnData)
+        {
+            currentVNData.enabled = vnData.enabled;
+            currentVNData.whosay = vnData.whosay is null ? "" : vnData.whosay;
+            currentVNData.whatsay = vnData.whatsay is null ? "" : vnData.whatsay;
+            if (vnData.addvncmds != null)
+                currentVNData.addvncmds = vnData.addvncmds;
+            else
+                currentVNData.addvncmds = "";
+
+            currentVNData.addprops = vnData.addprops;
+
+            GameController.SetText(currentVNData.whosay, currentVNData.whatsay);
+        }
+
+        internal void ResetVNData()
+        {
+            currentVNData.enabled = false;
+            currentVNData.whosay = "";
+            currentVNData.whatsay = "";
+            currentVNData.addvncmds = "";
+            currentVNData.addprops.a1 = false;
+            currentVNData.addprops.a2 = false;
         }
 
         internal void setCamera(bool isAnimated)
@@ -511,26 +531,11 @@ namespace SceneSaveState
 
             if (camera_data.addata is VNData addata)
             {
-                currentVNData.enabled = addata.enabled;
-                currentVNData.whosay = addata.whosay is null ? "" : addata.whosay;
-                currentVNData.whatsay = addata.whatsay is null ? "" : addata.whatsay;
-                if (addata.addvncmds != null)
-                    currentVNData.addvncmds = addata.addvncmds;
-                else
-                    currentVNData.addvncmds = "";
-
-                currentVNData.addprops = addata.addprops;
-
-                GameController.SetText(currentVNData.whosay, currentVNData.whatsay);
+                SetVNData(addata);
             }
             else
             {
-                currentVNData.enabled = false;
-                currentVNData.whosay = "";
-                currentVNData.whatsay = "";
-                currentVNData.addvncmds = "";
-                currentVNData.addprops.a1 = false;
-                currentVNData.addprops.a2 = false;
+                ResetVNData();
             }
         }
 
@@ -1171,7 +1176,6 @@ namespace SceneSaveState
         internal enum CamTask
         {
             UPDATE,
-            DELETE,
             ADD
         }
 

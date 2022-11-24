@@ -57,8 +57,14 @@ namespace VNEngine
             get
             {
                 var c = GameStudio.cameraCtrl;
+                //var trav = Traverse.Create(c);
+                // var cdata = trav.Field("cameraData").GetValue<Studio.CameraControl.CameraData>();
+#if KKS || KK
+                var cdata = Studio.Studio.Instance.m_CameraCtrl.cameraData;
+#else
                 var trav = Traverse.Create(c);
                 var cdata = trav.Field("cameraData").GetValue<Studio.CameraControl.CameraData>();
+#endif
                 return cdata;
             }
         }
@@ -123,24 +129,25 @@ namespace VNEngine
             cdata.Copy(cdatas[camnum - 1]);
         }
 
-        public void move_camera_direct(CamData cam)
+        public void Apply(CamData camData)
         {
             var cdata = cameraData;
             var c = GameStudio.cameraCtrl;
 
-            cdata.pos = cam.position;
+            cdata.pos = camData.position;
 
-            cdata.distance = cam.distance;
+            cdata.distance = camData.distance;
 
-            cdata.rotate = cam.rotation;
+            cdata.rotate = camData.rotation;
 
-            cdata.parse = cam.fov;
+            cdata.parse = camData.fov;
+            c.fieldOfView = camData.fov;
         }
 
         public void move_camera_direct(Vector3 pos, Vector3 distance, Vector3 rotate, float fov)
         {
             var cd = new CamData(pos, rotate, distance, fov);
-            move_camera_direct(cd);
+            Apply(cd);
         }
 
         public string CameraName
@@ -272,7 +279,7 @@ namespace VNEngine
 
         public void move_camera(CamData cam)
         {
-            move_camera_direct(cam);
+            Apply(cam);
         }
 
         public void cam_zoom(float zoom_delta)
@@ -293,7 +300,7 @@ namespace VNEngine
 
         public void move_camera_obj(CamData camobj)
         {
-            move_camera_direct(camobj);
+            Apply(camobj);
         }
 
         public void cam_goto_pos(CamData param)

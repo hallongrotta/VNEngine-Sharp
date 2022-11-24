@@ -212,7 +212,7 @@ namespace SceneSaveState
 
                 GUILayout.BeginHorizontal();
 
-                if (GUILayout.Button($"<color={col}>{camText}</color>", GUILayout.Width(ColumnWidth * 0.8f)))
+                if (GUILayout.Button($"<color={col}>{camText}, {(int)cam.fov}</color>", GUILayout.Width(ColumnWidth * 0.8f)))
                 {
                     Instance.CamManager.SetCurrent(i);
                     Instance.setCamera(isAnimated: false);
@@ -237,12 +237,12 @@ namespace SceneSaveState
                 {
                     if (Instance.promptOnDelete.Value)
                     {
-                        warning_action = Instance.deleteSceneCam;
+                        warning_action = Instance.DeleteSceneCam;
                         warning_param = new WarningParam_s("Delete selected cam?", false);
                     }
                     else
                     {
-                        Instance.changeSceneCam(CamTask.DELETE);
+                        Instance.DeleteSceneCam();
                     }
                 }
             }
@@ -420,7 +420,7 @@ namespace SceneSaveState
 
             // Column 2
             GUILayout.BeginVertical(GUILayout.Width(ColumnWidth));
-            GUILayout.Label("Scene Cameras");
+            GUILayout.Label($"Scene Cameras. FOV: {(int)Instance.CameraController.cameraData.parse}");
 
             // Camera and character selection tabs
             if (Instance.CurrentChapter.Count > 0)
