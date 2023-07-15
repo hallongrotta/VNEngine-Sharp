@@ -12,6 +12,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Character.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ActorFuncs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AdvIK.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)XXPE.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NeoOCI.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Folder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NEOPropData.cs" />

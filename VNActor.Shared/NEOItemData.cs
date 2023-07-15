@@ -22,7 +22,7 @@ namespace VNActor
         public Dictionary<int, Pattern> ptn_set;
         public Vector3 scale;
         public Color? shadow_color;
-
+       
         public NEOItemData()
         {
         }

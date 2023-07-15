@@ -63,45 +63,7 @@ namespace VNActor
                 shoesType = a.ShoesType;
                 eyeAngles = a.EyeAngles;
 
-                /* TODO implement KKPE
-
-                // ext data, enable by ini setting
-                if (is_ini_value_true("ExportChara_CurClothesCoord"))
-                {
-                    fs["ext_curclothcoord"] = a.get_curcloth_coordinate();
-                }
-                if (is_ini_value_true("ExportChara_CurClothesCoordNoAcc"))
-                {
-                    fs["ext_curclothcoordnoacc"] = a.get_curcloth_coordinate();
-                }
-                if (is_ini_value_true("ExportChara_BodyShapes"))
-                {
-                    fs["ext_bodyshapes"] = a.get_body_shapes_all();
-                }
-                if (is_ini_value_true("ExportChara_FaceShapes"))
-                {
-                    fs["ext_faceshapes"] = a.get_face_shapes_all();
-                }
-                if (is_ini_value_true("ExportChara_AnimeAuxParam"))
-                {
-                    fs["anim_optprm"] = a.get_anime_option_param();
-                }
-                // plugin data, enable by ini setting
-                try
-                {
-                    if (extplugins.ExtPlugin.exists("KKPE"))
-                    {
-                        if (is_ini_value_true("ExportChara_KKPE"))
-                        {
-                            fs["pl_kkpedata"] = a.get_kkpedata();
-                        }
-                    }
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("Error during get kkpedata");
-                }
-                */
+                
             }
 
             public void Remove(string key)

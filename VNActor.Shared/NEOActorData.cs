@@ -136,6 +136,9 @@ After:
 
         public int voiceRepeat;
 
+        public string xxpedata;
+        public Dictionary<string, Dictionary<string, string>> xxpeblend;
+
         public NEOActorData()
         {
         }
@@ -207,6 +210,17 @@ After:
                 {
                     Console.WriteLine(e);
                 }
+
+                try
+                {
+                    xxpedata = XXPE.GetCharaSettingsText(a.objctrl);
+                    xxpeblend = XXPE.GetBlendShapesObj(a.objctrl);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
+
             }
         }
 
@@ -301,6 +315,23 @@ After:
             {
                 Console.WriteLine(e);
             }
+
+            try
+            {
+                if (xxpedata != null)
+                {
+                    XXPE.SetCharaSettingsText(a.objctrl, xxpedata);
+                }
+                if (xxpeblend != null)
+                {
+                    XXPE.SetBlendShapesObj(a.objctrl, xxpeblend);
+                }                       
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+
         }
     }
 }

@@ -69,6 +69,9 @@
       <HintPath>..\packages\IllusionModdingAPI.KKSAPI.1.33.0\lib\net46\KKSAPI.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="KKSPE">
+      <HintPath>T:\illusion\[ScrewThisNoise] Koikatsu Sunshine EX BetterRepack R5\BepInEx\plugins\KKSPE.dll</HintPath>
+    </Reference>
     <Reference Include="KKS_AdvIKPlugin, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>T:\illusion\[ScrewThisNoise] Koikatsu Sunshine EX BetterRepack R5\BepInEx\plugins\KKS_AdvIKPlugin.dll</HintPath>
@@ -89,6 +92,7 @@
       <HintPath>..\packages\IllusionLibs.KoikatsuSunshine.UnityEngine.CoreModule.2019.4.9\lib\net46\Sirenix.Serialization.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="System.Xml" />
     <Reference Include="UniRx, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\IllusionLibs.KoikatsuSunshine.UniRx.2021.9.17\lib\net46\UniRx.dll</HintPath>
       <Private>False</Private>
