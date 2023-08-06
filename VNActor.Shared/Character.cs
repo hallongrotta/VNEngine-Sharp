@@ -568,22 +568,19 @@ namespace VNActor
                     }
                     case KinematicMode.FK:
                     {
-                        EnableFk();
+                        EnableFKAndDisableIK();
                         break;
                     }
                     case KinematicMode.IK:
                     {
-                        EnableIk();
+                        EnableIKAndDisableFK();
                         break;
                     }
                     case KinematicMode.None:
                     default:
                     {
-                        if (objctrl.oiCharInfo.enableIK)
-                            objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.IK, false, false);
-
-                        if (objctrl.oiCharInfo.enableFK)
-                            objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.FK, false, false);
+                        IKEnabled = false;
+                        FKEnabled = false;
                         break;
                     }
                 }
@@ -713,23 +710,56 @@ namespace VNActor
             objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.IK, true, false);
         }
 
-        public void EnableIk()
+        public void EnableIKAndDisableFK()
         {
-            if (objctrl.oiCharInfo.enableFK)
-                objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.FK, false, true);
 
-            if (objctrl.oiCharInfo.enableIK) return;
-            objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.IK, true, true);
+            FKEnabled = false;
+            IKEnabled = true;
+
         }
 
-        public void EnableFk()
+        public void EnableFKAndDisableIK()
         {
-            if (objctrl.oiCharInfo.enableIK) 
-                objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.IK, false, true);
+            IKEnabled = false;
+            FKEnabled = true;
 
-            if (objctrl.oiCharInfo.enableFK) return;
-            objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.FK, true, true);
         }
+
+
+        public bool IKEnabled
+        {
+            set
+            {
+                if (IKEnabled == value) return;
+                objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.IK, value, false);
+            }
+            get
+            {
+                return objctrl.oiCharInfo.enableIK;
+            }
+        }
+
+        public bool FKEnabled
+        {
+            set
+            {
+                if (FKEnabled == value) return;
+                try
+                {
+                    objctrl.ActiveKinematicMode(OICharInfo.KinematicMode.FK, value, false);
+                }
+                    
+                catch
+                {
+                    return;
+                }
+            }
+            get
+            {
+                return objctrl.oiCharInfo.enableFK;
+            }
+        }
+
 
         public float get_face_shape(int p1)
         {
