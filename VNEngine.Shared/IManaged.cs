@@ -6,7 +6,7 @@ namespace VNEngine
 {
     public interface IManaged<out T>
     {
-        string name { get; set; }
+        string Name { get; set; }
         string TypeName { get;}
         T Copy();
     }

@@ -68,7 +68,7 @@ namespace SceneSaveState
         {
             for (var i = 0; i < c.Count; i++)
             {
-                var sceneName = c[i].name;
+                var sceneName = c[i].Name;
                 var col = i == c.CurrentIndex && chapterSelected
                     ? SelectedTextColor
                     : NormalTextColor;
@@ -105,7 +105,7 @@ namespace SceneSaveState
                     ? SelectedTextColor
                     : NormalTextColor;
 
-                var chapterName = chapter.name ?? $"Chapter {i + 1}";
+                var chapterName = chapter.Name ?? $"Chapter {i + 1}";
 
                 if (chapterManager[i].HasItems)
                 {
@@ -131,8 +131,8 @@ namespace SceneSaveState
 
         internal static void SetName<T>(IManaged<T> item, string name)
         {
-            item.name = name == "" ? null : name;
-            Instance.ChapterManager.RebuildItemNames();
+            item.Name = name == "" ? null : name;
+            Instance.ChapterManager.ItemNames = Instance.ChapterManager.RebuildItemNames();
         }
 
         public static string GetSelectedName()
@@ -151,19 +151,11 @@ namespace SceneSaveState
             }
         }
 
-        public static void SetNameOfSelected<T>(IManaged<T> item)
+        public static string SetNameOfSelected()
         {
-            if (_sceneNameEntry == "")
-            {
-                item.name = null;
-            }
-            else
-            {
-                item.name = _sceneNameEntry;
-                _sceneNameEntry = "";
-            }
+            return _sceneNameEntry == "" ? null : _sceneNameEntry;
         }
-
+        
         public static void DrawSceneTab()
         {
             _sceneNameEntry = GetSelectedName();
@@ -174,14 +166,14 @@ namespace SceneSaveState
             {
                 if (selectedItem == SelectedItem.Chapter)
                 {
-                    SetNameOfSelected(Instance.CurrentChapter);
-                    Instance.ChapterManager.RebuildItemNames();
+                    Instance.CurrentChapter.Name = SetNameOfSelected();
                 }
                 else
                 {
-                    SetNameOfSelected(Instance.CurrentScene);
-                    Instance.CurrentChapter.RebuildItemNames();
+                    Instance.CurrentScene.Name = SetNameOfSelected();               
                 }
+                _sceneNameEntry = "";
+                Instance.CurrentChapter.ItemNames = Instance.CurrentChapter.RebuildItemNames();
             }
             GUILayout.EndHorizontal();
 
@@ -208,7 +200,7 @@ namespace SceneSaveState
             {
                 var col = i == Instance.CamManager.CurrentIndex ? SelectedTextColor : "#f9f9f9";
                 var cam = Instance.CurrentScene.cams[i];
-                var camText = cam.name ?? $"Cam {i + 1}";
+                var camText = cam.Name ?? $"Cam {i + 1}";
 
                 GUILayout.BeginHorizontal();
 

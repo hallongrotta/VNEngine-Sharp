@@ -552,7 +552,8 @@ namespace SceneSaveState
             var scene = new Scene(game.export_full_status(), roleTracker.AllCharacters, roleTracker.AllProps,
                 isSysTracking);
 
-            CurrentChapter.Update(scene);
+            var oldscene = CurrentChapter.Update(scene);
+            scene.Name = oldscene.Name;
         }
 
 

@@ -9,7 +9,7 @@ namespace SceneSaveState
 {
     public class Chapter : Manager<Scene>, IManaged<Chapter>
     {
-        public string name { get; set; }
+        public string Name { get; set; }
 
         public string TypeName => "Chapter";
 

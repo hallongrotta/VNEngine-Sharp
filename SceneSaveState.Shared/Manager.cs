@@ -20,7 +20,7 @@ namespace SceneSaveState
             get
             {
                 if (_itemNames != null && _itemNames.Length == Items.Count) return _itemNames;
-                RebuildItemNames();
+                _itemNames = RebuildItemNames();
                 return _itemNames;
             }
             set
@@ -137,9 +137,9 @@ namespace SceneSaveState
             return CurrentIndex;
         }
 
-        public void Update(T c)
+        public T Update(T c)
         {
-            Update(CurrentIndex, c);
+            return Update(CurrentIndex, c);
         }
 
         public void Duplicate()
@@ -163,23 +163,9 @@ namespace SceneSaveState
             return oldItem;
         }
 
-        internal void RebuildItemNames()
+        internal string[] RebuildItemNames()
         {
-            var newSceneStrArray = new string[Items.Count];
-            int id;
-            for (id = 0; id < Items.Count; id++)
-            {
-                if (Items[id].name is null)
-                {
-                    newSceneStrArray[id] = $"{Items[id].TypeName} {id + 1}";
-                }
-                else
-                {
-                    newSceneStrArray[id] = Items[id].name;
-                }
-
-            }
-            _itemNames = newSceneStrArray;
+            return Items.Select((x, i) => x.Name is null ? $"{x.TypeName} {i + 1}" : x.Name).ToArray();
         }
 
         public void MoveItemForward()
@@ -189,7 +175,7 @@ namespace SceneSaveState
             Current = Items[CurrentIndex + 1];
             CurrentIndex += 1;
             Current = forwardedItem;
-            RebuildItemNames();
+            _itemNames = RebuildItemNames();
         }
 
         public int Count => Items.Count;
@@ -201,7 +187,7 @@ namespace SceneSaveState
             Current = Items[CurrentIndex - 1];
             CurrentIndex -= 1;
             Current = backedItem;
-            RebuildItemNames();
+            _itemNames = RebuildItemNames();
         }
 
         public bool HasNext => CurrentIndex < Items.Count - 1;

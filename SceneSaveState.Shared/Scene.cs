@@ -20,7 +20,7 @@ namespace SceneSaveState
         public Dictionary<string, ItemData> items;
         public Dictionary<string, LightData> lights;
         public string TypeName => "Scene";
-        public string name { get; set; }
+        public string Name { get; set; }
         public Dictionary<string, NEOPropData> props;
         public SystemData sys;
 
