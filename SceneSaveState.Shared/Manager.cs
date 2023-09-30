@@ -15,7 +15,7 @@ namespace SceneSaveState
 
         private string[] _itemNames;
 
-        public string[] ItemNames
+        internal string[] ItemNames
         {
             get
             {
@@ -29,24 +29,24 @@ namespace SceneSaveState
             }
         }
 
-        public Manager()
+        internal Manager()
         {
             Items = new List<T>();
             CurrentIndex = -1;
         }
 
-        public Manager(List<T> items, int currentIndex = 0)
+        internal Manager(List<T> items, int currentIndex = 0)
         {
             this.Items = items;
             this.CurrentIndex = currentIndex;
         }
 
-        public Manager(List<T> items, string[] itemNames, int currentIndex = 0) : this(items, currentIndex) 
+        internal Manager(List<T> items, string[] itemNames, int currentIndex = 0) : this(items, currentIndex) 
         {
             this.ItemNames = itemNames;
         }
 
-        public int CurrentIndex
+        internal int CurrentIndex
         {
             get
             {
@@ -69,13 +69,13 @@ namespace SceneSaveState
             }
         }
 
-        public T Current
+        internal T Current
         {
             get => HasItems ? Items[CurrentIndex] : default;
             private set => Items[CurrentIndex] = value;
         }
 
-        public T this[int index]
+        internal T this[int index]
         {
             get => Items[index];
             set => Items[index] = value;
@@ -86,63 +86,65 @@ namespace SceneSaveState
             return Items.GetEnumerator();
         }
 
-        public bool HasItems => CurrentIndex > -1 && Items.Count > 0;
+        internal bool HasItems => CurrentIndex > -1 && Items.Count > 0;
 
 
-        public int Add(T i)
+        internal int Add(T i)
         {
             Items.Add(i);
             CurrentIndex = Items.Count - 1;
             return CurrentIndex;
         }
-        public void Insert(T i)
+        internal T Insert(T i)
         {
-            Insert(i, CurrentIndex);
+            return Insert(i, CurrentIndex);
         }
 
-        public void Prepend(T i)
+        internal void Prepend(T i)
         {
             Items.Insert(0, i);
             CurrentIndex = 0;
         }
 
-        public List<T> RemoveUntilEnd(int from)
+        internal List<T> RemoveUntilEnd(int from)
         {
             var items = Items.GetRange(from, Count - from);
             Items.RemoveRange(from, Count - from);
             return items;
         }
 
-        public void AddRange(List<T> items)
+        internal void AddRange(List<T> items)
         {
             Items.AddRange(items);
         }
 
-        public void Insert(T i, int position)
+        internal T Insert(T i, int position)
         {
             Items.Insert(position + 1, i);
             CurrentIndex++;
+            return i;
         }
 
-        public int Remove()
+        internal T Remove()
         {
             return Remove(CurrentIndex);
         }
 
-        public int Remove(int position)
+        internal T Remove(int position)
         {
-            if (Items.Count <= 0 || position >= Items.Count || position <= -1) return CurrentIndex;
+            var item = Items[position];
+            if (Items.Count <= 0 || position >= Items.Count || position <= -1) return item;
             Items.RemoveAt(position);
             CurrentIndex--;
-            return CurrentIndex;
+            return item;
         }
 
-        public T Update(T c)
+        internal T Update(T c)
         {
             return Update(CurrentIndex, c);
         }
 
-        public void Duplicate()
+        internal void Duplicate()
         {
             if (Items.Count > 0)
             {
@@ -150,12 +152,18 @@ namespace SceneSaveState
             }
         }
 
-        public T[] ExportItems()
+        internal T[] ExportItems()
         {
             return Items.ToArray();
         }
 
-        public virtual T Update(int position, T newItem)
+        internal void ImportItems(T[] items)
+        {
+            Items = items.ToList();
+            CurrentIndex = 0;
+        }
+
+        internal virtual T Update(int position, T newItem)
         {
             if (position >= Items.Count) return default;
             var oldItem = Items[position];
@@ -168,7 +176,7 @@ namespace SceneSaveState
             return Items.Select((x, i) => x.Name is null ? $"{x.TypeName} {i + 1}" : x.Name).ToArray();
         }
 
-        public void MoveItemForward()
+        internal void MoveItemForward()
         {
             if (CurrentIndex >= Items.Count - 1) return;
             var forwardedItem = Current;
@@ -178,9 +186,9 @@ namespace SceneSaveState
             _itemNames = RebuildItemNames();
         }
 
-        public int Count => Items.Count;
+        internal int Count => Items.Count;
 
-        public void MoveItemBack()
+        internal void MoveItemBack()
         {
             if (Items.Count <= 1 || this.CurrentIndex == 0) return;
             var backedItem = Current;
@@ -190,39 +198,39 @@ namespace SceneSaveState
             _itemNames = RebuildItemNames();
         }
 
-        public bool HasNext => CurrentIndex < Items.Count - 1;
+        internal bool HasNext => CurrentIndex < Items.Count - 1;
 
-        public bool HasPrev => CurrentIndex > 0;
+        internal bool HasPrev => CurrentIndex > 0;
 
-        public T SetCurrent(int index)
+        internal T SetCurrent(int index)
         {
             if (!HasItems || index >= Items.Count) return default;
             CurrentIndex = index;
             return Current;
         }
 
-        public T Next()
+        internal T Next()
         {
             if (!HasNext) return default;
             CurrentIndex++;
             return Current;
         }
 
-        public T Back()
+        internal T Back()
         {
             if (!HasPrev) return default;
             CurrentIndex--;
             return Current;
         }
 
-        public T First()
+        internal T First()
         {
             if (!HasItems) return default;
             CurrentIndex = 0;
             return Current;
         }
 
-        public T Last()
+        internal T Last()
         {
             if (!HasItems) return default;
             CurrentIndex = Count - 1;
@@ -252,6 +260,12 @@ namespace SceneSaveState
         {
             var list = s?.Split('\n');
             return list;
+        }
+
+        internal void SetName(IManaged<T> item, string name)
+        {
+            item.Name = name == "" ? null : name;
+            ItemNames = RebuildItemNames();
         }
 
     }

@@ -129,8 +129,6 @@ namespace VNEngine
 
         public int wwidth;
 
-        internal CameraController cameraController;
-
         public GameFunc _onCameraEnd;
 
         //private Component component;
@@ -246,7 +244,6 @@ namespace VNEngine
     public VNController()
         {
 
-            cameraController = new CameraController();
             gameObject.AddComponent<StudioController>();
 
             Logger = base.Logger;

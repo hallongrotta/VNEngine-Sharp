@@ -9,16 +9,23 @@
     <Import_RootNamespace>SceneSaveState.Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)AdvancedUI.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Camera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Chapter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)EditUI.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IManaged.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Manager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SaveLoadController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SaveLoadUI.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SceneConsole.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)TrackingUI.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SceneConsoleCamComponent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SceneConsoleChapterComponent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SceneConsoleCopyComponent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SceneConsoleRoleComponent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SceneConsoleSaveLoadComponent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SceneConsoleSceneComponent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SceneConsoleVNComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utils.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)View.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)VNData.cs" />
   </ItemGroup>
 </Project>

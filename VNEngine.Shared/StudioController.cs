@@ -366,6 +366,26 @@ namespace VNEngine
             }
         }
 
+        public Folder getFolder(string name, bool exact = false)
+        {
+            var flds = scene_get_all_folders();
+            foreach (var fld in flds)
+            {
+                if (exact == false)
+                {
+                    if (fld.text_name.Contains(name))
+                    {
+                        return fld;
+                    }
+                }
+                else if (name == fld.text_name)
+                {
+                    return fld;
+                }
+            }
+            return null;
+        }
+
         public string BackgroundImage
         {
             set

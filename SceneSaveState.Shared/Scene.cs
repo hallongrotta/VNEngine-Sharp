@@ -7,36 +7,35 @@ using VNEngine;
 using static VNActor.Character;
 using static VNActor.Light;
 using static VNEngine.System;
-using static VNEngine.VNCamera;
 
 using static VNActor.Item;
+using static SceneSaveState.Camera;
+using ADV;
+using static SceneSaveState.VNDataComponent;
 
 namespace SceneSaveState
 {
-    public partial class Scene : IManaged<Scene>
+    internal partial class Scene : Manager<View>, IManaged<Scene>
     {
-        public Dictionary<string, ActorData> actors;
-        public List<CamData> cams;
-        public Dictionary<string, ItemData> items;
-        public Dictionary<string, LightData> lights;
+        internal Dictionary<string, ActorData> actors;
+        internal Dictionary<string, ItemData> items;
+        internal Dictionary<string, LightData> lights;
         public string TypeName => "Scene";
         public string Name { get; set; }
-        public Dictionary<string, NEOPropData> props;
-        public SystemData sys;
+        internal Dictionary<string, NEOPropData> props;
+        internal SystemData sys;
 
-        public Scene(Dictionary<string, ActorData> actors, Dictionary<string, ItemData> items,
+        internal Scene(Dictionary<string, ActorData> actors, Dictionary<string, ItemData> items,
             Dictionary<string, LightData> lights, Dictionary<string, NEOPropData> props, List<CamData> cams)
         {
-            this.cams = cams;
             this.actors = actors;
             this.props = props;
             this.items = items;
             this.lights = lights;
         }
 
-        public Scene()
+        internal Scene()
         {
-            this.cams = new List<CamData>();
             this.actors = new Dictionary<string, ActorData>();
             this.props = new Dictionary<string, NEOPropData>();
             this.items = new Dictionary<string, ItemData>();
@@ -46,7 +45,7 @@ namespace SceneSaveState
 #endif
         }
 
-        public Scene(SystemData sysData, Dictionary<string, Character> actors, Dictionary<string, Prop> props,
+        internal Scene(SystemData sysData, Dictionary<string, Character> actors, Dictionary<string, Prop> props,
             bool importSys) : this()
         {
             foreach (var kv in actors) this.actors[kv.Key] = (ActorData) kv.Value.export_full_status();
@@ -56,7 +55,7 @@ namespace SceneSaveState
             if (importSys) sys = sysData;
         }
 
-        public void ApplyStatus<T>(T obj, IDataClass<T> status) where T : NeoOCI
+        internal void ApplyStatus<T>(T obj, IDataClass<T> status) where T : NeoOCI
         {
             if (status != null)
                 status.Apply(obj);
@@ -64,7 +63,12 @@ namespace SceneSaveState
                 obj.Visible = false;
         }
 
-        public void AddProp(string key, IVNObject<Prop> p)
+        internal void DeleteSceneCam()
+        {
+            Remove();
+        }
+
+        internal void AddProp(string key, IVNObject<Prop> p)
         {
             switch (p)
             {
@@ -87,7 +91,7 @@ namespace SceneSaveState
         }
 
 
-        public void Remove(string roleName)
+        internal void Remove(string roleName)
         {
             if (actors.ContainsKey(roleName))
                 actors.Remove(roleName);
@@ -95,7 +99,7 @@ namespace SceneSaveState
                 RemoveProp(roleName);
         }
 
-        public void RemoveProp(string key)
+        internal void RemoveProp(string key)
         {
             if (items.ContainsKey(key))
                 items.Remove(key);
@@ -114,7 +118,7 @@ namespace SceneSaveState
             return s;
         }
 
-        public bool IsEqual(Scene other)
+        internal bool IsEqual(Scene other)
         {
             /* TODO
             if (!Utils.is_arr_equal(cams, other.cams))
@@ -130,7 +134,7 @@ namespace SceneSaveState
         }
 
 
-        public void ChangeRoleName<T>(string roleName, string newRoleName, Dictionary<string, T> data)
+        internal void ChangeRoleName<T>(string roleName, string newRoleName, Dictionary<string, T> data)
         {
             if (!data.ContainsKey(roleName)) return;
 
@@ -138,7 +142,7 @@ namespace SceneSaveState
             data.Remove(roleName);
         }
 
-        public void ChangeRoleName(string roleName, string newRoleName)
+        internal void ChangeRoleName(string roleName, string newRoleName)
         {
             ChangeRoleName(roleName, newRoleName, actors);
             ChangeRoleName(roleName, newRoleName, items);
@@ -148,9 +152,15 @@ namespace SceneSaveState
             ChangeRoleName(roleName, newRoleName, texts);
 #endif
 
-            foreach (var cam in cams)
-                if (cam.addata.whosay == roleName)
-                    cam.addata.whosay = newRoleName;
+            VNData data;
+            foreach (var cam in this)
+                for (var i = 0; i < cam.Count; i++)
+                    if (cam[i].whosay == roleName)
+                    {
+                        data = cam[i];
+                        data.whosay = newRoleName;
+                        cam[i] = data;
+                    }   
         }
 
         internal void SetCharacterState(string roleName, Character character)

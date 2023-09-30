@@ -4,10 +4,11 @@ using System.IO;
 using System.Text;
 using System.Xml.Serialization;
 using VNEngine;
+using static SceneSaveState.VNDataComponent;
 
 namespace SceneSaveState
 {
-    public class Chapter : Manager<Scene>, IManaged<Chapter>
+    internal class Chapter : Manager<Scene>, IManaged<Chapter>
     {
         public string Name { get; set; }
 
@@ -18,36 +19,41 @@ namespace SceneSaveState
             throw new NotImplementedException();
         }
 
-        public Chapter()
+        internal Chapter()
         {
 
         }
 
-        public Chapter(List<Scene> scenes, string[] sceneNames) : base(scenes, sceneNames)
+        internal Chapter(List<Scene> scenes, string[] sceneNames) : base(scenes, sceneNames)
         {
 
         }
 
-        public override Scene Update(int position, Scene newScene)
+        internal override Scene Update(int position, Scene newScene)
         {
             var oldScene = base.Update(position, newScene);
-            newScene.cams = oldScene.cams;
+            newScene.ImportItems(oldScene.ExportItems());
             return oldScene;
         }
 
-        public void ImportCamTextsCustom()
+        internal void RemoveScene()
+        {
+            if (HasItems) Remove();
+        }
+
+        internal void ImportCamTextsCustom()
         {
             try
             {
                 var text = File.ReadAllLines("sss_camtexts.out");
-                var vndata = new VNCamera.VNData[text.Length];
+                var vndata = new VNData[text.Length];
                 var i = 0;
                 foreach (var line in text)
                 {
                     var entries = line.Split('\t');
                     if (entries.Length == 2)
                     {
-                        var data = new VNCamera.VNData();
+                        var data = new VNData();
                         data.whosay = entries[1];
                         data.whatsay = entries[0];
                         data.enabled = true;
@@ -58,10 +64,10 @@ namespace SceneSaveState
                 }
 
                 var j = 0;
-                foreach (var scene in Items)
-                    foreach (var cam in scene.cams)
+                foreach (var scene in this)
+                    foreach (var cam in scene)
                     {
-                        cam.addata = vndata[j];
+                        cam.Add(vndata[j]);
                         j++;
                         if (j >= text.Length) break;
                     }
@@ -72,36 +78,36 @@ namespace SceneSaveState
         }
 
         // export cam texts
-        public void exportCamTexts()
+        internal void exportCamTexts()
         {
             var filename = Path.Combine(Directory.GetCurrentDirectory(), "sss_camtexts.xml");
             var writer =
-                new XmlSerializer(typeof(List<VNCamera.VNData>));
-            var data = new List<VNCamera.VNData>();
-            foreach (var scene in Items)
-                foreach (var cam in scene.cams)
-                    data.Add(cam.addata);
+                new XmlSerializer(typeof(List<VNData>));
+            var data = new List<VNData>();
+            foreach (var scene in this)
+                foreach (var cam in scene)
+                    data.Add(cam.Current);
             var file = File.Create(filename);
             writer.Serialize(file, data);
             file.Close();
         }
 
         // export cam texts
-        public void importCamTexts()
+        internal void importCamTexts()
         {
             var filename = "sss_camtexts.xml";
             try
             {
                 var reader =
-                    new XmlSerializer(typeof(List<VNCamera.VNData>));
+                    new XmlSerializer(typeof(List<VNData>));
                 var file = new StreamReader(
                     filename);
                 var j = 0;
-                var data = reader.Deserialize(file) as List<VNCamera.VNData>;
+                var data = reader.Deserialize(file) as List<VNData>;
                 foreach (var scene in Items)
-                    foreach (var cam in scene.cams)
+                    foreach (var cam in scene)
                     {
-                        cam.addata = data[j];
+                        cam.Add(data[j]);
                         j++;
                         if (j >= data.Count) break;
                     }

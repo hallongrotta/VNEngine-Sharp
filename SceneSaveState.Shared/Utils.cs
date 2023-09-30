@@ -191,40 +191,7 @@ namespace SceneSaveState
             } */
         //}
 
-        public static void sceneConsoleGUIClose(object param)
-        {
-            sceneConsoleGUIClose();
-        }
-
-        public static void sceneConsoleGUIClose()
-        {
-            // applying backup
-            /*
-            if (!(SceneConsole.Instance.svname == ""))
-            {
-                SceneConsole.Instance.saveToFile(backup: true);
-            }
-            else
-            {
-                //if sc.verify_load() != 0:
-                //sc.saveSceneData(backup=True)
-                SceneConsole.Instance.svname = "backup";
-                SceneConsole.Instance.saveToFile(backup: true);
-            }
-            */
-            //SceneConsole.Instance.game.event_unreg_listener("update", hook_update);
-            SceneConsole.Instance.guiOnShow = false;
-            SceneConsole.Instance.GameController.windowName = "";
-            //sc.game.skin_set(sc.game_skin_saved)
-            //SceneConsole.Instance.game.skin_set(SceneConsole.Instance.game.gdata.sss_game_skin_saved);
-            //SceneConsole.Instance.game.gdata.sss_game_skin_saved = null;
-            // sc.game.isShowDevConsole = False
-            // sc.game.wwidth = sc.originalwindowwidth
-            // sc.game.wheight = sc.originalwindowheight
-            // sc.game.windowRect = Rect(Screen.width / 2 - sc.game.wwidth / 2, Screen.height - sc.game.wheight - 10,
-            //                            sc.game.wwidth, sc.game.wheight)
-            // sc.game.windowCallback = sc.originalWindowCallback
-        }
+        
 
 
 
@@ -240,25 +207,7 @@ namespace SceneSaveState
         }
 
         // ::::: Essential functions :::::
-        public static Folder getFolder(StudioController game, string name, bool exact = false)
-        {
-            var flds = game.scene_get_all_folders();
-            foreach (var fld in flds)
-            {
-                if (exact == false)
-                {
-                    if (fld.text_name.Contains(name))
-                    {
-                        return fld;
-                    }
-                }
-                else if (name == fld.text_name)
-                {
-                    return fld;
-                }
-            }
-            return null;
-        }
+        
 
 
 

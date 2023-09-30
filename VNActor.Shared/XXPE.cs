@@ -9,8 +9,6 @@ using System.Text;
 using static RootMotion.FinalIK.IKSolver;
 using System.Xml;
 using Housing;
-using ActionGame.Chara.Mover;
-using NodeCanvas.Framework;
 using System.Reflection;
 using JetBrains.Annotations;
 

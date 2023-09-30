@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace VNEngine
+namespace SceneSaveState
 {
     public interface IManaged<out T>
     {
