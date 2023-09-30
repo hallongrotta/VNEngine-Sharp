@@ -11,7 +11,7 @@ using NotImplementedException = System.NotImplementedException;
 
 namespace SceneSaveState
 {
-    internal class Camera : Manager<VNData>
+    public class Camera : Manager<VNData>
     {
      
 

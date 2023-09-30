@@ -7,7 +7,7 @@ using static SceneSaveState.VNDataComponent;
 
 namespace SceneSaveState
 {
-    internal class View: Manager<VNData>, IManaged<View>
+    public class View: Manager<VNData>, IManaged<View>
     {
         internal CamData camData;
         private float paramAnimCamDuration;

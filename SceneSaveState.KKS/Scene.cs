@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MessagePack;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,17 +7,38 @@ using System.Threading.Tasks;
 using VNActor;
 using VNActor.KKS;
 using VNEngine;
+using static VNEngine.System;
 using static SceneSaveState.Camera;
 
 namespace SceneSaveState
 {
-    internal partial class Scene
+    
+    public partial class Scene
     {
-        internal Dictionary<string, Text.TextData> texts;
 
-        internal Scene(Dictionary<string, Character.ActorData> actors, Dictionary<string, Item.ItemData> items,
-            Dictionary<string, Light.LightData> lights, Dictionary<string, NEOPropData> props, List<CamData> cams, Dictionary<string, Text.TextData> texts) : this(actors, items, lights, props, cams)
+        public Dictionary<string, Text.TextData> texts;
+
+        public Scene(
+            string Name,
+            Dictionary<string, Text.TextData> texts,
+            Dictionary<string, Character.ActorData> actors, 
+            List<CamData> cams, 
+            Dictionary<string, Item.ItemData> items,
+            Dictionary<string, Light.LightData> lights,
+            Dictionary<string, NEOPropData> props,
+            SystemData sys
+            )
         {
+            this.cams = null;
+            foreach ( var c in cams ) {
+                this.Add(new View(c));
+            }
+            this.actors = actors;
+            this.props = props;
+            this.items = items;
+            this.lights = lights;
+            this.sys = sys;
+            this.Name = Name;
             this.texts = texts;
         }
     }

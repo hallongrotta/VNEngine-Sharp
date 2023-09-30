@@ -12,27 +12,42 @@ using static VNActor.Item;
 using static SceneSaveState.Camera;
 using ADV;
 using static SceneSaveState.VNDataComponent;
+using MessagePack;
 
 namespace SceneSaveState
 {
-    internal partial class Scene : Manager<View>, IManaged<Scene>
+    [MessagePackObject(keyAsPropertyName: true)]
+    public partial class Scene : Manager<View>, IManaged<Scene>
     {
-        internal Dictionary<string, ActorData> actors;
-        internal Dictionary<string, ItemData> items;
-        internal Dictionary<string, LightData> lights;
-        public string TypeName => "Scene";
-        public string Name { get; set; }
-        internal Dictionary<string, NEOPropData> props;
-        internal SystemData sys;
 
-        internal Scene(Dictionary<string, ActorData> actors, Dictionary<string, ItemData> items,
-            Dictionary<string, LightData> lights, Dictionary<string, NEOPropData> props, List<CamData> cams)
+        public string Name { get; set; }
+
+        public Dictionary<string, ActorData> actors;
+
+        public List<CamData> cams;
+
+        public Dictionary<string, ItemData> items;
+
+        public Dictionary<string, LightData> lights;
+        [IgnoreMember]
+        public string TypeName => "Scene";
+
+        public Dictionary<string, NEOPropData> props;
+    
+        public SystemData sys;
+
+#if !KKS
+        public Scene(Dictionary<string, ActorData> actors, Dictionary<string, ItemData> items,
+        Dictionary<string, LightData> lights, Dictionary<string, NEOPropData> props, List<CamData> cams)
         {
-            this.actors = actors;
+            this.cams = cams;
+            this.actors = actors;   
             this.props = props;
             this.items = items;
             this.lights = lights;
+
         }
+#endif
 
         internal Scene()
         {
