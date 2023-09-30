@@ -32,10 +32,12 @@ namespace SceneSaveState
         {
             try
             {
+                Console.WriteLine(MessagePackSerializer.ToJson(item, StandardResolver.Instance));
                 return MessagePackSerializer.Serialize(item, StandardResolver.Instance);
             }
             catch (FormatterNotRegisteredException)
             {
+                Console.WriteLine(MessagePackSerializer.ToJson(item, ContractlessStandardResolver.Instance));
                 return MessagePackSerializer.Serialize(item, ContractlessStandardResolver.Instance);
             }
             catch (InvalidOperationException)
@@ -48,11 +50,11 @@ namespace SceneSaveState
         public static T DeserializeData<T>(byte[] s)
         {
             try
-            {
+            {        
                 return MessagePackSerializer.Deserialize<T>(s, StandardResolver.Instance);
             }
             catch (FormatterNotRegisteredException)
-            {
+            {    
                 return MessagePackSerializer.Deserialize<T>(s, ContractlessStandardResolver.Instance);
             }
             catch (InvalidOperationException)

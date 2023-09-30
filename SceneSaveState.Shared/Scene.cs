@@ -10,31 +10,46 @@ using static VNEngine.System;
 using static VNEngine.VNCamera;
 
 using static VNActor.Item;
+using MessagePack;
 
 namespace SceneSaveState
 {
+    [MessagePackObject(keyAsPropertyName: true)]
     public partial class Scene : IManaged<Scene>
     {
-        public Dictionary<string, ActorData> actors;
-        public List<CamData> cams;
-        public Dictionary<string, ItemData> items;
-        public Dictionary<string, LightData> lights;
-        public string TypeName => "Scene";
+
         public string Name { get; set; }
+
+        public Dictionary<string, ActorData> actors;
+
+        public List<CamData> cams;
+
+        public Dictionary<string, ItemData> items;
+
+        public Dictionary<string, LightData> lights;
+        [IgnoreMember]
+        public string TypeName => "Scene";
+
+
+
         public Dictionary<string, NEOPropData> props;
+    
         public SystemData sys;
 
+#if !KKS
         public Scene(Dictionary<string, ActorData> actors, Dictionary<string, ItemData> items,
-            Dictionary<string, LightData> lights, Dictionary<string, NEOPropData> props, List<CamData> cams)
+        Dictionary<string, LightData> lights, Dictionary<string, NEOPropData> props, List<CamData> cams)
         {
             this.cams = cams;
-            this.actors = actors;
+            this.actors = actors;   
             this.props = props;
             this.items = items;
             this.lights = lights;
-        }
 
-        public Scene()
+        }
+#endif
+
+        internal Scene()
         {
             this.cams = new List<CamData>();
             this.actors = new Dictionary<string, ActorData>();
