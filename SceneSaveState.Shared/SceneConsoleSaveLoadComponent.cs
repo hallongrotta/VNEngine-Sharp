@@ -11,6 +11,7 @@ using System.Text;
 using UnityEngine;
 using VNEngine;
 using static SceneSaveState.UI;
+using Logger = BepInEx.Logging.Logger;
 
 namespace SceneSaveState
 { 
@@ -26,8 +27,8 @@ namespace SceneSaveState
         internal const string defaultBackupName = "SSS.dat.backup";
         internal double saveDataSize { get; private set; }
 
-        private Manager<Chapter> chapterManager;
-        private RoleTracker roleTracker;
+        internal Manager<Chapter> chapterManager;
+        internal RoleTracker roleTracker;
         private bool trackMap;
 
         protected override void OnSceneSave()
@@ -43,23 +44,19 @@ namespace SceneSaveState
 
         protected override void OnSceneLoad(SceneOperationKind operation, ReadOnlyDictionary<int, ObjectCtrlInfo> loadedItems)
         {
-            var scene = LoadPluginData(GetExtendedData());
-            sc.LoadScene(scene);
+            var pluginData = GetExtendedData();
+            chapterManager = LoadChaptersFromPluginData(pluginData);
+            roleTracker = LoadRoleTrackerFromPluginData(pluginData);
+            //sc.LoadScene(scene);
         }
 
+        
         public SceneConsoleSaveLoadComponent()
         {
-            this.sc = null;
-            logger = sc.GetLogger;
+            logger = new ManualLogSource("SceneConsoleSaveLoad"); // The source name is shown in BepInEx log
+            BepInEx.Logging.Logger.Sources.Add(logger);
         }
-
-        /*
-        public SceneConsoleSaveLoadComponent(SceneConsole sc)
-        {
-            this.sc = sc;
-            logger = sc.GetLogger;
-        }
-        */
+        
 
         internal double CalculateSaveDataSize(byte[] bytes)
         {
@@ -106,19 +103,45 @@ namespace SceneSaveState
             return null;
         }
 
-        internal Scene LoadPluginData(PluginData pluginData)
+        internal RoleTracker LoadRoleTrackerFromPluginData(PluginData pluginData)
+        {
+            RoleTracker roleTracker = new RoleTracker();
+
+            if (pluginData.data.ContainsKey("roles") && pluginData.data["roles"] is byte[] roleData && roleData.Length > 0)
+                try
+                {
+                    var roles = Utils.DeserializeData<Dictionary<int, Dictionary<string, int>>>(roleData);
+                    roleTracker = new RoleTracker(roles);
+                }
+                catch (Exception e)
+                {
+                    logger.LogError("Error occurred while loading role data: " + e);
+                    logger.LogMessage("Failed to load role data, check debug log for more info.");
+                }
+            else
+            {
+                roleTracker = new RoleTracker();
+            }
+
+            // For scenes that still use SceneFolders
+            SceneFolders.LoadTrackedActorsAndProps();
+            if (SceneFolders.AllActors.Any() || SceneFolders.AllProps.Any())
+                roleTracker.AddFrom(SceneFolders.AllActors, SceneFolders.AllProps);
+
+            return roleTracker;
+        }
+
+        internal Manager<Chapter> LoadChaptersFromPluginData(PluginData pluginData)
         {
 
             Manager<Chapter> chapterManager = new Manager<Chapter>();
-            RoleTracker roleTracker = new RoleTracker();
             bool trackMap;
 
             if (pluginData?.data == null)
             {
-                var chapter = new Chapter();
                 chapterManager.Add(new Chapter());
                 saveDataSize = 0;
-                return chapter.Current;
+                return chapterManager;
             }
             else
             {
@@ -174,30 +197,11 @@ namespace SceneSaveState
                         logger.LogMessage("Failed to load scene data, check debug log for more info.");
                     }
 
-                if (pluginData.data.ContainsKey("roles") && pluginData.data["roles"] is byte[] roleData && roleData.Length > 0)
-                    try
-                    {
-                        var roles = Utils.DeserializeData<Dictionary<int, Dictionary<string, int>>>(roleData);
-                        roleTracker = new RoleTracker(roles);
-                    }
-                    catch (Exception e)
-                    {
-                        logger.LogError("Error occurred while loading role data: " + e);
-                        logger.LogMessage("Failed to load role data, check debug log for more info.");
-                    }
-                else
-                {
-                    roleTracker = new RoleTracker();
-                }
-
-                // For scenes that still use SceneFolders
-                SceneFolders.LoadTrackedActorsAndProps();
-                if (SceneFolders.AllActors.Any() || SceneFolders.AllProps.Any())
-                    roleTracker.AddFrom(SceneFolders.AllActors, SceneFolders.AllProps);
+                
 
                 chapterManager.SetCurrent(chapterIndex);
-                var scene = chapterManager.Current.SetCurrent(sceneIndex);
-                return scene;
+                chapterManager.Current.SetCurrent(sceneIndex);
+                return chapterManager;
             }
         }
 

@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using BepInEx;
+using BepInEx.Bootstrap;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using ExtensibleSaveFormat;
@@ -46,7 +47,7 @@ namespace SceneSaveState
         
         private new static ManualLogSource Logger;
 
-        private Manager<Chapter> ChapterManager;
+        //private Manager<Chapter> ChapterManager;
 
         private Warning? warning;
 
@@ -63,7 +64,7 @@ namespace SceneSaveState
         private ConfigEntry<bool> skipClothesChanges;
         private ConfigEntry<bool> paramAnimCamIfPossible;
 
-        private RoleTracker roleTracker;
+        //private RoleTracker roleTracker;
 
         private GUI.WindowFunction windowCallback;
 
@@ -78,6 +79,21 @@ namespace SceneSaveState
         private SceneConsoleCamComponent camComponent;
         private SceneConsoleCopyComponent copyPasteComponent;
         private SceneConsoleVNComponent vnComponent;
+
+        private Manager<Chapter> ChapterManager {
+            get
+            {
+                return GetSceneController().chapterManager;
+            }
+        }
+
+        private RoleTracker roleTracker
+        {
+            get
+            {
+                return GetSceneController().roleTracker;
+            }
+        }
 
 
         internal VNController GameController
@@ -95,17 +111,16 @@ namespace SceneSaveState
             // --- Some constants ---
             guiOnShow = false;
             // --- Essential Data ---
-            ChapterManager = new Manager<Chapter>();
-            roleTracker = new RoleTracker();
+            //ChapterManager = new Manager<Chapter>();
+            //roleTracker = new RoleTracker();
 
             roleComponent = new SceneConsoleRoleComponent(roleTracker, ChapterManager);
             chapterComponent = new SceneConsoleChapterComponent(ChapterManager, camComponent);
             sceneComponent = new SceneConsoleSceneComponent(this, autoAddCam.Value);
-            saveLoadComponent = new SceneConsoleSaveLoadComponent();
             copyPasteComponent = new SceneConsoleCopyComponent(this);
             vnComponent = new SceneConsoleVNComponent(GameController);
 
-            ChapterManager.Add(new Chapter());
+            //ChapterManager.Add(new Chapter());
             // blocking message
             funcLockedText = "...";
             isFuncLocked = false;
@@ -114,8 +129,6 @@ namespace SceneSaveState
         }
 
         internal static ConfigEntry<KeyboardShortcut> SSSHotkey { get; private set; }
-
-        
 
         internal StudioController game => StudioController.Instance;
 
@@ -128,12 +141,10 @@ namespace SceneSaveState
             Logger = base.Logger;
             loadConfig();
             sceneConsoleSkinSetup();
-        }
-
-        internal void Awake()
-        {
             StudioSaveLoadApi.RegisterExtraBehaviour<SceneConsoleSaveLoadComponent>(GUID);
         }
+
+        public static SceneConsoleSaveLoadComponent GetSceneController() => Chainloader.ManagerObject.transform.GetComponentInChildren<SceneConsoleSaveLoadComponent>();
 
         internal void loadConfig()
         {
@@ -149,6 +160,19 @@ namespace SceneSaveState
                 "Don't process clothes changes on scene change");
             paramAnimCamIfPossible = Config.Bind("Scene Console Settings", "AnimateCamsIfPossible", false,
                 "Animate cam if possible");
+        }
+
+        internal void SafeSceneConsoleWindowFunc(int id)
+        {
+            try
+            {
+                sceneConsoleWindowFunc(id);
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e);
+                this.guiOnShow = false;
+            }
         }
 
         internal void sceneConsoleWindowFunc(int id)
@@ -302,7 +326,7 @@ namespace SceneSaveState
 
         internal void sceneConsoleSkinSetup()
         {
-            windowCallback = sceneConsoleWindowFunc;
+            windowCallback = SafeSceneConsoleWindowFunc;
             var x = UI.defaultWindowX;
             var y = UI.defaultWindowY;
             var w = UI.WindowWidth;
@@ -407,8 +431,8 @@ namespace SceneSaveState
 
         internal void Reset()
         {
-            ChapterManager = new Manager<Chapter>();
-            ChapterManager.Add(new Chapter());
+            //ChapterManager = new Manager<Chapter>();
+            //ChapterManager.Add(new Chapter());
         }
 
         internal void NextSceneOrCamera(VNController vn, int i)
