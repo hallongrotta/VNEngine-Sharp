@@ -226,7 +226,7 @@ namespace SceneSaveState
             return _sceneNameEntry == "" ? null : _sceneNameEntry;
         }
 
-        internal Scene DrawChapterButtons(SceneConsole sc)
+        internal Scene DrawChapterButtons()
         {
             Scene s = null;
             var i = 0;
@@ -255,14 +255,14 @@ namespace SceneSaveState
 
                 if (chapterSelected)
                 {
-                    s = DrawSceneButtons(sc, chapter, i, true);
+                    s = DrawSceneButtons(chapter, i, true);
                 }
                 i++;
             }
             return s;
         }
 
-        internal Scene DrawSceneButtons(SceneConsole sc, Chapter c, int chapterNumber, bool chapterSelected)
+        internal Scene DrawSceneButtons(Chapter c, int chapterNumber, bool chapterSelected)
         {
             Scene s = null;
             for (var i = 0; i < c.Count; i++)
@@ -315,10 +315,10 @@ namespace SceneSaveState
             }
         }
 
-        internal void DrawSceneTab(SceneConsole sc, VNController gc, Chapter c, Camera cam)
+        internal Scene DrawSceneTab(VNController gc, Chapter c, Camera cam)
         {
             _sceneNameEntry = GetSelectedName();
-            Scene s = null;
+            Scene s;
 
             GUILayout.BeginHorizontal();
             _sceneNameEntry = GUILayout.TextField(_sceneNameEntry, GUILayout.Width(ColumnWidth * 0.8f));
@@ -339,11 +339,11 @@ namespace SceneSaveState
 
             scene_scroll = GUILayout.BeginScrollView(scene_scroll);
 
-            s = DrawChapterButtons(sc);
+            s = DrawChapterButtons();
 
             GUILayout.EndScrollView();
 
-            if (!c.HasItems) return;
+            if (!c.HasItems) return s;
 
             GUILayout.FlexibleSpace();
 
@@ -352,7 +352,7 @@ namespace SceneSaveState
             
             s = DrawNextPrevButtons(gc, c, cam) is Scene s2? s2 : s;
 
-            sc.LoadScene(s, cam);
+            return s;
 
         }
     }

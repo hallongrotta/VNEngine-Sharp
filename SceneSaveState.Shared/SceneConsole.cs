@@ -280,7 +280,8 @@ namespace SceneSaveState
             GUILayout.BeginVertical(GUILayout.Width(ColumnWidth));
             GUILayout.Label("Scenes");
             // Scene tab
-            ChapterManager.DrawSceneTab(this, GameController, c, cam);
+            var scene = ChapterManager.DrawSceneTab(GameController, c, cam);
+            LoadScene(scene, cam);
             GUILayout.EndVertical();
 
             // Column 2
