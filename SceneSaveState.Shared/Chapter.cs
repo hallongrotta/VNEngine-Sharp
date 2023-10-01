@@ -166,8 +166,17 @@ namespace SceneSaveState
 
         internal Scene SetCurrentScene(int i)
         {
-            var scene = SetCurrent(i);
-            return scene;
+            return SetCurrent(i);
+        }
+
+        internal View GoToNextView()
+        {
+            return Current.HasNext ? Current.Next() : Next().First();
+        }
+
+        internal View GoToPrevView()
+        {
+            return Current.HasNext ? Current.Back() : Back().Last();
         }
 
         public Warning? DrawSceneEditButtons(SceneConsole sc, Camera cam, bool promptOnDelete, bool autoAddCam)

@@ -300,7 +300,7 @@ namespace SceneSaveState
             GUILayout.Label("Scene Controls");
 
             c.DrawSceneEditButtons(this, cam, promptOnDelete.Value, autoAddCam.Value);
-            ChapterManager.DrawChapterEditButtons(this, c, cam, promptOnDelete.Value);
+            ChapterManager.DrawChapterEditButtons(c, cam, promptOnDelete.Value);
 
             GUILayout.FlexibleSpace();
 
@@ -411,16 +411,11 @@ namespace SceneSaveState
 
         internal bool LoadScene(Scene s, Camera c)
         {
+            if (s is null) return false;
             s.SetSceneState(game, roleTracker);
             if (s.HasItems) s.Current.setCamera(c, GameController);
             return true;
         }
-
-        internal bool LoadScene(Scene s)
-        {
-            return LoadScene(s, camera);
-        }
-
 
         internal void Reset()
         {
@@ -436,28 +431,8 @@ namespace SceneSaveState
         internal void NextSceneOrCamera(VNController vn, int i, Camera c)
         {
             var chapter = ChapterManager.Current;
-            NextSceneOrCamera(chapter, c);
-        }
-
-        internal void NextSceneOrCamera(Chapter c, Camera camera)
-        {
-            if (c.Current.HasNext)
-            {
-                var camData = c.Current.Next();
-                camData.setCamera(camera, GameController);
-            }
-            else
-            {
-                var scene = ChapterManager.LoadNextScene(c);
-                LoadScene(scene, camera);
-            }
-        }
-
-        internal void SetChapterAndScene(int chapterNumber, int sceneNumber)
-        {
-            var chapter = ChapterManager.SetCurrent(chapterNumber);
-            var scene = chapter.SetCurrentScene(sceneNumber);
-            LoadScene(scene);
+            var scene = ChapterManager.GoToNextSceneOrCam(vn, chapter, c);
+            LoadScene(scene, camera);
         }
 
         internal void runVNSS(string starfrom = "begin")

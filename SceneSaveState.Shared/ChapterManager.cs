@@ -36,74 +36,46 @@ namespace SceneSaveState
         {
         }
 
-        internal void MoveChapterForward()
+        internal Scene GoToNextScene(Chapter c)
         {
-            MoveItemForward();
+           return c.HasNext? c.Next() : Next().First();
         }
 
-        internal void MoveChapterBackward()
-        {
-            MoveItemBack();
-        }
-
-        internal Scene GoToPreviousChapter()
-        {
-            return Back().Last();
-        }
-
-        internal Scene GoToNextChapter()
-        {
-            return Next().First();
-        }
-
-        internal Scene SetChapter(int chapterNumber)
-        {
-            return SetCurrent(chapterNumber).First();
-        }
-
-        internal Scene LoadNextScene(Chapter c)
-        {
-           return c.HasNext? c.Next() : GoToNextChapter();
-        }
-
-        internal Scene LoadPreviousScene(SceneConsole sc, VNController gc, Chapter c, Camera cam, bool lastcam = false)
+        internal Scene GoToPreviousScene(Chapter c)
         {
 
-            Scene s = c.HasPrev ? c.Back() : GoToPreviousChapter();
-            sc.LoadScene(s);
-            if (!lastcam || s.Count <= 0) return s;
-            var camData = s.Last();
-            camData.setCamera(cam, gc);
-            return s;
+            return c.HasPrev ? c.Back() : Back().Last();
         }
 
-        internal Scene GoToPreviousScene(SceneConsole sc, VNController gc, Chapter c, Camera cam)
+        internal Scene GoToPreviousSceneOrCam(VNController gc, Chapter c, Camera cam)
         {
             var currentScene = c.Current;
             if (currentScene.HasPrev)
             {
                 var camdata = currentScene.Back();
                 camdata.setCamera(cam, gc);
-                return currentScene;
+                return null;
             }
-            if (!c.HasPrev) return currentScene;
-            else
-            {
-                return LoadPreviousScene(sc, gc, c, cam, true);
-            }
+            return GoToPreviousScene(c);
         }
 
-        internal Scene LoadPreviousScene(SceneConsole sc, VNController gc, Chapter c, Camera cam)
+        internal Scene GoToNextSceneOrCam(VNController gc, Chapter c, Camera cam)
         {
-            return LoadPreviousScene(sc, gc, c, cam, false);
+            var currentScene = c.Current;
+            if (currentScene.HasPrev)
+            {
+                var camdata = currentScene.First();
+                camdata.setCamera(cam, gc);
+                return null;
+            }
+            return GoToNextScene(c);
         }
 
         internal void MoveSceneForward(Chapter c)
         {
             if (!c.HasNext && HasNext)
             {
-                var scene = c.Remove();
-                Next().Prepend(scene);
+                Next().Prepend(c.Remove());
             }
             else
             {
@@ -125,18 +97,6 @@ namespace SceneSaveState
             {
                 chapter.MoveItemBack();
             }
-        }
-
-        public void AddChapter()
-        {
-            Add(new Chapter());
-        }
-
-        public Chapter InsertChapter()
-        {
-            var chapter = new Chapter();
-            Insert(chapter);
-            return chapter;
         }
 
         public Chapter SplitChapter(Chapter c)
@@ -164,16 +124,6 @@ namespace SceneSaveState
 
         }
 
-        public void DuplicateChapter()
-        {
-            Duplicate();
-        }
-
-        public void RemoveChapter()
-        {
-            Remove();
-        }
-
         internal void DrawMoveUpDownButtons()
         {
             GUILayout.BeginHorizontal();
@@ -181,11 +131,11 @@ namespace SceneSaveState
             GUILayout.FlexibleSpace();
             if (GUILayout.Button("Move ↑"))
             {
-                MoveChapterBackward();
+                MoveItemBack();
             }
             if (GUILayout.Button("Move ↓"))
             {
-                MoveChapterForward();
+                MoveItemForward();
             }
             GUILayout.EndHorizontal();
         }
@@ -207,39 +157,44 @@ namespace SceneSaveState
             GUILayout.EndHorizontal();
         }
 
-        internal Scene DrawNextPrevButtons(SceneConsole sc, VNController gc, Chapter c, Camera cam)
+        internal Scene DrawNextPrevButtons(VNController gc, Chapter c, Camera cam)
         {
             Scene s = null;
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Prev scene", GUILayout.Height(UI.RowHeight), GUILayout.Width(UI.ColumnWidth * 0.5f)))
             {
-                s = LoadPreviousScene(sc, gc, c, cam);
+                s = GoToPreviousSceneOrCam(gc, c, cam);
             }
             if (GUILayout.Button("Next scene", GUILayout.Height(UI.RowHeight), GUILayout.Width(UI.ColumnWidth * 0.5f)))
             {
-                s = LoadNextScene(c);
+                s = GoToNextSceneOrCam(gc, c, cam);
             }
             GUILayout.EndHorizontal();
             return s;
         }
 
-        internal Warning? DrawChapterEditButtons(SceneConsole sc, Chapter c, Camera cam, bool promptOnDelete)
+        private void RemoveChapter()
+        {
+            Remove();
+        }   
+
+        internal Warning? DrawChapterEditButtons(Chapter c, Camera cam, bool promptOnDelete)
         {
             Warning? warning = null;
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Add chapter", GUILayout.Height(RowHeight), GUILayout.Width(ColumnWidth * 0.5f)))
             {
-                AddChapter();
+                Add(new Chapter());
             }
             if (GUILayout.Button("Insert chapter", GUILayout.Height(RowHeight), GUILayout.Width(ColumnWidth * 0.5f)))
             {
-                InsertChapter();
+                Insert(new Chapter());
             }
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Copy chapter", GUILayout.Height(RowHeight), GUILayout.Width(ColumnWidth * 0.5f)))
             {
-                DuplicateChapter();
+                Duplicate();
             }
             if (GUILayout.Button("Delete chapter", GUILayout.Height(RowHeight), GUILayout.Width(ColumnWidth * 0.5f)))
             {
@@ -249,7 +204,7 @@ namespace SceneSaveState
                 }
                 else
                 {
-                    RemoveChapter();
+                    Remove();
                 }
             }
             GUILayout.EndHorizontal();
@@ -260,8 +215,7 @@ namespace SceneSaveState
             }
             if (GUILayout.Button("Split chapter", GUILayout.Height(RowHeight), GUILayout.Width(ColumnWidth * 0.5f)))
             {
-                Chapter new_chapter = SplitChapter(c);
-                sc.LoadScene(new_chapter.Current, cam);
+                SplitChapter(c);
             }
             GUILayout.EndHorizontal();
             return warning;
@@ -272,8 +226,9 @@ namespace SceneSaveState
             return _sceneNameEntry == "" ? null : _sceneNameEntry;
         }
 
-        internal void DrawChapterButtons(SceneConsole sc)
+        internal Scene DrawChapterButtons(SceneConsole sc)
         {
+            Scene s = null;
             var i = 0;
             foreach (var chapter in this)
             {
@@ -293,24 +248,23 @@ namespace SceneSaveState
 
                 if (GUILayout.Button($"<color={col}>{chapterName}</color>"))
                 {
-                    var scene = SetChapter(i);
-                    sc.LoadScene(scene);
+                    s = SetCurrent(i).First();
                     selectedItem = SelectedItem.Chapter;
                     _sceneNameEntry = "";
                 }
 
                 if (chapterSelected)
                 {
-                    DrawSceneButtons(sc, chapter, i, true);
+                    s = DrawSceneButtons(sc, chapter, i, true);
                 }
-
                 i++;
-
             }
+            return s;
         }
 
-        internal void DrawSceneButtons(SceneConsole sc, Chapter c, int chapterNumber, bool chapterSelected)
+        internal Scene DrawSceneButtons(SceneConsole sc, Chapter c, int chapterNumber, bool chapterSelected)
         {
+            Scene s = null;
             for (var i = 0; i < c.Count; i++)
             {
                 var sceneName = c[i].Name;
@@ -329,13 +283,21 @@ namespace SceneSaveState
                 if (GUILayout.Button($"<color={col}>{sceneName}</color>"))
                 {
                     selectedItem = SelectedItem.Scene;
-                    sc.SetChapterAndScene(chapterNumber, i);
+                    s = SetChapterAndScene(chapterNumber, i);
                     _sceneNameEntry = "";
+                    
                 }
 
                 GUILayout.EndHorizontal();
 
             }
+            return s;
+        }
+
+        internal Scene SetChapterAndScene(int chapterNumber, int sceneNumber)
+        {
+            var chapter = SetCurrent(chapterNumber);
+            return chapter.SetCurrentScene(sceneNumber);
         }
 
         internal string GetSelectedName()
@@ -356,6 +318,7 @@ namespace SceneSaveState
         internal void DrawSceneTab(SceneConsole sc, VNController gc, Chapter c, Camera cam)
         {
             _sceneNameEntry = GetSelectedName();
+            Scene s = null;
 
             GUILayout.BeginHorizontal();
             _sceneNameEntry = GUILayout.TextField(_sceneNameEntry, GUILayout.Width(ColumnWidth * 0.8f));
@@ -376,7 +339,7 @@ namespace SceneSaveState
 
             scene_scroll = GUILayout.BeginScrollView(scene_scroll);
 
-            DrawChapterButtons(sc);
+            s = DrawChapterButtons(sc);
 
             GUILayout.EndScrollView();
 
@@ -386,7 +349,11 @@ namespace SceneSaveState
 
             DrawMoveUpDownButtons(c);
             DrawMoveUpDownButtons();
-            DrawNextPrevButtons(sc, gc, c, cam);
+            
+            s = DrawNextPrevButtons(gc, c, cam) is Scene s2? s2 : s;
+
+            sc.LoadScene(s, cam);
+
         }
     }
 }
