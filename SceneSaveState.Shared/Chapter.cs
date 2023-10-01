@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Xml.Serialization;
+using UnityEngine;
 using VNEngine;
+using static SceneSaveState.UI;
 using static SceneSaveState.VNDataComponent;
 
 namespace SceneSaveState
@@ -128,6 +130,89 @@ namespace SceneSaveState
                 scene.sys.map_rot = Current.sys.map_rot;
             }
         }
+
+        internal Scene InsertScene(Scene s, Camera c, bool autoAddCam)
+        {
+            return AddScene(s, c, autoAddCam, insert: true);
+        }
+
+        internal Scene AddScene(Scene s, Camera c, bool autoAddCam, bool insert = false)
+        {
+            if (insert)
+                Insert(s);
+            else
+                Add(s);
+
+            if (autoAddCam)
+                s.Add(new View(c.export()));
+
+            return s;
+        }
+
+        internal Scene DuplicateScene()
+        {
+            var new_scene = Current.Copy();
+            Insert(new_scene);
+            return new_scene;
+        }
+
+        internal Scene UpdateScene(Scene s)
+        {
+            if (!HasItems) return null;
+            var oldscene = Update(s);
+            s.Name = oldscene.Name;
+            return s;
+        }
+
+        internal Scene SetCurrentScene(int i)
+        {
+            var scene = SetCurrent(i);
+            return scene;
+        }
+
+        public Warning? DrawSceneEditButtons(SceneConsole sc, Camera cam, bool promptOnDelete, bool autoAddCam)
+        {
+            GUILayout.BeginHorizontal();
+            Warning? warning = null;
+            if (GUILayout.Button("Add scene", GUILayout.Height(RowHeight * 2), GUILayout.Width(ColumnWidth * 0.5f)))
+            {
+                AddScene(sc.CreateScene(), cam, autoAddCam);
+            }
+            if (GUILayout.Button("Update scene", GUILayout.Height(RowHeight * 2), GUILayout.Width(ColumnWidth * 0.5f)))
+            {
+                UpdateScene(sc.CreateScene());
+            }
+            GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("Insert scene", GUILayout.Height(RowHeight), GUILayout.Width(ColumnWidth * 0.5f)))
+            {
+                InsertScene(sc.CreateScene(), cam, autoAddCam);
+            }
+            if (GUILayout.Button("Dup scene", GUILayout.Height(RowHeight), GUILayout.Width(ColumnWidth * 0.5f)))
+            {
+                DuplicateScene();
+            }
+            GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("Delete scene"))
+            {
+                if (promptOnDelete)
+                {
+
+                    warning = new Warning("Delete selected scene?", false, RemoveScene);
+                }
+                else
+                {
+                    RemoveScene();
+                }
+            }
+            GUILayout.EndHorizontal();
+            return warning;
+        }
+
+
+
+
 
 #if HS2
         internal void SetCurrentAccessoriesForAllScenes(string id)

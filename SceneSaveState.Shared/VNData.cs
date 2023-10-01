@@ -31,10 +31,11 @@ namespace SceneSaveState
             public string addvncmds;
             public bool add_props;
             public addprops_struct addprops;
+            private string name;
 
-            public string Name { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+            public string Name { get => name; set => name = value; }
 
-            public string TypeName => throw new NotImplementedException();
+            public string TypeName => "VNText";
 
             public struct addprops_struct
             {
@@ -53,6 +54,7 @@ namespace SceneSaveState
                 this.whatsay = whatsay;
                 this.addvncmds = addvncmds;
                 this.addprops = addprops;
+                this.name = "VNText";
                 add_props = false;
             }
 

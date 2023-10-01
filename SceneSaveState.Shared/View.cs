@@ -1,9 +1,13 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using UnityEngine;
+using VNEngine;
 using static SceneSaveState.Camera;
 using static SceneSaveState.VNDataComponent;
+using static SceneSaveState.VNDataComponent.VNData;
 
 namespace SceneSaveState
 {
@@ -13,10 +17,13 @@ namespace SceneSaveState
         private float paramAnimCamDuration;
         private string paramAnimCamStyle;
         private float paramAnimCamZoomOut;
+        internal const string defaultSpeakerAlias = "s";
 
-        public string Name { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        private VNData viewVNData;
 
-        public string TypeName => throw new NotImplementedException();
+        public string Name { get => null; set { } }
+
+        public string TypeName => "Cam";
 
         public View(CamData camData)
         {
@@ -24,6 +31,30 @@ namespace SceneSaveState
             paramAnimCamDuration = 1.5f;
             paramAnimCamStyle = "fast-slow";
             paramAnimCamZoomOut = 0.0f;
+
+
+            viewVNData = new VNData
+            {
+                enabled = false,
+                whosay = "",
+                whatsay = "",
+                addvncmds = "",
+                addprops = new addprops_struct()
+            };
+
+            viewVNData.addprops.a1 = false;
+            viewVNData.addprops.a2 = false;
+
+            Add(viewVNData);
+
+            viewVNData = Current;
+
+            // Transfer old data
+            if (camData.addata.enabled)
+            { 
+                Update(camData.addata);
+            }
+
         }
 
         public View Copy()
@@ -31,30 +62,15 @@ namespace SceneSaveState
             throw new NotImplementedException();
         }
 
-        internal void setCamera(Camera c, bool animCam)
+        internal void setCamera(Camera c, VNController gameController)
         {
-            setCamera(c, animCam);
+            setCamera(c, gameController, false);
         }
 
-        internal void setCamera(Camera c)
+        internal void setCamera(Camera c, VNController gameController, bool isAnimated)
         {
-            setCamera(c, false);
-        }
-
-        internal void setCamera(Camera c, SceneConsoleVNComponent vnComponent, bool isAnimated)
-        {
-            // check and run adv command
-            var keepCamera = false;
-            if (camData.addata.enabled)
-            {
-                //keepCamera = VNExt.runAdvVNSS(this, camera_data.addata); TODO
-            }
-
-            // actual set
-            if (keepCamera)
-            {
-            }
-            else if (isAnimated)
+         
+            if (isAnimated)
             {
                 // self.game.anim_to_camera(1.5, pos=camera_data[0], distance=camera_data[1], rotate=camera_data[2], fov=camera_data[3], style={'style': "fast-slow",'target_camera_zooming_in': 2})
                 /*var style = new Dictionary<string, object> {
@@ -75,14 +91,111 @@ namespace SceneSaveState
                 //this.game.move_camera(pos: camera_data.position, distance: camera_data.distance, rotate: camera_data.rotation, fov: camera_data.fov);
             }
 
-            if (camData.addata is VNData addata)
+            if (HasItems)
             {
-                vnComponent.SetVNData(addata);
+                SetVNData(gameController, Current);
             }
             else
             {
-                vnComponent.ResetVNData();
+                ResetVNData();
             }
+        }
+
+        internal void DrawVNDataOptions(RoleTracker roleTracker)
+        {
+            viewVNData.enabled = true;
+            if (!viewVNData.enabled) return;
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Who say:", GUILayout.Width(90));
+            GUILayout.FlexibleSpace();
+            if (GUILayout.Button("<", GUILayout.Width(20)))
+            {
+                viewVNData.whosay = get_next_speaker(roleTracker.CharacterRoles, viewVNData.whosay, false);
+            }
+            if (GUILayout.Button(">", GUILayout.Width(20)))
+            {
+                viewVNData.whosay = get_next_speaker(roleTracker.CharacterRoles, viewVNData.whosay, true);
+            }
+            GUILayout.EndHorizontal();
+            viewVNData.whosay = GUILayout.TextField(viewVNData.whosay);
+
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("What say:", GUILayout.Width(90));
+            GUILayout.FlexibleSpace();
+            if (GUILayout.Button("X", GUILayout.Width(20)))
+            {
+                viewVNData.whatsay = "";
+            }
+            if (GUILayout.Button("...", GUILayout.Width(20)))
+            {
+                viewVNData.whatsay = "...";
+            }
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginVertical();
+            viewVNData.whatsay = GUILayout.TextArea(viewVNData.whatsay, GUILayout.Height(85));
+            if (GUILayout.Button("Save", GUILayout.Width(40)))
+            {
+                Update(viewVNData);
+            }
+            GUILayout.EndVertical();
+
+            /*GUILayout.BeginHorizontal();
+                GUILayout.Label("  Adv VN cmds", GUILayout.Width(90));
+                Instance.currentVNData.addvncmds = GUILayout.TextArea(Instance.currentVNData.addvncmds, GUILayout.Width(235), GUILayout.Height(55));
+                if (GUILayout.Button("X", GUILayout.Width(20)))
+                {
+                    Instance.currentVNData.addvncmds = "";
+                }
+                // if GUILayout.Button("X", GUILayout.Width(20)):
+                //     sc.cam_whatsay = ""
+                // if GUILayout.Button("...", GUILayout.Width(20)):
+                //     sc.cam_whatsay = "..."
+                GUILayout.EndHorizontal();
+                */
+        }
+
+        internal string get_next_speaker(Dictionary<string, int> allActors, string curSpeakAlias, bool next)
+        {
+            // next from unknown speaker
+            var keylist = allActors.Keys.ToList();
+            if (curSpeakAlias != defaultSpeakerAlias && !allActors.ContainsKey(curSpeakAlias))
+                return defaultSpeakerAlias;
+            // next from s or actor
+            if (curSpeakAlias == defaultSpeakerAlias)
+            {
+                if (allActors.Count > 0)
+                {
+                    if (next)
+                        return keylist[0];
+                    return keylist.Last();
+                }
+
+                return defaultSpeakerAlias;
+            }
+
+            var nextIndex = keylist.IndexOf(curSpeakAlias);
+            if (next)
+                nextIndex += 1;
+            else
+                nextIndex -= 1;
+            return Enumerable.Range(0, allActors.Count).Contains(nextIndex) ? keylist[nextIndex] : defaultSpeakerAlias;
+        }
+
+        internal void SetVNData(VNController gameController, VNData vnData)
+        {
+            gameController.SetText(vnData.whosay, vnData.whatsay);
+            viewVNData = vnData;
+        }
+
+        internal void ResetVNData()
+        {
+            viewVNData.enabled = false;
+            viewVNData.whosay = "";
+            viewVNData.whatsay = "";
+            viewVNData.addvncmds = "";
+            viewVNData.addprops.a1 = false;
+            viewVNData.addprops.a2 = false;
         }
 
     }

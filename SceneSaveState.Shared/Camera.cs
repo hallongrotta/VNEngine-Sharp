@@ -11,7 +11,7 @@ using NotImplementedException = System.NotImplementedException;
 
 namespace SceneSaveState
 {
-    public class Camera : Manager<VNData>
+    public class Camera
     {
      
 
@@ -94,13 +94,6 @@ namespace SceneSaveState
         internal float camTFOV;
 
         internal Vector3 camTPos;
-
-        internal static Camera Instance { get; private set; }
-
-        internal Camera()
-        {
-            Instance = this;
-        }
 
         protected Studio.Studio GameStudio
         {

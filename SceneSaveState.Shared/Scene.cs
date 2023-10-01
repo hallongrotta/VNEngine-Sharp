@@ -13,6 +13,8 @@ using static SceneSaveState.Camera;
 using ADV;
 using static SceneSaveState.VNDataComponent;
 using MessagePack;
+using UnityEngine;
+using static SceneSaveState.UI;
 
 namespace SceneSaveState
 {
@@ -90,7 +92,7 @@ namespace SceneSaveState
                 case Item i:
                     items[key] = i.export_full_status() as ItemData;
                     break;
-                case Light l:
+                case VNActor.Light l:
                     lights[key] = l.export_full_status() as LightData;
                     break;
 #if KKS
@@ -202,7 +204,7 @@ namespace SceneSaveState
                     ApplyStatus(i, status);
                     break;
                 }
-                case Light l:
+                case VNActor.Light l:
                 {
                     lights.TryGetValue(roleName, out var status);
                     ApplyStatus(l, status);
@@ -229,5 +231,141 @@ namespace SceneSaveState
         {
             foreach (var kvp in roles) SetPropState(kvp.Key, kvp.Value);
         }
+        internal void SetSceneState(StudioController game, RoleTracker roleTracker)
+        {
+            if (roleTracker.isSysTracking) game.Apply(sys, roleTracker.track_map);
+
+            //var watch = new Stopwatch();
+            //watch.Start();
+            SetCharacterState(roleTracker.AllCharacters);
+            //watch.Stop();
+            //Logger.LogInfo($"Loaded character data in {watch.ElapsedMilliseconds} ms.");
+
+            SetPropState(roleTracker.AllProps);
+        }
+
+
+        // Views
+
+        private View[] camset;
+
+        internal void DeleteSceneCam(Camera c, VNController gc)
+        {
+            Remove();
+            if (HasItems) Current.setCamera(c, gc);
+        }
+
+        internal void addSceneCam(Camera c)
+        {
+            var camData = c.export();
+            Add(new View(camData));
+        }
+
+        internal void updateSceneCam(Camera c)
+        {
+            var camData = c.export();
+            Update(new View(camData));
+        }
+
+        // Copy/paste cam set
+        internal void copyCamSet()
+        {
+            camset = ExportItems();
+        }
+
+        internal void pasteCamSet()
+        {
+            ImportItems(camset);
+        }
+
+        internal Warning? DrawCamSelect(Camera c, VNController gameController, bool promptOnDelete)
+        {
+
+            Warning? warning = null;
+            cam_scroll = GUILayout.BeginScrollView(cam_scroll, GUILayout.Height(185));
+            for (int i = 0; i < Count - 0; i++)
+            {
+                var col = i == CurrentIndex ? SelectedTextColor : "#f9f9f9";
+                var cam = Items[i];
+                var camText = $"{cam.TypeName} {i + 1}";
+
+                GUILayout.BeginHorizontal();
+
+                if (GUILayout.Button($"<color={col}>{camText}, {(int)cam.camData.fov}</color>", GUILayout.Width(ColumnWidth * 0.8f)))
+                {
+                    var camData = SetCurrent(i);
+                    camData.setCamera(c, gameController, isAnimated: false);
+                }
+                if (GUILayout.Button($"<color={col}>a</color>", GUILayout.Width(ColumnWidth * 0.2f)))
+                {
+                    var camData = SetCurrent(i);
+                    camData.setCamera(c, gameController, isAnimated: true);
+                }
+                GUILayout.EndHorizontal();
+            }
+            GUILayout.EndScrollView();
+            GUILayout.FlexibleSpace();
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("Add", GUILayout.Width(ColumnWidth * 0.7f)))
+            {
+                addSceneCam(c);
+            }
+
+
+            if (HasItems)
+            {
+                if (GUILayout.Button("Del", GUILayout.Width(ColumnWidth * 0.3f)))
+                {
+                    if (promptOnDelete)
+                    {
+                        warning = new Warning("Delete selected cam?", false, DeleteSceneCam);
+                    }
+                    else
+                    {
+                        DeleteSceneCam();
+                    }
+                }
+            }
+            GUILayout.EndHorizontal();
+            if (Count > 0)
+            {
+                if (GUILayout.Button("Update", GUILayout.Width(ColumnWidth + 5)))
+                {
+                    updateSceneCam(c);
+                }
+            }
+            GUILayout.BeginHorizontal();
+            const string up = "\u2191";
+            const string down = "\u2193";
+            if (GUILayout.Button($"Cam {up}"))
+            {
+                MoveItemBack();
+            }
+            if (GUILayout.Button($"Cam {down}"))
+            {
+                MoveItemForward();
+            }
+            GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            if (HasItems)
+            {
+                if (GUILayout.Button("Copy cams"))
+                {
+                    copyCamSet();
+                }
+            }
+            GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            if (camset != null)
+            {
+                if (GUILayout.Button("Paste cams"))
+                {
+                    pasteCamSet();
+                }
+            }
+            GUILayout.EndHorizontal();
+            return warning;
+        }
+
     }
 }

@@ -72,15 +72,11 @@ namespace SceneSaveState
 
         private bool showTextBox = false;
 
-        private SceneConsoleRoleComponent roleComponent;
-        private SceneConsoleChapterComponent chapterComponent;
-        private SceneConsoleSceneComponent sceneComponent;
-        private SceneConsoleSaveLoadComponent saveLoadComponent;
-        private SceneConsoleCamComponent camComponent;
-        private SceneConsoleCopyComponent copyPasteComponent;
-        private SceneConsoleVNComponent vnComponent;
+        private readonly SceneConsoleSaveLoadComponent saveLoadComponent;
+        private readonly SceneConsoleCopyComponent copyPasteComponent;
+        private readonly Camera camera;
 
-        private Manager<Chapter> ChapterManager {
+        private ChapterManager ChapterManager {
             get
             {
                 return GetSceneController().chapterManager;
@@ -114,16 +110,14 @@ namespace SceneSaveState
             //ChapterManager = new Manager<Chapter>();
             //roleTracker = new RoleTracker();
 
-            roleComponent = new SceneConsoleRoleComponent(roleTracker, ChapterManager);
-            chapterComponent = new SceneConsoleChapterComponent(ChapterManager, camComponent);
-            sceneComponent = new SceneConsoleSceneComponent(this, autoAddCam.Value);
             copyPasteComponent = new SceneConsoleCopyComponent(this);
-            vnComponent = new SceneConsoleVNComponent(GameController);
+            camera = new Camera();
 
             //ChapterManager.Add(new Chapter());
             // blocking message
             funcLockedText = "...";
             isFuncLocked = false;
+
             // skin_default internal
 
         }
@@ -178,12 +172,9 @@ namespace SceneSaveState
         internal void sceneConsoleWindowFunc(int id)
         {
             var currentChapter = ChapterManager.Current;
-            var currentScene = currentChapter.Current;
-            var currentCam = currentScene.Current;
             ColumnWidth = WindowWidth / 3;
             GUI.DragWindow(new Rect(0, 0, 10000, 20));
-            try
-            {
+
                 if (warning is Warning w)
                 {
                     warningUI(w, msg: w.msg, single_op: w.single_op);
@@ -214,11 +205,11 @@ namespace SceneSaveState
                     {
                         // Edit window
                         case 0:
-                            sceneConsoleEditUI(currentChapter, camComponent.CameraController);
+                            sceneConsoleEditUI(currentChapter, camera);
                             break;
                         case 1:
                             // Trackable window
-                            roleComponent.sceneConsoleTrackable(game, promptOnDelete.Value);
+                            roleTracker.sceneConsoleTrackable(game, ChapterManager, promptOnDelete.Value);
                             break;
                         case 2:
                             // Load/Save window
@@ -269,13 +260,7 @@ namespace SceneSaveState
                     GUI.DragWindow();
                 }
             }
-            catch (Exception e)
-            {
-                Console.WriteLine("sceneSaveStateWindowGUI Exception: " + e.ToString());
-                //Utils.sceneConsoleGUIClose();
-                GameController.show_blocking_message_time("sceneSaveState error: " + e.ToString());
-            }
-        }
+        
 
         internal void DrawConfigSettings()
         {
@@ -295,17 +280,18 @@ namespace SceneSaveState
             GUILayout.BeginVertical(GUILayout.Width(ColumnWidth));
             GUILayout.Label("Scenes");
             // Scene tab
-            chapterComponent.DrawSceneTab(c, cam);
+            ChapterManager.DrawSceneTab(this, GameController, c, cam);
             GUILayout.EndVertical();
 
             // Column 2
             GUILayout.BeginVertical(GUILayout.Width(ColumnWidth));
-            GUILayout.Label($"Scene Cameras. FOV: {(int)camComponent.CameraController.cameraData.parse}");
+            GUILayout.Label($"Scene Cameras. FOV: {(int)camera.cameraData.parse}");
 
             // Camera and character selection tabs
-            if (c.Count > 0)
+            Scene s = c.Current;
+            if (s is Scene)
             {
-                camComponent.DrawCamSelect(c.Current, cam, vnComponent, promptOnDelete.Value);
+                s.DrawCamSelect(cam, GameController, promptOnDelete.Value);
             }
             GUILayout.EndVertical();
 
@@ -313,12 +299,19 @@ namespace SceneSaveState
             GUILayout.BeginVertical(GUILayout.Width(ColumnWidth));
             GUILayout.Label("Scene Controls");
 
-            sceneComponent.DrawSceneEditButtons(c, cam, promptOnDelete.Value);
-            chapterComponent.DrawChapterEditButtons(c, cam, promptOnDelete.Value);
+            c.DrawSceneEditButtons(this, cam, promptOnDelete.Value, autoAddCam.Value);
+            ChapterManager.DrawChapterEditButtons(this, c, cam, promptOnDelete.Value);
 
             GUILayout.FlexibleSpace();
 
-            vnComponent.DrawVNDataOptions(c.Current.Current);
+
+            if (s is Scene)
+            {
+                if (s.Current is View v)
+                {
+                    v.DrawVNDataOptions(roleTracker);
+                }
+            }
             GUILayout.FlexibleSpace();
             GUILayout.EndVertical();
             GUILayout.EndHorizontal();
@@ -380,7 +373,7 @@ namespace SceneSaveState
         internal Scene CreateScene()
         {
             return new Scene(game.export_full_status(), roleTracker.AllCharacters, roleTracker.AllProps,
-                roleComponent.isSysTracking);
+                roleTracker.isSysTracking);
         }
 
         internal void hide_blocking_message(object game = null)
@@ -418,14 +411,14 @@ namespace SceneSaveState
 
         internal bool LoadScene(Scene s, Camera c)
         {
-            roleComponent.SetSceneState(s, game);
-            if (s.HasItems) s.Current.setCamera(c);
+            s.SetSceneState(game, roleTracker);
+            if (s.HasItems) s.Current.setCamera(c, GameController);
             return true;
         }
 
         internal bool LoadScene(Scene s)
         {
-            return LoadScene(s, camComponent.CameraController);
+            return LoadScene(s, camera);
         }
 
 
@@ -437,7 +430,7 @@ namespace SceneSaveState
 
         internal void NextSceneOrCamera(VNController vn, int i)
         {
-            NextSceneOrCamera(vn, i, camComponent.CameraController);
+            NextSceneOrCamera(vn, i, camera);
         }
 
         internal void NextSceneOrCamera(VNController vn, int i, Camera c)
@@ -451,11 +444,11 @@ namespace SceneSaveState
             if (c.Current.HasNext)
             {
                 var camData = c.Current.Next();
-                camData.setCamera(camera);
+                camData.setCamera(camera, GameController);
             }
             else
             {
-                var scene = chapterComponent.LoadNextScene(c);
+                var scene = ChapterManager.LoadNextScene(c);
                 LoadScene(scene, camera);
             }
         }
@@ -463,7 +456,8 @@ namespace SceneSaveState
         internal void SetChapterAndScene(int chapterNumber, int sceneNumber)
         {
             var chapter = ChapterManager.SetCurrent(chapterNumber);
-            sceneComponent.SetCurrentScene(chapter, sceneNumber);
+            var scene = chapter.SetCurrentScene(sceneNumber);
+            LoadScene(scene);
         }
 
         internal void runVNSS(string starfrom = "begin")
@@ -479,7 +473,7 @@ namespace SceneSaveState
             else
                 calcPos = 0;
             var chapter = ChapterManager.SetCurrent(calcPos);
-            LoadScene(chapter.Current, camComponent.CameraController);
+            LoadScene(chapter.Current, camera);
             Console.WriteLine("Run VNSS from state {0}", calcPos.ToString());
             //game.vnscenescript_run_current(onEndVNSS, calcPos.ToString());
         }

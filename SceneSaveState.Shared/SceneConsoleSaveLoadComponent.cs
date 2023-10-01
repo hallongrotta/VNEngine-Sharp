@@ -27,19 +27,28 @@ namespace SceneSaveState
         internal const string defaultBackupName = "SSS.dat.backup";
         internal double saveDataSize { get; private set; }
 
-        internal Manager<Chapter> chapterManager;
+        internal ChapterManager chapterManager;
         internal RoleTracker roleTracker;
         private bool trackMap;
+
+        public SceneConsoleSaveLoadComponent()
+        {
+            this.chapterManager = new ChapterManager(new Chapter());
+            this.roleTracker = new RoleTracker();
+            this.trackMap = true;
+            logger = new ManualLogSource("SceneConsoleSaveLoad"); // The source name is shown in BepInEx log
+            BepInEx.Logging.Logger.Sources.Add(logger);
+        }
 
         protected override void OnSceneSave()
         {
             SetExtendedData(GetPluginData(chapterManager, roleTracker, trackMap));
         }
 
-        internal Manager<Chapter> deleteSaveData()
+        internal ChapterManager deleteSaveData()
         {
             SetExtendedData(new PluginData() { data = null });
-            return new Manager<Chapter>();
+            return new ChapterManager();
         }
 
         protected override void OnSceneLoad(SceneOperationKind operation, ReadOnlyDictionary<int, ObjectCtrlInfo> loadedItems)
@@ -50,12 +59,7 @@ namespace SceneSaveState
             //sc.LoadScene(scene);
         }
 
-        
-        public SceneConsoleSaveLoadComponent()
-        {
-            logger = new ManualLogSource("SceneConsoleSaveLoad"); // The source name is shown in BepInEx log
-            BepInEx.Logging.Logger.Sources.Add(logger);
-        }
+   
         
 
         internal double CalculateSaveDataSize(byte[] bytes)
@@ -63,7 +67,7 @@ namespace SceneSaveState
             return (double)bytes.Length / 1000;
         }
 
-        internal PluginData GetPluginData(Manager<Chapter> cm, RoleTracker roleTracker, bool trackMap)
+        internal PluginData GetPluginData(ChapterManager cm, RoleTracker roleTracker, bool trackMap)
         {
             var currentChapter = cm.Current;
             var pluginData = new PluginData();
@@ -131,10 +135,10 @@ namespace SceneSaveState
             return roleTracker;
         }
 
-        internal Manager<Chapter> LoadChaptersFromPluginData(PluginData pluginData)
+        internal ChapterManager LoadChaptersFromPluginData(PluginData pluginData)
         {
 
-            Manager<Chapter> chapterManager = new Manager<Chapter>();
+            ChapterManager chapterManager = new ChapterManager();
             bool trackMap;
 
             if (pluginData?.data == null)
@@ -167,8 +171,7 @@ namespace SceneSaveState
                     sceneData.Length > 0 && !pluginData.data.ContainsKey("chapters"))
                 {
                     var sceneArray = Utils.DeserializeData<Scene[]>(sceneData);
-                    chapterManager = new Manager<Chapter>();
-                    chapterManager.Add(new Chapter(sceneArray.ToList(), sceneStrings));
+                    chapterManager = new ChapterManager(new Chapter(sceneArray.ToList(), sceneStrings));
                 }
 
                 if (pluginData.data.ContainsKey("chapters") && pluginData.data["chapters"] is byte[] chapterData && chapterData.Length > 0)
@@ -183,9 +186,9 @@ namespace SceneSaveState
                             chapters.Add(new Chapter(t.ToList(), sceneStrings));
                         }
 
-                        var chapterStrings = Manager<Chapter>.DeserializeItemNames(chapterNames);
+                        var chapterStrings = ChapterManager.DeserializeItemNames(chapterNames);
 
-                        chapterManager = new Manager<Chapter>(chapters, currentIndex: chapterIndex, itemNames: chapterStrings);
+                        chapterManager = new ChapterManager(chapters, currentIndex: chapterIndex, itemNames: chapterStrings);
 
                         var saveDataSizeKb = CalculateSaveDataSize(chapterData);
                         logger.LogMessage($"Loaded {saveDataSizeKb:N} Kb of scene state data.");
@@ -222,7 +225,7 @@ namespace SceneSaveState
             File.WriteAllBytes(abs_file_path, data);
         }
 
-        internal Manager<Chapter> LoadFromFile(string filename)
+        internal ChapterManager LoadFromFile(string filename)
         {
             var script_dir = Path.GetDirectoryName(Application.dataPath);
             var file_path = Path.Combine(backup_folder_name, filename);
@@ -231,7 +234,7 @@ namespace SceneSaveState
             {
                 var data = File.ReadAllBytes(abs_file_path);
                 var chapters = Utils.DeserializeData<Chapter[]>(data);
-                return new Manager<Chapter>(chapters.ToList());
+                return new ChapterManager(chapters.ToList());
             }
             return null;
         }

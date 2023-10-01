@@ -11,7 +11,6 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)ActorUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AutoScriptInfo.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)RoleTracker.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SceneFolders.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StudioController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)System.cs" />
