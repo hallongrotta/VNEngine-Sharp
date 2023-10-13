@@ -9,7 +9,9 @@ namespace SceneSaveState
     public class Manager<T> where T : IManaged<T>
     {
 
-        protected List<T> Items;
+        private readonly List<T> items = new List<T>();
+
+        protected List<T> Items { get => items; }
 
         private int _index;
 
@@ -31,13 +33,12 @@ namespace SceneSaveState
 
         internal Manager()
         {
-            Items = new List<T>();
             CurrentIndex = -1;
         }
 
         internal Manager(List<T> items, int currentIndex = 0)
         {
-            this.Items = items;
+            this.ImportItems(items);
             this.CurrentIndex = currentIndex;
         }
 
@@ -159,7 +160,20 @@ namespace SceneSaveState
 
         internal void ImportItems(T[] items)
         {
-            Items = items.ToList();
+            foreach (var item in items)
+            {
+                Add(item);
+            }
+            CurrentIndex = 0;
+        }
+
+        internal void ImportItems(List<T> items)
+        {
+            if (items is null) return;
+            foreach (var item in items)
+            {
+                Add(item);
+            }
             CurrentIndex = 0;
         }
 

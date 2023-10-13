@@ -71,40 +71,33 @@ namespace SceneSaveState
         {
             var currentChapter = cm.Current;
             var pluginData = new PluginData();
-            if (cm.Count > 0)
-                try
-                {
-
-                    var chapters = cm.ExportItems();
-                    var chapterData = new Scene[chapters.Length][];
-                    for (var index = 0; index < chapters.Length; index++)
-                    {
-                        chapterData[index] = chapters[index].ExportItems();
-                    }
-
-                    var serializedChapters = Utils.SerializeData(chapterData);
-                    pluginData.data["chapters"] = serializedChapters;
-                    pluginData.data["currentScene"] = currentChapter.CurrentIndex;
-                    pluginData.data["currentChapter"] = cm.CurrentIndex;
-                    pluginData.data["sceneNames"] = currentChapter.ExportItemNames();
-                    pluginData.data["currentChapter"] = cm.CurrentIndex;
-                    pluginData.data["chapterNames"] = cm.ExportItemNames();
-                    pluginData.data["trackMap"] = trackMap;
-                    pluginData.data["roles"] = Utils.SerializeData(roleTracker.ExportRoles());
-                    var saveDataSizeKb = CalculateSaveDataSize(serializedChapters);
-                    logger.LogMessage($"Saved {saveDataSizeKb:N} Kb of scene state data.");
-                    saveDataSize = saveDataSizeKb;
-                    return pluginData;
-                }
-                catch (Exception e)
-                {
-                    logger.LogError("Error occurred while saving scene data: " + e);
-                    logger.LogMessage("Failed to save scene data, check debug log for more info.");
-                    return null;
-                }
-
             saveDataSize = 0;
-            return null;
+            if (!cm.HasItems) return null;
+            try
+            {
+
+                var chapters = cm.ExportItems();
+                var chapterData = cm.ExportItems().Select(c => c.ExportItems()).ToArray();
+                var serializedChapters = Utils.SerializeData(chapterData);
+                pluginData.data["chapters"] = serializedChapters;
+                pluginData.data["currentScene"] = currentChapter.CurrentIndex;
+                pluginData.data["currentChapter"] = cm.CurrentIndex;
+                pluginData.data["sceneNames"] = currentChapter.ExportItemNames();
+                pluginData.data["currentChapter"] = cm.CurrentIndex;
+                pluginData.data["chapterNames"] = cm.ExportItemNames();
+                pluginData.data["trackMap"] = trackMap;
+                pluginData.data["roles"] = Utils.SerializeData(roleTracker.ExportRoles());
+                var saveDataSizeKb = CalculateSaveDataSize(serializedChapters);
+                logger.LogMessage($"Saved {saveDataSizeKb:N} Kb of scene state data.");
+                saveDataSize = saveDataSizeKb;
+                return pluginData;
+            }
+            catch (Exception e)
+            {
+                logger.LogError("Error occurred while saving scene data: " + e);
+                logger.LogMessage("Failed to save scene data, check debug log for more info.");
+                return null;
+            }
         }
 
         internal RoleTracker LoadRoleTrackerFromPluginData(PluginData pluginData)

@@ -18,25 +18,36 @@ using static SceneSaveState.UI;
 
 namespace SceneSaveState
 {
-    [MessagePackObject(keyAsPropertyName: true)]
+    [MessagePackObject]
     public partial class Scene : Manager<View>, IManaged<Scene>
     {
 
+        [Key("Name")]
         public string Name { get; set; }
 
+        [Key("actors")]
         public Dictionary<string, ActorData> actors;
 
+        [Key("cams")]
         public List<CamData> cams;
 
+        [Key("items")]
         public Dictionary<string, ItemData> items;
 
+        [Key("lights")]
         public Dictionary<string, LightData> lights;
+
         [IgnoreMember]
         public string TypeName => "Scene";
 
+        [Key("props")]
         public Dictionary<string, NEOPropData> props;
-    
+
+        [Key("sys")]
         public SystemData sys;
+
+        [Key("views")]
+        public List<View> views {get => Items ; private set => ImportItems(value); }
 
 #if !KKS
         public Scene(Dictionary<string, ActorData> actors, Dictionary<string, ItemData> items,
@@ -286,7 +297,7 @@ namespace SceneSaveState
             for (int i = 0; i < Count - 0; i++)
             {
                 var col = i == CurrentIndex ? SelectedTextColor : "#f9f9f9";
-                var cam = Items[i];
+                var cam = this[i];
                 var camText = $"{cam.TypeName} {i + 1}";
 
                 GUILayout.BeginHorizontal();

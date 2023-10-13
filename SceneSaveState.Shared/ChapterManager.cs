@@ -115,7 +115,7 @@ namespace SceneSaveState
 
             var currentIndex = currentChapter.CurrentIndex;
 
-            var nextChapter = Items[currentIndex + 1];
+            var nextChapter = this[currentIndex + 1];
 
             currentChapter.AddRange(nextChapter.ExportItems().ToList());
 
@@ -241,9 +241,9 @@ namespace SceneSaveState
 
                 var chapterName = chapter.Name ?? $"Chapter {i + 1}";
 
-                if (Items[i].HasItems)
+                if (this[i].HasItems)
                 {   
-                    chapterName += $" ({Items[i].Count})";
+                    chapterName += $" ({this[i].Count})";
                 }
 
                 if (GUILayout.Button($"<color={col}>{chapterName}</color>"))
@@ -317,6 +317,7 @@ namespace SceneSaveState
 
         internal Scene DrawSceneTab(VNController gc, Chapter c, Camera cam)
         {
+           
             _sceneNameEntry = GetSelectedName();
             Scene s;
 

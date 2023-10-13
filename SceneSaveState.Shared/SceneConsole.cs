@@ -205,15 +205,15 @@ namespace SceneSaveState
                     {
                         // Edit window
                         case 0:
-                            sceneConsoleEditUI(currentChapter, camera);
+                            warning = sceneConsoleEditUI(currentChapter, camera);
                             break;
                         case 1:
                             // Trackable window
-                            roleTracker.sceneConsoleTrackable(game, ChapterManager, promptOnDelete.Value);
+                            warning = roleTracker.sceneConsoleTrackable(game, ChapterManager, promptOnDelete.Value);
                             break;
                         case 2:
                             // Load/Save window
-                            saveLoadComponent.sceneConsoleLdSvUI(this, ChapterManager.Count > 0);
+                            warning = saveLoadComponent.sceneConsoleLdSvUI(this, ChapterManager.Count > 0);
                             break;
                         case 3:
                             // --------- Advanced controls -------------
@@ -273,14 +273,15 @@ namespace SceneSaveState
             paramAnimCamIfPossible.Value = GUILayout.Toggle(paramAnimCamIfPossible.Value, "Animate cam if possible");
         }
 
-        internal void sceneConsoleEditUI(Chapter c, Camera cam)
+        internal Warning? sceneConsoleEditUI(Chapter c, Camera cam)
         {
+            Warning? w = null;
             GUILayout.BeginHorizontal();
             // Column 1
             GUILayout.BeginVertical(GUILayout.Width(ColumnWidth));
             GUILayout.Label("Scenes");
             // Scene tab
-            var scene = ChapterManager.DrawSceneTab(GameController, c, cam);
+            var scene = c == null ? null : ChapterManager.DrawSceneTab(GameController, c, cam);
             LoadScene(scene, cam);
             GUILayout.EndVertical();
 
@@ -289,22 +290,18 @@ namespace SceneSaveState
             GUILayout.Label($"Scene Cameras. FOV: {(int)camera.cameraData.parse}");
 
             // Camera and character selection tabs
-            Scene s = c.Current;
-            if (s is Scene)
-            {
-                s.DrawCamSelect(cam, GameController, promptOnDelete.Value);
-            }
+            Scene s = c?.Current;
+            w = s is Scene ? s.DrawCamSelect(cam, GameController, promptOnDelete.Value) : w;
             GUILayout.EndVertical();
 
             // Column 3         
             GUILayout.BeginVertical(GUILayout.Width(ColumnWidth));
             GUILayout.Label("Scene Controls");
 
-            c.DrawSceneEditButtons(this, cam, promptOnDelete.Value, autoAddCam.Value);
-            ChapterManager.DrawChapterEditButtons(c, cam, promptOnDelete.Value);
+            w = c?.DrawSceneEditButtons(this, cam, promptOnDelete.Value, autoAddCam.Value) ?? w;
+            w = ChapterManager.DrawChapterEditButtons(c, cam, promptOnDelete.Value) ?? w;
 
             GUILayout.FlexibleSpace();
-
 
             if (s is Scene)
             {
@@ -316,6 +313,7 @@ namespace SceneSaveState
             GUILayout.FlexibleSpace();
             GUILayout.EndVertical();
             GUILayout.EndHorizontal();
+            return w;
         }
 
         internal void sceneConsoleSkinSetup()

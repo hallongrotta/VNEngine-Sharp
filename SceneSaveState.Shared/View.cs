@@ -1,4 +1,5 @@
 ﻿
+using MessagePack;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,19 +12,28 @@ using static SceneSaveState.VNDataComponent.VNData;
 
 namespace SceneSaveState
 {
+    [MessagePackObject]
     public class View: Manager<VNData>, IManaged<View>
     {
-        internal CamData camData;
-        private float paramAnimCamDuration;
-        private string paramAnimCamStyle;
-        private float paramAnimCamZoomOut;
         internal const string defaultSpeakerAlias = "s";
 
-        private VNData viewVNData;
-
+        [Key("paramAnimCamDuration")]
+        public float paramAnimCamDuration;
+        [Key("paramAnimCamStyle")]
+        public string paramAnimCamStyle;
+        [Key("paramAnimCamZoomOut")]
+        public float paramAnimCamZoomOut;
+        [Key("camData")]
+        public CamData camData;
+        [Key("vnData")]
+        public List<VNData> vNDatas { get => Items; private set => ImportItems(value); }
+        [Key("Name")]
         public string Name { get => null; set { } }
 
+        [IgnoreMember]
         public string TypeName => "Cam";
+        private VNData viewVNData;
+
 
         public View(CamData camData)
         {
@@ -50,11 +60,21 @@ namespace SceneSaveState
             viewVNData = Current;
 
             // Transfer old data
-            if (camData.addata.enabled)
+            if (camData != null && camData.addata.enabled)
             { 
                 Update(camData.addata);
             }
 
+        }
+
+        public View(float paramAnimCamDuration, string paramAnimCamStyle, float paramAnimCamZoomOut, VNData viewVNData, CamData camData, List<VNData> vNDatas)
+        {
+            this.paramAnimCamDuration = paramAnimCamDuration;
+            this.paramAnimCamStyle = paramAnimCamStyle;
+            this.paramAnimCamZoomOut = paramAnimCamZoomOut;
+            this.viewVNData = viewVNData;
+            this.camData = camData;
+            this.vNDatas = vNDatas;
         }
 
         public View Copy()

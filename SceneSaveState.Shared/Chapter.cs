@@ -106,7 +106,7 @@ namespace SceneSaveState
                     filename);
                 var j = 0;
                 var data = reader.Deserialize(file) as List<VNData>;
-                foreach (var scene in Items)
+                foreach (var scene in this)
                     foreach (var cam in scene)
                     {
                         cam.Add(data[j]);
@@ -123,7 +123,7 @@ namespace SceneSaveState
 
         internal void SetCurrentMapForAllScenes()
         {
-            foreach (var scene in Items)
+            foreach (var scene in this)
             {
                 scene.sys.map = Current.sys.map;
                 scene.sys.map_pos = Current.sys.map_pos;

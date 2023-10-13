@@ -16,6 +16,7 @@ namespace SceneSaveState
     public partial class Scene
     {
 
+        [Key("texts")]
         public Dictionary<string, Text.TextData> texts;
 
         public Scene(
@@ -26,12 +27,17 @@ namespace SceneSaveState
             Dictionary<string, Item.ItemData> items,
             Dictionary<string, Light.LightData> lights,
             Dictionary<string, NEOPropData> props,
-            SystemData sys
-            )
+            SystemData sys,
+            List<View> views
+            ) : base()
         {
             this.cams = null;
-            foreach ( var c in cams ) {
-                this.Add(new View(c));
+            if ( cams != null )
+            {
+                foreach (var c in cams)
+                {
+                    Add(new View(c));
+                }
             }
             this.actors = actors;
             this.props = props;
@@ -40,6 +46,10 @@ namespace SceneSaveState
             this.sys = sys;
             this.Name = Name;
             this.texts = texts;
+            if (views != null)
+            {
+                this.views = views;
+            }
         }
     }
 }
