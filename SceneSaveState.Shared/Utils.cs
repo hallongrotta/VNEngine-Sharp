@@ -32,12 +32,12 @@ namespace SceneSaveState
         {
             try
             {
-                Console.WriteLine(MessagePackSerializer.ToJson(item, StandardResolver.Instance));
+                //Console.WriteLine(MessagePackSerializer.ToJson(item, StandardResolver.Instance));
                 return MessagePackSerializer.Serialize(item, StandardResolver.Instance);
             }
             catch (FormatterNotRegisteredException)
             {
-                Console.WriteLine(MessagePackSerializer.ToJson(item, ContractlessStandardResolver.Instance));
+                //Console.WriteLine(MessagePackSerializer.ToJson(item, ContractlessStandardResolver.Instance));
                 return MessagePackSerializer.Serialize(item, ContractlessStandardResolver.Instance);
             }
             catch (InvalidOperationException)
