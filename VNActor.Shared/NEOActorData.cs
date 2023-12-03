@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using MessagePack;
 using UnityEngine;
 using static VNActor.Character;
+using FKHeightAdjustUI;
 
 namespace VNActor
 {
@@ -139,6 +140,8 @@ After:
         public string xxpedata;
         public Dictionary<string, Dictionary<string, string>> xxpeblend;
 
+        public float FKHeightAdjust;
+
         public NEOActorData()
         {
         }
@@ -215,6 +218,16 @@ After:
                 {
                     xxpedata = XXPE.GetCharaSettingsText(a.objctrl);
                     xxpeblend = XXPE.GetBlendShapesObj(a.objctrl);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
+
+                try
+                {
+                    FKHeightAdjustUICharaController controller = a == null || a.CharInfo == null ? null : a.CharInfo.GetComponent<FKHeightAdjustUICharaController>();
+                    FKHeightAdjust = controller ? controller.HeightAdjust : (float)0.0;
                 }
                 catch (Exception e)
                 {
@@ -326,6 +339,16 @@ After:
                 {
                     XXPE.SetBlendShapesObj(a.objctrl, xxpeblend);
                 }                       
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+
+            try
+            {
+                FKHeightAdjustUICharaController controller = a == null || a.CharInfo == null ? null : a.CharInfo.GetComponent<FKHeightAdjustUICharaController>();
+                controller.HeightAdjust = controller ? FKHeightAdjust : (float)0.0;
             }
             catch (Exception e)
             {
