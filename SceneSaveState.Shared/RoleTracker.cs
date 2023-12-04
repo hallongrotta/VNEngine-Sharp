@@ -1,18 +1,20 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using KKAPI.Studio;
+﻿using KKAPI.Studio;
 using Studio;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using VNActor;
 using VNEngine;
 using static SceneSaveState.UI;
+using static SceneSaveState.VNDataComponent;
 
 namespace SceneSaveState
 {
     public class RoleTracker
     {
 
-        
+
 
         internal string newid;
 
@@ -25,6 +27,8 @@ namespace SceneSaveState
         internal bool isSysTracking = true;
 
         private const int EMPTY = -1;
+
+        private VNData viewVNData;
 
         public enum RoleTypes
         {
@@ -55,7 +59,7 @@ namespace SceneSaveState
             {
                 sc.show_blocking_message_time_sc("Please, add at least 1 state to add system environment tracking");
             }
-        }   
+        }
 
 
         internal void AddSelectedToRole()
@@ -80,7 +84,7 @@ namespace SceneSaveState
                 }
         }
 
-        internal void RemoveRoleOfSelected()
+        internal void RemoveRoleOfSelected(ChapterManager manager)
         {
             var objects = StudioAPI.GetSelectedObjects();
 
@@ -93,7 +97,7 @@ namespace SceneSaveState
             foreach (var oci in objects)
             {
                 var roleName = GetRoleName(oci);
-                RemoveRole(roleName);
+                RemoveRole(roleName, manager);
             }
         }
 
@@ -143,19 +147,19 @@ namespace SceneSaveState
 
         public RoleTracker(Dictionary<int, Dictionary<string, int>> roles) : this()
         {
-            foreach (var type in new List<RoleTypes> {RoleTypes.Character, RoleTypes.Prop})
-            foreach (var kv in roles[(int) type])
-            {
-                var oci = GetOCI(kv.Value);
-                if (oci is null)
+            foreach (var type in new List<RoleTypes> { RoleTypes.Character, RoleTypes.Prop })
+                foreach (var kv in roles[(int)type])
                 {
-                    AddRole(kv.Key, type);
+                    var oci = GetOCI(kv.Value);
+                    if (oci is null)
+                    {
+                        AddRole(kv.Key, type);
+                    }
+                    else
+                    {
+                        AddToRole(oci, kv.Key);
+                    }
                 }
-                else
-                {
-                    AddToRole(oci, kv.Key);
-                }
-            }
         }
 
         internal Dictionary<string, T> GenerateActorDict<T>(Dictionary<string, int> roleList) where T : NeoOCI
@@ -356,12 +360,6 @@ namespace SceneSaveState
             }
         }
 
-        public void RemoveRole(string roleName)
-        {
-            CharacterRoles.Remove(roleName);
-            PropRoles.Remove(roleName);
-        }
-
         public void AddToRole(ObjectCtrlInfo oci, string roleName)
         {
             var actor = NeoOCI.createFromOCI(oci);
@@ -408,16 +406,12 @@ namespace SceneSaveState
             return true;
         }
 
-        internal void RemoveRole(string roleName, Manager<Chapter> chapterManager)
+        internal void RemoveRole(string roleName, ChapterManager chapterManager)
         {
             if (roleName == "") return;
-
-            RemoveRole(roleName);
-
-            foreach (var chapter in chapterManager)
-            {
-                foreach (var scene in chapter) scene.Remove(roleName);
-            }
+            CharacterRoles.Remove(roleName);
+            PropRoles.Remove(roleName);
+            chapterManager.RemoveRole(roleName);
         }
 
 
@@ -425,12 +419,12 @@ namespace SceneSaveState
         {
             var roleList = new Dictionary<int, Dictionary<string, int>>();
 
-            foreach (var type in new List<RoleTypes> {RoleTypes.Character, RoleTypes.Prop})
-                roleList[(int) type] = new Dictionary<string, int>();
+            foreach (var type in new List<RoleTypes> { RoleTypes.Character, RoleTypes.Prop })
+                roleList[(int)type] = new Dictionary<string, int>();
 
-            foreach (var kv in CharacterRoles) roleList[(int) RoleTypes.Character][kv.Key] = kv.Value;
+            foreach (var kv in CharacterRoles) roleList[(int)RoleTypes.Character][kv.Key] = kv.Value;
 
-            foreach (var kv in PropRoles) roleList[(int) RoleTypes.Prop][kv.Key] = kv.Value;
+            foreach (var kv in PropRoles) roleList[(int)RoleTypes.Prop][kv.Key] = kv.Value;
 
             return roleList;
         }
@@ -465,12 +459,7 @@ namespace SceneSaveState
             GUILayout.EndHorizontal();
         }
 
-        internal void RemoveSelectedRole()
-        {
-            RemoveRole(SelectedRole);
-        }
-
-        internal Warning? sceneConsoleTrackable(StudioController game, Manager<Chapter> chapterManager, bool promptOnDelete)
+        internal Warning? sceneConsoleTrackable(StudioController game, ChapterManager chapterManager, bool promptOnDelete)
         {
             GUILayout.BeginHorizontal();
             GUILayout.BeginVertical(GUILayout.Width(ColumnWidth));
@@ -528,11 +517,12 @@ namespace SceneSaveState
 
                     if (promptOnDelete)
                     {
-                        warning = new Warning("Remove role from all scenes?", false, RemoveSelectedRole);
+                        var function = new WarningFunc(() => RemoveRole(SelectedRole, chapterManager));
+                        warning = new Warning("Remove role from all scenes?", false, function);
                     }
                     else
                     {
-                        RemoveRole(SelectedRole);
+                        RemoveRole(SelectedRole, chapterManager);
                     }
                 }
             }
@@ -578,5 +568,38 @@ namespace SceneSaveState
             return warning;
         }
 
+        internal const string defaultSpeakerAlias = "s";
+
+        internal string get_next_speaker(string curSpeakAlias, bool next)
+        {
+            return get_next_speaker(CharacterRoles, curSpeakAlias, next);
+        }
+
+        private string get_next_speaker(Dictionary<string, int> allActors, string curSpeakAlias, bool next)
+        {
+            // next from unknown speaker
+            var keylist = allActors.Keys.ToList();
+            if (curSpeakAlias != defaultSpeakerAlias && !allActors.ContainsKey(curSpeakAlias))
+                return defaultSpeakerAlias;
+            // next from s or actor
+            if (curSpeakAlias == defaultSpeakerAlias)
+            {
+                if (allActors.Count > 0)
+                {
+                    if (next)
+                        return keylist[0];
+                    return keylist.Last();
+                }
+
+                return defaultSpeakerAlias;
+            }
+
+            var nextIndex = keylist.IndexOf(curSpeakAlias);
+            if (next)
+                nextIndex += 1;
+            else
+                nextIndex -= 1;
+            return Enumerable.Range(0, allActors.Count).Contains(nextIndex) ? keylist[nextIndex] : defaultSpeakerAlias;
+        }
     }
 }

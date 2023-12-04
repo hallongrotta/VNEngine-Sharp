@@ -31,6 +31,11 @@ namespace SceneSaveState
 
         }
 
+        internal void RemoveRole(string roleName)
+        {
+            foreach (var scene in this) scene.Remove(roleName);
+        }
+
         internal override Scene Update(int position, Scene newScene)
         {
             var oldScene = base.Update(position, newScene);
@@ -131,21 +136,17 @@ namespace SceneSaveState
             }
         }
 
-        internal Scene InsertScene(Scene s, Camera c, bool autoAddCam)
+        internal Scene InsertScene(Scene s, CreateViewFunc viewFunc, bool autoAddCam)
         {
-            return AddScene(s, c, autoAddCam, insert: true);
+            return AddScene(s, viewFunc, autoAddCam, insert: true);
         }
 
-        internal Scene AddScene(Scene s, Camera c, bool autoAddCam, bool insert = false)
+        delegate Scene AddSceneFunc(Scene scene);
+        internal Scene AddScene(Scene s, CreateViewFunc viewFunc, bool autoAddCam, bool insert = false)
         {
-            if (insert)
-                Insert(s);
-            else
-                Add(s);
-
-            if (autoAddCam)
-                s.Add(new View(c.export()));
-
+            var addSceneFunc = insert ? (AddSceneFunc)Insert : Add; 
+            addSceneFunc(s);
+            var _ = autoAddCam ? s.Add(viewFunc()) : null;
             return s;
         }
 
@@ -179,28 +180,19 @@ namespace SceneSaveState
             return Current.HasNext ? Current.Back() : Back().Last();
         }
 
-        public Warning? DrawSceneEditButtons(SceneConsole sc, Camera cam, bool promptOnDelete, bool autoAddCam)
+        public delegate Scene CreateSceneFunc();
+        public delegate View CreateViewFunc();
+
+        public Warning? DrawSceneEditButtons(CreateSceneFunc fn, CreateViewFunc viewFunc, bool promptOnDelete, bool autoAddCam)
         {
             GUILayout.BeginHorizontal();
             Warning? warning = null;
-            if (GUILayout.Button("Add scene", GUILayout.Height(RowHeight * 2), GUILayout.Width(ColumnWidth * 0.5f)))
-            {
-                AddScene(sc.CreateScene(), cam, autoAddCam);
-            }
-            if (GUILayout.Button("Update scene", GUILayout.Height(RowHeight * 2), GUILayout.Width(ColumnWidth * 0.5f)))
-            {
-                UpdateScene(sc.CreateScene());
-            }
+            var _ = GUILayout.Button("Add scene", GUILayout.Height(RowHeight * 2), GUILayout.Width(ColumnWidth * 0.5f)) ? AddScene(fn(), viewFunc, autoAddCam) : null;
+            _ = GUILayout.Button("Update scene", GUILayout.Height(RowHeight * 2), GUILayout.Width(ColumnWidth * 0.5f)) ?  UpdateScene(fn()) : null;
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Insert scene", GUILayout.Height(RowHeight), GUILayout.Width(ColumnWidth * 0.5f)))
-            {
-                InsertScene(sc.CreateScene(), cam, autoAddCam);
-            }
-            if (GUILayout.Button("Dup scene", GUILayout.Height(RowHeight), GUILayout.Width(ColumnWidth * 0.5f)))
-            {
-                DuplicateScene();
-            }
+            _ = GUILayout.Button("Insert scene", GUILayout.Height(RowHeight), GUILayout.Width(ColumnWidth * 0.5f)) ? InsertScene(fn(), viewFunc, autoAddCam) : null;
+            _ = GUILayout.Button("Dup scene", GUILayout.Height(RowHeight), GUILayout.Width(ColumnWidth * 0.5f)) ? DuplicateScene() : null;
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Delete scene"))

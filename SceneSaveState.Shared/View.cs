@@ -15,7 +15,7 @@ namespace SceneSaveState
     [MessagePackObject]
     public class View: Manager<VNData>, IManaged<View>
     {
-        internal const string defaultSpeakerAlias = "s";
+
 
         [Key("paramAnimCamDuration")]
         public float paramAnimCamDuration;
@@ -32,32 +32,14 @@ namespace SceneSaveState
 
         [IgnoreMember]
         public string TypeName => "Cam";
-        private VNData viewVNData;
 
 
-        public View(CamData camData)
+        internal View(CamData camData)
         {
             this.camData = camData;
             paramAnimCamDuration = 1.5f;
             paramAnimCamStyle = "fast-slow";
             paramAnimCamZoomOut = 0.0f;
-
-
-            viewVNData = new VNData
-            {
-                enabled = false,
-                whosay = "",
-                whatsay = "",
-                addvncmds = "",
-                addprops = new addprops_struct()
-            };
-
-            viewVNData.addprops.a1 = false;
-            viewVNData.addprops.a2 = false;
-
-            Add(viewVNData);
-
-            viewVNData = Current;
 
             // Transfer old data
             if (camData != null && camData.addata.enabled)
@@ -67,14 +49,19 @@ namespace SceneSaveState
 
         }
 
-        public View(float paramAnimCamDuration, string paramAnimCamStyle, float paramAnimCamZoomOut, VNData viewVNData, CamData camData, List<VNData> vNDatas)
+        internal View(CamData camData, VNData vnData) : this(camData)
+        {
+            Add(vnData);
+        }
+
+        public View(List<VNData> vnData, string Name, float paramAnimCamDuration, string paramAnimCamStyle, float paramAnimCamZoomOut, CamData camData) : this(camData)
         {
             this.paramAnimCamDuration = paramAnimCamDuration;
             this.paramAnimCamStyle = paramAnimCamStyle;
             this.paramAnimCamZoomOut = paramAnimCamZoomOut;
-            this.viewVNData = viewVNData;
             this.camData = camData;
-            this.vNDatas = vNDatas;
+            this.vNDatas = vnData;
+            this.Name = Name;
         }
 
         public View Copy()
@@ -82,12 +69,12 @@ namespace SceneSaveState
             throw new NotImplementedException();
         }
 
-        internal void setCamera(Camera c, VNController gameController)
+        internal VNData? setCamera(Camera c, VNController gameController)
         {
-            setCamera(c, gameController, false);
+            return setCamera(c, gameController, false);
         }
 
-        internal void setCamera(Camera c, VNController gameController, bool isAnimated)
+        internal VNData? setCamera(Camera c, VNController gameController, bool isAnimated)
         {
          
             if (isAnimated)
@@ -114,109 +101,17 @@ namespace SceneSaveState
             if (HasItems)
             {
                 SetVNData(gameController, Current);
+                return Current;
             }
-            else
-            {
-                ResetVNData();
-            }
-        }
-
-        internal void DrawVNDataOptions(RoleTracker roleTracker)
-        {
-            viewVNData.enabled = true;
-            if (!viewVNData.enabled) return;
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("Who say:", GUILayout.Width(90));
-            GUILayout.FlexibleSpace();
-            if (GUILayout.Button("<", GUILayout.Width(20)))
-            {
-                viewVNData.whosay = get_next_speaker(roleTracker.CharacterRoles, viewVNData.whosay, false);
-            }
-            if (GUILayout.Button(">", GUILayout.Width(20)))
-            {
-                viewVNData.whosay = get_next_speaker(roleTracker.CharacterRoles, viewVNData.whosay, true);
-            }
-            GUILayout.EndHorizontal();
-            viewVNData.whosay = GUILayout.TextField(viewVNData.whosay);
-
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("What say:", GUILayout.Width(90));
-            GUILayout.FlexibleSpace();
-            if (GUILayout.Button("X", GUILayout.Width(20)))
-            {
-                viewVNData.whatsay = "";
-            }
-            if (GUILayout.Button("...", GUILayout.Width(20)))
-            {
-                viewVNData.whatsay = "...";
-            }
-            GUILayout.EndHorizontal();
-
-            GUILayout.BeginVertical();
-            viewVNData.whatsay = GUILayout.TextArea(viewVNData.whatsay, GUILayout.Height(85));
-            if (GUILayout.Button("Save", GUILayout.Width(40)))
-            {
-                Update(viewVNData);
-            }
-            GUILayout.EndVertical();
-
-            /*GUILayout.BeginHorizontal();
-                GUILayout.Label("  Adv VN cmds", GUILayout.Width(90));
-                Instance.currentVNData.addvncmds = GUILayout.TextArea(Instance.currentVNData.addvncmds, GUILayout.Width(235), GUILayout.Height(55));
-                if (GUILayout.Button("X", GUILayout.Width(20)))
-                {
-                    Instance.currentVNData.addvncmds = "";
-                }
-                // if GUILayout.Button("X", GUILayout.Width(20)):
-                //     sc.cam_whatsay = ""
-                // if GUILayout.Button("...", GUILayout.Width(20)):
-                //     sc.cam_whatsay = "..."
-                GUILayout.EndHorizontal();
-                */
-        }
-
-        internal string get_next_speaker(Dictionary<string, int> allActors, string curSpeakAlias, bool next)
-        {
-            // next from unknown speaker
-            var keylist = allActors.Keys.ToList();
-            if (curSpeakAlias != defaultSpeakerAlias && !allActors.ContainsKey(curSpeakAlias))
-                return defaultSpeakerAlias;
-            // next from s or actor
-            if (curSpeakAlias == defaultSpeakerAlias)
-            {
-                if (allActors.Count > 0)
-                {
-                    if (next)
-                        return keylist[0];
-                    return keylist.Last();
-                }
-
-                return defaultSpeakerAlias;
-            }
-
-            var nextIndex = keylist.IndexOf(curSpeakAlias);
-            if (next)
-                nextIndex += 1;
-            else
-                nextIndex -= 1;
-            return Enumerable.Range(0, allActors.Count).Contains(nextIndex) ? keylist[nextIndex] : defaultSpeakerAlias;
+            else return null;
         }
 
         internal void SetVNData(VNController gameController, VNData vnData)
         {
             gameController.SetText(vnData.whosay, vnData.whatsay);
-            viewVNData = vnData;
         }
 
-        internal void ResetVNData()
-        {
-            viewVNData.enabled = false;
-            viewVNData.whosay = "";
-            viewVNData.whatsay = "";
-            viewVNData.addvncmds = "";
-            viewVNData.addprops.a1 = false;
-            viewVNData.addprops.a2 = false;
-        }
+        
 
     }
 }

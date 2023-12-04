@@ -108,10 +108,10 @@ namespace SceneSaveState
             return Insert(new_chapter);
         }
 
-        public void MergeChapters()
+        public Chapter MergeChapters()
         {
             var currentChapter = Current;
-            if (!HasNext) return;
+            if (!HasNext) return null;
 
             var currentIndex = currentChapter.CurrentIndex;
 
@@ -119,9 +119,7 @@ namespace SceneSaveState
 
             currentChapter.AddRange(nextChapter.ExportItems().ToList());
 
-            Remove(currentIndex + 1);
-
-
+            return Remove(currentIndex + 1);
         }
 
         internal void DrawMoveUpDownButtons()
@@ -178,24 +176,15 @@ namespace SceneSaveState
             Remove();
         }   
 
-        internal Warning? DrawChapterEditButtons(Chapter c, Camera cam, bool promptOnDelete)
+        internal Warning? DrawChapterEditButtons(Chapter c, bool promptOnDelete)
         {
             Warning? warning = null;
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Add chapter", GUILayout.Height(RowHeight), GUILayout.Width(ColumnWidth * 0.5f)))
-            {
-                Add(new Chapter());
-            }
-            if (GUILayout.Button("Insert chapter", GUILayout.Height(RowHeight), GUILayout.Width(ColumnWidth * 0.5f)))
-            {
-                Insert(new Chapter());
-            }
+            var _ = GUILayout.Button("Add chapter", GUILayout.Height(RowHeight), GUILayout.Width(ColumnWidth * 0.5f)) ? Add(new Chapter()) : null;
+            _ = GUILayout.Button("Insert chapter", GUILayout.Height(RowHeight), GUILayout.Width(ColumnWidth * 0.5f)) ? Insert(new Chapter()) : null;
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Copy chapter", GUILayout.Height(RowHeight), GUILayout.Width(ColumnWidth * 0.5f)))
-            {
-                Duplicate();
-            }
+            _ = GUILayout.Button("Copy chapter", GUILayout.Height(RowHeight), GUILayout.Width(ColumnWidth * 0.5f)) ? Duplicate() : null;
             if (GUILayout.Button("Delete chapter", GUILayout.Height(RowHeight), GUILayout.Width(ColumnWidth * 0.5f)))
             {
                 if (promptOnDelete)
@@ -209,14 +198,8 @@ namespace SceneSaveState
             }
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Merge chapters", GUILayout.Height(RowHeight), GUILayout.Width(ColumnWidth * 0.5f)))
-            {
-                MergeChapters();
-            }
-            if (GUILayout.Button("Split chapter", GUILayout.Height(RowHeight), GUILayout.Width(ColumnWidth * 0.5f)))
-            {
-                SplitChapter(c);
-            }
+            _ = GUILayout.Button("Merge chapters", GUILayout.Height(RowHeight), GUILayout.Width(ColumnWidth * 0.5f)) ? MergeChapters() : null;
+            _ = GUILayout.Button("Split chapter", GUILayout.Height(RowHeight), GUILayout.Width(ColumnWidth * 0.5f)) ? SplitChapter(c) : null;
             GUILayout.EndHorizontal();
             return warning;
         }
@@ -260,6 +243,15 @@ namespace SceneSaveState
                 i++;
             }
             return s;
+        }
+
+        internal void RemoveRole(string roleName)
+        {
+            foreach (var chapter in this)
+            {
+                chapter.RemoveRole(roleName);
+
+            }
         }
 
         internal Scene DrawSceneButtons(Chapter c, int chapterNumber, bool chapterSelected)

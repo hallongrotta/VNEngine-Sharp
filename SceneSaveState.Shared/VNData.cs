@@ -58,6 +58,20 @@ namespace SceneSaveState
                 add_props = false;
             }
 
+            public static VNData empty()
+            {
+                var data = new VNData
+                {
+                    enabled = true,
+                    whosay = "",
+                    whatsay = "",
+                    addvncmds = ""
+                };
+                data.addprops.a1 = false;
+                data.addprops.a2 = false;
+                return data;
+            }
+
             public VNData Copy()
             {
                 throw new NotImplementedException();

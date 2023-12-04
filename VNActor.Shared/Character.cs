@@ -1063,8 +1063,15 @@ namespace VNActor
                 OIBoneInfo.BoneGroup.Skirt
             };
 
-            foreach (var i in Enumerable.Range(0, group.Length <= 7 ? group.Length : 7))
-                objctrl.ActiveFK(bis[i], group[i], force);
+            for (var i = 0; i < bis.Length; i++)
+                try
+                {
+                    objctrl.ActiveFK(bis[i], group[i], force);
+                } catch (NullReferenceException)
+                {
+                    Console.WriteLine("SetActiveFK: failed for {0}, {1}, {2}", i, bis[i], group[i]);
+                }
+               
         }
 
         public bool[] get_FK_active()

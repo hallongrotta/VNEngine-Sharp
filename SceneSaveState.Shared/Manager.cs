@@ -90,11 +90,11 @@ namespace SceneSaveState
         internal bool HasItems => CurrentIndex > -1 && Items.Count > 0;
 
 
-        internal int Add(T i)
+        internal T Add(T i)
         {
             Items.Add(i);
             CurrentIndex = Items.Count - 1;
-            return CurrentIndex;
+            return Current;
         }
         internal T Insert(T i)
         {
@@ -145,12 +145,9 @@ namespace SceneSaveState
             return Update(CurrentIndex, c);
         }
 
-        internal void Duplicate()
+        internal T Duplicate()
         {
-            if (Items.Count > 0)
-            {
-                Items.Insert(CurrentIndex, Items[CurrentIndex].Copy());
-            }
+            return Items.Count > 0 ? Insert(Items[CurrentIndex].Copy()) : default;
         }
 
         internal T[] ExportItems()

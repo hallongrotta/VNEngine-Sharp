@@ -19,6 +19,7 @@ using UnityEngine;
 using VNActor;
 using VNEngine;
 using static SceneSaveState.UI;
+using static SceneSaveState.VNDataComponent;
 using static VNActor.Character;
 using static VNActor.Item;
 using static VNActor.Light;
@@ -117,6 +118,8 @@ namespace SceneSaveState
             // blocking message
             funcLockedText = "...";
             isFuncLocked = false;
+
+            uiVNData = VNData.empty();
 
             // skin_default internal
 
@@ -273,6 +276,76 @@ namespace SceneSaveState
             paramAnimCamIfPossible.Value = GUILayout.Toggle(paramAnimCamIfPossible.Value, "Animate cam if possible");
         }
 
+        private VNData uiVNData;
+
+        internal VNData? DrawVNDataOptions(VNData visibleVNData, RoleTracker roleTracker)
+        {
+            VNData? newVNData = null;
+            var enabled = true;
+            
+            GUILayout.Label("Actor:");
+            GUILayout.FlexibleSpace();
+
+            string whosay = GUILayout.TextField(visibleVNData.whosay);
+
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("<", GUILayout.Width(20)))
+            {
+                whosay = roleTracker.get_next_speaker(visibleVNData.whosay, false);
+            }
+            if (GUILayout.Button(">", GUILayout.Width(20)))
+            {
+                whosay = roleTracker.get_next_speaker(visibleVNData.whosay, true);
+            }
+            GUILayout.EndHorizontal();
+
+            GUILayout.FlexibleSpace();
+            GUILayout.Label("Text:");
+
+            string whatsay = GUILayout.TextArea(visibleVNData.whatsay, GUILayout.Height(85));
+
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("X", GUILayout.Width(20)))
+            {
+                whatsay = "";
+            }
+            else if (GUILayout.Button("...", GUILayout.Width(20)))
+            {
+                whatsay = "...";
+            }
+            if (GUILayout.Button("Save", GUILayout.Width(40)))
+            {
+                newVNData = new VNData(enabled, whosay, whatsay, visibleVNData.addvncmds, visibleVNData.addprops);
+            }
+            GUILayout.EndHorizontal();
+
+            uiVNData.whosay = whosay;
+            uiVNData.whatsay = whatsay;
+
+            /*GUILayout.BeginHorizontal();
+                GUILayout.Label("  Adv VN cmds", GUILayout.Width(90));
+                Instance.currentVNData.addvncmds = GUILayout.TextArea(Instance.currentVNData.addvncmds, GUILayout.Width(235), GUILayout.Height(55));
+                if (GUILayout.Button("X", GUILayout.Width(20)))
+                {
+                    Instance.currentVNData.addvncmds = "";
+                }
+                // if GUILayout.Button("X", GUILayout.Width(20)):
+                //     sc.cam_whatsay = ""
+                // if GUILayout.Button("...", GUILayout.Width(20)):
+                //     sc.cam_whatsay = "..."
+                GUILayout.EndHorizontal();
+                */
+            return newVNData;
+
+        }
+
+        internal VNData ResetVNData()
+        {
+            var oldData = uiVNData;
+            uiVNData = VNData.empty();
+            return oldData;
+        }
+
         internal Warning? sceneConsoleEditUI(Chapter c, Camera cam)
         {
             Warning? w = null;
@@ -282,7 +355,11 @@ namespace SceneSaveState
             GUILayout.Label("Scenes");
             // Scene tab
             var scene = c == null ? null : ChapterManager.DrawSceneTab(GameController, c, cam);
-            LoadScene(scene, cam);
+            var vnData = LoadScene(scene, cam);
+            if (vnData is VNData vn)
+            {
+                uiVNData = vn;
+            }
             GUILayout.EndVertical();
 
             // Column 2
@@ -298,8 +375,8 @@ namespace SceneSaveState
             GUILayout.BeginVertical(GUILayout.Width(ColumnWidth));
             GUILayout.Label("Scene Controls");
 
-            w = c?.DrawSceneEditButtons(this, cam, promptOnDelete.Value, autoAddCam.Value) ?? w;
-            w = ChapterManager.DrawChapterEditButtons(c, cam, promptOnDelete.Value) ?? w;
+            w = c?.DrawSceneEditButtons(CreateScene, () => new View(cam.export(), ResetVNData()), promptOnDelete.Value, autoAddCam.Value) ?? w;
+            w = ChapterManager.DrawChapterEditButtons(c, promptOnDelete.Value) ?? w;
 
             GUILayout.FlexibleSpace();
 
@@ -307,7 +384,11 @@ namespace SceneSaveState
             {
                 if (s.Current is View v)
                 {
-                    v.DrawVNDataOptions(roleTracker);
+                    var vndata = DrawVNDataOptions(uiVNData, roleTracker);
+                    if (vndata is VNData vn_)
+                    {
+                        var result = v.HasItems ? v.Update(vn_) : v.Add(vn_);
+                    }
                 }
             }
             GUILayout.FlexibleSpace();
@@ -408,12 +489,11 @@ namespace SceneSaveState
 
         
 
-        internal bool LoadScene(Scene s, Camera c)
+        internal VNData? LoadScene(Scene s, Camera c)
         {
-            if (s is null) return false;
+            if (s is null) return null;
             s.SetSceneState(game, roleTracker);
-            if (s.HasItems) s.Current.setCamera(c, GameController);
-            return true;
+            if (s.HasItems) return s.Current.setCamera(c, GameController); else return null;
         }
 
         internal void Reset()
@@ -427,11 +507,11 @@ namespace SceneSaveState
             NextSceneOrCamera(vn, i, camera);
         }
 
-        internal void NextSceneOrCamera(VNController vn, int i, Camera c)
+        internal VNData? NextSceneOrCamera(VNController vn, int i, Camera c)
         {
             var chapter = ChapterManager.Current;
             var scene = ChapterManager.GoToNextSceneOrCam(vn, chapter, c);
-            LoadScene(scene, camera);
+            return LoadScene(scene, camera);
         }
 
         internal void runVNSS(string starfrom = "begin")
