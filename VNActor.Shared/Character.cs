@@ -167,31 +167,32 @@ namespace VNActor
         {
             get
             {
-                // needed only to save Fixed state
-                if (LookNeckPattern == NeckPattern.Fixed)
-                    using (var memoryStream = new MemoryStream())
-                    {
-                        using (var binaryWriter = new BinaryWriter(memoryStream))
-                        {
-                            objctrl.neckLookCtrl.SaveNeckLookCtrl(binaryWriter);
-                            return memoryStream.ToArray();
-                        }
-                    }
+                if (LookNeckPattern != NeckPattern.Fixed)
+                    return null;
 
-                return null;
+                // needed only to save Fixed state
+                using (var memoryStream = new MemoryStream())
+                {
+                    using (var binaryWriter = new BinaryWriter(memoryStream))
+                    {
+                        objctrl.neckLookCtrl.SaveNeckLookCtrl(binaryWriter);
+                        return memoryStream.ToArray();
+                    }
+                }
             }
             set
             {
-                if (LookNeckPattern == NeckPattern.Fixed)
-                    // print lst
-                    // print arrstate
-                    using (var memoryStream = new MemoryStream(value))
+                if (LookNeckPattern != NeckPattern.Fixed)
+                    return;
+                // print lst
+                // print arrstate
+                using (var memoryStream = new MemoryStream(value))
+                {
+                    using (var binaryReader = new BinaryReader(memoryStream))
                     {
-                        using (var binaryReader = new BinaryReader(memoryStream))
-                        {
-                            objctrl.neckLookCtrl.LoadNeckLookCtrl(binaryReader);
-                        }
+                        objctrl.neckLookCtrl.LoadNeckLookCtrl(binaryReader);
                     }
+                }
             }
         }
 
@@ -501,13 +502,7 @@ namespace VNActor
             get
             {
                 // return a tuple of current loaded voice: ((group, category, no), (group, category, no), ...)
-                var vlist = new List<int[]>();
-                foreach (var v in objctrl.voiceCtrl.list)
-                {
-                    int[] vi = {v.group, v.category, v.no};
-                    vlist.Add(vi);
-                }
-                return vlist;
+                return objctrl.voiceCtrl.list.Select(x => { return new int[] { x.group, x.category, x.no }; }).ToList();
             }
         }
 
@@ -599,16 +594,32 @@ namespace VNActor
 
             get
             {
-                var fkBoneInfo = new Dictionary<int, Vector3>();
-                foreach (var boneInfo in objctrl.listBones)
-                    if (boneInfo.active)
-                    {
-                        var rot = boneInfo.boneInfo.changeAmount.rot;
-                        var rotClone = new Vector3(rot.x, rot.y, rot.z);
-                        //var rotClone = new Vector3(NormalizeAngle(rot.x), NormalizeAngle(rot.y), NormalizeAngle(rot.z));
-                        fkBoneInfo[boneInfo.boneID] = rotClone;
-                    }
+                var activeBoneInfo = objctrl.listBones.Where(boneInfo => boneInfo.active);
+                Dictionary<int, Vector3> fkBoneInfo = activeBoneInfo.ToDictionary(boneInfo => boneInfo.boneID,
+                                       boneInfo =>
+                                       {
+                                        var rot = boneInfo.boneInfo.changeAmount.rot;
+                                        return new Vector3(rot.x, rot.y, rot.z);
+                                        });
                 return fkBoneInfo;
+            }
+        }
+
+        private IK_node_s makeIKNode(OCIChar.IKInfo itInfo)
+        {
+            var tgtName = itInfo.boneObject.name;
+            var pos = itInfo.targetInfo.changeAmount.pos;
+            var posClone = new Vector3(pos.x, pos.y, pos.z);
+            if (IsRotatableIK(tgtName))
+            {
+                var rot = itInfo.targetInfo.changeAmount.rot;
+                var rotClone = new Vector3(rot.x, rot.y, rot.z);
+                //var rotClone = new Vector3(NormalizeAngle(rot.x), NormalizeAngle(rot.y), NormalizeAngle(rot.z));
+                return new IK_node_s { pos = posClone, rot = rotClone };
+            }
+            else
+            {
+                return new IK_node_s { pos = posClone, rot = null };
             }
         }
 
@@ -617,10 +628,10 @@ namespace VNActor
             set
             {
                 if (value is null) return;
-                foreach (var ikTgt in objctrl.listIKTarget)
+                var validTargets = objctrl.listIKTarget.Where(ikTgt => ikTgt.active && value.ContainsKey(ikTgt.boneObject.name));
+                foreach (var ikTgt in validTargets)
                 {
                     var nodeName = ikTgt.boneObject.name;
-                    if (!(ikTgt.active && value.ContainsKey(nodeName))) continue;
                     ikTgt.targetInfo.changeAmount.pos = value[nodeName].pos;
                     if (IsRotatableIK(nodeName) && value[nodeName].rot is Vector3 ikRot)
                         ikTgt.targetInfo.changeAmount.rot = ikRot;
@@ -628,25 +639,8 @@ namespace VNActor
             }
             get
             {
-                var ik = new Dictionary<string, IK_node_s>();
-                foreach (var itInfo in objctrl.listIKTarget)
-                    if (itInfo.active)
-                    {
-                        var tgtName = itInfo.boneObject.name;
-                        var pos = itInfo.targetInfo.changeAmount.pos;
-                        var posClone = new Vector3(pos.x, pos.y, pos.z);
-                        if (IsRotatableIK(tgtName))
-                        {
-                            var rot = itInfo.targetInfo.changeAmount.rot;
-                            var rotClone = new Vector3(rot.x, rot.y, rot.z);
-                            //var rotClone = new Vector3(NormalizeAngle(rot.x), NormalizeAngle(rot.y), NormalizeAngle(rot.z));
-                            ik[tgtName] = new IK_node_s {pos = posClone, rot = rotClone};
-                        }
-                        else
-                        {
-                            ik[tgtName] = new IK_node_s {pos = posClone, rot = null};
-                        }
-                    }
+                var activeInfo = objctrl.listIKTarget.Where(itInfo => itInfo.active);
+                Dictionary<string, IK_node_s> ik = activeInfo.ToDictionary(itInfo => itInfo.boneObject.name, makeIKNode);
                 return ik;
             }
         }

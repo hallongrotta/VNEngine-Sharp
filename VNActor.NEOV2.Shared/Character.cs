@@ -262,15 +262,17 @@ namespace VNActor
                         return;
                     }
 
-                    for (int i = 0; i < value.parts.Length; i++)
-                    {                    
-                        if (value.parts[i].id != ClothCoordinate.parts[i].id)
-                        {
-                            objctrl.charInfo.nowCoordinate.clothes = value;
-                            objctrl.charInfo.Reload(false, true, true, true);
-                            return;
-                        }
-                    }                                     
+                    var reload = value.parts.Zip(ClothCoordinate.parts, (a, b) => a.id != b.id).Any(x => x);
+
+                    if (!reload)
+                    {
+                        return;
+                    }
+
+                    objctrl.charInfo.nowCoordinate.clothes = value;
+                    objctrl.charInfo.Reload(false, true, true, true);
+                    return;
+                                
                 }
                 catch (Exception e)
                 {
@@ -294,15 +296,18 @@ namespace VNActor
                         return;
                     }
 
-                    for (int i = 0; i < value.parts.Length; i++)
+                    var reload = value.parts.Zip(AccessoryCoordinate.parts, (a, b) => a.id != b.id).Any(x => x);
+
+                    if (!reload)
                     {
-                        if (value.parts[i].id != AccessoryCoordinate.parts[i].id)
-                        {
-                            objctrl.charInfo.nowCoordinate.accessory = value;
-                            objctrl.charInfo.Reload(false, true, true, true);
-                            return;
-                        }
+                        return;
                     }
+                    
+                    objctrl.charInfo.nowCoordinate.accessory = value;
+                    objctrl.charInfo.Reload(false, true, true, true);
+                    return;
+                        
+                    
                 }
                 catch (Exception e)
                 {

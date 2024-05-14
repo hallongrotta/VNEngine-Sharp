@@ -39,10 +39,10 @@ namespace SceneSaveState
         private const string GUID = "com.kasanari.bepinex.sceneconsole";
         private const string Version = "1.0";
         private const string about_text =
-            "SceneSaveState C# rewrite by @kasanari\n" +
+            "SceneSaveState/VNEngine C# rewrite by @kasanari\n" +
             "SceneSaveState/VNEngine by @keitaro\n" +
             "Original SceneConsole code by @chickenManX\n" +
-            "Some cool features by @countd360\n";
+            "Some features by @countd360\n";
 
 
         
@@ -137,7 +137,7 @@ namespace SceneSaveState
         {
             Logger = base.Logger;
             loadConfig();
-            sceneConsoleSkinSetup();
+            SceneConsoleSkinSetup();
             StudioSaveLoadApi.RegisterExtraBehaviour<SceneConsoleSaveLoadComponent>(GUID);
         }
 
@@ -208,7 +208,8 @@ namespace SceneSaveState
                     {
                         // Edit window
                         case 0:
-                            warning = sceneConsoleEditUI(currentChapter, camera);
+                            
+                            warning = SceneConsoleEditUI(currentChapter, camera);
                             break;
                         case 1:
                             // Trackable window
@@ -346,23 +347,23 @@ namespace SceneSaveState
             return oldData;
         }
 
-        internal Warning? sceneConsoleEditUI(Chapter c, Camera cam)
+        internal void DrawSceneSelector(Chapter c, Camera cam)
         {
-            Warning? w = null;
-            GUILayout.BeginHorizontal();
-            // Column 1
             GUILayout.BeginVertical(GUILayout.Width(ColumnWidth));
             GUILayout.Label("Scenes");
             // Scene tab
-            var scene = c == null ? null : ChapterManager.DrawSceneTab(GameController, c, cam);
-            var vnData = LoadScene(scene, cam);
+            var selected_scene = c == null ? null : ChapterManager.DrawSceneTab(GameController, c, cam);
+            var vnData = LoadScene(selected_scene, cam);
             if (vnData is VNData vn)
             {
                 uiVNData = vn;
             }
             GUILayout.EndVertical();
+        } 
 
-            // Column 2
+        internal Warning? DrawEditButtons(Chapter c, Camera cam)
+        {
+            Warning? w = null;
             GUILayout.BeginVertical(GUILayout.Width(ColumnWidth));
             GUILayout.Label($"Scene Cameras. FOV: {(int)camera.cameraData.parse}");
 
@@ -385,19 +386,30 @@ namespace SceneSaveState
                 if (s.Current is View v)
                 {
                     var vndata = DrawVNDataOptions(uiVNData, roleTracker);
-                    if (vndata is VNData vn_)
+                    if (vndata is VNData vn)
                     {
-                        var result = v.HasItems ? v.Update(vn_) : v.Add(vn_);
+                        var result = v.HasItems ? v.Update(vn) : v.Add(vn);
                     }
                 }
             }
             GUILayout.FlexibleSpace();
             GUILayout.EndVertical();
+            return w;
+        }
+
+        internal Warning? SceneConsoleEditUI(Chapter c, Camera cam)
+        {
+            GUILayout.BeginHorizontal();
+            // Column 1
+            DrawSceneSelector(c, cam);
+
+            // Column 2
+            var w = DrawEditButtons(c, cam);
             GUILayout.EndHorizontal();
             return w;
         }
 
-        internal void sceneConsoleSkinSetup()
+        internal void SceneConsoleSkinSetup()
         {
             windowCallback = SafeSceneConsoleWindowFunc;
             var x = UI.defaultWindowX;

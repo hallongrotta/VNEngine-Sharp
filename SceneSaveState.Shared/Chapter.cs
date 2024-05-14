@@ -18,7 +18,8 @@ namespace SceneSaveState
 
         public Chapter Copy()
         {
-            throw new NotImplementedException();
+            var bytes = Utils.SerializeData(this);
+            return Utils.DeserializeData<Chapter>(bytes);
         }
 
         internal Chapter()
