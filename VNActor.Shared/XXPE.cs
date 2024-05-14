@@ -112,8 +112,10 @@ namespace VNActor
                         //print("XXPEBlendShapes Warning: unknown setting node '%s'" % nc.Name)
                     }
                 }
-            } catch {
-
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"An error occurred while getting BlenShapes {e.Message}");
             }
 
             return fullObj;

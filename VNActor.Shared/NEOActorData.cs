@@ -211,7 +211,7 @@ After:
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                   Console.WriteLine("A problem occurred when getting AdvIK data: " + e.Message);
                 }
 
                 try
@@ -221,7 +221,7 @@ After:
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    Console.WriteLine($"A problem occurred when getting XXPE data: {e.Message}");
                 }
 
                 try
@@ -231,7 +231,7 @@ After:
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                   Console.WriteLine($"A problem occurred when getting FKHeightAdjust data: {e.Message}");
                 }
 
             }
@@ -326,7 +326,7 @@ After:
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Console.WriteLine("An error occurred when applying AdvIK data: " + e.Message);
             }
 
             try
@@ -342,7 +342,7 @@ After:
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Console.WriteLine($"An error occurred when applying XXPE data: {e.Message}");
             }
 
             try
@@ -352,7 +352,7 @@ After:
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Console.WriteLine($"An error occurred when applying FKHeightAdjust data: {e.Message}");
             }
 
         }
