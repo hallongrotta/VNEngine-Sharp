@@ -381,6 +381,9 @@ namespace VNActor
             set
             {
                 // param: a set of ((metallic, glossiness), (metallic, glossiness), ...)
+
+                if (value is null) return;
+
                 if (this.hasMetallic)
                 {
                     for (int i = 0; i < objctrl.useMetallic.Length; i++)
