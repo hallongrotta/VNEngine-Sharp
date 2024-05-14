@@ -360,15 +360,15 @@ namespace VNActor
         {
             get
             {
-                if (this.hasMetallic)
+                if (hasMetallic)
                 {
                     var length = this.objctrl.useMetallic.Length;
                     var mv = new Metallic_s[length];
                     for (int i = 0; i < length; i++)
                     {
-                        if (this.objctrl.useMetallic[i])
+                        if (objctrl.useMetallic[i])
                         {
-                            mv[i] = new Metallic_s { metallic = this.objctrl.itemInfo.colors[i].metallic, glossiness = this.objctrl.itemInfo.colors[i].glossiness };
+                            mv[i] = new Metallic_s { metallic = objctrl.itemInfo.colors[i].metallic, glossiness = objctrl.itemInfo.colors[i].glossiness };
                         }
                     }
                     return mv;
@@ -428,7 +428,7 @@ namespace VNActor
             }
             get
             {
-                if (this.hasOption && this.objctrl.itemInfo.option != null && this.objctrl.itemInfo.option.Count > 0)
+                if (hasOption && objctrl.itemInfo.option != null && this.objctrl.itemInfo.option.Count > 0)
                 {
                     return this.objctrl.itemInfo.option[0];
                 }

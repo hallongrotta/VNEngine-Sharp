@@ -49,6 +49,9 @@
     <Reference Include="HS2_AdvIKPlugin">
       <HintPath>B:\HS2_DEBUG\BepInEx\plugins\HS2_AdvIKPlugin.dll</HintPath>
     </Reference>
+    <Reference Include="HS2_FKHeightAdjustUI">
+      <HintPath>T:\illusion\[ScrewThisNoise] HoneySelect 2 DX BetterRepack R11\BepInEx\Plugins\HS2_FKHeightAdjustUI.dll</HintPath>
+    </Reference>
     <Reference Include="IL, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\IllusionLibs.HoneySelect2.IL.2020.5.29\lib\net46\IL.dll</HintPath>
       <Private>False</Private>

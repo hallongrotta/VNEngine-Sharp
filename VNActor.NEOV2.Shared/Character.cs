@@ -124,7 +124,7 @@ namespace VNActor
             get
             {
                 // get breast:
-                return this.objctrl.oiCharInfo.charFile.custom.body.shapeValueBody[1];
+                return objctrl.oiCharInfo.charFile.custom.body.shapeValueBody[1];
             }
         }
 
@@ -137,7 +137,7 @@ namespace VNActor
 
         public void set_accessory(int accIndex, bool accShow)
         {
-            this.objctrl.ShowAccessory(accIndex, accShow);
+            objctrl.ShowAccessory(accIndex, accShow);
         }
 
         public void set_accessory(bool accShow)
@@ -153,7 +153,7 @@ namespace VNActor
             // accShow: must be None
             for (int i = 0; i < 20; i++)
             {
-                this.objctrl.ShowAccessory(i, accShow);
+                objctrl.ShowAccessory(i, accShow);
             }
         }
 
@@ -165,22 +165,22 @@ namespace VNActor
             set
             {
                 // juices: level on (face, FrontUp, BackUp, FrontDown, BackDown) when 0-none, 1-few, 2-lots
-                this.objctrl.SetSiruFlags(ChaFileDefine.SiruParts.SiruKao, value[0]);
-                this.objctrl.SetSiruFlags(ChaFileDefine.SiruParts.SiruFrontTop, value[1]);
-                this.objctrl.SetSiruFlags(ChaFileDefine.SiruParts.SiruBackTop, value[2]);
-                this.objctrl.SetSiruFlags(ChaFileDefine.SiruParts.SiruFrontBot, value[3]);
-                this.objctrl.SetSiruFlags(ChaFileDefine.SiruParts.SiruBackBot, value[4]);
+                objctrl.SetSiruFlags(ChaFileDefine.SiruParts.SiruKao, value[0]);
+                objctrl.SetSiruFlags(ChaFileDefine.SiruParts.SiruFrontTop, value[1]);
+                objctrl.SetSiruFlags(ChaFileDefine.SiruParts.SiruBackTop, value[2]);
+                objctrl.SetSiruFlags(ChaFileDefine.SiruParts.SiruFrontBot, value[3]);
+                objctrl.SetSiruFlags(ChaFileDefine.SiruParts.SiruBackBot, value[4]);
             }
             get
             {
                 // return juice level of (face, FrontUp, BackUp, FrontDown, BackDown) in tuple
                 var jInfo = new byte[5]
                 {
-                this.objctrl.GetSiruFlags(ChaFileDefine.SiruParts.SiruKao),
-                this.objctrl.GetSiruFlags(ChaFileDefine.SiruParts.SiruFrontTop),
-                this.objctrl.GetSiruFlags(ChaFileDefine.SiruParts.SiruBackTop),
-                this.objctrl.GetSiruFlags(ChaFileDefine.SiruParts.SiruFrontBot),
-                this.objctrl.GetSiruFlags(ChaFileDefine.SiruParts.SiruBackBot)
+                objctrl.GetSiruFlags(ChaFileDefine.SiruParts.SiruKao),
+                objctrl.GetSiruFlags(ChaFileDefine.SiruParts.SiruFrontTop),
+                objctrl.GetSiruFlags(ChaFileDefine.SiruParts.SiruBackTop),
+                objctrl.GetSiruFlags(ChaFileDefine.SiruParts.SiruFrontBot),
+                objctrl.GetSiruFlags(ChaFileDefine.SiruParts.SiruBackBot)
             };
 
                 return jInfo;
@@ -195,12 +195,12 @@ namespace VNActor
             get
             {
                 // return tear level
-                return this.objctrl.GetTears();
+                return objctrl.GetTears();
             }
             set
             {
                 // level: 0~1
-                this.objctrl.SetTears(value);
+                objctrl.SetTears(value);
             }
         }
 
@@ -212,12 +212,12 @@ namespace VNActor
             set
             {
                 // level: tuya 0~1
-                this.objctrl.SetTuyaRate(value);
+                objctrl.SetTuyaRate(value);
             }
             get
             {
                 // return tuya rate
-                return this.objctrl.oiCharInfo.SkinTuyaRate;
+                return objctrl.oiCharInfo.SkinTuyaRate;
             }
         }
 
@@ -229,12 +229,12 @@ namespace VNActor
             get
             {
                 // return wet rate
-                return this.objctrl.oiCharInfo.WetRate;
+                return objctrl.oiCharInfo.WetRate;
             }
             set
             {
                 // level: wet 0~1
-                this.objctrl.SetWetRate(value);
+                objctrl.SetWetRate(value);
             }
         }
 
@@ -251,7 +251,7 @@ namespace VNActor
         {
             get
             {
-                return this.objctrl.charInfo.nowCoordinate.clothes;
+                return objctrl.charInfo.nowCoordinate.clothes;
             }
             set
             {
@@ -266,8 +266,8 @@ namespace VNActor
                     {                    
                         if (value.parts[i].id != ClothCoordinate.parts[i].id)
                         {
-                            this.objctrl.charInfo.nowCoordinate.clothes = value;
-                            this.objctrl.charInfo.Reload(false, true, true, true);
+                            objctrl.charInfo.nowCoordinate.clothes = value;
+                            objctrl.charInfo.Reload(false, true, true, true);
                             return;
                         }
                     }                                     
@@ -283,7 +283,7 @@ namespace VNActor
         {
             get
             {
-                return this.objctrl.charInfo.nowCoordinate.accessory;
+                return objctrl.charInfo.nowCoordinate.accessory;
             }
             set
             {
@@ -298,8 +298,8 @@ namespace VNActor
                     {
                         if (value.parts[i].id != AccessoryCoordinate.parts[i].id)
                         {
-                            this.objctrl.charInfo.nowCoordinate.accessory = value;
-                            this.objctrl.charInfo.Reload(false, true, true, true);
+                            objctrl.charInfo.nowCoordinate.accessory = value;
+                            objctrl.charInfo.Reload(false, true, true, true);
                             return;
                         }
                     }
