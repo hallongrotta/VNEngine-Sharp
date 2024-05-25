@@ -142,6 +142,7 @@ namespace SceneSaveState
 
         internal T Update(T c)
         {
+            if (CurrentIndex < 0) { return Add(c); }
             return Update(CurrentIndex, c);
         }
 
@@ -174,9 +175,10 @@ namespace SceneSaveState
             CurrentIndex = 0;
         }
 
+
         internal virtual T Update(int position, T newItem)
         {
-            if (position >= Items.Count) return default;
+            if (position < 0 || position >= Count) return default;
             var oldItem = Items[position];
             Items[position] = newItem;
             return oldItem;
@@ -201,7 +203,7 @@ namespace SceneSaveState
 
         internal void MoveItemBack()
         {
-            if (Items.Count <= 1 || this.CurrentIndex == 0) return;
+            if (Items.Count <= 1 || CurrentIndex <= 0) return;
             var backedItem = Current;
             Current = Items[CurrentIndex - 1];
             CurrentIndex -= 1;
