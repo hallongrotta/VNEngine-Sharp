@@ -509,8 +509,7 @@ namespace SceneSaveState
 
         internal void Reset()
         {
-            //ChapterManager = new Manager<Chapter>();
-            //ChapterManager.Add(new Chapter());
+            GetSceneController().Clear();
         }
 
         internal void NextSceneOrCamera(VNController vn, int i)

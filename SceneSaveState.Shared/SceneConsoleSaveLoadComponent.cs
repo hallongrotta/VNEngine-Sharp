@@ -59,8 +59,12 @@ namespace SceneSaveState
             //sc.LoadScene(scene);
         }
 
-   
-        
+
+        internal void Clear()
+        {
+            chapterManager = new ChapterManager(new Chapter());
+            roleTracker = new RoleTracker();
+        }
 
         internal double CalculateSaveDataSize(byte[] bytes)
         {
