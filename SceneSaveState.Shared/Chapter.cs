@@ -127,13 +127,19 @@ namespace SceneSaveState
             }
         }
 
-        internal void SetCurrentMapForAllScenes()
+        internal void SetCurrentMapNumForAllScenes(int map_num)
         {
             foreach (var scene in this)
             {
-                scene.sys.map = Current.sys.map;
-                scene.sys.map_pos = Current.sys.map_pos;
-                scene.sys.map_rot = Current.sys.map_rot;
+                scene.sys.map = map_num;
+            }
+        }
+        internal void SetCurrentMapTransformForAllScenes(Vector3 pos, Vector3 rot)
+        {
+            foreach (var scene in this)
+            {
+                scene.sys.map_pos = pos;
+                scene.sys.map_rot = rot;
             }
         }
 

@@ -175,9 +175,13 @@ namespace SceneSaveState
             }
             if (GUILayout.Button("Set current map to all scenes."))
             {
-                c.SetCurrentMapForAllScenes();
+                c.SetCurrentMapNumForAllScenes(game.MapNumber);
             }
-            #if HS2
+            if (GUILayout.Button("Set current map transform to all scenes."))
+            {
+                c.SetCurrentMapTransformForAllScenes(game.MapRot, game.MapPos);
+            }
+#if HS2
             if (GUILayout.Button("Set current actor's clothes to all scenes."))
             {
                 string id = sc.GetIDOfSelectedObject();
