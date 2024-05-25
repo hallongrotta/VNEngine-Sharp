@@ -73,7 +73,6 @@ namespace SceneSaveState
 
         private bool showTextBox = false;
 
-        private readonly SceneConsoleSaveLoadComponent saveLoadComponent;
         private readonly SceneConsoleCopyComponent copyPasteComponent;
         private readonly Camera camera;
 
@@ -217,7 +216,7 @@ namespace SceneSaveState
                             break;
                         case 2:
                             // Load/Save window
-                            warning = saveLoadComponent.sceneConsoleLdSvUI(this, ChapterManager.Count > 0);
+                            warning = GetSceneController().sceneConsoleLdSvUI(this, ChapterManager.Count > 0);
                             break;
                         case 3:
                             // --------- Advanced controls -------------
@@ -558,7 +557,7 @@ namespace SceneSaveState
             foreach (var objectCtrl in objects)
                 try
                 {
-                    if (objectCtrl is OCIChar c) return SceneFolders.GetActorID(c);
+                    if (objectCtrl is OCIChar c) return roleTracker.GetRoleName(c);
                 }
                 catch
                 {
