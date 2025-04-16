@@ -179,7 +179,7 @@ namespace SceneSaveState
             }
             if (GUILayout.Button("Set current map transform to all scenes."))
             {
-                c.SetCurrentMapTransformForAllScenes(game.MapRot, game.MapPos);
+                c.SetCurrentMapTransformForAllScenes(game.MapPos, game.MapRot);
             }
 #if HS2
             if (GUILayout.Button("Set current actor's clothes to all scenes."))
