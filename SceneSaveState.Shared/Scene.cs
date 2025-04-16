@@ -49,18 +49,36 @@ namespace SceneSaveState
         [Key("views")]
         public List<View> views {get => Items ; private set => ImportItems(value); }
 
-#if !KKS
-        public Scene(Dictionary<string, ActorData> actors, Dictionary<string, ItemData> items,
-        Dictionary<string, LightData> lights, Dictionary<string, NEOPropData> props, List<CamData> cams)
+        public Scene(
+     string Name,
+     List<View> views,
+     Dictionary<string, ActorData> actors,
+     List<CamData> cams,
+     Dictionary<string, ItemData> items,
+     Dictionary<string, LightData> lights,
+     Dictionary<string, NEOPropData> props,
+     SystemData sys
+     ) : base()
         {
-            this.cams = cams;
-            this.actors = actors;   
+            this.cams = null;
+            if (cams != null)
+            {
+                foreach (var c in cams)
+                {
+                    Add(new View(c));
+                }
+            }
+            this.actors = actors;
             this.props = props;
             this.items = items;
             this.lights = lights;
-
+            this.sys = sys;
+            this.Name = Name;
+            if (views != null)
+            {
+                this.views = views;
+            }
         }
-#endif
 
         internal Scene()
         {
