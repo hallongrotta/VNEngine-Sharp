@@ -1,6 +1,8 @@
-﻿using System;
+﻿using MessagePack;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
 using UnityEngine;
@@ -10,7 +12,7 @@ using static SceneSaveState.VNDataComponent;
 
 namespace SceneSaveState
 {
-    internal class Chapter : Manager<Scene>, IManaged<Chapter>
+    public class Chapter : Manager<Scene>, IManaged<Chapter>
     {
         public string Name { get; set; }
 
@@ -22,12 +24,12 @@ namespace SceneSaveState
             return Utils.DeserializeData<Chapter>(bytes);
         }
 
-        internal Chapter()
+        public Chapter()
         {
 
         }
 
-        internal Chapter(List<Scene> scenes, string[] sceneNames) : base(scenes, sceneNames)
+        public Chapter(List<Scene> scenes, string[] sceneNames) : base(scenes, sceneNames)
         {
 
         }
@@ -159,10 +161,17 @@ namespace SceneSaveState
 
         internal Scene DuplicateScene()
         {
-            var new_scene = Current.Copy();
+            if (!HasItems) return null;
+            return DuplicateScene(Current);
+        }
+
+        private Scene DuplicateScene(Scene s)
+        {
+            var new_scene = s.Copy();
             Insert(new_scene);
             return new_scene;
         }
+
 
         internal Scene UpdateScene(Scene s)
         {
