@@ -24,7 +24,7 @@ namespace SceneSaveState
             return Utils.DeserializeData<Chapter>(bytes);
         }
 
-        public Chapter()
+        public Chapter() : base()
         {
 
         }
